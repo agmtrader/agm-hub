@@ -1,0 +1,231 @@
+"use client"
+import { useEffect, useState } from "react"
+
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  getPaginationRowModel,
+  SortingState,
+  getSortedRowModel,
+  ColumnDef,
+} from "@tanstack/react-table"
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+import { Checkbox } from "@/components/ui/checkbox"
+
+import { DocumentData } from "firebase/firestore"
+import { cn } from "@/lib/utils"
+
+interface DataTableSelectProps<TData> {
+    data: TData[]
+    setSelection: React.Dispatch<React.SetStateAction<TData | null>>
+    width?: number
+}
+
+interface DataTableProps<TData> {
+  data: TData[]
+  width?: number
+}
+
+export const DataTable = <TData,>({data, width}: DataTableProps<TData>) => {
+
+    const [rowSelection, setRowSelection] = useState({})
+    const [sorting, setSorting] = useState<SortingState>([])
+
+    function buildColumns(data:DocumentData[]) {
+        const columns:Array<any> = []
+  
+        Object.keys(data[0]).forEach((column) => {
+          columns.push({
+            accessorKey:column, 
+            header:column
+          })
+        })
+  
+        return columns
+  
+    }  
+    const columns = buildColumns(data as DocumentData[])
+
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        state: {
+          sorting,
+        },
+    })
+
+    return (
+    <div className={cn('w-[50%] rounded-md border', width && `w-[${width}%]`)}>
+        <Table>
+        <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                return (
+                    <TableHead key={header.id}>
+                    {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                        )}
+                    </TableHead>
+                )
+                })}
+            </TableRow>
+            ))}
+        </TableHeader>
+        <TableBody>
+            {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+                <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                >
+                {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                ))}
+                </TableRow>
+            ))
+            ) : (
+            <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+                </TableCell>
+            </TableRow>
+            )}
+        </TableBody>
+        </Table>
+    </div>
+    )
+}
+
+export const DataTableSelect = <TData,>({data, setSelection}: DataTableSelectProps<TData>) => {
+
+    const [rowSelection, setRowSelection] = useState({})
+    const [sorting, setSorting] = useState<SortingState>([])
+
+    function buildColumns(data:DocumentData[]) {
+        const columns:Array<any> = []
+
+        columns.push(
+            {
+                id: "select",
+                cell: ({ row }:{row: any}) => (
+                  <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value:any) => selectRow(row, !!value)}
+                    aria-label="Select row"
+                  />
+                ),
+                enableSorting: false,
+                enableHiding: false,
+              }
+        )
+  
+        Object.keys(data[0]).forEach((column) => {
+          columns.push({
+            accessorKey:column, 
+            header:column
+          })
+        })
+  
+        return columns
+  
+    }  
+    const columns = buildColumns(data as DocumentData[])
+
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        onRowSelectionChange: setRowSelection,
+        enableMultiRowSelection:false,
+        state: {
+          sorting,
+          rowSelection
+        },
+    })
+
+    function selectRow (row:any, value: any) {
+      row.toggleSelected(value)
+    }
+
+    const [tableState, setTable] = useState(table.getFilteredSelectedRowModel().rows[0])
+
+    useEffect(() => {
+      if (tableState) {
+        setSelection(tableState.original)
+      } else {
+        setSelection(null)
+      }
+    }, [tableState])
+
+    return (
+      <div className="w-full h-full flex flex-col gap-y-5 justify-center items-center">
+        <div className="w-[50%] rounded-md border">
+            <Table>
+            <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                    return (
+                        <TableHead key={header.id}>
+                        {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                            )}
+                        </TableHead>
+                    )
+                    })}
+                </TableRow>
+                ))}
+            </TableHeader>
+            <TableBody>
+                {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                    <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    >
+                    {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                    ))}
+                    </TableRow>
+                ))
+                ) : (
+                <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results.
+                    </TableCell>
+                </TableRow>
+                )}
+            </TableBody>
+            </Table>
+        </div>
+      </div>
+    )
+}

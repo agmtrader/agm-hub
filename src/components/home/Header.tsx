@@ -1,0 +1,63 @@
+"use client"
+import React, { useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+
+import { Button } from '@/components/ui/button'
+import useScrollPositions from '@/hooks/useScrollPositions'
+
+import {motion, useAnimate, AnimatePresence} from 'framer-motion'
+import { List } from 'react-bootstrap-icons'
+import Sidebar from './sidebar/Sidebar'
+
+const maxScroll = 100
+
+type Props = {}
+
+const Header = (props: Props) => {
+
+  var scroll = useScrollPositions()
+
+  const [expandSidebar, setExpandSidebar] = useState(false)
+
+  return (
+    <div>
+      <AnimatePresence>
+        {scroll > maxScroll ? 
+          <motion.div initial={{y:-100}} animate={{y:0}} exit={{y:-100}} transition={{y: { type: "spring", bounce: 0 }}} className='flex flex-col items-center fixed w-full h-[10vh] px-5 z-10 bg-agm-white'>
+            <div className='flex w-full h-full items-center justify-between'>
+                <Image src={'/images/brand/agm-logo.png'} height = {150} width = {120} alt = 'AGM Logo' fill={false}/>
+                <Button variant={'ghost'} onClick={() => setExpandSidebar(true)}>
+                  <List />
+                </Button>
+            </div>
+          </motion.div>
+          :
+          <div className='flex items-center justify-between fixed w-full h-[10vh] px-5 z-10 bg-transparent'>
+            <Image src={'/images/brand/agm-logo-white.png'} height = {150} width = {120} alt = 'AGM Logo' fill={false}/>
+            <Button variant={'ghost'} className='hover:bg-black hover:bg-opacity-10' onClick={() => setExpandSidebar(true)}>
+              <List className='text-agm-white'/>
+            </Button>
+          </div>
+        }
+      </AnimatePresence>
+      <AnimatePresence>
+        {expandSidebar &&
+          <div>
+            <div className='bg-black w-[100vw] fixed h-[100vh]  z-10 bg-opacity-50'></div>
+            <motion.div initial={{x:500}} animate={{x:0}} exit={{x:500}} transition={{duration:0.2  , y: { type: "spring", bounce: 0 }}} className='z-10 flex flex-col gap-y-5 items-end justify-start fixed right-0 w-[15vw] p-10 h-full bg-agm-white'>
+              <div className='w-full h-fit flex justify-end items-start'>
+                <Button variant={'ghost'} onClick={() => setExpandSidebar(false)}>
+                  X
+                </Button>
+              </div>
+              <Sidebar />
+            </motion.div>
+          </div>
+          }
+      </AnimatePresence>
+    </div>
+  )
+}
+
+export default Header
