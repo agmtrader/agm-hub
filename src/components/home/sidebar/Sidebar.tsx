@@ -1,7 +1,7 @@
 "use client"
-
-import * as React from "react"
 import Link from "next/link"
+
+import React from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -38,14 +38,18 @@ const navbarContent = [
 
 import { usePathname } from "next/navigation"
 
-const Sidebar = () => {
+interface Props {
+  setExpandSidebar: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const Sidebar = ({setExpandSidebar}:Props) => {
 
   return (
     <NavigationMenu className="h-full w-full flex">
         <NavigationMenuList className="w-full gap-y-5 h-[80vh] justify-between flex flex-col">
             <div className="w-full h-full flex flex-col justify-start gap-y-5 items-start">
                 {navbarContent.map((item, index) => (
-                    <NavigationMenuItem key={index} className="flex w-full h-fit justify-end">
+                    <NavigationMenuItem key={index} onClick={() => setExpandSidebar(false)} className="flex w-full h-fit justify-end">
                         <Link href={item.url} legacyBehavior passHref>
                             <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
                                 <div className="flex">

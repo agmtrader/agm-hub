@@ -26,15 +26,24 @@ const Header = (props: Props) => {
         {scroll > maxScroll ? 
           <motion.div initial={{y:-100}} animate={{y:0}} exit={{y:-100}} transition={{y: { type: "spring", bounce: 0 }}} className='flex flex-col items-center fixed w-full h-[10vh] px-5 z-10 bg-agm-white'>
             <div className='flex w-full h-full items-center justify-between'>
-                <Image src={'/images/brand/agm-logo.png'} height = {150} width = {120} alt = 'AGM Logo' fill={false}/>
+              <Link href={'/'}>
+                <Button variant={'ghost'}>
+                  <Image src={'/images/brand/agm-logo.png'} height = {150} width = {120} alt = 'AGM Logo' fill={false}/>
+                </Button>
+              </Link>
                 <Button variant={'ghost'} onClick={() => setExpandSidebar(true)}>
+                  
                   <List />
                 </Button>
             </div>
           </motion.div>
           :
           <div className='flex items-center justify-between fixed w-full h-[10vh] px-5 z-10 bg-transparent'>
-            <Image src={'/images/brand/agm-logo-white.png'} height = {150} width = {120} alt = 'AGM Logo' fill={false}/>
+            <Link href={'/'}>
+                <Button variant={'ghost'} className='hover:bg-opacity-0 hover:bg-black'>
+                  <Image src={'/images/brand/agm-logo-white.png'} height = {150} width = {120} alt = 'AGM Logo' fill={false}/>
+                </Button>
+              </Link>
             <Button variant={'ghost'} className='hover:bg-black hover:bg-opacity-10' onClick={() => setExpandSidebar(true)}>
               <List className='text-agm-white'/>
             </Button>
@@ -51,7 +60,7 @@ const Header = (props: Props) => {
                   X
                 </Button>
               </div>
-              <Sidebar />
+              <Sidebar setExpandSidebar={setExpandSidebar}/>
             </motion.div>
           </div>
           }

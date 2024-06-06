@@ -55,7 +55,7 @@ const Sidebar = () => {
             <NavigationMenuList className="w-full gap-y-5 h-full justify-between flex flex-col">
                 <div className="w-full h-full flex flex-col justify-start gap-y-5 items-start">
                     {navbarContent.map((item) => (
-                        <NavigationMenuItem className="flex w-full h-fit justify-start">
+                        <NavigationMenuItem key={item.name} className="flex w-full h-fit justify-start">
                             <Link href={item.url} legacyBehavior passHref>
                                 <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), 'w-full bg-agm-dark-blue hover:bg-agm-light-blue text-white hover:text-white')}>
                                     <div className="flex w-full text-start">

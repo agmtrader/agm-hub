@@ -18,9 +18,30 @@ import Sidebar from '@/components/dashboard/sidebar/Sidebar';
 import { useSession } from 'next-auth/react';
 import { DataTable } from '@/components/dashboard/DataTable';
 
+import { getAuth, signInWithCustomToken } from 'firebase/auth'
+import { firebase } from '@/utils/firestore';
+
 const page = () => {
 
   const {data:session} = useSession()
+
+  const auth = getAuth(firebase)
+
+  async function syncFirebaseAuth(session:any) {
+    if (session && session.firebaseToken) {
+      try {
+        await signInWithCustomToken(auth, session.firebaseToken)
+      } catch (error) {
+        console.error('Error signing in with custom token:', error)
+      }
+    } else {
+      auth.signOut()
+    }
+  }
+
+  useEffect(() => {
+    syncFirebaseAuth(session)
+  }, [session])
 
   // Initialize data variables
   const [tickets, setTickets] = useState<DocumentData[] | null>(null)
@@ -39,13 +60,13 @@ const page = () => {
     fetchData()
 
   }, [])
- 
+  
   return (
-    <div className='w-full h-full flex'>
-      {session?.user &&
+    <div className='w-full h-full flex '>
 
-        <div className="flex flex-row w-full justify-center items-start h-full gap-y-36 bg-[#2571A5]"> {/*BG*/}
-          
+        <div className="flex flex-row w-[100vw] justify-center items-start h-full gap-y-36 bg-[#2571A5]"> {/*BG*/}
+        
+        {session?.user ?
           <div className='flex flex-row my-[10vh] w-full gap-x-5 mx-5'> {/*Sidebar separator*/}
 
             <Sidebar/>
@@ -110,15 +131,45 @@ const page = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {tickets && <DataTable data={tickets}/>}
+                    {tickets && <DataTable data={tickets} width={100}/>}
                   </CardContent>
                 </Card>
               </div>
 
+              <div className='flex w-full gap-x-5 flex-row'>
+                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
+                  <CardHeader>
+                    <CardTitle>
+                      <p className='text-3xl'>Open applications</p>
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
+                  <CardHeader>
+                    <CardTitle>
+                      <p className='text-3xl'>Open applications</p>
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
+                  <CardHeader>
+                    <CardTitle>
+                      <p className='text-3xl'>Open applications</p>
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+              </div>
+
+              <iframe title="Realtime Database Google" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=f1d81e10-b10b-4e48-92d7-f8e49e6800b1&autoAuth=true&ctid=34ef35c3-128b-4180-9d21-e764b0c7596d" frameborder="0" allowFullScreen="true"></iframe>
+
             </div>
-          </div>         
-        </div>
+          </div>      
+          :
+          <div className='w-[100vw] h-[100vh]'>
+            <p>Log in to view!</p>
+          </div>   
       }
+    </div>
     </div>
   )
 }

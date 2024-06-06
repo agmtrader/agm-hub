@@ -170,15 +170,13 @@ export const DataTableSelect = <TData,>({data, setSelection}: DataTableSelectPro
       row.toggleSelected(value)
     }
 
-    const [tableState, setTable] = useState(table.getFilteredSelectedRowModel().rows[0])
-
     useEffect(() => {
-      if (tableState) {
-        setSelection(tableState.original)
+      if (table.getFilteredSelectedRowModel().rows[0]) {
+        setSelection(table.getFilteredSelectedRowModel().rows[0].original)
       } else {
         setSelection(null)
       }
-    }, [tableState])
+    })
 
     return (
       <div className="w-full h-full flex flex-col gap-y-5 justify-center items-center">

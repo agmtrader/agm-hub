@@ -23,11 +23,11 @@ export default function RootLayout({
 
   return (
 
-    <html lang="en" className={cn(inter.className, "flex flex-col h-fit w-full bg-agm-white overflow-x-hidden scroll-smooth")}>
-      <body className='h-full w-full flex flex-row scroll-smooth'>
-        <div className="h-full w-full flex flex-row">
+    <html lang="en" className={cn(inter.className, "flex flex-col h-fit w-full  bg-agm-white overflow-x-hidden scroll-smooth")}>
+      <body className='h-full w-full flex flex-row scroll-smooth '>
+        <div className="h-full w-full  flex flex-row">
           <NextAuthProvider>
-            <div className="flex flex-col h-full w-full scroll-smooth">
+            <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
               <Header />
               {children}
             </div>
