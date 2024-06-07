@@ -9,8 +9,10 @@ const firebaseConfig = {
 };
 
 import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { getFirestore } from 'firebase/firestore/lite';
 
 // Initialize Firebase
 export const firebase = initializeApp(firebaseConfig);
 export const db = getFirestore(firebase);
+export const firebaseAuth = getAuth(firebase)

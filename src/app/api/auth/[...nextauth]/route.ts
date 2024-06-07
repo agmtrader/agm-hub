@@ -3,15 +3,9 @@ import GoogleProvider from 'next-auth/providers/google'
 
 import * as admin from 'firebase-admin'
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY,
-    }),
-  })
-}
+import { FirestoreAdapter } from "@next-auth/firebase-adapter"
+import { db, firebase } from "@/utils/firestore"
+import { GoogleAuthProvider, getAuth, signInWithCredential } from "firebase/auth"
 
 const handler = NextAuth({
   providers: [
@@ -29,17 +23,11 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, account, profile }) {
-      token.uid = account?.userId
       return token
     },
     async session({ session, token, user }) {
-      
-      if (token && token.uid) {
-        const firebaseToken = await admin.auth().createCustomToken(token.uid as string)
-        session.firebaseToken = firebaseToken
-      }
       return session
-    }
+    },
   },
   session: {
     strategy: 'jwt'
@@ -47,4 +35,3 @@ const handler = NextAuth({
 })
 
 export { handler as GET, handler as POST }
-
