@@ -1,11 +1,7 @@
+import { adminAuth, firestoreAdmin } from "@/utils/firebase-admin"
+import { FirestoreAdapter } from "@next-auth/firebase-adapter"
 import NextAuth from "next-auth"
 import GoogleProvider from 'next-auth/providers/google'
-
-import * as admin from 'firebase-admin'
-
-import { FirestoreAdapter } from "@next-auth/firebase-adapter"
-import { db, firebase } from "@/utils/firestore"
-import { GoogleAuthProvider, getAuth, signInWithCredential } from "firebase/auth"
 
 const handler = NextAuth({
   providers: [
@@ -21,17 +17,29 @@ const handler = NextAuth({
       }
     }),
   ],
+  adapter: FirestoreAdapter(firestoreAdmin),
   callbacks: {
-    async jwt({ token, account, profile }) {
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.sub = user.id
+      }
       return token
     },
     async session({ session, token, user }) {
+      if (session?.user) {
+        if (token.sub) {
+          session.user.id = token.sub
+
+          const firebaseToken = await adminAuth.createCustomToken(token.sub)
+          session.firebaseToken = firebaseToken
+        }
+      }
       return session
     },
   },
   session: {
     strategy: 'jwt'
-  }
+  },
 })
 
 export { handler as GET, handler as POST }

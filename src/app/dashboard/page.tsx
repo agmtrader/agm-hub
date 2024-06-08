@@ -18,30 +18,9 @@ import Sidebar from '@/components/dashboard/sidebar/Sidebar';
 import { useSession } from 'next-auth/react';
 import { DataTable } from '@/components/dashboard/DataTable';
 
-import { getAuth, signInWithCustomToken } from 'firebase/auth'
-import { firebase } from '@/utils/firestore';
-
 const page = () => {
 
   const {data:session} = useSession()
-
-  const auth = getAuth(firebase)
-
-  async function syncFirebaseAuth(session:any) {
-    if (session && session.firebaseToken) {
-      try {
-        await signInWithCustomToken(auth, session.firebaseToken)
-      } catch (error) {
-        console.error('Error signing in with custom token:', error)
-      }
-    } else {
-      auth.signOut()
-    }
-  }
-
-  useEffect(() => {
-    syncFirebaseAuth(session)
-  }, [session])
 
   // Initialize data variables
   const [tickets, setTickets] = useState<DocumentData[] | null>(null)

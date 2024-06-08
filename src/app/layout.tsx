@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import Header from "../components/home/Header";
 import { NextAuthProvider } from "./NextAuthProvider";
 import Sidebar from "@/components/home/sidebar/Sidebar";
+import FirebaseAuthProvider from "./FirebaseAuthProvider";
 
 export const metadata: Metadata = {
   title: "AGM Technology",
@@ -27,10 +28,12 @@ export default function RootLayout({
       <body className='h-full w-full flex flex-row scroll-smooth '>
         <div className="h-full w-full  flex flex-row">
           <NextAuthProvider>
+            <FirebaseAuthProvider>
             <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
               <Header />
               {children}
             </div>
+            </FirebaseAuthProvider>
           </NextAuthProvider>
         </div>
       </body>
