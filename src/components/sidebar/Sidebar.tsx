@@ -14,7 +14,6 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import { Home } from "lucide-react"
 import Account from "./Account"
 
 const navbarContent = [
@@ -35,8 +34,6 @@ const navbarContent = [
         'url':'/dashboard'
     },
 ]
-
-import { usePathname } from "next/navigation"
 
 interface Props {
   setExpandSidebar: React.Dispatch<React.SetStateAction<boolean>>

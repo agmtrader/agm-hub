@@ -6,7 +6,7 @@ import { DocumentData } from 'firebase/firestore/lite';
 import { addColumnsFromJSON, getDocumentsFromCollection } from '@/utils/api';
 import { sortColumns } from '@/utils/table';
 
-import { DataTableSelect } from '@/components/dashboard/DataTable';
+import { DataTableSelect } from '@/components/dashboard/components/DataTable';
 
 interface Props {
   setCurrentTicket: React.Dispatch<React.SetStateAction<DocumentData | null>>,

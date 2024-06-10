@@ -6,7 +6,7 @@ import { DocumentData } from 'firebase/firestore/lite';
 import { sortColumns } from '@/utils/table';
 import { addColumnsFromJSON, queryDocumentsFromCollection } from '@/utils/api';
 
-import { DataTable } from '@/components/dashboard/DataTable';
+import { DataTable } from '@/components/dashboard/components/DataTable';
 import { AccessForm } from '../open_account/AccessForm';
 
 interface Props {

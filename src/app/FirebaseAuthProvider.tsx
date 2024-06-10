@@ -22,7 +22,7 @@ function FirebaseAuthProvider ({
                 await signInWithCustomToken(auth, session.firebaseToken)
               }
             } catch (error) {
-                console.error('Failed to sign in.')
+                console.error('Missing necessary credentials. Limiting user experience to client mode.')
             }
         } else {
             auth.signOut()

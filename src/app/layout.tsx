@@ -4,9 +4,8 @@ import "./globals.css";
 import { Inter } from 'next/font/google'
 import { cn } from "@/lib/utils";
 
-import Header from "../components/home/Header";
+import Header from "@/components/Header";
 import { NextAuthProvider } from "./NextAuthProvider";
-import Sidebar from "@/components/home/sidebar/Sidebar";
 import FirebaseAuthProvider from "./FirebaseAuthProvider";
 
 export const metadata: Metadata = {

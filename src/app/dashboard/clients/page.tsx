@@ -6,7 +6,7 @@ import { Map } from '@/lib/types';
 
 import { getDocumentsFromCollection, getForeignTables } from '@/utils/api';
 
-import { DataTable } from '@/components/dashboard/DataTable';
+import { DataTable } from '@/components/dashboard/components/DataTable';
 import { sortColumns } from '@/utils/table';
 
 const page = () => {

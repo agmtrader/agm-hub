@@ -6,7 +6,7 @@ import { DocumentData } from 'firebase/firestore';
 import { sortColumns } from '@/utils/table';
 import { addColumnsFromJSON, queryDocumentsFromCollection, updateFieldInDocument } from '@/utils/api';
 
-import { DataTable } from '@/components/dashboard/DataTable';
+import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Button } from '@/components/ui/button';
 import DocumentsViewer from '../documents/DocumentsViewer';
 import { Checkbox } from '@/components/ui/checkbox';

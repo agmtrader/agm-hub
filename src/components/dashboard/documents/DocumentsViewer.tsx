@@ -8,7 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { DataTable } from "../DataTable"
+import { DataTable } from "../components/DataTable"
 import { Button } from "@/components/ui/button"
 
 import DocumentUploader from "./DocumentUploader"
