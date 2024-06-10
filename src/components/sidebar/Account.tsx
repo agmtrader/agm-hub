@@ -1,12 +1,12 @@
 import React from 'react'
 import { useSession, signIn, signOut } from "next-auth/react"
-import { Button } from '../../ui/button'
+import { Button } from '../ui/button'
 
 import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
 import { NavigationMenuLink } from '@radix-ui/react-navigation-menu'
-import { navigationMenuTriggerStyle } from '../../ui/navigation-menu'
+import { navigationMenuTriggerStyle } from '../ui/navigation-menu'
 
 import {
   Popover,

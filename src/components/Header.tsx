@@ -6,9 +6,9 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import useScrollPositions from '@/hooks/useScrollPositions'
 
-import {motion, useAnimate, AnimatePresence} from 'framer-motion'
+import {motion, AnimatePresence} from 'framer-motion'
 import { List } from 'react-bootstrap-icons'
-import Sidebar from './dashboard/sidebar/Sidebar'
+import Sidebar from './sidebar/Sidebar'
 
 const maxScroll = 100
 
