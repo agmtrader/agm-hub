@@ -21,8 +21,8 @@ const page = () => {
               <p>Client mode</p>
             </div>  
           :
-          <div className='w-[100vw] h-[100vh]'>
-            <p>Log in to view!</p>
+          <div className='w-[100vw] flex justify-center items-center h-[100vh]'>
+            <p className='text-7xl text-white font-bold'>Log in to view!</p>
           </div>   
         }
 

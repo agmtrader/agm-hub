@@ -46,12 +46,7 @@ import { addDays, format, subDays } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 
-const languages = [
-{ label: "Mr.", value: "mr" },
-{ label: "Ms.", value: "ms" },
-{ label: "Mrs.", value: "mrs" },
-{ label: "Dr.", value: "dr" },
-] as const
+import { marital_status, salutations, countries } from "@/lib/form"
 
 const formSchema = z.object({
 
@@ -69,8 +64,6 @@ const formSchema = z.object({
     message: "Last name cannot be empty.",
   }),
 
-
-
   address: z.string().min(1, {
     message: 'Address cannot be empty.'
   }),
@@ -84,11 +77,32 @@ const formSchema = z.object({
   }),
 
   zip:  z.string().min(1, {
-    message: 'State/Province cannot be empty.'
+    message: 'Zip code cannot be empty.'
   }),
 
+  phone_type: z.string().min(1, {
+    message: 'Phone type cannot be empty.'
+  }),
+
+  phone_country: z.string().min(1, {
+    message: 'You must select a phone country.'
+  }),
+  
+  phone_number: z.string().min(1, {
+    message: 'Phone number cannot be empty.'
+  }),
+
+  citizenship: z.string().min(1, {
+    message: 'You must select a citizenship.'
+  }),
+
+  country_of_birth: z.string().min(1, {
+    message: 'You must select a country of birth.'
+  }),
+
+
   date_of_birth: z.date({
-    required_error: "A date of birth is required.",
+    required_error: "You must select a date of birth.",
   }),
 
   marital_status: z.string().min(1, {
@@ -96,7 +110,7 @@ const formSchema = z.object({
   }),
 
   number_of_dependents: z.string().min(1, {
-    message: 'You must select a Country of Residence.'
+    message: 'Number of dependents cannot be empty.'
   }),
 
   country_of_residence: z.string().min(1, {
@@ -104,20 +118,102 @@ const formSchema = z.object({
   }),
 
   tax_id: z.string().min(1, {
-    message: 'Date of birth cannot be empty.'
+    message: 'Tax ID cannot be empty.'
+  }),
+
+  id_country: z.string().min(1, {
+    message: 'You must select an ID Country.'
+  }),
+
+  id_type: z.string().min(1, {
+    message: 'You must select an ID type.'
+  }),
+
+  id_number: z.string().min(1, {
+    message: 'ID number cannot be empty.'
+  }),
+
+  id_expiration: z.date({
+    required_error: "You must select a date of expiration.",
+  }),
+
+
+  employment_status: z.string().min(1, {
+    message: 'Employment status cannot be empty.'
+  }),
+
+  employer_name: z.string().min(1, {
+    message: 'Employer name cannot be empty.'
+  }),
+
+  employer_address: z.string().min(1, {
+    message: 'Employer address cannot be empty.'
+  }),
+
+  employer_city: z.string().min(1, {
+    message: 'Employer city cannot be empty.'
+  }),
+
+  employer_state: z.string().min(1, {
+    message: 'Employer state cannot be empty.'
+  }),
+
+  employer_zip: z.string().min(1, {
+    message: 'Employer zip cannot be empty.'
+  }),
+
+  nature_of_business: z.string().min(1, {
+    message: 'Employer zip cannot be empty.'
+  }),
+
+  occupation: z.string().min(1, {
+    message: 'Employer zip cannot be empty.'
+  }),
+
+  source_of_wealth: z.string().min(1, {
+    message: 'You must select a source of wealth.'
+  }),
+
+  currency: z.string().min(1, {
+    message: 'You must select a currency.'
+  }),
+
+
+  security_q_1: z.string().min(1, {
+    message: 'You must select a security question.'
+  }),
+
+  security_a_1: z.string().min(1, {
+    message: 'You must select a security answer.'
+  }),
+
+  security_q_2: z.string().min(1, {
+    message: 'You must select a security question.'
+  }),
+
+  security_a_2: z.string().min(1, {
+    message: 'You must select a security answer.'
+  }),
+
+  security_q_3: z.string().min(1, {
+    message: 'You must select a security question.'
+  }),
+
+  security_a_3: z.string().min(1, {
+    message: 'You must select a security answer.'
   }),
 
 })
 
 interface Props {
   stepForward:() => void,
-  setCanContinue?:React.Dispatch<React.SetStateAction<boolean>>,
   stepBackwards?:() => void
 }
 
-const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => {
+const AboutYouPrimary = ({stepBackwards}:Props) => {
 
-  const [date, setDate] = useState<Date>(new Date())
+  const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date())
+  const [idExpirationDate, setIDExpirationDate] = useState<Date>(new Date())
 
   const initialFormValues = {
     salutation: '',
@@ -129,12 +225,41 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
     city: '',
     state: '',
     zip: '',
+    phone_type: '',
+    phone_country: '',
+    phone_number: '',
+    citizenship: '',
+    country_of_birth: '',
 
-    date_of_birth: date,
+    date_of_birth: dateOfBirth,
     marital_status: '',
     number_of_dependents: '',
     country_of_residence: '',
     tax_id: '',
+
+    id_type: '',
+    id_country: '',
+    id_number: '',
+    id_expiration: idExpirationDate,
+
+    employment_status: '',
+    employer_name: '',
+    employer_address: '',
+    employer_city: '',
+    employer_state: '',
+    employer_zip: '',
+    nature_of_business: '',
+    occupation: '',
+
+    source_of_wealth: '',
+    currency: '',
+
+    security_q_1:  '',
+    security_a_1: '',
+    security_q_2: '',
+    security_a_2: '',
+    security_q_3: '',
+    security_a_3: ''
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -166,7 +291,7 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
               name="salutation"
               render={({ field }) => (
                 <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Marital Status</FormLabel>
+                  <FormLabel>Salutation</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -179,8 +304,8 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
                             )}
                           >
                           {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
+                            ? salutations.find(
+                                (salutation) => salutation.value === field.value
                               )?.label
                             : "Select"}
                         </Button>
@@ -195,15 +320,15 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
                           />
                           <CommandEmpty>No country found.</CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {salutations.map((salutation) => (
                               <CommandItem
-                                value={language.label}
-                                key={language.value}
+                                value={salutation.label}
+                                key={salutation.value}
                                 onSelect={() => {
-                                  form.setValue("salutation", language.value)
+                                  form.setValue("salutation", salutation.value)
                                 }}
                               >
-                                {language.label}
+                                {salutation.label}
                               </CommandItem>
                             ))}
 
@@ -318,6 +443,200 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
                 </FormItem>
             )}
             />
+
+            <FormField
+              control={form.control}
+              name="phone_type"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Phone type</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone_country"
+              render={({ field }) => (
+                <FormItem className="flex w-full h-full flex-col text-center gap-x-5 font-normal justify-center">
+                  <FormLabel>Phone country</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full text-sm flex justify-center",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? countries.find(
+                                (country) => country.value === field.value
+                              )?.label
+                            : "Select a country"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search countries..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup>
+                            {countries.map((country) => (
+                              <CommandItem
+                                value={country.label}
+                                key={country.value}
+                                onSelect={() => {
+                                  form.setValue("phone_country", country.value)
+                                }}
+                              >
+                                {country.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone_number"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Phone number</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />            
+            <FormField
+              control={form.control}
+              name="citizenship"
+              render={({ field }) => (
+                <FormItem className="flex w-full h-full flex-col text-center gap-x-5 font-normal justify-center">
+                  <FormLabel>Citizenship</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full text-sm flex justify-center",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? countries.find(
+                                (country) => country.value === field.value
+                              )?.label
+                            : "Select a country"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search countries..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup>
+                            {countries.map((country) => (
+                              <CommandItem
+                                value={country.label}
+                                key={country.value}
+                                onSelect={() => {
+                                  form.setValue("citizenship", country.value)
+                                }}
+                              >
+                                {country.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+                        <FormField
+              control={form.control}
+              name="country_of_birth"
+              render={({ field }) => (
+                <FormItem className="flex w-full h-full flex-col text-center gap-x-5 font-normal justify-center">
+                  <FormLabel>Country of Birth</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full text-sm flex justify-center",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? countries.find(
+                                (country) => country.value === field.value
+                              )?.label
+                            : "Select a country"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search countries..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup>
+                            {countries.map((country) => (
+                              <CommandItem
+                                value={country.label}
+                                key={country.value}
+                                onSelect={() => {
+                                  form.setValue("country_of_birth", country.value)
+                                }}
+                              >
+                                {country.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
@@ -352,7 +671,7 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
                   <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
                     <Select
                       onValueChange={(value) => {
-                        setDate(subDays(new Date(), parseInt(value)))
+                        setDateOfBirth(subDays(new Date(), parseInt(value)))
                       }}
                     >
                       <SelectTrigger>
@@ -374,8 +693,8 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      date={date}
-                      setDate={setDate}
+                      date={dateOfBirth}
+                      setDate={setDateOfBirth}
                       disabled={(date) =>
                         date > new Date() || date < new Date("1900-01-01")
                       }
@@ -406,8 +725,8 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
                           )}
                         >
                           {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
+                            ? marital_status.find(
+                                (status) => status.value === field.value
                               )?.label
                             : "Select"}
                         </Button>
@@ -420,17 +739,17 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
                             placeholder="Search status..."
                             className="h-9"
                           />
-                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandEmpty>No status found.</CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {marital_status.map((status) => (
                               <CommandItem
-                                value={language.label}
-                                key={language.value}
+                                value={status.label}
+                                key={status.value}
                                 onSelect={() => {
-                                  form.setValue("marital_status", language.value)
+                                  form.setValue("marital_status", status.value)
                                 }}
                               >
-                                {language.label}
+                                {status.label}
                               </CommandItem>
                             ))}
 
@@ -462,42 +781,24 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
               control={form.control}
               name="country_of_residence"
               render={({ field }) => (
-                <FormItem>
-                <FormLabel>Country of Residence</FormLabel>
-                <FormControl>
-                    <Input placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-          </div>
-
-          <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
-            <p className="text-xl font-bold">Basic info</p>
-
-            <FormField
-              control={form.control}
-              name="salutation"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Marital Status</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full flex text-sm",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
+                <FormItem className="flex w-full h-full flex-col text-center gap-x-5 font-normal justify-center">
+                  <FormLabel>Country of residence</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full text-sm flex justify-center",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
                           {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
+                            ? countries.find(
+                                (country) => country.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a country"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -505,20 +806,81 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
                       <Command>
                         <CommandList>
                           <CommandInput
-                            placeholder="Search..."
+                            placeholder="Search countries..."
                             className="h-9"
                           />
                           <CommandEmpty>No country found.</CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {countries.map((country) => (
                               <CommandItem
-                                value={language.label}
-                                key={language.value}
+                                value={country.label}
+                                key={country.value}
                                 onSelect={() => {
-                                  form.setValue("salutation", language.value)
+                                  form.setValue("country_of_residence", country.value)
                                 }}
                               >
-                                {language.label}
+                                {country.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
+            <p className="text-xl font-bold">ID Info</p>
+
+
+            <FormField
+              control={form.control}
+              name="id_country"
+              render={({ field }) => (
+                <FormItem className="flex w-full h-full flex-col text-center gap-x-5 font-normal justify-center">
+                  <FormLabel>ID Country</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full text-sm flex justify-center",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? countries.find(
+                                (country) => country.value === field.value
+                              )?.label
+                            : "Select a country"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search countries..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup>
+                            {countries.map((country) => (
+                              <CommandItem
+                                value={country.label}
+                                key={country.value}
+                                onSelect={() => {
+                                  form.setValue("id_country", country.value)
+                                }}
+                              >
+                                {country.label}
                               </CommandItem>
                             ))}
 
@@ -534,10 +896,207 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
 
             <FormField
               control={form.control}
-              name="first_name"
+              name="id_type"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>ID Type</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full flex text-sm",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? marital_status.find(
+                                (status) => status.value === field.value
+                              )?.label
+                            : "Select"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search types..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No type found.</CommandEmpty>
+                          <CommandGroup>
+                            {marital_status.map((status) => (
+                              <CommandItem
+                                value={status.label}
+                                key={status.value}
+                                onSelect={() => {
+                                  form.setValue("id_type", status.value)
+                                }}
+                              >
+                                {status.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="id_number"
               render={({ field }) => (
                 <FormItem>
-                <FormLabel>First name</FormLabel>
+                <FormLabel>ID Number</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            
+            <FormField
+              control={form.control}
+              name="id_expiration"
+              render={({ field }) => (
+                <FormItem className="flex flex-col w-full justify-center">
+                  <FormLabel>Document expiration date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full flex gap-x-5 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+
+                          <CalendarIcon className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
+                      <Select
+                        onValueChange={(value) => {
+                          setIDExpirationDate(subDays(new Date(), parseInt(value)))
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+
+                        <SelectContent position="popper">
+
+                          <SelectItem value="0">Today</SelectItem>
+                          <SelectItem value="1">Yesterday</SelectItem>
+                          <SelectItem value="7">A week ago</SelectItem>
+                          <SelectItem value="14">Two weeks ago</SelectItem>
+                          <SelectItem value="365">1 Year Ago</SelectItem>
+
+                        </SelectContent>
+                      </Select>
+
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        date={idExpirationDate}
+                        setDate={setIDExpirationDate}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+          </div>
+
+          <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
+            <p className="text-xl font-bold">Employer info</p>
+
+            <FormField
+              control={form.control}
+              name="employment_status"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>Employment Status</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full flex text-sm",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? marital_status.find(
+                                (status) => status.value === field.value
+                              )?.label
+                            : "Select"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search status..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandGroup>
+                            {marital_status.map((status) => (
+                              <CommandItem
+                                value={status.label}
+                                key={status.value}
+                                onSelect={() => {
+                                  form.setValue("employment_status", status.value)
+                                }}
+                              >
+                                {status.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="employer_name"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Employer name</FormLabel>
                 <FormControl>
                     <Input placeholder="" {...field} />
                 </FormControl>
@@ -548,10 +1107,10 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
 
             <FormField
               control={form.control}
-              name="middle_name"
+              name="employer_address"
               render={({ field }) => (
                 <FormItem>
-                <FormLabel>Middle name</FormLabel>
+                <FormLabel>Employer address</FormLabel>
                 <FormControl>
                     <Input placeholder="" {...field} />
                 </FormControl>
@@ -562,16 +1121,402 @@ const AboutYouPrimary = ({stepForward, setCanContinue, stepBackwards}:Props) => 
 
             <FormField
               control={form.control}
-              name="last_name"
+              name="employer_city"
               render={({ field }) => (
                 <FormItem>
-                <FormLabel>Last name</FormLabel>
+                <FormLabel>Employer city</FormLabel>
                 <FormControl>
                     <Input placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
             )}
+            />
+
+            <FormField
+              control={form.control}
+              name="employer_state"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Employer state/province</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+
+            <FormField
+              control={form.control}
+              name="employer_zip"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Employer zip</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+
+            <FormField
+              control={form.control}
+              name="nature_of_business"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Nature of business</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+
+            <FormField
+              control={form.control}
+              name="occupation"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Occupation</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+
+          </div>
+
+          <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
+            <p className="text-xl font-bold">Financial info</p>
+
+            <FormField
+              control={form.control}
+              name="source_of_wealth"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>Source of Wealth</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full flex text-sm",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? marital_status.find(
+                                (status) => status.value === field.value
+                              )?.label
+                            : "Select"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search status..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandGroup>
+                            {marital_status.map((status) => (
+                              <CommandItem
+                                value={status.label}
+                                key={status.value}
+                                onSelect={() => {
+                                  form.setValue("employment_status", status.value)
+                                }}
+                              >
+                                {status.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>Currency</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full flex text-sm",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? marital_status.find(
+                                (status) => status.value === field.value
+                              )?.label
+                            : "Select"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search status..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandGroup>
+                            {marital_status.map((status) => (
+                              <CommandItem
+                                value={status.label}
+                                key={status.value}
+                                onSelect={() => {
+                                  form.setValue("employment_status", status.value)
+                                }}
+                              >
+                                {status.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+
+          </div>
+
+          <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
+            <p className="text-xl font-bold">Security Questions</p>
+
+            <FormField
+              control={form.control}
+              name="security_q_1"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>Security Question 1</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full flex text-sm",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? marital_status.find(
+                                (status) => status.value === field.value
+                              )?.label
+                            : "Select"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search status..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandGroup>
+                            {marital_status.map((status) => (
+                              <CommandItem
+                                value={status.label}
+                                key={status.value}
+                                onSelect={() => {
+                                  form.setValue("employment_status", status.value)
+                                }}
+                              >
+                                {status.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="security_a_1"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Security Answer 1</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="security_q_2"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>Security Question 2</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full flex text-sm",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? marital_status.find(
+                                (status) => status.value === field.value
+                              )?.label
+                            : "Select"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search status..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandGroup>
+                            {marital_status.map((status) => (
+                              <CommandItem
+                                value={status.label}
+                                key={status.value}
+                                onSelect={() => {
+                                  form.setValue("employment_status", status.value)
+                                }}
+                              >
+                                {status.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="security_a_2"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Security Answer 2</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="security_q_3"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>Security Question 3</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full flex text-sm",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? marital_status.find(
+                                (status) => status.value === field.value
+                              )?.label
+                            : "Select"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search status..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandGroup>
+                            {marital_status.map((status) => (
+                              <CommandItem
+                                value={status.label}
+                                key={status.value}
+                                onSelect={() => {
+                                  form.setValue("employment_status", status.value)
+                                }}
+                              >
+                                {status.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="security_a_3"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Security Answer 3</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
 
