@@ -1,3 +1,4 @@
+import { authedUsers } from "@/lib/authed-users"
 import { adminAuth, firestoreAdmin } from "@/utils/firebase-admin"
 import { FirestoreAdapter } from "@next-auth/firebase-adapter"
 import NextAuth from "next-auth"
@@ -63,7 +64,15 @@ const handler = NextAuth({
         if (token.sub) {
           session.user.id = token.sub
 
-          const firebaseToken = await adminAuth.createCustomToken(token.sub)
+          const options = {
+            admin: false
+          }
+
+          if (session.user.email?.split('@')[1] == 'agmtechnology.com' || authedUsers.includes(session.user.email)) {
+            options.admin = true
+          }
+
+          const firebaseToken = await adminAuth.createCustomToken(token.sub, options)
           session.firebaseToken = firebaseToken
         }
       }

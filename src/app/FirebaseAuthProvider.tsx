@@ -13,14 +13,10 @@ function FirebaseAuthProvider ({
     
     const {data:session} = useSession()
 
-    let authedUsers:Array<any>
-
     async function syncFirebaseAuth(session: Session) {
         if (session && session.firebaseToken) {
             try {
-              if (session.user.email?.split('@')[1] == 'agmtechnology.com' || authedUsers.includes(session.user.email)) {
                 await signInWithCustomToken(auth, session.firebaseToken)
-              }
             } catch (error) {
                 console.error('Missing necessary credentials. Limiting user experience to client mode.')
             }
