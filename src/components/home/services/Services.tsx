@@ -1,14 +1,19 @@
+import { Handshake } from 'lucide-react'
 import React from 'react'
+import { GraphUpArrow, Mortarboard } from 'react-bootstrap-icons'
 
 const services = [
   {
-    name: 'AGM Trader'
+    name: 'AGM Trader',
+    icon: <GraphUpArrow className='text-white h-32 w-32'/>
   },
   {
-    name: 'AGM Advisor'
+    name: 'AGM Advisor',
+    icon: <Mortarboard className='text-white h-32 w-32'/>
   },
   {
-    name: 'AGM Institutional'
+    name: 'AGM Institutional',
+    icon: <Handshake className='text-white h-32 w-32'/>
   }
 ]
 
@@ -23,7 +28,9 @@ function Services() {
                 <div className='h-fit w-fit'>
                   <p className='text-2xl text-agm-white font-light'>{element.name}</p>
                 </div>
-                <div className='w-full h-full rounded-3xl bg-agm-dark-orange'></div>
+                <div className='w-full h-full flex justify-center items-center rounded-3xl bg-agm-dark-orange'>
+                  {element.icon}
+                </div>
               </div>
           ))}
         </div>
