@@ -43,7 +43,7 @@ import { countries, account_types } from "@/lib/form"
 
 const formSchema = z.object({
 
-  username: z.string().min(1, {
+  email: z.string().min(1, {
     message: "Username cannot be empty.",
   }),
 
@@ -64,8 +64,8 @@ interface Props {
 
 const GeneralInfo = ({stepForward, setTicket}:Props) => {
 
-  const initialFormValues = {
-    username: '',
+  let initialFormValues = {
+    email: '',
   
     country: '',
   
@@ -82,6 +82,7 @@ const GeneralInfo = ({stepForward, setTicket}:Props) => {
       let ticketID = formatTimestamp(timestamp)
       const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values}
       setTicket(ticket)
+      await addDocument(ticket, '/db/clients/tickets', ticketID)
       stepForward()
   }
 
@@ -94,7 +95,7 @@ const GeneralInfo = ({stepForward, setTicket}:Props) => {
 
             <FormField
               control={form.control}
-              name="username"
+              name="email"
               render={({ field }) => (
                 <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -219,7 +220,7 @@ const GeneralInfo = ({stepForward, setTicket}:Props) => {
             />
 
             <Button className="bg-agm-light-orange" type="submit">
-              Next step
+              Start my application
             </Button>
 
           </form>

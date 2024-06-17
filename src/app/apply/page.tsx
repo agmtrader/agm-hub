@@ -5,6 +5,7 @@ import GeneralInfo from '@/components/apply/GeneralInfo'
 import AboutYouPrimary from '@/components/apply/AboutYouPrimary';
 import { Ticket } from '@/lib/types';
 import Regulatory from '@/components/apply/Regulatory';
+import { useSession } from 'next-auth/react';
 
 
 
@@ -12,9 +13,7 @@ type Props = {}
 
 const page = (props: Props) => {
 
-  const [step, setStep] = useState<number>(3)
-
-  const [cache, setCache] = useState(null)
+  const [step, setStep] = useState<number>(1)
 
   const [ticket, setTicket] = useState<Ticket | null>(null)
   console.log(ticket)
@@ -23,7 +22,7 @@ const page = (props: Props) => {
       setStep(step + 1)
   }
 
-  function stepBackwards() {
+  function stepBackward() {
     if (step > 1) {
       setStep(step - 1)
     }
@@ -36,8 +35,20 @@ const page = (props: Props) => {
       </div>
 
       {step === 1 && <GeneralInfo stepForward={stepForward} setTicket={setTicket}/>}
-      {(step === 2) && <AboutYouPrimary stepForward={stepForward} stepBackwards={stepBackwards}/>}
-      {(step === 3) && <Regulatory stepForward={stepForward} stepBackwards={stepBackwards}/>}
+      
+      {(ticket && ticket['ApplicationInfo']['account_type'] === 'individual') &&
+        (step === 2) ? <AboutYouPrimary stepForward={stepForward} stepBackward={stepBackward}/>
+        :
+        (step === 3) && <Regulatory stepForward={stepForward} stepBackwards={stepBackward}/>
+      }
+
+      {(ticket && ticket['ApplicationInfo']['account_type'] === 'joint') &&
+        (step === 2) ? <AboutYouPrimary stepForward={stepForward} stepBackward={stepBackward}/>
+        :
+        (step === 3) ? <AboutYouPrimary stepForward={stepForward} stepBackward={stepBackward}/>
+        :
+        (step === 4) && <Regulatory stepForward={stepForward} stepBackwards={stepBackward}/>
+      }
 
     </div>
 )}

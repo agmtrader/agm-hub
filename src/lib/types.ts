@@ -13,16 +13,16 @@ export enum osTypes {
 }
 
 export type Client = {
-    'ClientID': string
-    'Status': string
-    'Documents':DocumentReference
-  }
+  'ClientID': string
+  'Status': string
+  'Documents':DocumentReference
+}
 
-  export type Ticket = {
-    'TicketID': string
-    'Status': string
-    'ApplicationInfo':object
-  }
+export type Ticket = {
+  'TicketID': string
+  'Status': string
+  'ApplicationInfo':any
+}
 
 export interface Map {
     [key: string]: string | undefined

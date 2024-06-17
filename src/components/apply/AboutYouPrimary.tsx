@@ -46,7 +46,8 @@ import { addDays, format, subDays } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 
-import { marital_status, salutations, countries } from "@/lib/form"
+import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth } from "@/lib/form"
+import { Checkbox } from "../ui/checkbox"
 
 const formSchema = z.object({
 
@@ -170,8 +171,8 @@ const formSchema = z.object({
     message: 'Employer zip cannot be empty.'
   }),
 
-  source_of_wealth: z.string().min(1, {
-    message: 'You must select a source of wealth.'
+  source_of_wealth: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one item.",
   }),
 
   currency: z.string().min(1, {
@@ -207,15 +208,15 @@ const formSchema = z.object({
 
 interface Props {
   stepForward:() => void,
-  stepBackwards?:() => void
+  stepBackward:() => void,
 }
 
-const AboutYouPrimary = ({stepBackwards}:Props) => {
+const AboutYouPrimary = ({stepBackward, stepForward}:Props) => {
 
   const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date())
   const [idExpirationDate, setIDExpirationDate] = useState<Date>(new Date())
 
-  const initialFormValues = {
+  let initialFormValues = {
     salutation: '',
     first_name: '',
     middle_name: '',
@@ -250,8 +251,8 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
     employer_zip: '',
     nature_of_business: '',
     occupation: '',
-
-    source_of_wealth: '',
+    
+    source_of_wealth: [],
     currency: '',
 
     security_q_1:  '',
@@ -270,6 +271,8 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const ticket = {'ApplicationInfo':values}
     console.log(ticket)
+
+    stepForward()
   }
 
   return (
@@ -680,9 +683,9 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
 
                       <SelectContent position="popper">
 
-                        <SelectItem value="0">Today</SelectItem>
-                        <SelectItem value="1">Yesterday</SelectItem>
-                        <SelectItem value="7">A week ago</SelectItem>
+                        <SelectItem value="365">2023</SelectItem>
+                        <SelectItem value="725">2022</SelectItem>
+                        <SelectItem value="7">2021</SelectItem>
                         <SelectItem value="14">Two weeks ago</SelectItem>
                         <SelectItem value="365">1 Year Ago</SelectItem>
 
@@ -912,7 +915,7 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
                           )}
                         >
                           {field.value
-                            ? marital_status.find(
+                            ? id_type.find(
                                 (status) => status.value === field.value
                               )?.label
                             : "Select"}
@@ -928,7 +931,7 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
                           />
                           <CommandEmpty>No type found.</CommandEmpty>
                           <CommandGroup>
-                            {marital_status.map((status) => (
+                            {id_type.map((status) => (
                               <CommandItem
                                 value={status.label}
                                 key={status.value}
@@ -1053,7 +1056,7 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
                           )}
                         >
                           {field.value
-                            ? marital_status.find(
+                            ? employment_status.find(
                                 (status) => status.value === field.value
                               )?.label
                             : "Select"}
@@ -1069,7 +1072,7 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
                           />
                           <CommandEmpty>No status found.</CommandEmpty>
                           <CommandGroup>
-                            {marital_status.map((status) => (
+                            {employment_status.map((status) => (
                               <CommandItem
                                 value={status.label}
                                 key={status.value}
@@ -1197,54 +1200,44 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
             <FormField
               control={form.control}
               name="source_of_wealth"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Source of Wealth</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full flex text-sm",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? marital_status.find(
-                                (status) => status.value === field.value
-                              )?.label
-                            : "Select"}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandInput
-                            placeholder="Search status..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No status found.</CommandEmpty>
-                          <CommandGroup>
-                            {marital_status.map((status) => (
-                              <CommandItem
-                                value={status.label}
-                                key={status.value}
-                                onSelect={() => {
-                                  form.setValue("employment_status", status.value)
+              render={() => (
+                <FormItem className="w-[50%] flex flex-col justify-center text-center gap-x-5 font-normal">
+                  <div className="w-full mb-4 flex flex-col justify-center items-center text-center">
+                    <FormLabel>Sidebar</FormLabel>
+                  </div>
+                  {source_of_wealth.map((item) => (
+                    <FormField
+                      key={item.id}
+                      control={form.control}
+                      name="source_of_wealth"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={item.id}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(item.id)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, item.id])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== item.id
+                                        )
+                                      )
                                 }}
-                              >
-                                {status.label}
-                              </CommandItem>
-                            ))}
-
-                          </CommandGroup>
-                          </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal w-fit">
+                              {item.label}
+                            </FormLabel>
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  ))}
                   <FormMessage />
                 </FormItem>
               )}
@@ -1268,7 +1261,7 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
                           )}
                         >
                           {field.value
-                            ? marital_status.find(
+                            ? currencies.find(
                                 (status) => status.value === field.value
                               )?.label
                             : "Select"}
@@ -1284,7 +1277,7 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
                           />
                           <CommandEmpty>No status found.</CommandEmpty>
                           <CommandGroup>
-                            {marital_status.map((status) => (
+                            {currencies.map((status) => (
                               <CommandItem
                                 value={status.label}
                                 key={status.value}
@@ -1521,7 +1514,7 @@ const AboutYouPrimary = ({stepBackwards}:Props) => {
           </div>
 
           <div className="flex gap-x-5 justify-center items-center w-full h-full">
-            <Button className="bg-agm-light-orange" onClick={stepBackwards}>
+            <Button className="bg-agm-light-orange" onClick={stepBackward}>
               Previous step
             </Button>
             <Button className="bg-agm-light-orange" type="submit">

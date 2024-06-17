@@ -34,6 +34,10 @@ const navbarContent = [
         'name':'AGM Dashboard',
         'url':'/dashboard'
     },
+    {
+      'name':'Apply for an account',
+      'url':'/apply'
+  },
 ]
 
 interface Props {

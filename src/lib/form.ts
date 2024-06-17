@@ -213,5 +213,38 @@ export const marital_status = [
     { label: "Single", value: "sngl" },
     { label: "Married", value: "mrd" },
     { label: "Widowed", value: "wdw" },
-    { label: "...", value: "dr" },
+] as const
+
+export const id_type = [
+    { label: "Passport", value: "passport" },
+    { label: "ID", value: "id" },
+] as const
+
+export const employment_status = [
+    { label: "Employed", value: "employed" },
+    { label: "Retired", value: "retired" },
+] as const
+
+export const currencies = [
+    { label: "USD", value: "usd" },
+    { label: "Euro", value: "eur" },
+] as const
+
+export const source_of_wealth = [
+    {
+      id: "allowance",
+      label: "Allowance",
+    },
+    {
+      id: "disability",
+      label: "Disability",
+    },
+    {
+      id: "income",
+      label: "Income",
+    },
+    {
+      id: "inheritance",
+      label: "Inheritance",
+    },
 ] as const

@@ -54,8 +54,9 @@ const Account = (props: Props) => {
         :
         <Button onClick={(e) => {
             e.preventDefault()
-            signIn('google')}}
-            className="flex"
+            signIn('google')
+          }}
+          className="flex"
         >
             <p className="text-sm">Sign in</p>
         </Button>

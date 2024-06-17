@@ -32,7 +32,6 @@ const DocumentsViewer = ({documents}:{documents:any}) => {
                     </iframe>
                     {documents[index] && <DataTable data={[documents[index]]} width={100}/>}
                     <div className='flex gap-x-5'>
-                      <Button className='w-fit h-fit'>Edit document info</Button>
                       <DocumentUploader type={index} />
                     </div>
                   </div>
