@@ -5,7 +5,7 @@ import GeneralInfo from '@/components/apply/GeneralInfo'
 import AboutYouPrimary from '@/components/apply/AboutYouPrimary';
 import { Ticket } from '@/lib/types';
 import Regulatory from '@/components/apply/Regulatory';
-import { useSession } from 'next-auth/react';
+import AboutYouSecondary from '@/components/apply/AboutYouSecondary';
 
 
 
@@ -29,7 +29,7 @@ const page = (props: Props) => {
   }
 
   return (
-    <div className='w-full h-full flex mt-[20vh] flex-col gap-y-10 justify-center items-center'>
+    <div className='w-full h-full flex my-32 flex-col gap-y-10 justify-center items-center'>
       <div className='w-full h-fit flex justify-center items-center'>
         <p className='text-7xl font-bold'>{step}.</p>
       </div>
@@ -37,17 +37,9 @@ const page = (props: Props) => {
       {step === 1 && <GeneralInfo stepForward={stepForward} setTicket={setTicket}/>}
       
       {(ticket && ticket['ApplicationInfo']['account_type'] === 'individual') &&
-        (step === 2) ? <AboutYouPrimary stepForward={stepForward} stepBackward={stepBackward}/>
+        (step === 2) ? <AboutYouPrimary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
         :
         (step === 3) && <Regulatory stepForward={stepForward} stepBackwards={stepBackward}/>
-      }
-
-      {(ticket && ticket['ApplicationInfo']['account_type'] === 'joint') &&
-        (step === 2) ? <AboutYouPrimary stepForward={stepForward} stepBackward={stepBackward}/>
-        :
-        (step === 3) ? <AboutYouPrimary stepForward={stepForward} stepBackward={stepBackward}/>
-        :
-        (step === 4) && <Regulatory stepForward={stepForward} stepBackwards={stepBackward}/>
       }
 
     </div>

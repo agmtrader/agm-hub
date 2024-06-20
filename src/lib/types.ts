@@ -21,9 +21,9 @@ export type Client = {
 export type Ticket = {
   'TicketID': string
   'Status': string
-  'ApplicationInfo':any
+  'ApplicationInfo':Map
 }
 
 export interface Map {
-    [key: string]: string | undefined
+    [key: string]: string | string[] | Date | undefined
 }

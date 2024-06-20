@@ -165,11 +165,11 @@ const formSchema = z.object({
   }),
 
   nature_of_business: z.string().min(1, {
-    message: 'Nature of business cannot be empty.'
+    message: 'Employer zip cannot be empty.'
   }),
 
   occupation: z.string().min(1, {
-    message: 'Occupation cannot be empty.'
+    message: 'Employer zip cannot be empty.'
   }),
 
   source_of_wealth: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -210,11 +210,10 @@ const formSchema = z.object({
 interface Props {
   stepForward:() => void,
   stepBackward:() => void,
-  ticket: Ticket,
   setTicket:React.Dispatch<React.SetStateAction<Ticket | null>>
 }
 
-const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) => {
+const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
 
   const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date())
   const [idExpirationDate, setIDExpirationDate] = useState<Date>(new Date())
@@ -272,16 +271,9 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
-    // Get current application information
-    let application_info = ticket['ApplicationInfo']
-
-    // Update application information
-    Object.keys(values).forEach((key:any) => {
-      application_info[key] = values[key as keyof object]
-    })
-
-    setTicket({...ticket, ApplicationInfo:application_info})
+    const ticket = {'ApplicationInfo':values}
+    console.log(ticket)
+    setTicket(null)
     stepForward()
   }
 
@@ -331,7 +323,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             placeholder="Search..."
                             className="h-9"
                           />
-                          <CommandEmpty>No salutatation found.</CommandEmpty>
+                          <CommandEmpty>No country found.</CommandEmpty>
                           <CommandGroup>
                             {salutations.map((salutation) => (
                               <CommandItem
@@ -845,20 +837,6 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                 </FormItem>
               )}
             />
-
-          <FormField
-              control={form.control}
-              name="tax_id"
-              render={({ field }) => (
-                <FormItem>
-                <FormLabel>Tax ID</FormLabel>
-                <FormControl>
-                    <Input placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
           </div>
 
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
@@ -1306,7 +1284,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                                 value={status.label}
                                 key={status.value}
                                 onSelect={() => {
-                                  form.setValue("currency", status.value)
+                                  form.setValue("employment_status", status.value)
                                 }}
                               >
                                 {status.label}
@@ -1368,7 +1346,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                                 value={status.label}
                                 key={status.value}
                                 onSelect={() => {
-                                  form.setValue("security_q_1", status.value)
+                                  form.setValue("employment_status", status.value)
                                 }}
                               >
                                 {status.label}
@@ -1437,7 +1415,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                                 value={status.label}
                                 key={status.value}
                                 onSelect={() => {
-                                  form.setValue("security_q_2", status.value)
+                                  form.setValue("employment_status", status.value)
                                 }}
                               >
                                 {status.label}
@@ -1506,7 +1484,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                                 value={status.label}
                                 key={status.value}
                                 onSelect={() => {
-                                  form.setValue("security_q_3", status.value)
+                                  form.setValue("employment_status", status.value)
                                 }}
                               >
                                 {status.label}
@@ -1552,4 +1530,4 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
   )
 }
 
-export default AboutYouPrimary
+export default AboutYouSecondary
