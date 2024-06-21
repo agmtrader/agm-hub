@@ -1,5 +1,5 @@
 "use client"
-import React, {useState} from "react"
+import React, {SetStateAction, useState} from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -34,6 +34,8 @@ import {
 } from "@/components/ui/popover"
 
 import { salutations } from "@/lib/form"
+import { Ticket } from "@/lib/types"
+import { updateFieldInDocument } from "@/utils/api"
 
 const formSchema = z.object({
 
@@ -60,10 +62,12 @@ const formSchema = z.object({
 
 interface Props {
   stepForward:() => void,
-  stepBackwards?:() => void
+  stepBackwards?:() => void,
+  ticket: Ticket,
+  setTicket:React.Dispatch<SetStateAction<Ticket | null>>
 }
 
-const Regulatory = ({stepBackwards}:Props) => {
+const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
 
   const initialFormValues = {
     annual_net_income: '',
@@ -80,8 +84,14 @@ const Regulatory = ({stepBackwards}:Props) => {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const ticket = {'ApplicationInfo':values}
-    console.log(ticket)
+
+    Object.keys(values).forEach(async (key) =>  {
+      await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'ApplicationInfo.' + key, values[key as keyof object])
+    })
+
+    await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'Status', 'Open')
+
+    stepForward()
   }
 
   return (

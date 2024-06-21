@@ -24,8 +24,9 @@ const DocumentUploader = ({type}: Props) => {
     <div>
         <Dialog>
             <DialogTrigger asChild>
-                <Button className='w-fit h-fit' >
-                <Upload className="h-5 w-5"/>
+                <Button className='w-fit h-fit flex gap-x-5' >
+                    <p>Reupload file</p>
+                    <Upload className="h-5 w-5"/>
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">

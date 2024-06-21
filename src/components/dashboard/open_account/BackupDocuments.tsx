@@ -8,7 +8,7 @@ import { addColumnsFromJSON, queryDocumentsFromCollection, updateFieldInDocument
 
 import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Button } from '@/components/ui/button';
-import DocumentsViewer from '../documents/DocumentsViewer';
+import UserDocumentsViewer from './components/UserDocumentsViewer';
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface Props {
@@ -39,9 +39,9 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
     async function queryData () {
 
       // Query documents associated to current ticket
-      let poaData = await queryDocumentsFromCollection('/db/document_center/poa', 'DocumentID', ticketID)
-      let poiData = await queryDocumentsFromCollection('/db/document_center/poi', 'DocumentID', ticketID)
-      let sowData = await queryDocumentsFromCollection('/db/document_center/sow', 'DocumentID', ticketID)
+      let poaData = await queryDocumentsFromCollection('/db/document_center/poa', 'TicketID', ticketID)
+      let poiData = await queryDocumentsFromCollection('/db/document_center/poi', 'TicketID', ticketID)
+      let sowData = await queryDocumentsFromCollection('/db/document_center/sow', 'TicketID', ticketID)
 
       // Fill documents data
       let documentsData:DocumentData[] = []
@@ -90,7 +90,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
         <Button className='w-fit h-fit'>Document Center</Button>
       </div>
       {ticket && <DataTable data={ticket}/>}
-      {documents && <DocumentsViewer documents={documents}/> }
+      {documents && <UserDocumentsViewer documents={documents}/> }
       {documents && documents.length === 3 && 
         <div className="items-top flex space-x-2">
             <Checkbox

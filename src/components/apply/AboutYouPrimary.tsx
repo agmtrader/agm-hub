@@ -49,6 +49,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth } from "@/lib/form"
 import { Checkbox } from "../ui/checkbox"
 import { Ticket } from "@/lib/types"
+import { updateFieldInDocument } from "@/utils/api"
 
 const formSchema = z.object({
 
@@ -273,16 +274,12 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
-    // Get current application information
-    let application_info = ticket['ApplicationInfo']
-
-    // Update application information
-    Object.keys(values).forEach((key:any) => {
-      application_info[key] = values[key as keyof object]
+    Object.keys(values).forEach(async (key) =>  {
+      await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'ApplicationInfo.' + key, values[key as keyof object])
     })
 
-    setTicket({...ticket, ApplicationInfo:application_info})
     stepForward()
+    
   }
 
   return (

@@ -7,7 +7,7 @@ import { sortColumns } from '@/utils/table';
 import { addColumnsFromJSON, queryDocumentsFromCollection } from '@/utils/api';
 
 import { DataTable } from '@/components/dashboard/components/DataTable';
-import { AccessForm } from '../open_account/AccessForm';
+import { AccessForm } from './components/AccessForm';
 
 interface Props {
   currentTicket: DocumentData,

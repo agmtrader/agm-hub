@@ -8,12 +8,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { DataTable } from "../components/DataTable"
+import { DataTable } from "../../components/DataTable"
 import { Button } from "@/components/ui/button"
 
-import DocumentUploader from "./DocumentUploader"
+import DocumentUploader from "../../document_center/DocumentUploader"
 
-const DocumentsViewer = ({documents}:{documents:any}) => {
+const UserDocumentsViewer = ({documents}:{documents:any}) => {
   return (
     <Carousel className="w-full max-w-3xl h-fit">
       <CarouselContent>
@@ -47,6 +47,6 @@ const DocumentsViewer = ({documents}:{documents:any}) => {
   )
 }
 
-export default DocumentsViewer
+export default UserDocumentsViewer
 
 //https://drive.google.com/file/d/fileID/preview

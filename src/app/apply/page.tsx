@@ -36,10 +36,11 @@ const page = (props: Props) => {
 
       {step === 1 && <GeneralInfo stepForward={stepForward} setTicket={setTicket}/>}
       
-      {(ticket && ticket['ApplicationInfo']['account_type'] === 'individual') &&
+      {(ticket && ticket['ApplicationInfo']['account_type'] === 'individual') && (
         (step === 2) ? <AboutYouPrimary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
         :
-        (step === 3) && <Regulatory stepForward={stepForward} stepBackwards={stepBackward}/>
+        (step === 3) && <Regulatory ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackwards={stepBackward}/>
+        )
       }
 
     </div>

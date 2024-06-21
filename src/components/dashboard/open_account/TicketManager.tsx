@@ -39,7 +39,6 @@ const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) 
   useEffect(() => {
 
     if (currentTicket) {
-      console.log('1')
       setCanContinue(true)
     } else {
       setCanContinue(false)
