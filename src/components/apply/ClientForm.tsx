@@ -7,6 +7,7 @@ import { Ticket } from '@/lib/types';
 import Regulatory from '@/components/apply/Regulatory';
 import AboutYouSecondary from '@/components/apply/AboutYouSecondary';
 
+
 const ClientForm = () => {
 
   const [step, setStep] = useState<number>(1)

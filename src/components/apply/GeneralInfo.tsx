@@ -69,7 +69,7 @@ interface Props {
 
 const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
 
-  const searchParams = useSearchParams()
+  //const searchParams = useSearchParams()
 
   let initialFormValues = {
     email: '',
@@ -88,9 +88,10 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
       const timestamp = new Date()
-      const advisor = searchParams.get('ad')
+      // Todo -- fix search params
+      //const advisor = searchParams.get('ad')
       const ticketID = formatTimestamp(timestamp)
-      const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':advisor}
+      const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':null}
       setTicket(ticket)
       await addDocument(ticket, '/db/clients/tickets', ticketID)
       stepForward()
