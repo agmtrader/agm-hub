@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import DocumentsViewer from '@/components/dashboard/documents/DocumentsViewer'
+import DocumentsViewer from '../../../components/dashboard/document_center/DocumentViewer'
 import { addColumnsFromJSON, getDocumentsFromCollection } from '@/utils/api'
 import { sortColumns } from '@/utils/table'
 import { DocumentData } from 'firebase-admin/firestore'
