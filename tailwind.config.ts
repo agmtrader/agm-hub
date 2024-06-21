@@ -19,12 +19,12 @@ const config = {
     },
     extend: {
       colors: {
-        'agm-dark-blue':'#0E2B3F',
-        'agm-light-blue':'#2571A5',
-        'agm-dark-orange':'#EA5B11',
-        'agm-light-orange':'#F16D01',
+        'agm-dark-blue':'#062D47',
+        'agm-blue':'#104970',
+        'agm-light-blue':'#5996C0',
+        'agm-orange':'#F26C0D',
         'agm-white':'#FFFFFF',
-        'agm-black':'#000000',
+        'agm-black':'#262626',
         'agm-accent':'#F1F5F9',
         'agm-green':'#42FF00',
         border: "hsl(var(--border))",

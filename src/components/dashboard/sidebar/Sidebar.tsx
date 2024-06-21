@@ -36,6 +36,10 @@ const navbarContent = [
         'name':'Open Account',
         'url':'/dashboard/open_account'
     },
+    {
+      'name':'Document Center',
+      'url':'/dashboard/document_center'
+  },
 ]
 
 import { usePathname } from "next/navigation"

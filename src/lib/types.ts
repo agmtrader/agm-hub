@@ -22,6 +22,7 @@ export type Ticket = {
   'TicketID': string
   'Status': string
   'ApplicationInfo':Map
+  'Advisor':string | null
 }
 
 export interface Map {

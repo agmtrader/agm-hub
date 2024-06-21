@@ -38,8 +38,8 @@ import {
 } from "@/components/ui/popover"
 
 import { countries, account_types } from "@/lib/form"
-
-
+import { useSearchParams } from "next/navigation"
+import { PersonLinesFill } from "react-bootstrap-icons"
 
 const formSchema = z.object({
 
@@ -55,14 +55,21 @@ const formSchema = z.object({
     message: "You must select an account type.",
   }),
 
+  username: z.string().min(2, {
+    message: "You must select an account type.",
+  }),
+
 })
 
 interface Props {
   stepForward:() => void,
-  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>
+  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
+  step: number
 }
 
-const GeneralInfo = ({stepForward, setTicket}:Props) => {
+const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
+
+  const searchParams = useSearchParams()
 
   let initialFormValues = {
     email: '',
@@ -70,6 +77,8 @@ const GeneralInfo = ({stepForward, setTicket}:Props) => {
     country: '',
   
     account_type: '',
+
+    username: ''
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,17 +87,24 @@ const GeneralInfo = ({stepForward, setTicket}:Props) => {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-      let timestamp = new Date()
-      let ticketID = formatTimestamp(timestamp)
-      const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values}
+      const timestamp = new Date()
+      const advisor = searchParams.get('ad')
+      const ticketID = formatTimestamp(timestamp)
+      const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':advisor}
       setTicket(ticket)
       await addDocument(ticket, '/db/clients/tickets', ticketID)
       stepForward()
   }
 
   return (
-      <div className="h-full w-full flex flex-col justify-center items-center gap-y-5">
-        <h1 className='text-7xl font-bold'>General info.</h1>
+      <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
+        <div className='flex relative flex-row h-full mt-20 w-full justify-center items-center z-0 gap-x-5'>
+            <div key={step} className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
+              <PersonLinesFill className='h-24 w-24 text-agm-blue'/>
+              <p className='text-5xl font-bold'>{step}. <span className='font-light'>General Info</span></p>
+            </div>
+        </div>
+        
         <Form {...form}>
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col justify-center items-center">
@@ -219,7 +235,21 @@ const GeneralInfo = ({stepForward, setTicket}:Props) => {
               )}
             />
 
-            <Button className="bg-agm-light-orange" type="submit">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date of birth</FormLabel>
+                    <FormControl>
+                      <Input placeholder="shadcn" {...field} />
+                    </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button className="bg-agm-orange" type="submit">
               Start my application
             </Button>
 

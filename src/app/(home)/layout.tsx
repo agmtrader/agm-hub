@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "../globals.css";
 
 import { Inter } from 'next/font/google'
 import { cn } from "@/lib/utils";
 
 import Header from "@/components/Header";
-import { NextAuthProvider } from "./NextAuthProvider";
-import FirebaseAuthProvider from "./FirebaseAuthProvider";
+import { NextAuthProvider } from "../NextAuthProvider";
+import FirebaseAuthProvider from "../FirebaseAuthProvider";
 
 export const metadata: Metadata = {
   title: "AGM Technology",

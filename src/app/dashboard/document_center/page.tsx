@@ -24,7 +24,7 @@ const page = (props: Props) => {
       async function queryData () {
 
         // Fetch ticket with updated status
-        let documentsData = await getDocumentsFromCollection('db/clients/documents/')
+        let documentsData = await getDocumentsFromCollection('db/document_center/poa/')
         documentsData = await addColumnsFromJSON(documentsData)
         setDocuments(sortColumns(documentsData, documentColumns))
       }

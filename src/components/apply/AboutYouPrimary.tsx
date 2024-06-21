@@ -282,6 +282,8 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
     
   }
 
+  console.log(form.formState.errors)
+
   return (
     <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
       <div className="flex flex-col justify-center items-center">
@@ -1535,10 +1537,10 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
           </div>
 
           <div className="flex gap-x-5 justify-center items-center w-full h-full">
-            <Button className="bg-agm-light-orange" onClick={stepBackward}>
+            <Button variant={'default'} onClick={stepBackward}>
               Previous step
             </Button>
-            <Button className="bg-agm-light-orange" type="submit">
+            <Button variant={'default'} type="submit">
               Next step
             </Button>
           </div>

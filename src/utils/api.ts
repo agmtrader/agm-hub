@@ -103,7 +103,7 @@ export async function addColumnsFromJSON(documents:DocumentData[]) {
 
         for (const key of Object.keys(d)) {
 
-            if (typeof(d[key]) == 'object') {
+            if (typeof(d[key]) == 'object' && d[key]) {
                 let json = d[key]
                 Object.keys(json).forEach((col) => {
                     d[col] = json[col]

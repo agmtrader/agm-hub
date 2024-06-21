@@ -29,14 +29,13 @@ const Dashboard = ({user}: Props) => {
   const [tickets, setTickets] = useState<DocumentData[] | null>(null)
 
   // Ticket columns - export to dictionary!
-  const columns = ['TicketID', 'Status', 'username', 'email']
+  const columns = ['TicketID', 'Status', 'Advisor']
 
   // Fetch tickets from database
   useEffect(() => {
 
     async function fetchData () {
         let data = await getDocumentsFromCollection('db/clients/tickets/')
-        data = await addColumnsFromJSON(data)
         setTickets(sortColumns(data, columns))
     }
     fetchData()

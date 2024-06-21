@@ -20,7 +20,7 @@ const services = [
 function Services() {
   return (
     <div className='flex flex-col h-full w-[104.4%] -mx-[2.2%]'>
-      <div className='bg-agm-light-orange w-full h-full justify-center items-center flex flex-col gap-y-10 py-20'>
+      <div className='bg-agm-blue w-full h-full justify-center items-center flex flex-col gap-y-10 py-20'>
         <h2 className='text-agm-white text-5xl font-bold'>Our Services</h2>
         <div className='flex items-center justify-center h-full w-[70%] gap-x-10'>
           {services.map((element, index) => (
@@ -28,7 +28,7 @@ function Services() {
                 <div className='h-fit w-fit'>
                   <p className='text-2xl text-agm-white font-light'>{element.name}</p>
                 </div>
-                <div className='w-full h-full flex justify-center items-center rounded-3xl bg-agm-dark-orange'>
+                <div className='w-full h-full flex justify-center items-center rounded-3xl bg-agm-dark-blue'>
                   {element.icon}
                 </div>
               </div>
