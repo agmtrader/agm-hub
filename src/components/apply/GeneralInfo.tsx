@@ -55,7 +55,11 @@ const formSchema = z.object({
     message: "You must select an account type.",
   }),
 
-  username: z.string().min(2, {
+  year: z.string().min(2, {
+    message: "You must select an account type.",
+  }),
+
+  month: z.string().min(2, {
     message: "You must select an account type.",
   }),
 
@@ -78,7 +82,9 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
   
     account_type: '',
 
-    username: ''
+    year: '',
+
+    month: ''
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -87,13 +93,25 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+
       const timestamp = new Date()
+
       // Todo -- fix search params
       //const advisor = searchParams.get('ad')
+
+      //const date = values.month + '/' + values.year;
+
+      //(values as any).date = date;
+
+      //delete (values as any).month
+      //delete (values as any).year
+
       const ticketID = formatTimestamp(timestamp)
       const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':null}
+
       setTicket(ticket)
       await addDocument(ticket, '/db/clients/tickets', ticketID)
+
       stepForward()
   }
 
@@ -236,19 +254,36 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date of birth</FormLabel>
-                    <FormControl>
-                      <Input placeholder="shadcn" {...field} />
-                    </FormControl>
+            <p className="text-sm text-start">Date of birth</p>
+            <div className="flex gap-x-5 w-full h-full">
+              <FormField
+                control={form.control}
+                name="month"
+                render={({ field }) => (
+                  <FormItem>
+                  <FormControl>
+                      <Input className="w-16" placeholder="MM" {...field} />
+                  </FormControl>
                   <FormMessage />
-                </FormItem>
+                  </FormItem>
               )}
-            />
+              />
+              /
+              <FormField
+                control={form.control}
+                name="year"
+                render={({ field }) => (
+                  <FormItem>
+                  <FormControl>
+                      <Input placeholder="YYYY" className="w-16"{...field} />
+                  </FormControl>
+                  <FormMessage />
+                  </FormItem>
+              )}
+              />
+            </div>
+
+            
 
             <Button className="bg-agm-orange" type="submit">
               Start my application

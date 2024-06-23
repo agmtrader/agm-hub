@@ -9,7 +9,7 @@ import { NextAuthProvider } from "../NextAuthProvider";
 import FirebaseAuthProvider from "../FirebaseAuthProvider";
 
 export const metadata: Metadata = {
-  title: "AGM Technology",
+  title: "AGM Dashboard",
   description: "Creado por Andres Aguilar y Ramon Castro",
 };
 

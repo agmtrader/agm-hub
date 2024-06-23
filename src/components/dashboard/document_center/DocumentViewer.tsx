@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,
@@ -12,38 +12,26 @@ import { DataTable } from "../components/DataTable"
 import { Button } from "@/components/ui/button"
 
 import DocumentUploader from "./DocumentUploader"
+import { DocumentData } from "firebase-admin/firestore"
 
-const DocumentViewer = ({documents}:{documents:any}) => {
+const DocumentViewer = ({document}:{document:DocumentData}) => {
   return (
-    <Carousel className="w-full max-w-3xl h-fit">
-      <CarouselContent>
-        {Array.from({ length: 3 }).map((document:any, index:number) => (
-          <CarouselItem key={index}>
-            <div className="p-1">
-              <Card>
-                <CardContent className="flex items-center justify-center">
-                  <div className='w-full flex flex-col gap-y-5 justify-center items-center h-fit overflow-hidden'>
-                    <iframe 
-                      src={documents[index] ? documents[index]['URL']:'404'}
-                      width="500" 
-                      height="600" 
-                      className=' '
-                      allow="autoplay">
-                    </iframe>
-                    {documents[index] && <DataTable data={[documents[index]]} width={100}/>}
-                    <div className='flex gap-x-5'>
-                      <DocumentUploader type={index} />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
+    <Card>
+      <CardContent className="flex items-center my-5 justify-center">
+        <div className='w-full flex flex-col gap-y-5 justify-center items-center h-fit overflow-hidden'>
+          <iframe 
+            src={document ? document['URL']:'404'}
+            width="500" 
+            height="600" 
+            className=' '
+            allow="autoplay">
+          </iframe>
+          <div className='flex gap-x-5'>
+            <DocumentUploader type={document['type']} />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 

@@ -116,7 +116,7 @@ export const DataTable = <TData,>({data, width}: DataTableProps<TData>) => {
     )
 }
 
-export const DataTableSelect = <TData,>({data, setSelection}: DataTableSelectProps<TData>) => {
+export const DataTableSelect = <TData,>({data, setSelection, width}: DataTableSelectProps<TData>) => {
 
     const [rowSelection, setRowSelection] = useState({})
     const [sorting, setSorting] = useState<SortingState>([])
@@ -179,51 +179,49 @@ export const DataTableSelect = <TData,>({data, setSelection}: DataTableSelectPro
     })
 
     return (
-      <div className="w-full h-full flex flex-col gap-y-5 justify-center items-center">
-        <div className="w-[50%] rounded-md border">
-            <Table>
-            <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                    return (
-                        <TableHead key={header.id}>
-                        {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                            )}
-                        </TableHead>
-                    )
-                    })}
-                </TableRow>
-                ))}
-            </TableHeader>
-            <TableBody>
-                {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                    <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    >
-                    {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                    ))}
-                    </TableRow>
-                ))
-                ) : (
-                <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                    No results.
-                    </TableCell>
-                </TableRow>
-                )}
-            </TableBody>
-            </Table>
-        </div>
+      <div className={cn('w-[50%] rounded-md border', width && `w-[${width}%]`)}>
+        <Table>
+          <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                  return (
+                      <TableHead key={header.id}>
+                      {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                          )}
+                      </TableHead>
+                  )
+                  })}
+              </TableRow>
+              ))}
+          </TableHeader>
+          <TableBody>
+              {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                  <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  >
+                  {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                  ))}
+                  </TableRow>
+              ))
+              ) : (
+              <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results.
+                  </TableCell>
+              </TableRow>
+              )}
+          </TableBody>
+        </Table>
       </div>
     )
 }
