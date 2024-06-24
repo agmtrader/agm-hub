@@ -11,7 +11,7 @@ import {
 import { DataTable } from "../../components/DataTable"
 import { Button } from "@/components/ui/button"
 
-import DocumentUploader from "../../document_center/DocumentUploader"
+import DocumentReuploader from "../../document_center/DocumentReuploader"
 
 const UserDocumentsViewer = ({documents}:{documents:any}) => {
   return (
@@ -32,7 +32,7 @@ const UserDocumentsViewer = ({documents}:{documents:any}) => {
                     </iframe>
                     {documents[index] && <DataTable data={[documents[index]]} width={100}/>}
                     <div className='flex gap-x-5'>
-                      <DocumentUploader type={index} />
+                      <DocumentReuploader document={document} />
                     </div>
                   </div>
                 </CardContent>

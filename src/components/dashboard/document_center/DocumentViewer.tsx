@@ -11,7 +11,7 @@ import {
 import { DataTable } from "../components/DataTable"
 import { Button } from "@/components/ui/button"
 
-import DocumentUploader from "./DocumentUploader"
+import DocumentReuploader from "./DocumentReuploader"
 import { DocumentData } from "firebase-admin/firestore"
 
 const DocumentViewer = ({document}:{document:DocumentData}) => {
@@ -27,7 +27,7 @@ const DocumentViewer = ({document}:{document:DocumentData}) => {
             allow="autoplay">
           </iframe>
           <div className='flex gap-x-5'>
-            <DocumentUploader document={document} />
+            <DocumentReuploader document={document}/>
           </div>
         </div>
       </CardContent>

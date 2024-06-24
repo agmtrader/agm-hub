@@ -6,9 +6,19 @@ import { sortColumns } from '@/utils/table'
 import { DocumentData } from 'firebase-admin/firestore'
 import { DataTable, DataTableSelect } from '@/components/dashboard/components/DataTable'
 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import DocumentUploader from '@/components/dashboard/document_center/DocumentUploader'
+
 type Props = {}
 
 const page = (props: Props) => {
+
+    const [type, setType] = useState("poa");
 
     // Initialize data variables
     const [poiData, setPOIData] = useState<DocumentData[] | null>(null)
@@ -37,13 +47,14 @@ const page = (props: Props) => {
       queryData()
   
     }, [])
+
     
   return (
     <div>
         <div className='flex flex-col my-10 justify-center items-center gap-y-10'>
           <h1 className='text-7xl font-bold'>AGM Document Center</h1>
 
-          <Tabs defaultValue="poa" className="w-[80%]">
+          <Tabs defaultValue="poa" onValueChange={setType} className="w-[80%]">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="poa">Proof of Address</TabsTrigger>
               <TabsTrigger value="poi">Proof of Identity</TabsTrigger>
@@ -57,27 +68,10 @@ const page = (props: Props) => {
               {currentDocument && <DocumentsViewer document={currentDocument}/>}
             </TabsContent>
           </Tabs>
+          <DocumentUploader type={type}/>
         </div>
     </div>
   )
 }
 
 export default page
-
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"

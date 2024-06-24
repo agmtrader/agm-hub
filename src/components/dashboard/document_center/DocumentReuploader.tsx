@@ -30,20 +30,22 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import { new_poa_schema, poa_schema } from "@/lib/form"
+import { poa_schema } from "@/lib/form"
 import { DocumentData } from 'firebase-admin/firestore'
 
-const DocumentUploader = ({type}:{type:string}) => {
+type Props = {
+    document: DocumentData
+}
+
+const DocumentReuploader = ({document}: Props) => {
   
     //const searchParams = useSearchParams()
-    let formSchema:any;
-    let initialFormValues:any;
+    const formSchema = poa_schema
 
-    switch (type) {
-      case 'poa':
-        formSchema = new_poa_schema
+    let initialFormValues:any;
+    switch (document['Type']) {
+      case 'POA':
         initialFormValues = {
-          account_number:'',
           issued_date:'',
           type:'',
           upload:''
@@ -65,7 +67,7 @@ const DocumentUploader = ({type}:{type:string}) => {
         <Dialog>
             <DialogTrigger asChild>
                 <Button className='w-fit h-fit flex gap-x-5' >
-                    <p>Upload new file</p>
+                    <p>Reupload file</p>
                     <Upload className="h-5 w-5"/>
                 </Button>
             </DialogTrigger>
@@ -109,5 +111,5 @@ const DocumentUploader = ({type}:{type:string}) => {
   )
 }
 
-export default DocumentUploader
+export default DocumentReuploader
 
