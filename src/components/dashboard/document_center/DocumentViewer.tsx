@@ -27,7 +27,7 @@ const DocumentViewer = ({document}:{document:DocumentData}) => {
             allow="autoplay">
           </iframe>
           <div className='flex gap-x-5'>
-            <DocumentUploader type={document['type']} />
+            <DocumentUploader document={document} />
           </div>
         </div>
       </CardContent>

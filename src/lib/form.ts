@@ -1,3 +1,4 @@
+// Dictionaries
 export const countries = [
     { label: "Afghanistan", value: "af" },
     { label: "Albania", value: "al" },
@@ -248,3 +249,392 @@ export const source_of_wealth = [
       label: "Inheritance",
     },
 ] as const
+
+
+
+// Schemas
+import { z } from "zod"
+
+export const about_you_primary_schema = z.object({
+
+  salutation: z.string().min(1, {
+    message: "You must select a salutation.",
+  }),
+
+  first_name: z.string().min(1, {
+    message: "First name cannot be empty.",
+  }),
+
+  middle_name: z.string().optional().transform(e => e === "" ? undefined : e),
+
+  last_name: z.string().min(1, {
+    message: "Last name cannot be empty.",
+  }),
+
+  address: z.string().min(1, {
+    message: 'Address cannot be empty.'
+  }),
+
+  city: z.string().min(1, {
+    message: 'City cannot be empty.'
+  }),
+
+  state: z.string().min(1, {
+    message: 'State/Province cannot be empty.'
+  }),
+
+  zip:  z.string().min(1, {
+    message: 'Zip code cannot be empty.'
+  }),
+
+  phone_type: z.string().min(1, {
+    message: 'Phone type cannot be empty.'
+  }),
+
+  phone_country: z.string().min(1, {
+    message: 'You must select a phone country.'
+  }),
+  
+  phone_number: z.string().min(1, {
+    message: 'Phone number cannot be empty.'
+  }),
+
+  citizenship: z.string().min(1, {
+    message: 'You must select a citizenship.'
+  }),
+
+  country_of_birth: z.string().min(1, {
+    message: 'You must select a country of birth.'
+  }),
+
+
+  date_of_birth: z.date({
+    required_error: "You must select a date of birth.",
+  }),
+
+  marital_status: z.string().min(1, {
+    message: 'You must select a marital status'
+  }),
+
+  number_of_dependents: z.string().min(1, {
+    message: 'Number of dependents cannot be empty.'
+  }),
+
+  country_of_residence: z.string().min(1, {
+    message: 'You must select a Country of Residence.'
+  }),
+
+  tax_id: z.string().min(1, {
+    message: 'Tax ID cannot be empty.'
+  }),
+
+  id_country: z.string().min(1, {
+    message: 'You must select an ID Country.'
+  }),
+
+  id_type: z.string().min(1, {
+    message: 'You must select an ID type.'
+  }),
+
+  id_number: z.string().min(1, {
+    message: 'ID number cannot be empty.'
+  }),
+
+  id_expiration: z.date({
+    required_error: "You must select a date of expiration.",
+  }),
+
+
+  employment_status: z.string().min(1, {
+    message: 'Employment status cannot be empty.'
+  }),
+
+  employer_name: z.string().min(1, {
+    message: 'Employer name cannot be empty.'
+  }),
+
+  employer_address: z.string().min(1, {
+    message: 'Employer address cannot be empty.'
+  }),
+
+  employer_city: z.string().min(1, {
+    message: 'Employer city cannot be empty.'
+  }),
+
+  employer_state: z.string().min(1, {
+    message: 'Employer state cannot be empty.'
+  }),
+
+  employer_zip: z.string().min(1, {
+    message: 'Employer zip cannot be empty.'
+  }),
+
+  nature_of_business: z.string().min(1, {
+    message: 'Nature of business cannot be empty.'
+  }),
+
+  occupation: z.string().min(1, {
+    message: 'Occupation cannot be empty.'
+  }),
+
+  source_of_wealth: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one item.",
+  }),
+
+  currency: z.string().min(1, {
+    message: 'You must select a currency.'
+  }),
+
+
+  security_q_1: z.string().min(1, {
+    message: 'You must select a security question.'
+  }),
+
+  security_a_1: z.string().min(1, {
+    message: 'You must select a security answer.'
+  }),
+
+  security_q_2: z.string().min(1, {
+    message: 'You must select a security question.'
+  }),
+
+  security_a_2: z.string().min(1, {
+    message: 'You must select a security answer.'
+  }),
+
+  security_q_3: z.string().min(1, {
+    message: 'You must select a security question.'
+  }),
+
+  security_a_3: z.string().min(1, {
+    message: 'You must select a security answer.'
+  }),
+
+})
+
+export const about_you_secondary_schema = z.object({
+
+  salutation: z.string().min(1, {
+    message: "You must select a salutation.",
+  }),
+
+  first_name: z.string().min(1, {
+    message: "First name cannot be empty.",
+  }),
+
+  middle_name: z.string().optional().transform(e => e === "" ? undefined : e),
+
+  last_name: z.string().min(1, {
+    message: "Last name cannot be empty.",
+  }),
+
+  address: z.string().min(1, {
+    message: 'Address cannot be empty.'
+  }),
+
+  city: z.string().min(1, {
+    message: 'City cannot be empty.'
+  }),
+
+  state: z.string().min(1, {
+    message: 'State/Province cannot be empty.'
+  }),
+
+  zip:  z.string().min(1, {
+    message: 'Zip code cannot be empty.'
+  }),
+
+  phone_type: z.string().min(1, {
+    message: 'Phone type cannot be empty.'
+  }),
+
+  phone_country: z.string().min(1, {
+    message: 'You must select a phone country.'
+  }),
+  
+  phone_number: z.string().min(1, {
+    message: 'Phone number cannot be empty.'
+  }),
+
+  citizenship: z.string().min(1, {
+    message: 'You must select a citizenship.'
+  }),
+
+  country_of_birth: z.string().min(1, {
+    message: 'You must select a country of birth.'
+  }),
+
+
+  date_of_birth: z.date({
+    required_error: "You must select a date of birth.",
+  }),
+
+  marital_status: z.string().min(1, {
+    message: 'You must select a marital status'
+  }),
+
+  number_of_dependents: z.string().min(1, {
+    message: 'Number of dependents cannot be empty.'
+  }),
+
+  country_of_residence: z.string().min(1, {
+    message: 'You must select a Country of Residence.'
+  }),
+
+  tax_id: z.string().min(1, {
+    message: 'Tax ID cannot be empty.'
+  }),
+
+  id_country: z.string().min(1, {
+    message: 'You must select an ID Country.'
+  }),
+
+  id_type: z.string().min(1, {
+    message: 'You must select an ID type.'
+  }),
+
+  id_number: z.string().min(1, {
+    message: 'ID number cannot be empty.'
+  }),
+
+  id_expiration: z.date({
+    required_error: "You must select a date of expiration.",
+  }),
+
+
+  employment_status: z.string().min(1, {
+    message: 'Employment status cannot be empty.'
+  }),
+
+  employer_name: z.string().min(1, {
+    message: 'Employer name cannot be empty.'
+  }),
+
+  employer_address: z.string().min(1, {
+    message: 'Employer address cannot be empty.'
+  }),
+
+  employer_city: z.string().min(1, {
+    message: 'Employer city cannot be empty.'
+  }),
+
+  employer_state: z.string().min(1, {
+    message: 'Employer state cannot be empty.'
+  }),
+
+  employer_zip: z.string().min(1, {
+    message: 'Employer zip cannot be empty.'
+  }),
+
+  nature_of_business: z.string().min(1, {
+    message: 'Employer zip cannot be empty.'
+  }),
+
+  occupation: z.string().min(1, {
+    message: 'Employer zip cannot be empty.'
+  }),
+
+  source_of_wealth: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one item.",
+  }),
+
+  currency: z.string().min(1, {
+    message: 'You must select a currency.'
+  }),
+
+
+  security_q_1: z.string().min(1, {
+    message: 'You must select a security question.'
+  }),
+
+  security_a_1: z.string().min(1, {
+    message: 'You must select a security answer.'
+  }),
+
+  security_q_2: z.string().min(1, {
+    message: 'You must select a security question.'
+  }),
+
+  security_a_2: z.string().min(1, {
+    message: 'You must select a security answer.'
+  }),
+
+  security_q_3: z.string().min(1, {
+    message: 'You must select a security question.'
+  }),
+
+  security_a_3: z.string().min(1, {
+    message: 'You must select a security answer.'
+  }),
+
+})
+
+export const general_info_schema = z.object({
+
+  email: z.string().min(1, {
+    message: "Username cannot be empty.",
+  }),
+
+  country: z.string().min(2, {
+    message: "Country cannot be empty.",
+  }),
+
+  account_type: z.string().min(2, {
+    message: "You must select an account type.",
+  }),
+
+  year: z.string().min(2, {
+    message: "You must select an account type.",
+  }),
+
+  month: z.string().min(2, {
+    message: "You must select an account type.",
+  }),
+
+})
+
+export const regulatory_schema = z.object({
+
+  annual_net_income: z.string().min(1, {
+    message: "You must select a annual net income.",
+  }),
+  net_worth: z.string().min(1, {
+    message: "You must select a net worth.",
+  }),
+  liquid_net_worth: z.string().min(1, {
+    message: "You must select a liquid net worth.",
+  }),
+  investment_objectives: z.string().min(1, {
+    message: "You must select at least one investment objectives.",
+  }),
+  trading_experience: z.string().min(1, {
+    message: "You must select your trading experience.",
+  }),
+  products: z.string().min(1, {
+    message: "You must select at least one product.",
+  }),
+
+})
+
+export const poa_schema = z.object({
+
+  timestamp: z.string().min(1, {
+    message: "You must select a annual net income.",
+  }),
+  email: z.string().min(1, {
+    message: "You must select a net worth.",
+  }),
+  account_number: z.string().min(1, {
+    message: "You must select a liquid net worth.",
+  }),
+  issued_date: z.string().min(1, {
+    message: "You must select at least one investment objectives.",
+  }),
+  type: z.string().min(1, {
+    message: "You must select your trading experience.",
+  }),
+  upload: z.string().min(1, {
+    message: "You must select at least one product.",
+  }),
+
+})

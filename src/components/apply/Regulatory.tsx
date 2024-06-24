@@ -33,32 +33,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { salutations } from "@/lib/form"
+import { regulatory_schema, salutations } from "@/lib/form"
 import { Ticket } from "@/lib/types"
 import { updateFieldInDocument } from "@/utils/api"
 
-const formSchema = z.object({
-
-  annual_net_income: z.string().min(1, {
-    message: "You must select a annual net income.",
-  }),
-  net_worth: z.string().min(1, {
-    message: "You must select a net worth.",
-  }),
-  liquid_net_worth: z.string().min(1, {
-    message: "You must select a liquid net worth.",
-  }),
-  investment_objectives: z.string().min(1, {
-    message: "You must select at least one investment objectives.",
-  }),
-  trading_experience: z.string().min(1, {
-    message: "You must select your trading experience.",
-  }),
-  products: z.string().min(1, {
-    message: "You must select at least one product.",
-  }),
-
-})
+const formSchema = regulatory_schema
 
 interface Props {
   stepForward:() => void,

@@ -37,33 +37,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { countries, account_types } from "@/lib/form"
+import { countries, account_types, general_info_schema } from "@/lib/form"
 import { useSearchParams } from "next/navigation"
 import { PersonLinesFill } from "react-bootstrap-icons"
 
-const formSchema = z.object({
-
-  email: z.string().min(1, {
-    message: "Username cannot be empty.",
-  }),
-
-  country: z.string().min(2, {
-    message: "Country cannot be empty.",
-  }),
-
-  account_type: z.string().min(2, {
-    message: "You must select an account type.",
-  }),
-
-  year: z.string().min(2, {
-    message: "You must select an account type.",
-  }),
-
-  month: z.string().min(2, {
-    message: "You must select an account type.",
-  }),
-
-})
+const formSchema = general_info_schema
 
 interface Props {
   stepForward:() => void,
