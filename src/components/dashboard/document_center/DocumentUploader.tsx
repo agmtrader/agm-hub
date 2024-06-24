@@ -125,35 +125,6 @@ const DocumentUploader = ({type}: Props) => {
                             )}
                             />
 
-                            <p className="text-sm text-start">Date of birth</p>
-                            <div className="flex gap-x-5 w-full h-full">
-                            <FormField
-                                control={form.control}
-                                name="month"
-                                render={({ field }) => (
-                                <FormItem>
-                                <FormControl>
-                                    <Input className="w-16" placeholder="MM" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                            /
-                            <FormField
-                                control={form.control}
-                                name="year"
-                                render={({ field }) => (
-                                <FormItem>
-                                <FormControl>
-                                    <Input placeholder="YYYY" className="w-16"{...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                            </div>
-
                             <Button className="bg-agm-orange" type="submit">
                             Start my application
                             </Button>
