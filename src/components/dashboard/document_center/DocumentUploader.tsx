@@ -49,6 +49,15 @@ const DocumentUploader = ({type}:{type:string}) => {
           upload:''
         }
         break;
+      case 'poi':
+        formSchema = new_poa_schema
+        initialFormValues = {
+          account_number:'',
+          issued_date:'',
+          type:'',
+          upload:''
+        }
+        break;
     }
 
     const form = useForm<z.infer<typeof formSchema>>({

@@ -32,6 +32,7 @@ const handler = NextAuth({
         if (token.sub) {
           session.user.id = token.sub
 
+          /*
           const options = {
             admin: false
           }
@@ -39,8 +40,10 @@ const handler = NextAuth({
           if (session.user.email?.split('@')[1] == 'agmtechnology.com' || authedUsers.includes(session.user.email)) {
             options.admin = true
           }
+          */
 
-          const firebaseToken = await adminAuth.createCustomToken(token.sub, options)
+          const firebaseToken = await adminAuth.createCustomToken(token.sub)
+          console.log(firebaseToken)
           session.firebaseToken = firebaseToken
           
         }

@@ -16,6 +16,7 @@ function FirebaseAuthProvider ({
     async function syncFirebaseAuth(session: Session) {
         if (session && session.firebaseToken) {
             try {
+                console.log(session.firebaseToken)
                 await signInWithCustomToken(auth, session.firebaseToken)
             } catch (error) {
                 console.error('Missing necessary credentials. Limiting user experience to client mode.')
