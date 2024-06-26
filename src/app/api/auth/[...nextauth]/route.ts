@@ -1,5 +1,6 @@
 import { authedUsers } from "@/lib/authed-users"
 import { adminAuth, firestoreAdmin } from "@/utils/firebase-admin"
+import { auth } from "@/utils/firestore"
 import { FirestoreAdapter } from "@next-auth/firebase-adapter"
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
@@ -43,7 +44,6 @@ const handler = NextAuth({
           */
 
           const firebaseToken = await adminAuth.createCustomToken(token.sub)
-          console.log(firebaseToken)
           session.firebaseToken = firebaseToken
           
         }
