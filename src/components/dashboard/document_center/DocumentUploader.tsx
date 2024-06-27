@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Upload } from "lucide-react"
 import { Button } from '@/components/ui/button'
+import { google } from 'googleapis'
 
 import {
     Dialog,
@@ -19,7 +20,6 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
-
 import {
   Form,
   FormControl,
@@ -31,13 +31,22 @@ import {
 } from "@/components/ui/form"
 
 import { new_poa_schema, poa_schema } from "@/lib/form"
-import { DocumentData } from 'firebase-admin/firestore'
+import { createFile } from '@/utils/google-drive'
 
 const DocumentUploader = ({type}:{type:string}) => {
   
     //const searchParams = useSearchParams()
     let formSchema:any;
     let initialFormValues:any;
+
+    const [file, setFile] = useState<File | null>(null)
+    console.log(file)
+
+    const handleUploadFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        setFile(e.target.files[0]);
+      }
+    }
 
     switch (type) {
       case 'poa':
@@ -66,7 +75,35 @@ const DocumentUploader = ({type}:{type:string}) => {
     })
     
     async function onSubmit(values: z.infer<typeof formSchema>) {
-      console.log(values)
+
+      if (file) {
+  
+        const requestBody = {
+          name: 'test.csv',
+          fields: 'id',
+        }
+  
+        const media = {
+          mimeType: 'text/csv',
+          body: file,
+        }
+
+        try {
+
+          //const file = await createFile(requestBody, media)
+          const file = null
+          
+          if (file) {
+            console.log('File Id:', file.data.id);
+            return file.data.id;
+          }
+
+        } catch (err) {
+          // TODO(developer) - Handle error
+          throw err;
+        }
+        console.log(values, file)
+      }
     }
 
   return (
@@ -89,7 +126,7 @@ const DocumentUploader = ({type}:{type:string}) => {
     
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col justify-center items-center">
 
-                      {Object.keys(initialFormValues).map((key:any) => (
+                      {Object.keys(initialFormValues).slice(0,Object.keys(initialFormValues).length - 1).map((key:any) => (
                         <FormField
                         key={key}
                         control={form.control}
@@ -106,8 +143,17 @@ const DocumentUploader = ({type}:{type:string}) => {
                         />
                       ))}
 
+                      <Input
+                        placeholder="Picture"
+                        type="file"
+                        accept="image/*, application/pdf, text/csv"
+                        onChange={(event) =>
+                          handleUploadFile(event)
+                        }
+                      />
+
                       <Button className="bg-agm-orange" type="submit">
-                        Upload file
+                        Submit
                       </Button>
 
                     </form>
@@ -116,6 +162,7 @@ const DocumentUploader = ({type}:{type:string}) => {
         </Dialog>
     </div>
   )
+    
 }
 
 export default DocumentUploader

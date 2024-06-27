@@ -22,9 +22,13 @@ const handler = NextAuth({
   ],
   adapter: FirestoreAdapter(firestoreAdmin),
   callbacks: {
-    jwt: async ({ token, user }) => {
+    jwt: async ({ token, user, account }) => {
       if (user) {
         token.sub = user.id
+        
+      }
+      if (account) {
+        token.accessToken = account.access_token
       }
       return token
     },
@@ -45,7 +49,9 @@ const handler = NextAuth({
 
           const firebaseToken = await adminAuth.createCustomToken(token.sub)
           session.firebaseToken = firebaseToken
-          
+        }
+        if (token.accessToken) {
+          session.accessToken = token.accessToken
         }
       }
       return session

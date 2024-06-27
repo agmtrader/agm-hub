@@ -25,6 +25,16 @@ export type Ticket = {
   'Advisor':string | null
 }
 
+export type POA = {
+  'Timestamp': string
+  'AccountNumber': string
+  'IssuedDate': string
+  'ExpirationDate':string
+  'Type':string
+  'URL':string | null
+}
+
+
 export interface Map {
     [key: string]: string | string[] | Date | undefined
 }
