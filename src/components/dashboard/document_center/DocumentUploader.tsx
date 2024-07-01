@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/form"
 
 import { new_poa_schema, poa_schema } from "@/lib/form"
-import { createFile } from '@/utils/google-drive'
 
 const DocumentUploader = ({type}:{type:string}) => {
   
@@ -40,13 +39,6 @@ const DocumentUploader = ({type}:{type:string}) => {
     let initialFormValues:any;
 
     const [file, setFile] = useState<File | null>(null)
-    console.log(file)
-
-    const handleUploadFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files) {
-        setFile(e.target.files[0]);
-      }
-    }
 
     switch (type) {
       case 'poa':
@@ -76,35 +68,24 @@ const DocumentUploader = ({type}:{type:string}) => {
     
     async function onSubmit(values: z.infer<typeof formSchema>) {
 
-      if (file) {
-  
-        const requestBody = {
-          name: 'test.csv',
-          fields: 'id',
-        }
-  
-        const media = {
-          mimeType: 'text/csv',
-          body: file,
-        }
-
-        try {
-
-          //const file = await createFile(requestBody, media)
-          const file = null
-          
-          if (file) {
-            console.log('File Id:', file.data.id);
-            return file.data.id;
-          }
-
-        } catch (err) {
-          // TODO(developer) - Handle error
-          throw err;
-        }
-        console.log(values, file)
-      }
     }
+
+    const uploadFile = async () => {
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/drive", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      console.log(data)
+    }
+
 
   return (
     <div>
@@ -147,14 +128,14 @@ const DocumentUploader = ({type}:{type:string}) => {
                         placeholder="Picture"
                         type="file"
                         accept="image/*, application/pdf, text/csv"
-                        onChange={(event) =>
-                          handleUploadFile(event)
-                        }
+                        onChange={(e) => setFile(e.target.files![0])}
                       />
 
                       <Button className="bg-agm-orange" type="submit">
                         Submit
                       </Button>
+
+                      <button onClick={uploadFile}>Upload File</button>
 
                     </form>
                   </Form>
@@ -166,4 +147,3 @@ const DocumentUploader = ({type}:{type:string}) => {
 }
 
 export default DocumentUploader
-
