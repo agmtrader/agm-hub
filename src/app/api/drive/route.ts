@@ -5,7 +5,7 @@ import mime from 'mime'
 import { Readable } from "stream";
 import { getServerSession } from "next-auth";
 
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { NextApiRequest, NextApiResponse } from "next";
 
 // upload function
