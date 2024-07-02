@@ -1,10 +1,11 @@
+import RiskForm from '@/components/dashboard/risk_assesment/RiskForm'
 import React from 'react'
 
-type Props = {}
-
-const page = (props: Props) => {
+const page = () => {
   return (
-    <div>page</div>
+    <div>
+      <RiskForm/>
+    </div>
   )
 }
 
