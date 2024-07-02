@@ -51,7 +51,7 @@ interface Props {
 
 const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
 
-  //const searchParams = useSearchParams()
+  const searchParams = useSearchParams()
 
   let initialFormValues = {
     email: '',
@@ -59,10 +59,6 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
     country: '',
   
     account_type: '',
-
-    year: '',
-
-    month: ''
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -74,18 +70,10 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
 
       const timestamp = new Date()
 
-      // Todo -- fix search params
-      //const advisor = searchParams.get('ad')
-
-      //const date = values.month + '/' + values.year;
-
-      //(values as any).date = date;
-
-      //delete (values as any).month
-      //delete (values as any).year
+      const advisor = searchParams.get('ad')
 
       const ticketID = formatTimestamp(timestamp)
-      const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':null}
+      const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':advisor}
 
       setTicket(ticket)
       await addDocument(ticket, '/db/clients/tickets', ticketID)
@@ -231,37 +219,6 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
                 </FormItem>
               )}
             />
-
-            <p className="text-sm text-start">Date of birth</p>
-            <div className="flex gap-x-5 w-full h-full">
-              <FormField
-                control={form.control}
-                name="month"
-                render={({ field }) => (
-                  <FormItem>
-                  <FormControl>
-                      <Input className="w-16" placeholder="MM" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  </FormItem>
-              )}
-              />
-              /
-              <FormField
-                control={form.control}
-                name="year"
-                render={({ field }) => (
-                  <FormItem>
-                  <FormControl>
-                      <Input placeholder="YYYY" className="w-16"{...field} />
-                  </FormControl>
-                  <FormMessage />
-                  </FormItem>
-              )}
-              />
-            </div>
-
-            
 
             <Button className="bg-agm-orange" type="submit">
               Start my application

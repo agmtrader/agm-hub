@@ -250,8 +250,6 @@ export const source_of_wealth = [
     },
 ] as const
 
-
-
 // Schemas
 import { z } from "zod"
 
@@ -583,14 +581,6 @@ export const general_info_schema = z.object({
     message: "You must select an account type.",
   }),
 
-  year: z.string().min(2, {
-    message: "You must select an account type.",
-  }),
-
-  month: z.string().min(2, {
-    message: "You must select an account type.",
-  }),
-
 })
 
 export const regulatory_schema = z.object({
@@ -616,6 +606,8 @@ export const regulatory_schema = z.object({
 
 })
 
+
+
 export const poa_schema = z.object({
 
   issued_date: z.string().min(1, {
@@ -637,10 +629,21 @@ export const new_poa_schema = z.object({
   issued_date: z.string().min(1, {
     message: "You must select at least one investment objectives.",
   }),
-  type: z.string().min(1, {
-    message: "You must select your trading experience.",
-  }),
-  upload: z.string().min(1, {
-    message: "You must select at least one product.",
-  }),
 })
+
+
+export const temp_email_schema = z.object({
+
+  temp_email: z.string(),
+
+  temp_password: z.string()
+
+})
+
+export const account_number_schema = z.object({
+
+  account_number: z.string(),
+
+})
+
+// Types

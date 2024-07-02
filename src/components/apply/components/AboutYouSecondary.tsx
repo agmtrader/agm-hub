@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react"
+import React, {SetStateAction, useState} from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -46,21 +46,19 @@ import { addDays, format, subDays } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 
-import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_primary_schema } from "@/lib/form"
-import { Checkbox } from "../ui/checkbox"
+import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_secondary_schema } from "@/lib/form"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Ticket } from "@/lib/types"
-import { updateFieldInDocument } from "@/utils/api"
 
-const formSchema = about_you_primary_schema
+const formSchema = about_you_secondary_schema
 
 interface Props {
   stepForward:() => void,
   stepBackward:() => void,
-  ticket: Ticket,
   setTicket:React.Dispatch<React.SetStateAction<Ticket | null>>
 }
 
-const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) => {
+const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
 
   const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date())
   const [idExpirationDate, setIDExpirationDate] = useState<Date>(new Date())
@@ -118,16 +116,11 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
-    Object.keys(values).forEach(async (key) =>  {
-      await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'ApplicationInfo.' + key, values[key as keyof object])
-    })
-
+    const ticket = {'ApplicationInfo':values}
+    console.log(ticket)
+    setTicket(null)
     stepForward()
-    
   }
-
-  console.log(form.formState.errors)
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
@@ -175,7 +168,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             placeholder="Search..."
                             className="h-9"
                           />
-                          <CommandEmpty>No salutatation found.</CommandEmpty>
+                          <CommandEmpty>No country found.</CommandEmpty>
                           <CommandGroup>
                             {salutations.map((salutation) => (
                               <CommandItem
@@ -689,20 +682,6 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                 </FormItem>
               )}
             />
-
-          <FormField
-              control={form.control}
-              name="tax_id"
-              render={({ field }) => (
-                <FormItem>
-                <FormLabel>Tax ID</FormLabel>
-                <FormControl>
-                    <Input placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
           </div>
 
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
@@ -1150,7 +1129,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                                 value={status.label}
                                 key={status.value}
                                 onSelect={() => {
-                                  form.setValue("currency", status.value)
+                                  form.setValue("employment_status", status.value)
                                 }}
                               >
                                 {status.label}
@@ -1212,7 +1191,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                                 value={status.label}
                                 key={status.value}
                                 onSelect={() => {
-                                  form.setValue("security_q_1", status.value)
+                                  form.setValue("employment_status", status.value)
                                 }}
                               >
                                 {status.label}
@@ -1281,7 +1260,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                                 value={status.label}
                                 key={status.value}
                                 onSelect={() => {
-                                  form.setValue("security_q_2", status.value)
+                                  form.setValue("employment_status", status.value)
                                 }}
                               >
                                 {status.label}
@@ -1350,7 +1329,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                                 value={status.label}
                                 key={status.value}
                                 onSelect={() => {
-                                  form.setValue("security_q_3", status.value)
+                                  form.setValue("employment_status", status.value)
                                 }}
                               >
                                 {status.label}
@@ -1382,18 +1361,19 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
           </div>
 
           <div className="flex gap-x-5 justify-center items-center w-full h-full">
-            <Button variant={'default'} onClick={stepBackward}>
+            <Button className="bg-agm-light-orange" onClick={stepBackward}>
               Previous step
             </Button>
-            <Button variant={'default'} type="submit">
+            <Button className="bg-agm-light-orange" type="submit">
               Next step
             </Button>
           </div>
 
         </form>
       </Form>
+      
     </div>
   )
 }
 
-export default AboutYouPrimary
+export default AboutYouSecondary

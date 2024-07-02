@@ -31,32 +31,31 @@ import {
 } from "@/components/ui/form"
 
 import { new_poa_schema, poa_schema } from "@/lib/form"
+import { drive } from 'googleapis/build/src/apis/drive'
 
 const DocumentUploader = ({type}:{type:string}) => {
   
-    //const searchParams = useSearchParams()
     let formSchema:any;
     let initialFormValues:any;
 
     const [file, setFile] = useState<File | null>(null)
+    let driveId = ''
 
     switch (type) {
       case 'poa':
         formSchema = new_poa_schema
+        driveId = '1Jy3igpudOeF-qOZfMKNAThSAv3LBzAh9GDXSIKjkYOUCSrDIExJhxRvWdNuUxOytt09Dj8is'
         initialFormValues = {
           account_number:'',
           issued_date:'',
-          type:'',
-          upload:''
         }
         break;
       case 'poi':
         formSchema = new_poa_schema
+        driveId = '0AJK0LiNFpTk6Uk9PVA'
         initialFormValues = {
           account_number:'',
           issued_date:'',
-          type:'',
-          upload:''
         }
         break;
     }
@@ -67,25 +66,29 @@ const DocumentUploader = ({type}:{type:string}) => {
     })
     
     async function onSubmit(values: z.infer<typeof formSchema>) {
-
+      const fileInfo = await uploadFile()
+      console.log(values, fileInfo)
     }
 
     const uploadFile = async () => {
       if (!file) return;
 
       const formData = new FormData();
-      formData.append("file", file);
 
-      const res = await fetch("/api/drive", {
+      formData.append('file', file)
+      formData.append('driveId', driveId)
+
+      if (!driveId) return;
+
+      const response = await fetch("/api/drive", {
         method: "POST",
         body: formData,
       });
 
-      const data = await res.json();
+      const fileInfo = await response.json();
 
-      console.log(data)
+      return fileInfo
     }
-
 
   return (
     <div>
@@ -107,7 +110,7 @@ const DocumentUploader = ({type}:{type:string}) => {
     
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col justify-center items-center">
 
-                      {Object.keys(initialFormValues).slice(0,Object.keys(initialFormValues).length - 1).map((key:any) => (
+                      {Object.keys(initialFormValues).map((key:any) => (
                         <FormField
                         key={key}
                         control={form.control}
@@ -134,8 +137,6 @@ const DocumentUploader = ({type}:{type:string}) => {
                       <Button className="bg-agm-orange" type="submit">
                         Submit
                       </Button>
-
-                      <button onClick={uploadFile}>Upload File</button>
 
                     </form>
                   </Form>

@@ -20,7 +20,7 @@ const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) 
   const [tickets, setTickets] = useState<DocumentData[] | null>(null)
 
   // Ticket columns - export to dictionary!
-  const columns = ['TicketID', 'Status', 'username', 'email']
+  const columns = ['TicketID', 'Status', 'first_name', 'last_name', 'account_type', 'email', 'country']
 
   // Fetch tickets from database
   useEffect(() => {

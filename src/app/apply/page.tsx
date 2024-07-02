@@ -13,7 +13,7 @@ const page = () => {
       {started ? 
         <ClientForm/>
         :
-        <div className='w-full h-[100vh] flex flex-col justify-center items-start'>
+        <div className='w-full h-[100vh] flex flex-col justify-center items-center'>
           <Button onClick={() => setStarted(true)}>Get started.</Button>
         </div>
       }

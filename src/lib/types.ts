@@ -1,4 +1,5 @@
 import { DocumentReference } from "firebase/firestore"
+
 export enum DeviceTypes{
     PC,
     MOBILE
@@ -36,5 +37,5 @@ export type POA = {
 
 
 export interface Map {
-    [key: string]: string | string[] | Date | undefined
+    [key: string]: any
 }

@@ -1,5 +1,5 @@
 "use client"
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import { useSession } from 'next-auth/react';
 import Dashboard from '@/components/dashboard/Dashboard';
 

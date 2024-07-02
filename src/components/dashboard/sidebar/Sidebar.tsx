@@ -28,17 +28,21 @@ import {
 } from "@/components/ui/card"
 
 const navbarContent = [
-    {
-        'name':'Clients',
-        'url':'/dashboard/clients'
-    },
-    {
-        'name':'Open Account',
-        'url':'/dashboard/open_account'
-    },
-    {
-      'name':'Document Center',
-      'url':'/dashboard/document_center'
+  {
+      'name':'Clients',
+      'url':'/dashboard/clients'
+  },
+  {
+      'name':'Open Account',
+      'url':'/dashboard/open_account'
+  },
+  {
+    'name':'Document Center',
+    'url':'/dashboard/document_center'
+  },
+  {
+    'name':'Risk Assesment',
+    'url':'/dashboard/risk_assesment'
   },
 ]
 

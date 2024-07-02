@@ -9,7 +9,7 @@ import { authOptions } from "@/lib/auth";
 import { NextApiRequest, NextApiResponse } from "next";
 
 // upload function
-async function uploadFileToDrive (service: any, file: any, driveId: string) {
+async function uploadFileToDrive (service: any, file: any, driveId: FormDataEntryValue | null) {
 
   if (!service) {
     return null
@@ -35,16 +35,14 @@ async function uploadFileToDrive (service: any, file: any, driveId: string) {
     supportsAllDrives: true,
   })
 
-  console.log(response)
-
   // get file link
   const fileLink = await service.files.get({
-    fields: "id",
+    fields: "id, name",
     fileId: response.data.id!,
     supportsAllDrives: true,
   })
 
-  return fileLink
+  return fileLink.data
 };
 
 // POST request handler
@@ -96,17 +94,11 @@ export const POST = async (req:Request, res:Response) => {
     const service = google.drive({ version: "v3", auth });
 
     const request = await req.formData()
+
     const file = request.get('file')
-    const driveId = '0AJK0LiNFpTk6Uk9PVA'
+    const driveId = request.get('driveId')
 
-    const fileLink = await uploadFileToDrive(service, file, driveId);
+    const fileId = await uploadFileToDrive(service, file, driveId);
 
-  return NextResponse.json(
-    {
-      fileLink,
-    },
-    {
-      status: 200,
-    }
-  )
+  return NextResponse.json(fileId)
 }
