@@ -17,23 +17,22 @@ import { useState } from "react"
 
 const FormSchema = z.object({
   type: z.enum(["1", "2.5", "4"], {
-    required_error: "You need to select a investor type.",
-    invalid_type_error: "Invalid type",
+    required_error: "You must select a investor type.",
   }),
   loss: z.enum(["1", "2", "3", "4"], {
-    required_error: "You need to select a reaction to loss.",
+    required_error: "You must select a reaction to loss.",
   }),
   gain: z.enum(["1", "2", "3", "4"], {
-    required_error: "You need to select a reaction to gain.",
+    required_error: "You must select a reaction to gain.",
   }),
   period: z.enum(["1", "2", "3", "4"], {
-    required_error: "You need to select a term.",
+    required_error: "You must select a term.",
   }),
   diversification: z.enum(["1", "2", "3"], {
-    required_error: "You need to select a term.",
+    required_error: "You must select a portfolio.",
   }),
   goals: z.enum(["1", "2", "3"], {
-    required_error: "You need to select a term.",
+    required_error: "You must select a term.",
   }),
 })
 
@@ -81,6 +80,7 @@ const RiskForm = () => {
   }
 
   return (
+
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
 
@@ -358,6 +358,7 @@ const RiskForm = () => {
       </form>
       {score && score}
     </Form>
+    
   )
 }
 
