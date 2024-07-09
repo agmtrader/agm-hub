@@ -119,11 +119,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
-    Object.keys(values).forEach(async (key) =>  {
-      await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'ApplicationInfo.' + key, values[key as keyof object])
-    })
-
-    stepForward()
+    console.log(values)
     
   }
 

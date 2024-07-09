@@ -69,16 +69,15 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
       const timestamp = new Date()
-
       const advisor = searchParams.get('ad')
-
       const ticketID = formatTimestamp(timestamp)
+
       const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':advisor}
-
+      console.log(ticket)
       setTicket(ticket)
-      await addDocument(ticket, '/db/clients/tickets', ticketID)
 
-      stepForward()
+      //await addDocument(ticket, '/db/clients/tickets', ticketID)
+      //stepForward()
   }
 
   return (

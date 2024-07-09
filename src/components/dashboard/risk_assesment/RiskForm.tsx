@@ -15,26 +15,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
 
-const FormSchema = z.object({
-  type: z.enum(["1", "2.5", "4"], {
-    required_error: "You must select a investor type.",
-  }),
-  loss: z.enum(["1", "2", "3", "4"], {
-    required_error: "You must select a reaction to loss.",
-  }),
-  gain: z.enum(["1", "2", "3", "4"], {
-    required_error: "You must select a reaction to gain.",
-  }),
-  period: z.enum(["1", "2", "3", "4"], {
-    required_error: "You must select a term.",
-  }),
-  diversification: z.enum(["1", "2", "3"], {
-    required_error: "You must select a portfolio.",
-  }),
-  goals: z.enum(["1", "2", "3"], {
-    required_error: "You must select a term.",
-  }),
-})
+import { risk_assesment_schema } from "@/lib/form"
 
 const weights = [
   {
@@ -65,13 +46,14 @@ const weights = [
 
 const RiskForm = () => {
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  // No need for initial values since the schema uses only zod.enum objects
+  const form = useForm<z.infer<typeof risk_assesment_schema>>({
+    resolver: zodResolver(risk_assesment_schema),
   })
 
   const [score, setScore] = useState<number | null>(null)
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  function onSubmit(data: z.infer<typeof risk_assesment_schema>) {
     let sum = 0
     Object.entries(data).forEach((element) => {
       sum += weights.filter(el => el['name'] == element[0])[0]['weight'] * Number(element[1])

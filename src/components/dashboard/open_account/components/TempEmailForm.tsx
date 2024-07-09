@@ -38,9 +38,13 @@ const TempEmailForm = ({currentTicket, setCanContinue}: Props) => {
     })
     
     async function onSubmit(values: z.infer<typeof temp_email_schema>) {
+
         let timestamp = new Date()
         let accountTimestamp = formatTimestamp(timestamp)
+        
+        // TODO create type for this
         const account_details:any = {'Timestamp':accountTimestamp, 'TicketID':currentTicket['TicketID'], 'TemporalEmail':values.temp_email, 'TemporalPassword':values.temp_password}
+        
         //await addDocument(account, 'db/clients/accounts', currentTicket['TicketID'])
         console.log(account_details)
     }

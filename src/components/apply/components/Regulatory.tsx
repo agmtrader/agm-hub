@@ -64,13 +64,11 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
-    Object.keys(values).forEach(async (key) =>  {
-      await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'ApplicationInfo.' + key, values[key as keyof object])
-    })
+    console.log(values)
 
-    await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'Status', 'Open')
+    //await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'Status', 'Open')
 
-    stepForward()
+    //stepForward()
   }
 
   return (

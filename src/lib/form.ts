@@ -646,4 +646,44 @@ export const account_number_schema = z.object({
 
 })
 
+export const account_access_schema = z.object({
+
+  name: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }).max(50),
+
+  lastname: z.string().min(2, {
+    message: "Email must be at least 2 characters.",
+  }).max(50),
+
+  username: z.string(), 
+
+  password: z.string(),
+
+  account_number: z.string(),
+
+})
+
+
+export const risk_assesment_schema = z.object({
+  type: z.enum(["1", "2.5", "4"], {
+    required_error: "You must select a investor type.",
+  }),
+  loss: z.enum(["1", "2", "3", "4"], {
+    required_error: "You must select a reaction to loss.",
+  }),
+  gain: z.enum(["1", "2", "3", "4"], {
+    required_error: "You must select a reaction to gain.",
+  }),
+  period: z.enum(["1", "2", "3", "4"], {
+    required_error: "You must select a term.",
+  }),
+  diversification: z.enum(["1", "2", "3"], {
+    required_error: "You must select a portfolio.",
+  }),
+  goals: z.enum(["1", "2", "3"], {
+    required_error: "You must select a term.",
+  }),
+})
+
 // Types

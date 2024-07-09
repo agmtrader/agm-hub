@@ -13,9 +13,6 @@ import { Input } from "@/components/ui/input"
 
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { addDocument } from "@/utils/api"
-import { formatTimestamp } from "@/utils/dates"
-import { temp_email_schema } from '@/lib/form'
 import { useForm } from 'react-hook-form'
 
 import { account_number_schema } from '@/lib/form'
@@ -30,7 +27,7 @@ const AccountNumberForm = ({setCanContinue}: Props) => {
 
     let initialFormValues = {
         account_number:''
-      }
+    }
 
     const form = useForm<z.infer<typeof account_number_schema>>({
         resolver: zodResolver(account_number_schema),
@@ -38,9 +35,13 @@ const AccountNumberForm = ({setCanContinue}: Props) => {
     })
     
     async function onSubmit(values: z.infer<typeof account_number_schema>) {
+
+        // TODO create type for account access form
         const account_number:any = {'AccountNumber':values.account_number}
+        
         //await addDocument(account, 'db/clients/accounts', currentTicket['TicketID'])
         setCanContinue(true)
+
         console.log(account_number)
     }
 
