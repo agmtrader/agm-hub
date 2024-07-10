@@ -5,6 +5,9 @@ import { Inter } from 'next/font/google'
 import { cn } from "@/lib/utils";
 
 import Header from "@/components/apply/Header";
+import Footer from "@/components/Footer";
+
+
 import { NextAuthProvider } from "../NextAuthProvider";
 import FirebaseAuthProvider from "../FirebaseAuthProvider";
 

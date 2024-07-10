@@ -18,25 +18,29 @@ import {
 import Account from "./Account"
 
 const navbarContent = [
-    {
-        'name':'AGM Advisor',
-        'url':'/'
-    },
-    {
-        'name':'AGM Trader',
-        'url':'/'
-    },
-    {
-        'name':'AGM Institutional',
-        'url':'/'
-    },
-    {
-        'name':'AGM Dashboard',
-        'url':'/dashboard'
-    },
-    {
-      'name':'Apply for an account',
-      'url':'/apply'
+  {
+    'name':'Home',
+    'url':'/'
+  },
+  {
+      'name':'AGM Advisor',
+      'url':'/'
+  },
+  {
+      'name':'AGM Trader',
+      'url':'/'
+  },
+  {
+      'name':'AGM Institutional',
+      'url':'/'
+  },
+  {
+      'name':'AGM Dashboard',
+      'url':'/dashboard'
+  },
+  {
+    'name':'Apply for an account',
+    'url':'/apply'
   },
 ]
 

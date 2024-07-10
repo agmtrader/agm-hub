@@ -4,9 +4,10 @@ import "../globals.css"
 import { Inter } from 'next/font/google'
 import { cn } from "@/lib/utils";
 
-import Header from "@/components/Header";
 import { NextAuthProvider } from "../NextAuthProvider";
 import FirebaseAuthProvider from "../FirebaseAuthProvider";
+import Header from "@/components/dashboard/Header";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "AGM Dashboard",
@@ -28,8 +29,10 @@ export default function RootLayout({
         <div className="h-full w-full  flex flex-row">
           <NextAuthProvider>
             <FirebaseAuthProvider>
-            <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
+            <div className="flex flex-col bg-agm-blue scrollbar-hide h-full w-full gap-y-10 scroll-smooth">
+              <Header/>
               {children}
+              <Footer />
             </div>
             </FirebaseAuthProvider>
           </NextAuthProvider>

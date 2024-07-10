@@ -45,7 +45,7 @@ const Dashboard = ({user}: Props) => {
 
   return (
 
-    <div className='flex flex-row my-[10vh] w-full gap-x-5 mx-5'> {/*Sidebar separator*/}
+    <div className='flex flex-row w-full gap-x-5 mx-5'> {/*Sidebar separator*/}
 
         <Sidebar/>
 

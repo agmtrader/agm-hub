@@ -19,8 +19,9 @@ const config = {
     },
     extend: {
       colors: {
+        'agm-accent-dark':'#001A4C',
         'agm-dark-blue':'#062D47',
-        'agm-blue':'#104970',
+        'agm-blue':'#2571A5',
         'agm-light-blue':'#5996C0',
         'agm-orange':'#F26C0D',
         'agm-white':'#FFFFFF',

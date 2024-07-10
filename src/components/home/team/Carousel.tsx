@@ -34,7 +34,7 @@ const team = [
 
 export function TeamCarousel() {
   return (
-    <Carousel className="w-full h-full max-w-5xl">
+    <Carousel className="w-full h-full max-w-[80%]">
       <CarouselContent>
         {team.map((member, index) => (
           <CarouselItem key={index} className="basis-1/3">
