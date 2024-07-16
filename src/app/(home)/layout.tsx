@@ -24,8 +24,8 @@ export default function RootLayout({
 
   return (
 
-    <html lang="en" className={cn(inter.className, "flex flex-col h-fit w-full  bg-agm-white overflow-x-hidden scroll-smooth")}>
-      <body className='h-full w-full flex flex-row scroll-smooth '>
+    <html lang="en" className={cn(inter.className, "flex flex-col h-fit w-full bg-agm-white overflow-x-hidden scroll-smooth")}>
+      <body className='h-full w-full flex flex-row'>
         <div className="h-full w-full  flex flex-row">
           <NextAuthProvider>
             <FirebaseAuthProvider>

@@ -64,12 +64,19 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
-    console.log(values)
+    Object.keys(values).forEach(async (key) => {
+      await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.${key}`, values[key as keyof object])
+    })
 
-    //await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'Status', 'Open')
+    await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'Status', 'Open')
+    
+    //setTicket(ticket)
 
-    //stepForward()
+    stepForward()
+
   }
+
+  console.log(form.formState.errors)
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
@@ -143,6 +150,118 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
 
             <FormField
               control={form.control}
+              name="investment_objectives"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>Investment Objectives</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn(
+                              "w-full flex text-sm",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                          {field.value
+                            ? salutations.find(
+                                (salutation) => salutation.value === field.value
+                              )?.label
+                            : "Select"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No category found.</CommandEmpty>
+                          <CommandGroup>
+                            {salutations.map((salutation) => (
+                              <CommandItem
+                                value={salutation.label}
+                                key={salutation.value}
+                                onSelect={() => {
+                                  form.setValue("investment_objectives", salutation.value)
+                                }}
+                              >
+                                {salutation.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="products"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>Products</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn(
+                              "w-full flex text-sm",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                          {field.value
+                            ? salutations.find(
+                                (salutation) => salutation.value === field.value
+                              )?.label
+                            : "Select"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No category found.</CommandEmpty>
+                          <CommandGroup>
+                            {salutations.map((salutation) => (
+                              <CommandItem
+                                value={salutation.label}
+                                key={salutation.value}
+                                onSelect={() => {
+                                  form.setValue("products", salutation.value)
+                                }}
+                              >
+                                {salutation.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="net_worth"
               render={({ field }) => (
                 <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
@@ -195,7 +314,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            />   
 
             <FormField
               control={form.control}

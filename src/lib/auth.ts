@@ -43,17 +43,15 @@ export const authOptions: NextAuthOptions = {
 
             session.user.id = token.sub
   
-            /*
             const options = {
               admin: false
             }
-  
-            if (session.user.email?.split('@')[1] == 'agmtechnology.com' || authedUsers.includes(session.user.email)) {
+            
+            if (session.user.email?.split('@')[1] == 'agmtechnology.com') {
               options.admin = true
             }
-            */
   
-            const firebaseToken = await adminAuth.createCustomToken(token.sub)
+            const firebaseToken = await adminAuth.createCustomToken(token.sub, options)
             session.firebaseToken = firebaseToken
 
           }

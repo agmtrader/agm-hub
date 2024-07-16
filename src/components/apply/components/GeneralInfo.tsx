@@ -76,8 +76,9 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
       console.log(ticket)
       setTicket(ticket)
 
-      //await addDocument(ticket, '/db/clients/tickets', ticketID)
-      //stepForward()
+      await addDocument(ticket, '/db/clients/tickets', ticketID)
+      stepForward()
+      
   }
 
   return (
