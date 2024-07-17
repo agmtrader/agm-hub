@@ -32,8 +32,11 @@ import {
 
 import { new_poa_schema, poa_schema } from "@/lib/form"
 import { drive } from 'googleapis/build/src/apis/drive'
+import { DocumentData } from 'firebase/firestore'
+import { formatTimestamp } from '@/utils/dates'
+import { addDocument } from '@/utils/api'
 
-const DocumentUploader = ({type}:{type:string}) => {
+const DocumentUploader = ({type, document}:{type:string, document?:DocumentData}) => {
   
     let formSchema:any;
     let initialFormValues:any;
@@ -43,16 +46,34 @@ const DocumentUploader = ({type}:{type:string}) => {
 
     switch (type) {
       case 'poa':
-        formSchema = new_poa_schema
-        driveId = '1Jy3igpudOeF-qOZfMKNAThSAv3LBzAh9GDXSIKjkYOUCSrDIExJhxRvWdNuUxOytt09Dj8is'
-        initialFormValues = {
-          account_number:'',
-          issued_date:'',
+        if (document) {
+          formSchema = poa_schema
+          initialFormValues = {
+            issued_date:'',
+          }
+        } else {
+          formSchema = new_poa_schema
+          initialFormValues = {
+            account_number:'',
+            issued_date:'',
+          }
         }
+        driveId = '1wPsX533MjJLAocS7WKQMTO2uB6Ozi2Dy'
         break;
       case 'poi':
-        formSchema = new_poa_schema
-        driveId = '0AJK0LiNFpTk6Uk9PVA'
+        if (document) {
+          formSchema = poa_schema
+          initialFormValues = {
+            issued_date:'',
+          }
+        } else {
+          formSchema = new_poa_schema
+          initialFormValues = {
+            account_number:'',
+            issued_date:'',
+          }
+        }
+        driveId = '1wPsX533MjJLAocS7WKQMTO2uB6Ozi2Dy'
         initialFormValues = {
           account_number:'',
           issued_date:'',
@@ -67,7 +88,26 @@ const DocumentUploader = ({type}:{type:string}) => {
     
     async function onSubmit(values: z.infer<typeof formSchema>) {
       const fileInfo = await uploadFile()
-      console.log(values, fileInfo)
+      console.log(fileInfo)
+
+      let timestamp = new Date()
+      let documentTimestamp = formatTimestamp(timestamp)
+
+      let documentInfo:any
+
+      // https://drive.google.com/uc?export=download&id=
+
+      if (fileInfo) {
+        if (document) {
+          documentInfo = {'DocumentID':documentTimestamp, 'FileID':fileInfo['id'], 'URL':`https://drive.google.com/file/d/${fileInfo['id']}/preview`, 'TicketID':document['TicketID'], 'Type':type, 'FileName':fileInfo['name']}
+          console.log(documentInfo)
+        } else {
+          documentInfo = {'DocumentID':documentTimestamp, 'FileID':fileInfo['id'], 'URL':`https://drive.google.com/file/d/${fileInfo['id']}/preview`, 'TicketID':values.account_number, 'Type':type, 'FileName':fileInfo['name']}
+          console.log(documentInfo)
+        }
+      }
+
+      await addDocument(documentInfo, `db/document_center/${documentInfo['Type']}`, documentTimestamp)
     }
 
     const uploadFile = async () => {
@@ -95,7 +135,7 @@ const DocumentUploader = ({type}:{type:string}) => {
         <Dialog>
             <DialogTrigger asChild>
                 <Button className='w-fit h-fit flex gap-x-5' >
-                    <p>Upload new file</p>
+                    {document ? <p>Reupload {type}</p>:<p>Upload new {type}</p>}
                     <Upload className="h-5 w-5"/>
                 </Button>
             </DialogTrigger>
@@ -148,3 +188,5 @@ const DocumentUploader = ({type}:{type:string}) => {
 }
 
 export default DocumentUploader
+
+//https://drive.google.com/file/d/{id}/preview

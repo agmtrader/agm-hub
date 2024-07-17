@@ -18,6 +18,8 @@ const page = () => {
   const [currentTicket, setCurrentTicket] = useState<DocumentData | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const [documentIDs, setDocumentIDs] = useState<any[] | null>(null)
+
   function stepForward(e:React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     if (canContinue) {
       setStep(step + 1)

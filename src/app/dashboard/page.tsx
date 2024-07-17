@@ -18,7 +18,8 @@ const page = () => {
           :
           <div className='w-full flex justify-center items-center h-[100vh]'>
             <p className='text-7xl text-white font-bold'>Log in to view!</p>
-          </div>   
+          </div>
+          
         }
 
       </div>

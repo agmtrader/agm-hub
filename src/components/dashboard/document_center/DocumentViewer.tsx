@@ -1,18 +1,12 @@
 import * as React from "react"
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-import { DataTable } from "../components/DataTable"
-import { Button } from "@/components/ui/button"
 
-import DocumentReuploader from "./DocumentReuploader"
+import DocumentUploader from "./DocumentUploader"
+
 import { DocumentData } from "firebase-admin/firestore"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 const DocumentViewer = ({document}:{document:DocumentData}) => {
   return (
@@ -20,14 +14,19 @@ const DocumentViewer = ({document}:{document:DocumentData}) => {
       <CardContent className="flex items-center my-5 justify-center">
         <div className='w-full flex flex-col gap-y-5 justify-center items-center h-fit overflow-hidden'>
           <iframe 
-            src={document ? document['URL']:'404'}
+            src={document ? document['URL']:''}
             width="500" 
             height="600" 
             className=' '
             allow="autoplay">
           </iframe>
           <div className='flex gap-x-5'>
-            <DocumentReuploader document={document}/>
+            <DocumentUploader document={document}type={document['Type']}/>
+            <Button asChild>
+              <Link href={`https://drive.google.com/uc?export=download&id=${document['FileID']}`} passHref>
+                Download File
+              </Link>
+            </Button>
           </div>
         </div>
       </CardContent>

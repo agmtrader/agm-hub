@@ -609,19 +609,10 @@ export const regulatory_schema = z.object({
 
 
 export const poa_schema = z.object({
-
   issued_date: z.string().min(1, {
     message: "You must select at least one investment objectives.",
   }),
-  type: z.string().min(1, {
-    message: "You must select your trading experience.",
-  }),
-  upload: z.string().min(1, {
-    message: "You must select at least one product.",
-  }),
-
 })
-
 export const new_poa_schema = z.object({
   account_number: z.string().min(1, {
     message: "You must select a liquid net worth.",
@@ -636,7 +627,9 @@ export const temp_email_schema = z.object({
 
   temp_email: z.string(),
 
-  temp_password: z.string()
+  temp_password: z.string(),
+
+  account_number: z.string()
 
 })
 

@@ -8,8 +8,16 @@ import { addColumnsFromJSON, queryDocumentsFromCollection, updateFieldInDocument
 
 import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Button } from '@/components/ui/button';
-import UserDocumentsViewer from './components/UserDocumentsViewer';
 import { Checkbox } from '@/components/ui/checkbox';
+
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import DocumentViewer from '../document_center/DocumentViewer';
+import DocumentUploader from '../document_center/DocumentUploader';
 
 interface Props {
   currentTicket: DocumentData,
@@ -25,7 +33,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
 
   // Column defs - pass to dictionary!
   const columns = ['TicketID', 'Status','email', 'username']
-  const documentColumns = ['DocumentID', 'URL']
+  const documentColumns = ['TicketID', 'Type', 'URL']
 
   // Initialize state variables for refreshing data
   const [refresh, setRefresh] = useState<boolean>(false)
@@ -51,6 +59,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
       currentTicket = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
 
       // Update ticket status depending on query
+      console.log(documentsData)
       if (documentsData && documentsData.length !== 3) {
         await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Missing documents')
       } else if (currentTicket[0]['Status'] !== 'Ready for application') {
@@ -89,8 +98,24 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
       <div className='flex gap-x-5'>
         <Button className='w-fit h-fit'>Document Center</Button>
       </div>
+
       {ticket && <DataTable data={ticket}/>}
-      {documents && <UserDocumentsViewer documents={documents}/> }
+
+      <Tabs defaultValue="poa" className="w-[80%]">
+        <TabsList className="grid w-full grid-cols-2">
+          {documents && documents.map((document) => (
+            <TabsTrigger key={document['Type']} value={document['Type']}>{document['Type']}</TabsTrigger>
+          ))}
+        </TabsList>
+        {documents && documents.map((document) => (
+          <div>
+            <TabsContent value={document['Type']} key={document['Type']} className='flex flex-col gap-y-10'>
+              <DocumentViewer document={document}/>
+            </TabsContent>
+          </div>
+        ))}
+      </Tabs>
+
       {documents && documents.length === 3 && 
         <div className="items-top flex space-x-2">
             <Checkbox

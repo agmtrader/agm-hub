@@ -27,7 +27,7 @@ const page = (props: Props) => {
     const [currentDocument, setCurrentDocument] = useState<DocumentData | null>(null)
 
     // Column defs - pass to dictionary!
-    const documentColumns = ['Timestamp', 'Type', 'AccountNumber', 'TicketID', 'AGM User', 'URL']
+    const documentColumns = ['Type', 'FileName', 'FileID', 'URL']
   
     // Fetch documents and ticket data associated to current ticket
     useEffect(() => {
@@ -59,15 +59,18 @@ const page = (props: Props) => {
               <TabsTrigger value="poa">Proof of Address</TabsTrigger>
               <TabsTrigger value="poi">Proof of Identity</TabsTrigger>
             </TabsList>
+            
             <TabsContent value="poa" className='flex flex-col gap-y-10'>
               {poaData && <DataTableSelect width={100} setSelection={setCurrentDocument} data={poaData}/>}
               {currentDocument && <DocumentsViewer document={currentDocument}/>}
             </TabsContent>
+
             <TabsContent value="poi">
               {poiData && <DataTableSelect width={100} setSelection={setCurrentDocument} data={poiData}/>}
               {currentDocument && <DocumentsViewer document={currentDocument}/>}
             </TabsContent>
           </Tabs>
+
           <DocumentUploader type={type}/>
         </div>
     </div>

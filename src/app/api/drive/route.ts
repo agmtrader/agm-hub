@@ -57,7 +57,7 @@ export const POST = async (req:Request, res:Response) => {
         setHeader: (name: string, value: string) => res.headers?.set(name, value),
       } as unknown as NextApiResponse,
       authOptions
-    );
+    )
 
     if (!session) {
 
