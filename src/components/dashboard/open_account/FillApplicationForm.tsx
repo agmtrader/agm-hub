@@ -1,24 +1,23 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 
-import { DocumentData } from 'firebase/firestore/lite';
-
 import { sortColumns } from '@/utils/table';
 import { addColumnsFromJSON, queryDocumentsFromCollection } from '@/utils/api';
 
 import { DataTable } from '@/components/dashboard/components/DataTable';
 import AccessForm from './components/AccessForm';
+import { Documents, Map, Ticket } from '@/lib/types';
 
 interface Props {
-  currentTicket: DocumentData,
+  currentTicket: Ticket,
   setCanContinue: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
 const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
   
   // Initialize data variables
-  const [ticket, setTicket] = useState<DocumentData[] | null>(null)
-  const [documents, setDocuments] = useState<DocumentData[] | null>(null)
+  const [ticket, setTicket] = useState<Ticket[] | null>(null)
+  const [documents, setDocuments] = useState<Documents | null>(null)
 
   // Columns - pass to dict!
   const ticketColumns = ['TicketID', 'Status', 'email', 'username', 'language']
@@ -35,11 +34,22 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
       // Fetch ticket
       let data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
       data = await addColumnsFromJSON(data)
-      setTicket(sortColumns(data, ticketColumns))
 
-      // Fetch ticket
-      data = await queryDocumentsFromCollection('db/clients/documents/', 'DocumentsID', ticketID)
-      setDocuments(sortColumns(data, documentColumns))
+      data = sortColumns(data, ticketColumns)
+
+      let tickets:Ticket[] = []
+      data.forEach((entry:Map) => {
+        tickets.push(
+          {
+            'TicketID': entry['TicketID'],
+            'Status': entry['Status'],
+            'ApplicationInfo': entry['ApplicationInfo'],
+            'Advisor': entry['Advisor']
+          }
+        )
+      })
+
+      setTicket(tickets)
     }
     
     queryData()

@@ -35,8 +35,9 @@ import { drive } from 'googleapis/build/src/apis/drive'
 import { DocumentData } from 'firebase/firestore'
 import { formatTimestamp } from '@/utils/dates'
 import { addDocument } from '@/utils/api'
+import { ClientDocument, Document } from '@/lib/types'
 
-const DocumentUploader = ({type, document}:{type:string, document?:DocumentData}) => {
+const DocumentUploader = ({type, document}:{type:string, document?:Document}) => {
   
     let formSchema:any;
     let initialFormValues:any;
@@ -45,22 +46,24 @@ const DocumentUploader = ({type, document}:{type:string, document?:DocumentData}
     let driveId = ''
 
     switch (type) {
-      case 'poa':
+      case 'POA':
         if (document) {
           formSchema = poa_schema
           initialFormValues = {
             issued_date:'',
+            type:''
           }
         } else {
           formSchema = new_poa_schema
           initialFormValues = {
             account_number:'',
             issued_date:'',
+            type:''
           }
         }
         driveId = '1wPsX533MjJLAocS7WKQMTO2uB6Ozi2Dy'
         break;
-      case 'poi':
+      case 'POI':
         if (document) {
           formSchema = poa_schema
           initialFormValues = {
@@ -98,13 +101,24 @@ const DocumentUploader = ({type, document}:{type:string, document?:DocumentData}
       // https://drive.google.com/uc?export=download&id=
 
       if (fileInfo) {
+
+        documentInfo = {'DocumentID':documentTimestamp, 'FileID':fileInfo['id'], 'URL':`https://drive.google.com/file/d/${fileInfo['id']}/preview`, 'Type':type, 'FileName':fileInfo['name']}
+
         if (document) {
-          documentInfo = {'DocumentID':documentTimestamp, 'FileID':fileInfo['id'], 'URL':`https://drive.google.com/file/d/${fileInfo['id']}/preview`, 'TicketID':document['TicketID'], 'Type':type, 'FileName':fileInfo['name']}
-          console.log(documentInfo)
+
+          if (document['Type'] == 'POA') {
+            documentInfo['TicketID'] = document['TicketID' as keyof Document]
+            documentInfo['AccountNumber'] = document['AccountNumber']
+          }
+
         } else {
-          documentInfo = {'DocumentID':documentTimestamp, 'FileID':fileInfo['id'], 'URL':`https://drive.google.com/file/d/${fileInfo['id']}/preview`, 'TicketID':values.account_number, 'Type':type, 'FileName':fileInfo['name']}
-          console.log(documentInfo)
+
+          documentInfo['AccountNumber'] = values['account_number']
+
+          //Query account number ticket
+          documentInfo['TicketID'] = 'N/A'
         }
+
       }
 
       await addDocument(documentInfo, `db/document_center/${documentInfo['Type']}`, documentTimestamp)

@@ -1,24 +1,21 @@
 'use client'
 import React, { useState } from 'react';
 
-import { DocumentData } from 'firebase/firestore/lite';
-
 import { Button } from '@/components/ui/button';
 
 import TicketManager from '@/components/dashboard/open_account/TicketManager';
 import BackupDocuments from '@/components/dashboard/open_account/BackupDocuments';
 import FillApplicationForm from '@/components/dashboard/open_account/FillApplicationForm';
 import OpenAccount from '@/components/dashboard/open_account/OpenAccount';
+import { Ticket } from '@/lib/types';
 
 const page = () => {
 
   const [step, setStep] = useState<number>(1)
   const [canContinue, setCanContinue] = useState<boolean>(false)
 
-  const [currentTicket, setCurrentTicket] = useState<DocumentData | null>(null)
+  const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null)
   const [error, setError] = useState<string | null>(null)
-
-  const [documentIDs, setDocumentIDs] = useState<any[] | null>(null)
 
   function stepForward(e:React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     if (canContinue) {

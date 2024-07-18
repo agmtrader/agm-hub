@@ -7,29 +7,45 @@ import { addColumnsFromJSON, getDocumentsFromCollection } from '@/utils/api';
 import { sortColumns } from '@/utils/table';
 
 import { DataTableSelect } from '@/components/dashboard/components/DataTable';
+import { Map, Ticket } from '@/lib/types';
 
 interface Props {
-  setCurrentTicket: React.Dispatch<React.SetStateAction<DocumentData | null>>,
-  currentTicket: DocumentData | null,
-  setCanContinue: any // !!!!
+  setCurrentTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
+  currentTicket: Ticket | null,
+  setCanContinue: any
 }
 
 const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) => {
 
   // Initialize data variables
-  const [tickets, setTickets] = useState<DocumentData[] | null>(null)
+  const [tickets, setTickets] = useState<Ticket[] | null>(null)
 
   // Ticket columns - export to dictionary!
-  const columns = ['TicketID', 'Status', 'first_name', 'last_name', 'account_type', 'email', 'country']
+  const columns = ['TicketID', 'Status', 'first_name', 'last_name', 'email', 'country', 'currency']
 
   // Fetch tickets from database
   useEffect(() => {
 
     async function fetchData () {
         setCurrentTicket(null)
+
         let data = await getDocumentsFromCollection('db/clients/tickets/')
         data = await addColumnsFromJSON(data)
-        setTickets(sortColumns(data, columns))
+        data = sortColumns(data, columns)
+
+        let tickets:Ticket[] = []
+        data.forEach((entry:Map) => {
+          tickets.push(
+            {
+              'TicketID': entry['TicketID'],
+              'Status': entry['Status'],
+              'ApplicationInfo': entry['ApplicationInfo'],
+              'Advisor': entry['Advisor']
+            }
+          )
+        })
+        setTickets(tickets)
+        
     }
     fetchData()
 

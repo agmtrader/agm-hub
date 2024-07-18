@@ -13,20 +13,48 @@ export enum osTypes {
     IOS
 }
 
-export type Client = {
-  'ClientID': string
-  'Status': string
-  'Documents':DocumentReference
+// Array of objects or object of any
+export interface Map {
+    [key: string]: any
 }
 
-export type Ticket = {
+// Tickets
+export interface Ticket {
   'TicketID': string
   'Status': string
   'ApplicationInfo':Map
   'Advisor':string | null
 }
 
+// Account Access
+export interface Account {
+  'AccountID':string
+  'TicketID':string
+  'TemporalEmail':string
+  'TemporalPassword':string
+  'AccountNumber':string
+  'Name':string
+  'LastName':string, 
+  'IBKRUsername':string, 
+  'IBKRPassword':string, 
+  'Advisor':string | null
+}
+
+
+// Table
+export type Selection = Document | Ticket
+
+
+// Document Center
+export interface Documents {
+  [key:string]: Document[] | ClientDocument[]
+}
+
+export type Document = ClientDocument | STAT
+export type ClientDocument = POA | POI
+
 export type POA = {
+  'TicketID': string
   'Timestamp': string
   'AccountNumber': string
   'IssuedDate': string
@@ -34,8 +62,16 @@ export type POA = {
   'Type':string
   'URL':string | null
 }
-
-
-export interface Map {
-    [key: string]: any
+export type POI = {
+  'TicketID': string
+  'Timestamp': string
+  'AccountNumber': string
+  'IssuedDate': string
+  'ExpirationDate':string
+  'Type':string
+}
+export type STAT = {
+  'Timestamp': string
+  'AccountNumber': string
+  'Type':string
 }

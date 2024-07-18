@@ -22,9 +22,10 @@ import { addDocument } from "@/utils/api"
 import { formatTimestamp } from "@/utils/dates"
 import { account_access_schema, temp_email_schema } from '@/lib/form'
 import { useForm } from 'react-hook-form'
+import { Ticket } from '@/lib/types'
 
 interface Props {
-  currentTicket:DocumentData, 
+  currentTicket:Ticket, 
   setCanContinue: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -50,7 +51,7 @@ const OpenAccount = ({currentTicket, setCanContinue}:Props) => {
       const account_details:any = {'AccountID':accountTimestamp, 'TicketID':currentTicket['TicketID'], 'TemporalEmail':values.temp_email, 'TemporalPassword':values.temp_password, 'AccountNumber':values.account_number}
       
       await addDocument(account_details, 'db/clients/accounts', currentTicket['TicketID'])
-      
+    
       setCanContinue(true)
   }
 

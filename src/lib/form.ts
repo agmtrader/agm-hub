@@ -612,6 +612,9 @@ export const poa_schema = z.object({
   issued_date: z.string().min(1, {
     message: "You must select at least one investment objectives.",
   }),
+  type: z.string().min(1, {
+    message: "You must select at least one type.",
+  }),
 })
 export const new_poa_schema = z.object({
   account_number: z.string().min(1, {
@@ -619,6 +622,9 @@ export const new_poa_schema = z.object({
   }),
   issued_date: z.string().min(1, {
     message: "You must select at least one investment objectives.",
+  }),
+  type: z.string().min(1, {
+    message: "You must select at least one type.",
   }),
 })
 

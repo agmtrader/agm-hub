@@ -1,78 +1,66 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import DocumentsViewer from '../../../components/dashboard/document_center/DocumentViewer'
-import { addColumnsFromJSON, getDocumentsFromCollection } from '@/utils/api'
-import { sortColumns } from '@/utils/table'
-import { DocumentData } from 'firebase-admin/firestore'
-import { DataTable, DataTableSelect } from '@/components/dashboard/components/DataTable'
+import { getDocumentsFromCollection } from '@/utils/api';
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import DocumentUploader from '@/components/dashboard/document_center/DocumentUploader'
+import { Document, Documents, POA } from '@/lib/types';
+import DocumentCenter from '@/components/dashboard/document_center/DocumentCenter';
 
-type Props = {}
-
-const page = (props: Props) => {
-
-    const [type, setType] = useState("poa");
-
-    // Initialize data variables
-    const [poiData, setPOIData] = useState<DocumentData[] | null>(null)
-    const [poaData, setPOAData] = useState<DocumentData[] | null>(null)
-
-    const [currentDocument, setCurrentDocument] = useState<DocumentData | null>(null)
-
-    // Column defs - pass to dictionary!
-    const documentColumns = ['Type', 'FileName', 'FileID', 'URL']
+const page = () => {
   
-    // Fetch documents and ticket data associated to current ticket
-    useEffect(() => {
-  
-      async function queryData () {
+  const [selection, setSelection] = useState<Document | null>(null)
+  const [documents, setDocuments] = useState<Documents | null>(null)
 
-        // Fetch ticket with updated status
-        let documentsData = await getDocumentsFromCollection('db/document_center/poi/')
-        documentsData = await addColumnsFromJSON(documentsData)
-        setPOIData(sortColumns(documentsData, documentColumns))
+  const [refresh, setRefresh] = useState<boolean>(false)
 
-        documentsData = await getDocumentsFromCollection('db/document_center/poa/')
-        documentsData = await addColumnsFromJSON(documentsData)
-        setPOAData(sortColumns(documentsData, documentColumns))
-      }
+  // Fetch documents and ticket data associated to current ticket
+  useEffect(() => {
+
+    async function queryData () {
+
+      let data = await getDocumentsFromCollection(`/db/document_center/poa`)
+
+      let poaData:POA[] = []
+
+      data.forEach((entry) => {
+        poaData.push({
+          'TicketID': entry['TicketID'],
+          'Timestamp': entry['Timestamp'],
+          'AccountNumber': entry['AccountNumber'],
+          'IssuedDate': entry['IssuedDate'],
+          'ExpirationDate': entry['ExpirationDate'],
+          'Type': entry['Type'],
+          'URL': entry['URL']
+        })
+      })
+
+      data = await getDocumentsFromCollection(`/db/document_center/poi`)
+
+      let poiData:POA[] = []
+
+      data.forEach((entry) => {
+        poiData.push({
+          'TicketID': entry['TicketID'],
+          'Timestamp': entry['Timestamp'],
+          'AccountNumber': entry['AccountNumber'],
+          'IssuedDate': entry['IssuedDate'],
+          'ExpirationDate': entry['ExpirationDate'],
+          'Type': entry['Type'],
+          'URL': entry['URL']
+        })
+      })
+
+      setDocuments({'POA':poaData,'POI': poiData})
       
-      queryData()
-  
-    }, [])
-
+    }
     
+    queryData()
+
+  }, [refresh])
+
   return (
-    <div>
-        <div className='flex flex-col my-10 justify-center items-center gap-y-10'>
-          <h1 className='text-7xl font-bold'>AGM Document Center</h1>
-
-          <Tabs defaultValue="poa" onValueChange={setType} className="w-[80%]">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="poa">Proof of Address</TabsTrigger>
-              <TabsTrigger value="poi">Proof of Identity</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="poa" className='flex flex-col gap-y-10'>
-              {poaData && <DataTableSelect width={100} setSelection={setCurrentDocument} data={poaData}/>}
-              {currentDocument && <DocumentsViewer document={currentDocument}/>}
-            </TabsContent>
-
-            <TabsContent value="poi">
-              {poiData && <DataTableSelect width={100} setSelection={setCurrentDocument} data={poiData}/>}
-              {currentDocument && <DocumentsViewer document={currentDocument}/>}
-            </TabsContent>
-          </Tabs>
-
-          <DocumentUploader type={type}/>
-        </div>
+    <div className='h-full w-full flex flex-col justify-start gap-y-10 items-center'>
+      <h1 className='text-7xl font-bold'>Document Center</h1>
+      <DocumentCenter documents={documents} setSelection={setSelection} selection={selection}/>
     </div>
   )
 }

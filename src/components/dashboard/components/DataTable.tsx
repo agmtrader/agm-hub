@@ -22,8 +22,8 @@ import {
 
 import { Checkbox } from "@/components/ui/checkbox"
 
-import { DocumentData } from "firebase/firestore"
 import { cn } from "@/lib/utils"
+import { Map } from "@/lib/types"
 
 interface DataTableSelectProps<TData> {
     data: TData[]
@@ -41,7 +41,7 @@ export const DataTable = <TData,>({data, width}: DataTableProps<TData>) => {
     const [rowSelection, setRowSelection] = useState({})
     const [sorting, setSorting] = useState<SortingState>([])
 
-    function buildColumns(data:DocumentData[]) {
+    function buildColumns(data:Map) {
         const columns:Array<any> = []
   
         Object.keys(data[0]).forEach((column) => {
@@ -54,7 +54,7 @@ export const DataTable = <TData,>({data, width}: DataTableProps<TData>) => {
         return columns
   
     }  
-    const columns = buildColumns(data as DocumentData[])
+    const columns = buildColumns(data as Map)
 
     const table = useReactTable({
         data,
@@ -121,7 +121,7 @@ export const DataTableSelect = <TData,>({data, setSelection, width}: DataTableSe
     const [rowSelection, setRowSelection] = useState({})
     const [sorting, setSorting] = useState<SortingState>([])
 
-    function buildColumns(data:DocumentData[]) {
+    function buildColumns(data:Map) {
         const columns:Array<any> = []
 
         columns.push(
@@ -149,7 +149,7 @@ export const DataTableSelect = <TData,>({data, setSelection, width}: DataTableSe
         return columns
   
     }  
-    const columns = buildColumns(data as DocumentData[])
+    const columns = buildColumns(data as Map)
 
     const table = useReactTable({
         data,
