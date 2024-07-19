@@ -14,7 +14,7 @@ const page = () => {
 
       {started ? 
 
-        <ClientForm/>
+        <ClientForm />
         :
         <Title setStarted={setStarted}/>
         

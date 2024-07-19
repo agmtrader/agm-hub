@@ -37,7 +37,7 @@ import { formatTimestamp } from '@/utils/dates'
 import { addDocument } from '@/utils/api'
 import { ClientDocument, Document } from '@/lib/types'
 
-const DocumentUploader = ({type, document}:{type:string, document?:Document}) => {
+const DocumentUploader = ({type, document, accountNumber}:{type:string, document?:Document, accountNumber?:string}) => {
   
     let formSchema:any;
     let initialFormValues:any;
@@ -48,39 +48,53 @@ const DocumentUploader = ({type, document}:{type:string, document?:Document}) =>
     switch (type) {
       case 'POA':
         if (document) {
+
+          // If reuploading
           formSchema = poa_schema
           initialFormValues = {
             issued_date:'',
-            type:''
           }
+
         } else {
+
+          // New document
           formSchema = new_poa_schema
           initialFormValues = {
-            account_number:'',
             issued_date:'',
-            type:''
           }
+
+          if (!accountNumber) {
+            initialFormValues['account_number'] = ''
+          }
+
         }
         driveId = '1wPsX533MjJLAocS7WKQMTO2uB6Ozi2Dy'
         break;
       case 'POI':
         if (document) {
+
+          // If reuploading
           formSchema = poa_schema
           initialFormValues = {
             issued_date:'',
+            misc:''
           }
+
         } else {
+
+          // New document
           formSchema = new_poa_schema
           initialFormValues = {
-            account_number:'',
             issued_date:'',
+            misc:''
           }
+
+          if (!accountNumber) {
+            initialFormValues['account_number'] = ''
+          }
+          
         }
         driveId = '1wPsX533MjJLAocS7WKQMTO2uB6Ozi2Dy'
-        initialFormValues = {
-          account_number:'',
-          issued_date:'',
-        }
         break;
     }
 
@@ -107,21 +121,23 @@ const DocumentUploader = ({type, document}:{type:string, document?:Document}) =>
         if (document) {
 
           if (document['Type'] == 'POA') {
-            documentInfo['TicketID'] = document['TicketID' as keyof Document]
+
             documentInfo['AccountNumber'] = document['AccountNumber']
+
           }
 
         } else {
 
-          documentInfo['AccountNumber'] = values['account_number']
+          if (accountNumber) {
 
-          //Query account number ticket
-          documentInfo['TicketID'] = 'N/A'
+            documentInfo['AccountNumber'] = accountNumber
+
+          }
         }
 
       }
 
-      await addDocument(documentInfo, `db/document_center/${documentInfo['Type']}`, documentTimestamp)
+      await addDocument(documentInfo, `db/document_center/${documentInfo['Type'].toLowerCase()}`, documentTimestamp)
     }
 
     const uploadFile = async () => {

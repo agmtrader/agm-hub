@@ -33,19 +33,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
-import { addDays, format, subDays } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
-
 import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_primary_schema } from "@/lib/form"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Ticket } from "@/lib/types"
@@ -81,7 +68,9 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
     citizenship: '',
     country_of_birth: '',
 
-    date_of_birth: dateOfBirth,
+    dob_day:'',
+    dob_month:'',
+    dob_year:'',
     marital_status: '',
     number_of_dependents: '',
     country_of_residence: '',
@@ -90,7 +79,9 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
     id_type: '',
     id_country: '',
     id_number: '',
-    id_expiration: idExpirationDate,
+    id_expiration_year:'',
+    id_expiration_month:'',
+    id_expiration_day:'',
 
     employment_status: '',
     employer_name: '',
@@ -109,7 +100,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
     security_q_2: '',
     security_a_2: '',
     security_q_3: '',
-    security_a_3: ''
+    security_a_3: '', 
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -118,6 +109,14 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+
+    const dob_date = values.dob_day + '/' + values.dob_month + '/' + values.dob_year;
+
+    (values as any).date = dob_date;
+
+    delete (values as any).dob_day
+    delete (values as any).dob_month
+    delete (values as any).dob_year
 
     Object.keys(values).forEach(async (key) => {
       console.log(key)
@@ -500,70 +499,48 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
             <p className="text-xl font-bold">Personal Info</p>
 
-            <FormField
-            control={form.control}
-            name="date_of_birth"
-            render={({ field }) => (
-              <FormItem className="flex flex-col w-full justify-center">
-                <FormLabel>Date of birth</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
+            <p className="text-sm text-start">Date of birth</p>
+
+            <div className="flex gap-x-5 w-full h-full">
+              <FormField
+                control={form.control}
+                name="dob_day"
+                render={({ field }) => (
+                    <FormItem>
                     <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full flex gap-x-5 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-
-                        <CalendarIcon className="h-4 w-4 opacity-50" />
-                      </Button>
+                        <Input className="w-16" placeholder="DD" {...field} />
                     </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
-                    <Select
-                      onValueChange={(value) => {
-                        setDateOfBirth(subDays(new Date(), parseInt(value)))
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-
-                      <SelectContent position="popper">
-
-                        <SelectItem value="365">2023</SelectItem>
-                        <SelectItem value="725">2022</SelectItem>
-                        <SelectItem value="7">2021</SelectItem>
-                        <SelectItem value="14">Two weeks ago</SelectItem>
-                        <SelectItem value="365">1 Year Ago</SelectItem>
-
-                      </SelectContent>
-                    </Select>
-
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      date={dateOfBirth}
-                      setDate={setDateOfBirth}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-            />
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                /
+                <FormField
+                control={form.control}
+                name="dob_month"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input className="w-16" placeholder="MM" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                /
+                <FormField
+                control={form.control}
+                name="dob_year"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input placeholder="YYYY" className="w-16"{...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
 
             <FormField
               control={form.control}
@@ -836,71 +813,46 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
               )}
             />
 
-            
-            <FormField
-              control={form.control}
-              name="id_expiration"
-              render={({ field }) => (
-                <FormItem className="flex flex-col w-full justify-center">
-                  <FormLabel>Document expiration date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full flex gap-x-5 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-
-                          <CalendarIcon className="h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
-                      <Select
-                        onValueChange={(value) => {
-                          setIDExpirationDate(subDays(new Date(), parseInt(value)))
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-
-                        <SelectContent position="popper">
-
-                          <SelectItem value="0">Today</SelectItem>
-                          <SelectItem value="1">Yesterday</SelectItem>
-                          <SelectItem value="7">A week ago</SelectItem>
-                          <SelectItem value="14">Two weeks ago</SelectItem>
-                          <SelectItem value="365">1 Year Ago</SelectItem>
-
-                        </SelectContent>
-                      </Select>
-
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        date={idExpirationDate}
-                        setDate={setIDExpirationDate}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex gap-x-5 w-full h-full">
+              <FormField
+                control={form.control}
+                name="id_expiration_day"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input className="w-16" placeholder="DD" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                /
+                <FormField
+                control={form.control}
+                name="id_expiration_month"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input className="w-16" placeholder="MM" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                /
+                <FormField
+                control={form.control}
+                name="id_expiration_year"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input placeholder="YYYY" className="w-16"{...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
 
           </div>
 

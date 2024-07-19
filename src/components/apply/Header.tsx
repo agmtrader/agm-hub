@@ -16,36 +16,21 @@ type Props = {}
 
 const Header = (props: Props) => {
 
-  var scroll = useScrollPositions()
-
   const [expandSidebar, setExpandSidebar] = useState(false)
 
   return (
     <div>
       <AnimatePresence>
-        {scroll > maxScroll ? 
-          <motion.div initial={{y:-100}} animate={{y:0}} exit={{y:-100}} transition={{y: { type: "spring", bounce: 0 }}} className='flex items-center justify-between fixed w-full h-[10vh] px-5 z-10 bg-agm-white'>
-              <Link className='w-full h-full flex items-center' href={'/'}>
-                <Button variant={'ghost'}>
-                  <Image src={'/images/brand/agm-logo.png'} height = {150} width = {120} alt = 'AGM Logo' fill={false}/>
-                </Button>
-              </Link>
-              <Button variant={'ghost'} onClick={() => setExpandSidebar(true)}>
-                <List />
-              </Button>
-          </motion.div>
-          :
           <div className='flex items-center justify-between fixed w-full h-fit py-5 z-10 bg-transparent'>
             <Link className='w-full h-full flex items-center' href={'/'}>
                 <Button variant={'ghost'} className='hover:bg-opacity-0 hover:bg-black'>
-                  <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {150} width = {120}/>
+                  <Image src={'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {150} width = {120}/>
                 </Button>
               </Link>
             <Button variant={'ghost'} className='hover:bg-black hover:bg-opacity-10' onClick={() => setExpandSidebar(true)}>
-              <List className='text-agm-white'/>
+              <List className='text-agm-black'/>
             </Button>
           </div>
-        }
       </AnimatePresence>
       <AnimatePresence>
         {expandSidebar &&

@@ -25,11 +25,11 @@ type Props = {
 
 const Dashboard = ({user}: Props) => {
 
-      // Initialize data variables
+    // Initialize data variables
   const [tickets, setTickets] = useState<DocumentData[] | null>(null)
 
   // Ticket columns - export to dictionary!
-  const columns = ['TicketID', 'Status', 'first_name', 'last_name', 'country']
+  const columns = ['TicketID', 'Status', 'first_name', 'last_name']
 
   // Fetch tickets from database
   useEffect(() => {

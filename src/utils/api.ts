@@ -25,7 +25,7 @@ export async function getDocumentsFromCollection(path: string) {
     return documents
 }
 
-export async function queryDocumentsFromCollection(path: string, key: string, value:string) {
+export async function queryDocumentsFromCollection(path: string, key: string, value:string | null) {
 
     const documents:Array<DocumentData> = []
 

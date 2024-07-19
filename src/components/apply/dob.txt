@@ -41,3 +41,5 @@ message: "You must select an account type.",
 
 //delete (values as any).month
 //delete (values as any).year
+
+console.log(values['date'])

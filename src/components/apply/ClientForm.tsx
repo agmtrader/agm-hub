@@ -29,7 +29,7 @@ const ClientForm = () => {
   // Ticket -> clientId
 
   return (
-    <div className='w-full h-full flex flex-col mt-32 justify-center items-center'>
+    <div className='w-full h-full flex flex-col mt-10 mb-10 justify-center items-start'>
 
       {step === 1 && <GeneralInfo step={step} stepForward={stepForward} setTicket={setTicket}/>}
       

@@ -306,8 +306,16 @@ export const about_you_primary_schema = z.object({
   }),
 
 
-  date_of_birth: z.date({
-    required_error: "You must select a date of birth.",
+  dob_year: z.string().min(2, {
+    message: "You must select an account type.",
+    }),
+    
+  dob_month: z.string().min(2, {
+  message: "You must select an account type.",
+  }),
+
+  dob_day: z.string().min(2, {
+    message: "You must select an account type.",
   }),
 
   marital_status: z.string().min(1, {
@@ -338,10 +346,17 @@ export const about_you_primary_schema = z.object({
     message: 'ID number cannot be empty.'
   }),
 
-  id_expiration: z.date({
-    required_error: "You must select a date of expiration.",
+  id_expiration_year: z.string().min(2, {
+    message: "You must select an account type.",
+    }),
+    
+  id_expiration_month: z.string().min(2, {
+  message: "You must select an account type.",
   }),
 
+  id_expiration_day: z.string().min(2, {
+    message: "You must select an account type.",
+  }),
 
   employment_status: z.string().min(1, {
     message: 'Employment status cannot be empty.'
@@ -612,20 +627,12 @@ export const poa_schema = z.object({
   issued_date: z.string().min(1, {
     message: "You must select at least one investment objectives.",
   }),
-  type: z.string().min(1, {
-    message: "You must select at least one type.",
-  }),
 })
 export const new_poa_schema = z.object({
-  account_number: z.string().min(1, {
-    message: "You must select a liquid net worth.",
-  }),
+  account_number: z.ostring(),
   issued_date: z.string().min(1, {
     message: "You must select at least one investment objectives.",
-  }),
-  type: z.string().min(1, {
-    message: "You must select at least one type.",
-  }),
+  })
 })
 
 

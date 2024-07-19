@@ -16,14 +16,12 @@ type Props = {}
 
 const Header = (props: Props) => {
 
-  var scroll = useScrollPositions()
-
   const [expandSidebar, setExpandSidebar] = useState(false)
 
   return (
     <div>
       <AnimatePresence>
-        <div className='flex items-center justify-between fixed w-full h-fit py-5 z-10 bg-transparent'>
+        <div className='flex items-center justify-between w-full h-fit py-5 z-10 bg-transparent'>
         <Link className='w-full h-full flex items-center' href={'/'}>
             <Button variant={'ghost'} className='hover:bg-opacity-0 hover:bg-black'>
                 <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {150} width = {120}/>
