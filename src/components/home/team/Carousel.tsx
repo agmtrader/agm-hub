@@ -34,16 +34,16 @@ const team = [
 
 export function TeamCarousel() {
   return (
-    <Carousel className="w-full h-full max-w-[80%]">
+    <Carousel className="w-full h-full max-w-[70%]">
       <CarouselContent>
         {team.map((member, index) => (
-          <CarouselItem key={index} className="basis-1/3">
+          <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
             <div className="p-1">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <div className="w-full h-full flex flex-col justify-evenly items-center">
-                    <p className="text-sm font-bold">{member.name}</p>
-                    <p className="text-sm font-light">{member.title}</p>
+                  <div className="w-full h-full flex flex-col justify-center items-center">
+                    <p className="text-2xl">{member.name}</p>
+                    <p className="text-md font-light">{member.title}</p>
                   </div>
                 </CardContent>
               </Card>

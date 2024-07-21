@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col justify-center items-center h-[100%] w-[100%] gap-y-36">
+    <div className="flex flex-col justify-center items-center h-full w-full gap-y-36">
       <Title />
       <Introduction />
       <Services />

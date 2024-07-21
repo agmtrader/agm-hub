@@ -34,18 +34,8 @@ const Header = (props: Props) => {
       </AnimatePresence>
       <AnimatePresence>
         {expandSidebar &&
-          <div>
-            <div className='bg-black w-[100vw] fixed h-[100vh] z-10 bg-opacity-50'></div>
-            <motion.div initial={{x:500}} animate={{x:0}} exit={{x:500}} transition={{duration:0.2  , y: { type: "spring", bounce: 0 }}} className='z-10 flex flex-col gap-y-5 items-end justify-start fixed right-0 w-[15vw] p-10 h-full bg-agm-white'>
-              <div className='w-full h-fit flex justify-end items-start'>
-                <Button variant={'ghost'} onClick={() => setExpandSidebar(false)}>
-                  X
-                </Button>
-              </div>
-              <Sidebar setExpandSidebar={setExpandSidebar}/>
-            </motion.div>
-          </div>
-          }
+          <Sidebar setExpandSidebar={setExpandSidebar}/>
+        }
       </AnimatePresence>
     </div>
   )
