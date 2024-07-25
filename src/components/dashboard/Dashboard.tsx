@@ -46,12 +46,11 @@ const Dashboard = ({user}: Props) => {
 
   return (
 
-    <div className='flex flex-row w-full gap-x-5 mx-5'> {/*Sidebar separator*/}
+    <div className='flex flex-row justify-center items-start w-full gap-x-5'> {/*Sidebar separator*/}
 
         <Sidebar/>
 
-        <div className='flex flex-col gap-y-10 justify-center items-center w-full h-full'>  {/*Create dashboard vertical sections*/}
-
+        <div className='flex flex-col gap-y-10 justify-center items-center w-[80%] h-full'>  {/*Create dashboard vertical sections*/}
         <div className='flex w-full gap-x-10 h-full flex-row'>
 
             <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
@@ -142,6 +141,7 @@ const Dashboard = ({user}: Props) => {
         <iframe title="Realtime Database Google" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=f1d81e10-b10b-4e48-92d7-f8e49e6800b1&autoAuth=true&ctid=34ef35c3-128b-4180-9d21-e764b0c7596d" allowFullScreen={true}></iframe>
 
         </div>
+
     </div>
   )
 }

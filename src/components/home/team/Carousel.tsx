@@ -12,11 +12,11 @@ import {
 const team = [
   {
     name: 'Hernan Castro',
-    title: 'CEO'
+    title: 'Chief Executive Officer'
   },
   {
     name: 'Ramon Castro',
-    title: 'COO'
+    title: 'Chief Operating Officer'
   },
   {
     name: 'Cristian Ramirez',
@@ -24,7 +24,7 @@ const team = [
   },
   {
     name: 'Javier Cordero',
-    title: ''
+    title: 'Trade Support Specialist'
   },
   {
     name: 'Andres Aguilar',

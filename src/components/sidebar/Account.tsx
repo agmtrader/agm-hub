@@ -27,14 +27,14 @@ const Account = (props: Props) => {
       {session?.user ?
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant={'ghost'} className='flex flex-col gap-y-5 w-full h-full'>
+            <Button variant='ghost' className='flex flex-col gap-y-5 w-full h-full'>
               <div className='flex w-full h-full items-center gap-x-5'>
                 <img className='rounded-full w-10 h-10' src={session?.user.image!} referrerPolicy="no-referrer" alt={'No image'}/>
                 <p className='text-sm text-black'>{session?.user.name}</p>
               </div>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-fit h-full flex justify-center items-center">
+          <PopoverContent className="w-full h-full flex justify-center items-center">
             {session?.user &&
               <div className='w-fit h-full flex justify-center items-center'>
                   <Button onClick={() => signOut()} className="flex">

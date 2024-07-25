@@ -10,7 +10,7 @@ const page = () => {
   return (
     <div className='w-full h-full flex'>
 
-      <div className="flex flex-row w-full justify-center items-start h-full gap-y-10"> {/*BG*/}
+      <div className="flex flex-row w-full px-10 justify-center items-start h-full gap-y-10"> {/*BG*/}
         
         {session?.user ?
         
