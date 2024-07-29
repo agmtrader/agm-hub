@@ -16,6 +16,20 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
 
 import { risk_assesment_schema } from "@/lib/form"
+import { addDocument } from "@/utils/api"
+import { Input } from "@/components/ui/input"
+import { Map } from "@/lib/types"
+import { formatTimestamp } from "@/utils/dates"
+
+const asset_allocation = [
+  {
+    name: 'conservative_a',
+    bonds_aaa_a: 0.3,
+    bonds_bbb: 0.7,
+    bonds_bb: 0,
+    etfs: 0
+  }
+]
 
 const weights = [
   {
@@ -51,20 +65,48 @@ const RiskForm = () => {
     resolver: zodResolver(risk_assesment_schema),
   })
 
-  const [score, setScore] = useState<number | null>(null)
+  async function onSubmit(values: z.infer<typeof risk_assesment_schema>) {
 
-  function onSubmit(data: z.infer<typeof risk_assesment_schema>) {
+
+    const timestamp = new Date()
+    const riskProfileID = formatTimestamp(timestamp)
+
     let sum = 0
-    Object.entries(data).forEach((element) => {
-      sum += weights.filter(el => el['name'] == element[0])[0]['weight'] * Number(element[1])
+    Object.entries(values).forEach((element) => {
+      if (element[0] !== 'account_number') {
+        sum += weights.filter(el => el['name'] == element[0])[0]['weight'] * Number(element[1])
+      }
     })
-    setScore(sum)
+
+    const risk_profile = {
+      'AccountNumber':values.account_number,
+      'Score':sum,
+      'RiskProfileID':riskProfileID,
+    }
+
+    await addDocument(risk_profile, 'db/clients/risk_profiles', riskProfileID)
+
   }
 
   return (
+    <div className="w-full h-full flex">
 
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+
+      <FormField
+            control={form.control}
+            name="account_number"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Account number</FormLabel>
+              <FormControl>
+                  <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+              </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
@@ -338,8 +380,8 @@ const RiskForm = () => {
         
         <Button type="submit">Submit</Button>
       </form>
-      {score && score}
     </Form>
+    </div>
     
   )
 }

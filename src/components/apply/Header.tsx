@@ -9,26 +9,30 @@ import useScrollPositions from '@/hooks/useScrollPositions'
 import {motion, AnimatePresence} from 'framer-motion'
 import { List } from 'react-bootstrap-icons'
 import Sidebar from '../sidebar/Sidebar'
+import { cn } from '@/lib/utils'
 
 const maxScroll = 100
 
-type Props = {}
+type Props = {
+  dark: boolean
+  bg?: boolean
+}
 
-const Header = (props: Props) => {
+const Header = ({dark, bg}: Props) => {
 
   const [expandSidebar, setExpandSidebar] = useState(false)
 
   return (
-    <div>
+    <div className='w-full h-full flex'>
       <AnimatePresence>
-          <div className='flex items-center justify-between fixed w-full h-fit py-5 z-10 bg-transparent'>
+          <div className={cn('flex items-center justify-between fixed w-full h-fit py-5 z-10 bg-transparent', bg && 'bg-agm-white')}>
             <Link className='w-full h-full flex items-center' href={'/'}>
                 <Button variant={'ghost'} className='hover:bg-opacity-0 hover:bg-black'>
-                  <Image src={'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {150} width = {120}/>
+                  <Image src={dark ? '/images/brand/agm-logo-white.png':'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {150} width = {120}/>
                 </Button>
               </Link>
             <Button variant={'ghost'} className='hover:bg-black hover:bg-opacity-10' onClick={() => setExpandSidebar(true)}>
-              <List className='text-agm-black'/>
+              <List className={cn('text-agm-black', dark && 'text-agm-white')}/>
             </Button>
           </div>
       </AnimatePresence>

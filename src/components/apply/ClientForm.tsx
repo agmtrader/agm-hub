@@ -1,12 +1,10 @@
 'use client'
 
 import React, { useState } from 'react';
-import GeneralInfo from './components/GeneralInfo';
-import AboutYouPrimary from './components/AboutYouPrimary';
+import GeneralInfo from './account/components/GeneralInfo';
+import AboutYouPrimary from './account/components/AboutYouPrimary';
+import Regulatory from './account/components/Regulatory';
 import { Ticket } from '@/lib/types';
-import Regulatory from '@/components/apply/components/Regulatory';
-import AboutYouSecondary from './components/AboutYouSecondary';
-
 
 const ClientForm = () => {
 

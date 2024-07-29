@@ -672,6 +672,9 @@ export const account_access_schema = z.object({
 
 
 export const risk_assesment_schema = z.object({
+  account_number: z.string().min(1, {
+    message: 'Account number cannot be empty.'
+  }),
   type: z.enum(["1", "2.5", "4"], {
     required_error: "You must select a investor type.",
   }),
@@ -691,5 +694,6 @@ export const risk_assesment_schema = z.object({
     required_error: "You must select a term.",
   }),
 })
+
 
 // Types

@@ -4,12 +4,8 @@ import "../globals.css"
 import { Inter } from 'next/font/google'
 import { cn } from "@/lib/utils";
 
-import Header from "@/components/apply/Header";
-import Footer from "@/components/Footer";
-
-
-import { NextAuthProvider } from "../NextAuthProvider";
-import FirebaseAuthProvider from "../FirebaseAuthProvider";
+import { NextAuthProvider } from "@/app/NextAuthProvider";
+import FirebaseAuthProvider from "@/app/FirebaseAuthProvider";
 
 export const metadata: Metadata = {
   title: "AGM Technology",
@@ -32,7 +28,6 @@ export default function RootLayout({
           <NextAuthProvider>
             <FirebaseAuthProvider>
             <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
-              <Header />
               {children}
             </div>
             </FirebaseAuthProvider>
