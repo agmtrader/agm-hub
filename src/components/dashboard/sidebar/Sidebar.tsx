@@ -49,8 +49,8 @@ import Account from "./Account"
 const Sidebar = () => {
 
   return (
-      <div className="w-full">
-          <Card className="border-0 bg-agm-dark-blue w-full">
+      <div className="w-fit">
+          <Card className="border-0 bg-agm-dark-blue w-fit">
             <CardHeader>
               <CardTitle>
                 <p className='text-3xl text-white font-bold'>AGM Dashboard</p>

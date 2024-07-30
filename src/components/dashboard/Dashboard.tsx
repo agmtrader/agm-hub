@@ -50,7 +50,7 @@ const Dashboard = ({user}: Props) => {
 
         <Sidebar/>
 
-        <div className='flex flex-col gap-y-10 justify-center items-center w-[80%] h-full'>  {/*Create dashboard vertical sections*/}
+        <div className='flex flex-col gap-y-10 justify-center items-center w-[100%] h-full'>  {/*Create dashboard vertical sections*/}
         <div className='flex w-full gap-x-10 h-full flex-row'>
 
             <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">

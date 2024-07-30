@@ -29,7 +29,7 @@ export default function RootLayout({
         <div className="h-full w-full  flex flex-row">
           <NextAuthProvider>
             <FirebaseAuthProvider>
-            <div className="flex flex-col bg-agm-blue scrollbar-hide h-full w-full gap-y-10 scroll-smooth">
+            <div className="flex flex-col bg-agm-blue scrollbar-hide h-full min-h-[100vh] w-full gap-y-10 scroll-smooth">
               <Header/>
               {children}
               <Footer />

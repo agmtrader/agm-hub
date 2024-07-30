@@ -3,6 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import { Doughnut } from 'react-chartjs-2'
+
+import 'chart.js/auto'
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -13,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { getDocumentsFromCollection, queryDocumentsFromCollection } from "@/utils/api"
-import { Input } from "@/components/ui/input"
+
 import { useEffect, useState } from "react"
 import { DataTable } from "@/components/dashboard/components/DataTable"
 
@@ -115,22 +118,6 @@ const page = () => {
     resolver: zodResolver(schema),
   })
 
-  useEffect(() => {
-
-    async function fetchData () {
-
-        let data = await getDocumentsFromCollection('db/clients/accounts/')
-        let accountNumbers:any[] = []
-
-        data.forEach((element:any) => {
-          setAccountNumbers([...accountNumbers, {label:element.AccountNumber, value:element.AccountNumber}])
-        })
-        
-    }
-    fetchData()
-
-  }, [])
-
   const [portfolio, setPortfolio] = useState<any[] | null>(null)
   const [accountNumbers, setAccountNumbers] = useState<any[] | null>(null)
 
@@ -176,11 +163,79 @@ const page = () => {
 
   }
 
+  function getAssetAllocation() {
+    let labels:any[] = []
+    let values:any[] = []
+    
+    if (portfolio) {
+      labels = Object.keys(portfolio[0]).filter((element) => element !== 'name' && element !== 'average_yield')
+      labels.forEach((label) => {
+        values.push(portfolio[0][label])
+      })
+    }
+    return {labels, values}
+  }
+
+  // Fetch all accounts with a risk profile
+  useEffect(() => {
+
+    async function fetchData () {
+
+        let data = await getDocumentsFromCollection('db/clients/accounts/')
+        let accountNumbers:any[] = []
+
+        data.forEach((element:any) => {
+          setAccountNumbers([...accountNumbers, {label:element.AccountNumber, value:element.AccountNumber}])
+        })
+        
+    }
+
+    fetchData()
+
+  }, [])
+  
+  const {labels, values} = getAssetAllocation()
+
+  const data = {
+    backgroundColor: [
+      "rgb(2, 88, 255)",
+      "rgb(249, 151, 0)",
+      "rgb(255, 199, 0)",
+      "rgb(32, 214, 152)",
+    ],
+    labels: labels,
+    datasets: [
+      {
+        label: "Portfolio",
+        data: values,
+        backgroundColor: [
+          "rgb(2, 88, 255)",
+          "rgb(249, 151, 0)",
+          "rgb(255, 199, 0)",
+          "rgb(32, 214, 152)",
+        ],
+        hoverOffset: 4,
+      },
+    ],
+  }
+  
+  const options = {
+    elements: {
+      arc: {
+        weight: 0.5,
+        borderWidth: 1,
+      },
+    },
+  }
+
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full justify-start items-center flex gap-y-10 flex-col">
+
+      <h1 className="text-7xl font-bold">Risk Assesment Profiles</h1>
+
       {accountNumbers &&
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6 flex gap-x-5">
 
           <FormField
               control={form.control}
@@ -242,8 +297,11 @@ const page = () => {
           </form>
         </Form>
       }
-
-      {portfolio && <DataTable data={portfolio}/>}
+      {portfolio &&
+        <div className="w-[30%] flex">
+          <Doughnut data={data} options={options} />
+        </div>
+      }
 
     </div>
     
