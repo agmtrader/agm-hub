@@ -313,7 +313,7 @@ export const about_you_primary_schema = z.object({
     message: "First name cannot be empty.",
   }),
 
-  middle_name: z.string().optional().transform(e => e === "" ? '' : e),
+  middle_name: z.string().optional(),
 
   last_name: z.string().min(1, {
     message: "Last name cannot be empty.",
@@ -356,16 +356,18 @@ export const about_you_primary_schema = z.object({
   }),
 
 
-  dob_year: z.string().min(1, {
-    message: "You must select an account type.",
-    }),
+  dob_year: z.string().min(4, {
+    message: "Year must be 4 digits.",
+  }).max(4, {
+    message: "Year must be 4 digits."
+  }),
     
-  dob_month: z.string().min(1, {
-  message: "You must select an account type.",
+  dob_month: z.string().min(2, {
+    message: "Month must be 2 digits.",
   }),
 
-  dob_day: z.string().min(1, {
-    message: "You must select an account type.",
+  dob_day: z.string().min(2, {
+    message: "Day must be 2 digits.",
   }),
 
   marital_status: z.string().min(1, {
@@ -396,12 +398,14 @@ export const about_you_primary_schema = z.object({
     message: 'ID number cannot be empty.'
   }),
 
-  id_expiration_year: z.string().min(1, {
-    message: "You must select an account type.",
-    }),
+  id_expiration_year: z.string().min(4, {
+    message: "Year must be 4 digits.",
+  }).max(4, {
+    message: "Year must be 4 digits."
+  }),
     
-  id_expiration_month: z.string().min(1, {
-  message: "You must select an account type.",
+  id_expiration_month: z.string().min(2, {
+    message: "Month must be 2 digits.",
   }),
 
   employment_status: z.string().min(1, {
@@ -410,35 +414,35 @@ export const about_you_primary_schema = z.object({
 
   employer_name: z.string().min(1, {
     message: 'Employer name cannot be empty.'
-  }).optional(),
+  }),
 
   employer_address: z.string().min(1, {
     message: 'Employer address cannot be empty.'
-  }).optional(),
+  }),
 
   employer_city: z.string().min(1, {
     message: 'Employer city cannot be empty.'
-  }).optional(),
+  }),
 
   employer_state: z.string().min(1, {
     message: 'Employer state cannot be empty.'
-  }).optional(),
+  }),
 
   employer_country: z.string().min(1, {
     message: 'Employer name cannot be empty.'
-  }).optional(),
+  }),
 
   employer_zip: z.string().min(1, {
     message: 'Employer zip cannot be empty.'
-  }).optional(),
+  }),
 
   nature_of_business: z.string().min(1, {
     message: 'Nature of business cannot be empty.'
-  }).optional(),
+  }),
 
   occupation: z.string().min(1, {
     message: 'Occupation cannot be empty.'
-  }).optional(),
+  }),
 
 
   source_of_wealth: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -528,16 +532,18 @@ export const about_you_secondary_schema = z.object({
   }),
 
 
-  dob_year: z.string().min(2, {
-    message: "You must select an account type.",
-    }),
+  dob_year: z.string().min(4, {
+    message: "Year must be 4 digits.",
+  }).max(4, {
+    message: "Year must be 4 digits."
+  }),
     
   dob_month: z.string().min(2, {
-  message: "You must select an account type.",
+    message: "Month must be 2 digits.",
   }),
 
   dob_day: z.string().min(2, {
-    message: "You must select an account type.",
+    message: "Day must be 2 digits.",
   }),
 
   marital_status: z.string().min(1, {
@@ -568,12 +574,14 @@ export const about_you_secondary_schema = z.object({
     message: 'ID number cannot be empty.'
   }),
 
-  id_expiration_year: z.string().min(2, {
-    message: "You must select an account type.",
-    }),
+  id_expiration_year: z.string().min(4, {
+    message: "Year must be 4 digits.",
+  }).max(4, {
+    message: "Year must be 4 digits."
+  }),
     
   id_expiration_month: z.string().min(2, {
-  message: "You must select an account type.",
+    message: "Month must be 2 digits.",
   }),
 
   employment_status: z.string().min(1, {
@@ -582,31 +590,31 @@ export const about_you_secondary_schema = z.object({
 
   employer_name: z.string().min(1, {
     message: 'Employer name cannot be empty.'
-  }).optional(),
+  }),
 
   employer_address: z.string().min(1, {
     message: 'Employer address cannot be empty.'
-  }).optional(),
+  }),
 
   employer_city: z.string().min(1, {
     message: 'Employer city cannot be empty.'
-  }).optional(),
+  }),
 
   employer_state: z.string().min(1, {
     message: 'Employer state cannot be empty.'
-  }).optional(),
+  }),
 
   employer_zip: z.string().min(1, {
     message: 'Employer zip cannot be empty.'
-  }).optional(),
+  }),
 
   nature_of_business: z.string().min(1, {
     message: 'Nature of business cannot be empty.'
-  }).optional(),
+  }),
 
   occupation: z.string().min(1, {
     message: 'Occupation cannot be empty.'
-  }).optional(),
+  }),
 
 
   source_of_wealth: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -630,6 +638,7 @@ export const about_you_secondary_schema = z.object({
   }),
 
 })
+
 export const regulatory_schema = z.object({
   annual_net_income: z.string().min(1, {
     message: "You must select a annual net income.",
@@ -640,12 +649,14 @@ export const regulatory_schema = z.object({
   liquid_net_worth: z.string().min(1, {
     message: "You must select a liquid net worth.",
   }),
+
   investment_objectives: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You must select at least one investment objective.",
   }).default([]),
-  products: z.string().min(1, {
+
+  products: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You must select at least one product.",
-  })
+  }).default([]),
 })
 
 // Document Center

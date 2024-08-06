@@ -2,17 +2,16 @@
 
 import React, { useState } from 'react';
 import GeneralInfo from './account/components/GeneralInfo';
-import AboutYouPrimary from './account/components/AboutYouPrimary';
+import AboutYouPrimary from './account/components/AboutYou';
 import Regulatory from './account/components/Regulatory';
 import { Ticket } from '@/lib/types';
-import AboutYouSecondary from './account/components/AboutYouSecondary';
+import AboutYou from './account/components/AboutYou';
 
 const ClientForm = () => {
 
   const [step, setStep] = useState<number>(1)
 
   const [ticket, setTicket] = useState<Ticket | null>(null)
-  console.log(ticket)
 
   function stepForward() {
       setStep(step + 1)
@@ -30,7 +29,7 @@ const ClientForm = () => {
       {step === 1 && <GeneralInfo step={step} stepForward={stepForward} setTicket={setTicket}/>}
       
         {(ticket && ticket['ApplicationInfo']['account_type'] === 'individual') ? (
-            (step === 2) ? <AboutYouPrimary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
+            (step === 2) ? <AboutYou primary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
             :
               (step === 3) ? <Regulatory ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackwards={stepBackward}/>
               : 
@@ -39,9 +38,9 @@ const ClientForm = () => {
           :
           (ticket && ticket['ApplicationInfo']['account_type'] === 'joint') && (
 
-            (step === 2) ? <AboutYouPrimary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
+            (step === 2) ? <AboutYou primary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
             :
-              (step === 3) ? <AboutYouSecondary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
+              (step === 3) ? <AboutYou primary={false} ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
               : 
                 (step == 4) ? <Regulatory ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackwards={stepBackward}/>
                 :

@@ -107,8 +107,8 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                             )}
                           >
                           {field.value
-                            ? salutations.find(
-                                (salutation) => salutation.value === field.value
+                            ? worths.find(
+                                (worths) => worths.value === field.value
                               )?.label
                             : "Select an income"}
                         </Button>
@@ -123,15 +123,15 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                           />
                           <CommandEmpty>No category found.</CommandEmpty>
                           <CommandGroup>
-                            {salutations.map((salutation) => (
+                            {worths.map((worth) => (
                               <CommandItem
-                                value={salutation.label}
-                                key={salutation.value}
+                                value={worth.label}
+                                key={worth.value}
                                 onSelect={() => {
-                                  form.setValue("annual_net_income", salutation.value)
+                                  form.setValue("annual_net_income", worth.value)
                                 }}
                               >
-                                {salutation.label}
+                                {worth.label}
                               </CommandItem>
                             ))}
 
@@ -164,7 +164,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                           >
                           {field.value
                             ? worths.find(
-                                (worth) => worth.value === field.value
+                                (worths) => worths.value === field.value
                               )?.label
                             : "Select a worth"}
                         </Button>
@@ -177,17 +177,17 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                             placeholder="Search..."
                             className="h-9"
                           />
-                          <CommandEmpty>No worth found.</CommandEmpty>
+                          <CommandEmpty>No category found.</CommandEmpty>
                           <CommandGroup>
-                            {salutations.map((salutation) => (
+                            {worths.map((worth) => (
                               <CommandItem
-                                value={salutation.label}
-                                key={salutation.value}
+                                value={worth.label}
+                                key={worth.value}
                                 onSelect={() => {
-                                  form.setValue("net_worth", salutation.value)
+                                  form.setValue("net_worth", worth.value)
                                 }}
                               >
-                                {salutation.label}
+                                {worth.label}
                               </CommandItem>
                             ))}
 
@@ -199,14 +199,14 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                   <FormMessage />
                 </FormItem>
               )}
-            />   
+            />
 
             <FormField
               control={form.control}
               name="liquid_net_worth"
               render={({ field }) => (
                 <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Liquid net worth</FormLabel>
+                  <FormLabel>Annual net income</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -220,7 +220,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                           >
                           {field.value
                             ? worths.find(
-                                (worth) => worth.value === field.value
+                                (worths) => worths.value === field.value
                               )?.label
                             : "Select a worth"}
                         </Button>
@@ -233,17 +233,17 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                             placeholder="Search..."
                             className="h-9"
                           />
-                          <CommandEmpty>No worth found.</CommandEmpty>
+                          <CommandEmpty>No category found.</CommandEmpty>
                           <CommandGroup>
-                            {salutations.map((salutation) => (
+                            {worths.map((worth) => (
                               <CommandItem
-                                value={salutation.label}
-                                key={salutation.value}
+                                value={worth.label}
+                                key={worth.value}
                                 onSelect={() => {
-                                  form.setValue("liquid_net_worth", salutation.value)
+                                  form.setValue("liquid_net_worth", worth.value)
                                 }}
                               >
-                                {salutation.label}
+                                {worth.label}
                               </CommandItem>
                             ))}
 
@@ -255,7 +255,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                   <FormMessage />
                 </FormItem>
               )}
-            />   
+            /> 
 
             <FormField
               control={form.control}
@@ -269,7 +269,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                     <FormField
                       key={item.id}
                       control={form.control}
-                      name="source_of_wealth"
+                      name="investment_objectives"
                       render={({ field }) => {
                         return (
                           <FormItem
