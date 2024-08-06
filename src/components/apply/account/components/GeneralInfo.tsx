@@ -37,7 +37,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { countries, account_types, general_info_schema } from "@/lib/form"
+import { countries, account_types, general_info_schema, getDefaults } from "@/lib/form"
 import { useSearchParams } from "next/navigation"
 import { PersonLinesFill } from "react-bootstrap-icons"
 
@@ -53,17 +53,15 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
 
   const searchParams = useSearchParams()
 
-  let initialFormValues = {
-    email: '',
-  
-    country: '',
-  
-    account_type: '',
-  }
+  let formSchema:any;
+  let initialFormValues:any;
+
+  formSchema = general_info_schema
+  initialFormValues = getDefaults(formSchema)
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    values: initialFormValues,
+      resolver: zodResolver(formSchema),
+      values: initialFormValues,
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {

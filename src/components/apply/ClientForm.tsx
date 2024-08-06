@@ -5,6 +5,7 @@ import GeneralInfo from './account/components/GeneralInfo';
 import AboutYouPrimary from './account/components/AboutYouPrimary';
 import Regulatory from './account/components/Regulatory';
 import { Ticket } from '@/lib/types';
+import AboutYouSecondary from './account/components/AboutYouSecondary';
 
 const ClientForm = () => {
 
@@ -23,20 +24,28 @@ const ClientForm = () => {
     }
   }
 
-  // Add splash screen to choose tickets associated with accounts
-  // Ticket -> clientId
-
   return (
     <div className='w-full h-full flex flex-col mt-10 mb-10 justify-center items-start'>
 
       {step === 1 && <GeneralInfo step={step} stepForward={stepForward} setTicket={setTicket}/>}
       
-        {(ticket && ticket['ApplicationInfo']['account_type'] === 'individual') && (
+        {(ticket && ticket['ApplicationInfo']['account_type'] === 'individual') ? (
             (step === 2) ? <AboutYouPrimary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
             :
               (step === 3) ? <Regulatory ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackwards={stepBackward}/>
               : 
                 (step == 4) && 'Done!'
+            )
+          :
+          (ticket && ticket['ApplicationInfo']['account_type'] === 'joint') && (
+
+            (step === 2) ? <AboutYouPrimary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
+            :
+              (step === 3) ? <AboutYouSecondary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
+              : 
+                (step == 4) ? <Regulatory ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackwards={stepBackward}/>
+                :
+                (step == 5) && 'Done!'
             )
         }
 

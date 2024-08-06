@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
+import { Checkbox } from "@/components/ui/checkbox"
+
 import {
   Form,
   FormControl,
@@ -33,7 +35,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { regulatory_schema, salutations } from "@/lib/form"
+import { getDefaults, investment_objectives, products, regulatory_schema, salutations, worths } from "@/lib/form"
 import { Ticket } from "@/lib/types"
 import { updateFieldInDocument } from "@/utils/api"
 
@@ -48,18 +50,15 @@ interface Props {
 
 const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
 
-  const initialFormValues = {
-    annual_net_income: '',
-    net_worth: '',
-    liquid_net_worth: '',
-    investment_objectives: '',
-    trading_experience: '',
-    products: '',
-  }
+  let formSchema:any;
+  let initialFormValues:any;
+
+  formSchema = regulatory_schema
+  initialFormValues = getDefaults(formSchema)
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    values: initialFormValues,
+      resolver: zodResolver(formSchema),
+      values: initialFormValues,
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -75,8 +74,6 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
     stepForward()
 
   }
-
-  console.log(form.formState.errors)
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
@@ -113,7 +110,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                             ? salutations.find(
                                 (salutation) => salutation.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select an income"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -150,118 +147,6 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
 
             <FormField
               control={form.control}
-              name="investment_objectives"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Investment Objectives</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full flex text-sm",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                          {field.value
-                            ? salutations.find(
-                                (salutation) => salutation.value === field.value
-                              )?.label
-                            : "Select"}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandInput
-                            placeholder="Search..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No category found.</CommandEmpty>
-                          <CommandGroup>
-                            {salutations.map((salutation) => (
-                              <CommandItem
-                                value={salutation.label}
-                                key={salutation.value}
-                                onSelect={() => {
-                                  form.setValue("investment_objectives", salutation.value)
-                                }}
-                              >
-                                {salutation.label}
-                              </CommandItem>
-                            ))}
-
-                          </CommandGroup>
-                          </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="products"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Products</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full flex text-sm",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                          {field.value
-                            ? salutations.find(
-                                (salutation) => salutation.value === field.value
-                              )?.label
-                            : "Select"}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandInput
-                            placeholder="Search..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No category found.</CommandEmpty>
-                          <CommandGroup>
-                            {salutations.map((salutation) => (
-                              <CommandItem
-                                value={salutation.label}
-                                key={salutation.value}
-                                onSelect={() => {
-                                  form.setValue("products", salutation.value)
-                                }}
-                              >
-                                {salutation.label}
-                              </CommandItem>
-                            ))}
-
-                          </CommandGroup>
-                          </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="net_worth"
               render={({ field }) => (
                 <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
@@ -278,10 +163,10 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                             )}
                           >
                           {field.value
-                            ? salutations.find(
-                                (salutation) => salutation.value === field.value
+                            ? worths.find(
+                                (worth) => worth.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a worth"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -292,7 +177,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                             placeholder="Search..."
                             className="h-9"
                           />
-                          <CommandEmpty>No category found.</CommandEmpty>
+                          <CommandEmpty>No worth found.</CommandEmpty>
                           <CommandGroup>
                             {salutations.map((salutation) => (
                               <CommandItem
@@ -334,10 +219,10 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                             )}
                           >
                           {field.value
-                            ? salutations.find(
-                                (salutation) => salutation.value === field.value
+                            ? worths.find(
+                                (worth) => worth.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a worth"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -348,7 +233,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                             placeholder="Search..."
                             className="h-9"
                           />
-                          <CommandEmpty>No category found.</CommandEmpty>
+                          <CommandEmpty>No worth found.</CommandEmpty>
                           <CommandGroup>
                             {salutations.map((salutation) => (
                               <CommandItem
@@ -370,59 +255,95 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                   <FormMessage />
                 </FormItem>
               )}
+            />   
+
+            <FormField
+              control={form.control}
+              name="investment_objectives"
+              render={() => (
+                <FormItem className="w-full flex flex-col justify-center text-center gap-x-5 font-normal">
+                  <div className="w-full mb-4 flex flex-col justify-center items-center text-center">
+                    <FormLabel>Investment Objectives</FormLabel>
+                  </div>
+                  {investment_objectives.map((item) => (
+                    <FormField
+                      key={item.id}
+                      control={form.control}
+                      name="source_of_wealth"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={item.id}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(item.id)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, item.id])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value:any) => value !== item.id
+                                        )
+                                      )
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal w-fit">
+                              {item.label}
+                            </FormLabel>
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  ))}
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             <FormField
               control={form.control}
-              name="trading_experience"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Trading Experience</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full flex text-sm",
-                              !field.value && "text-muted-foreground"
-                            )}
+              name="products"
+              render={() => (
+                <FormItem className="w-full flex flex-col justify-center text-center gap-x-5 font-normal">
+                  <div className="w-full mb-4 flex flex-col justify-center items-center text-center">
+                    <FormLabel>Products to trade</FormLabel>
+                  </div>
+                  {products.map((item) => (
+                    <FormField
+                      key={item.id}
+                      control={form.control}
+                      name="products"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={item.id}
+                            className="flex flex-row items-start space-x-3 space-y-0"
                           >
-                          {field.value
-                            ? salutations.find(
-                                (salutation) => salutation.value === field.value
-                              )?.label
-                            : "Select"}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandInput
-                            placeholder="Search..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No category found.</CommandEmpty>
-                          <CommandGroup>
-                            {salutations.map((salutation) => (
-                              <CommandItem
-                                value={salutation.label}
-                                key={salutation.value}
-                                onSelect={() => {
-                                  form.setValue("trading_experience", salutation.value)
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(item.id)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, item.id])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value:any) => value !== item.id
+                                        )
+                                      )
                                 }}
-                              >
-                                {salutation.label}
-                              </CommandItem>
-                            ))}
-
-                          </CommandGroup>
-                          </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal w-fit">
+                              {item.label}
+                            </FormLabel>
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  ))}
                   <FormMessage />
                 </FormItem>
               )}

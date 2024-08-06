@@ -1,5 +1,5 @@
 "use client"
-import React, {SetStateAction, useState} from "react"
+import React, { useState } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -33,93 +33,53 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
-import { addDays, format, subDays } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
-
-import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_secondary_schema } from "@/lib/form"
+import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_primary_schema, about_you_secondary_schema, getDefaults } from "@/lib/form"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Ticket } from "@/lib/types"
+import { updateFieldInDocument } from "@/utils/api"
 
 const formSchema = about_you_secondary_schema
 
 interface Props {
   stepForward:() => void,
   stepBackward:() => void,
+  ticket: Ticket,
   setTicket:React.Dispatch<React.SetStateAction<Ticket | null>>
 }
 
-const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
+const AboutYouSecondary = ({stepBackward, stepForward, ticket, setTicket}:Props) => {
 
-  const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date())
-  const [idExpirationDate, setIDExpirationDate] = useState<Date>(new Date())
+  let formSchema:any;
+  let initialFormValues:any;
 
-  let initialFormValues = {
-    salutation: '',
-    first_name: '',
-    middle_name: '',
-    last_name: '',
-
-    address: '',
-    city: '',
-    state: '',
-    zip: '',
-    phone_type: '',
-    phone_country: '',
-    phone_number: '',
-    citizenship: '',
-    country_of_birth: '',
-
-    date_of_birth: dateOfBirth,
-    marital_status: '',
-    number_of_dependents: '',
-    country_of_residence: '',
-    tax_id: '',
-
-    id_type: '',
-    id_country: '',
-    id_number: '',
-    id_expiration: idExpirationDate,
-
-    employment_status: '',
-    employer_name: '',
-    employer_address: '',
-    employer_city: '',
-    employer_state: '',
-    employer_zip: '',
-    nature_of_business: '',
-    occupation: '',
-    
-    source_of_wealth: [],
-    currency: '',
-
-    security_q_1:  '',
-    security_a_1: '',
-    security_q_2: '',
-    security_a_2: '',
-    security_q_3: '',
-    security_a_3: ''
-  }
+  formSchema = about_you_secondary_schema
+  initialFormValues = getDefaults(formSchema)
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    values: initialFormValues,
+      resolver: zodResolver(formSchema),
+      values: initialFormValues,
   })
 
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const ticket = {'ApplicationInfo':values}
-    console.log(ticket)
-    setTicket(null)
+
+    const dob_date = values.dob_day + '/' + values.dob_month + '/' + values.dob_year;
+
+    (values as any).date = dob_date;
+
+    delete (values as any).dob_day
+    delete (values as any).dob_month
+    delete (values as any).dob_year
+
+    Object.keys(values).forEach(async (key) => {
+      console.log(key)
+      await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.${key}`, values[key as keyof object])
+    })
+
+    //setTicket(ticket)
+
     stepForward()
+
   }
 
   return (
@@ -168,7 +128,7 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
                             placeholder="Search..."
                             className="h-9"
                           />
-                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandEmpty>No salutatation found.</CommandEmpty>
                           <CommandGroup>
                             {salutations.map((salutation) => (
                               <CommandItem
@@ -492,70 +452,48 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
             <p className="text-xl font-bold">Personal Info</p>
 
-            <FormField
-            control={form.control}
-            name="date_of_birth"
-            render={({ field }) => (
-              <FormItem className="flex flex-col w-full justify-center">
-                <FormLabel>Date of birth</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
+            <p className="text-sm text-start">Date of birth</p>
+
+            <div className="flex gap-x-5 w-full h-full">
+              <FormField
+                control={form.control}
+                name="dob_day"
+                render={({ field }) => (
+                    <FormItem>
                     <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full flex gap-x-5 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-
-                        <CalendarIcon className="h-4 w-4 opacity-50" />
-                      </Button>
+                        <Input className="w-16" placeholder="DD" {...field} />
                     </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
-                    <Select
-                      onValueChange={(value) => {
-                        setDateOfBirth(subDays(new Date(), parseInt(value)))
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-
-                      <SelectContent position="popper">
-
-                        <SelectItem value="365">2023</SelectItem>
-                        <SelectItem value="725">2022</SelectItem>
-                        <SelectItem value="7">2021</SelectItem>
-                        <SelectItem value="14">Two weeks ago</SelectItem>
-                        <SelectItem value="365">1 Year Ago</SelectItem>
-
-                      </SelectContent>
-                    </Select>
-
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      date={dateOfBirth}
-                      setDate={setDateOfBirth}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-            />
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                /
+                <FormField
+                control={form.control}
+                name="dob_month"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input className="w-16" placeholder="MM" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                /
+                <FormField
+                control={form.control}
+                name="dob_year"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input placeholder="YYYY" className="w-16"{...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
 
             <FormField
               control={form.control}
@@ -681,6 +619,20 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
                   <FormMessage />
                 </FormItem>
               )}
+            />
+
+          <FormField
+              control={form.control}
+              name="tax_id"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Tax ID</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
             />
           </div>
 
@@ -814,71 +766,46 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
               )}
             />
 
-            
-            <FormField
-              control={form.control}
-              name="id_expiration"
-              render={({ field }) => (
-                <FormItem className="flex flex-col w-full justify-center">
-                  <FormLabel>Document expiration date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full flex gap-x-5 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-
-                          <CalendarIcon className="h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
-                      <Select
-                        onValueChange={(value) => {
-                          setIDExpirationDate(subDays(new Date(), parseInt(value)))
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-
-                        <SelectContent position="popper">
-
-                          <SelectItem value="0">Today</SelectItem>
-                          <SelectItem value="1">Yesterday</SelectItem>
-                          <SelectItem value="7">A week ago</SelectItem>
-                          <SelectItem value="14">Two weeks ago</SelectItem>
-                          <SelectItem value="365">1 Year Ago</SelectItem>
-
-                        </SelectContent>
-                      </Select>
-
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        date={idExpirationDate}
-                        setDate={setIDExpirationDate}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex gap-x-5 w-full h-full">
+              <FormField
+                control={form.control}
+                name="id_expiration_day"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input className="w-16" placeholder="DD" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                /
+                <FormField
+                control={form.control}
+                name="id_expiration_month"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input className="w-16" placeholder="MM" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                /
+                <FormField
+                control={form.control}
+                name="id_expiration_year"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <Input placeholder="YYYY" className="w-16"{...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
 
           </div>
 
@@ -1071,7 +998,7 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
                                     ? field.onChange([...field.value, item.id])
                                     : field.onChange(
                                         field.value?.filter(
-                                          (value) => value !== item.id
+                                          (value:any) => value !== item.id
                                         )
                                       )
                                 }}
@@ -1129,7 +1056,7 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
                                 value={status.label}
                                 key={status.value}
                                 onSelect={() => {
-                                  form.setValue("employment_status", status.value)
+                                  form.setValue("currency", status.value)
                                 }}
                               >
                                 {status.label}
@@ -1150,69 +1077,13 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
           </div>
 
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
-            <p className="text-xl font-bold">Security Questions</p>
-
+            <p className="text-xl font-bold">Basic information</p>
             <FormField
               control={form.control}
-              name="security_q_1"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Security Question 1</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full flex text-sm",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? marital_status.find(
-                                (status) => status.value === field.value
-                              )?.label
-                            : "Select"}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandInput
-                            placeholder="Search status..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No status found.</CommandEmpty>
-                          <CommandGroup>
-                            {marital_status.map((status) => (
-                              <CommandItem
-                                value={status.label}
-                                key={status.value}
-                                onSelect={() => {
-                                  form.setValue("employment_status", status.value)
-                                }}
-                              >
-                                {status.label}
-                              </CommandItem>
-                            ))}
-
-                          </CommandGroup>
-                          </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="security_a_1"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                <FormLabel>Security Answer 1</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                     <Input placeholder="" {...field} />
                 </FormControl>
@@ -1220,68 +1091,12 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="security_q_2"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Security Question 2</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full flex text-sm",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? marital_status.find(
-                                (status) => status.value === field.value
-                              )?.label
-                            : "Select"}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandInput
-                            placeholder="Search status..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No status found.</CommandEmpty>
-                          <CommandGroup>
-                            {marital_status.map((status) => (
-                              <CommandItem
-                                value={status.label}
-                                key={status.value}
-                                onSelect={() => {
-                                  form.setValue("employment_status", status.value)
-                                }}
-                              >
-                                {status.label}
-                              </CommandItem>
-                            ))}
-
-                          </CommandGroup>
-                          </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="security_a_2"
+              name="username"
               render={({ field }) => (
                 <FormItem>
-                <FormLabel>Security Answer 2</FormLabel>
+                <FormLabel>Username</FormLabel>
                 <FormControl>
                     <Input placeholder="" {...field} />
                 </FormControl>
@@ -1289,68 +1104,12 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="security_q_3"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Security Question 3</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full flex text-sm",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? marital_status.find(
-                                (status) => status.value === field.value
-                              )?.label
-                            : "Select"}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandInput
-                            placeholder="Search status..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No status found.</CommandEmpty>
-                          <CommandGroup>
-                            {marital_status.map((status) => (
-                              <CommandItem
-                                value={status.label}
-                                key={status.value}
-                                onSelect={() => {
-                                  form.setValue("employment_status", status.value)
-                                }}
-                              >
-                                {status.label}
-                              </CommandItem>
-                            ))}
-
-                          </CommandGroup>
-                          </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="security_a_3"
+              name="password"
               render={({ field }) => (
                 <FormItem>
-                <FormLabel>Security Answer 3</FormLabel>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                     <Input placeholder="" {...field} />
                 </FormControl>
@@ -1361,17 +1120,16 @@ const AboutYouSecondary = ({stepBackward, stepForward, setTicket}:Props) => {
           </div>
 
           <div className="flex gap-x-5 justify-center items-center w-full h-full">
-            <Button className="bg-agm-light-orange" onClick={stepBackward}>
+            <Button variant={'default'} onClick={stepBackward}>
               Previous step
             </Button>
-            <Button className="bg-agm-light-orange" type="submit">
+            <Button variant={'default'} type="submit">
               Next step
             </Button>
           </div>
 
         </form>
       </Form>
-      
     </div>
   )
 }

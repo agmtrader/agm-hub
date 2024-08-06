@@ -33,12 +33,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_primary_schema } from "@/lib/form"
+import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_primary_schema, getDefaults, phone_types } from "@/lib/form"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Ticket } from "@/lib/types"
 import { updateFieldInDocument } from "@/utils/api"
-
-const formSchema = about_you_primary_schema
 
 interface Props {
   stepForward:() => void,
@@ -49,63 +47,15 @@ interface Props {
 
 const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) => {
 
-  const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date())
-  const [idExpirationDate, setIDExpirationDate] = useState<Date>(new Date())
+  let formSchema:any;
+  let initialFormValues:any;
 
-  let initialFormValues = {
-    salutation: '',
-    first_name: '',
-    middle_name: '',
-    last_name: '',
-
-    address: '',
-    city: '',
-    state: '',
-    zip: '',
-    phone_type: '',
-    phone_country: '',
-    phone_number: '',
-    citizenship: '',
-    country_of_birth: '',
-
-    dob_day:'',
-    dob_month:'',
-    dob_year:'',
-    marital_status: '',
-    number_of_dependents: '',
-    country_of_residence: '',
-    tax_id: '',
-
-    id_type: '',
-    id_country: '',
-    id_number: '',
-    id_expiration_year:'',
-    id_expiration_month:'',
-    id_expiration_day:'',
-
-    employment_status: '',
-    employer_name: '',
-    employer_address: '',
-    employer_city: '',
-    employer_state: '',
-    employer_zip: '',
-    nature_of_business: '',
-    occupation: '',
-    
-    source_of_wealth: [],
-    currency: '',
-
-    security_q_1:  '',
-    security_a_1: '',
-    security_q_2: '',
-    security_a_2: '',
-    security_q_3: '',
-    security_a_3: '', 
-  }
+  formSchema = about_you_primary_schema
+  initialFormValues = getDefaults(formSchema)
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    values: initialFormValues,
+      resolver: zodResolver(formSchema),
+      values: initialFormValues,
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -119,11 +69,10 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
     delete (values as any).dob_year
 
     Object.keys(values).forEach(async (key) => {
-      console.log(key)
       await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.${key}`, values[key as keyof object])
     })
 
-    //setTicket(ticket)
+    console.log(values)
 
     stepForward()
 
@@ -164,7 +113,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             ? salutations.find(
                                 (salutation) => salutation.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a salutation"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -172,7 +121,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                       <Command>
                         <CommandList>
                           <CommandInput
-                            placeholder="Search..."
+                            placeholder="Search salutations..."
                             className="h-9"
                           />
                           <CommandEmpty>No salutatation found.</CommandEmpty>
@@ -203,7 +152,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
               control={form.control}
               name="first_name"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full">
                 <FormLabel>First name</FormLabel>
                 <FormControl>
                     <Input placeholder="" {...field} />
@@ -305,14 +254,56 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
               control={form.control}
               name="phone_type"
               render={({ field }) => (
-                <FormItem>
-                <FormLabel>Phone type</FormLabel>
-                <FormControl>
-                    <Input placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
+                <FormItem className="flex w-full h-full flex-col text-center gap-x-5 font-normal justify-center">
+                  <FormLabel>Phone type</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full text-sm flex justify-center",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? phone_types.find(
+                                (type) => type.value === type.value
+                              )?.label
+                            : "Select a type"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search types..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No type found.</CommandEmpty>
+                          <CommandGroup>
+                            {phone_types.map((type) => (
+                              <CommandItem
+                                value={type.label}
+                                key={type.value}
+                                onSelect={() => {
+                                  form.setValue("phone_type", type.value)
+                                }}
+                              >
+                                {type.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
                 </FormItem>
-            )}
+              )}
             />
 
             <FormField
@@ -563,7 +554,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             ? marital_status.find(
                                 (status) => status.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a status"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -764,7 +755,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             ? id_type.find(
                                 (status) => status.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select ID type"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -813,20 +804,9 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
               )}
             />
 
-            <div className="flex gap-x-5 w-full h-full">
-              <FormField
-                control={form.control}
-                name="id_expiration_day"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormControl>
-                        <Input className="w-16" placeholder="DD" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                /
+            <p className="text-sm">ID Expiration</p>
+
+            <div className="flex gap-x-5 w-full justify-center h-full">
                 <FormField
                 control={form.control}
                 name="id_expiration_month"
@@ -880,7 +860,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             ? employment_status.find(
                                 (status) => status.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a status"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -973,6 +953,62 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
 
             <FormField
               control={form.control}
+              name="employer_country"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
+                  <FormLabel>Employer country</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full flex text-sm",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? countries.find(
+                                (country) => country.value === field.value
+                              )?.label
+                            : "Select a country"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput
+                            placeholder="Search country..."
+                            className="h-9"
+                          />
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup>
+                            {currencies.map((status) => (
+                              <CommandItem
+                                value={status.label}
+                                key={status.value}
+                                onSelect={() => {
+                                  form.setValue("employer_country", status.value)
+                                }}
+                              >
+                                {status.label}
+                              </CommandItem>
+                            ))}
+
+                          </CommandGroup>
+                          </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="employer_zip"
               render={({ field }) => (
                 <FormItem>
@@ -1022,9 +1058,9 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
               control={form.control}
               name="source_of_wealth"
               render={() => (
-                <FormItem className="w-[50%] flex flex-col justify-center text-center gap-x-5 font-normal">
+                <FormItem className="w-full flex flex-col justify-center text-center gap-x-5 font-normal">
                   <div className="w-full mb-4 flex flex-col justify-center items-center text-center">
-                    <FormLabel>Sidebar</FormLabel>
+                    <FormLabel>Source of Wealth</FormLabel>
                   </div>
                   {source_of_wealth.map((item) => (
                     <FormField
@@ -1045,7 +1081,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                                     ? field.onChange([...field.value, item.id])
                                     : field.onChange(
                                         field.value?.filter(
-                                          (value) => value !== item.id
+                                          (value:any) => value !== item.id
                                         )
                                       )
                                 }}
@@ -1085,7 +1121,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             ? currencies.find(
                                 (status) => status.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a currency"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -1093,10 +1129,10 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                       <Command>
                         <CommandList>
                           <CommandInput
-                            placeholder="Search status..."
+                            placeholder="Search currency..."
                             className="h-9"
                           />
-                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandEmpty>No currency found.</CommandEmpty>
                           <CommandGroup>
                             {currencies.map((status) => (
                               <CommandItem
@@ -1147,7 +1183,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             ? marital_status.find(
                                 (status) => status.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a security question"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -1155,10 +1191,10 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                       <Command>
                         <CommandList>
                           <CommandInput
-                            placeholder="Search status..."
+                            placeholder="Search questions..."
                             className="h-9"
                           />
-                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandEmpty>No question found.</CommandEmpty>
                           <CommandGroup>
                             {marital_status.map((status) => (
                               <CommandItem
@@ -1216,7 +1252,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             ? marital_status.find(
                                 (status) => status.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a security question"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -1224,10 +1260,10 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                       <Command>
                         <CommandList>
                           <CommandInput
-                            placeholder="Search status..."
+                            placeholder="Search questions..."
                             className="h-9"
                           />
-                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandEmpty>No question found.</CommandEmpty>
                           <CommandGroup>
                             {marital_status.map((status) => (
                               <CommandItem
@@ -1285,7 +1321,7 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                             ? marital_status.find(
                                 (status) => status.value === field.value
                               )?.label
-                            : "Select"}
+                            : "Select a security question"}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -1293,10 +1329,10 @@ const AboutYouPrimary = ({stepBackward, stepForward, ticket, setTicket}:Props) =
                       <Command>
                         <CommandList>
                           <CommandInput
-                            placeholder="Search status..."
+                            placeholder="Search questions..."
                             className="h-9"
                           />
-                          <CommandEmpty>No status found.</CommandEmpty>
+                          <CommandEmpty>No question found.</CommandEmpty>
                           <CommandGroup>
                             {marital_status.map((status) => (
                               <CommandItem
