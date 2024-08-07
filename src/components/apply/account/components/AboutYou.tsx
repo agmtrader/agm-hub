@@ -49,7 +49,7 @@ interface Props {
 const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props) => {
 
   let formSchema:any;
-  let initialFormValues:any;
+  let initialFormValues:any = {};
 
   if (primary) {
     formSchema = about_you_primary_schema 
@@ -89,7 +89,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
     <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
       <div className="flex flex-col justify-center items-center">
         <h1 className='text-7xl font-bold'>About you</h1>
-        <h1 className='text-3xl font-light'>Primary holder</h1>
+        <h1 className='text-3xl font-light'>{primary ? 'Primary holder':'Secondary holder'}</h1>
       </div>
 
       <Form {...form}>
@@ -157,7 +157,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
             <FormField
               control={form.control}
-              name="first_name"
+              name="FirstName"
               render={({ field }) => (
                 <FormItem className="w-full">
                 <FormLabel>First name</FormLabel>
@@ -171,7 +171,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
             <FormField
               control={form.control}
-              name="middle_name"
+              name="MiddleName"
               render={({ field }) => (
                 <FormItem>
                 <FormLabel>Middle name</FormLabel>
@@ -1423,7 +1423,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
           }
 
           <div className="flex gap-x-5 justify-center items-center w-full h-full">
-            <Button variant={'default'} onClick={stepBackward}>
+            <Button variant={'default'} type="button" onClick={stepBackward}>
               Previous step
             </Button>
             <Button variant={'default'} type="submit">

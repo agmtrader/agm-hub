@@ -221,7 +221,7 @@ export const marital_status = [
 
 export const id_type = [
     { label: "Passport", value: "passport" },
-    { label: "ID", value: "id" },
+    { label: "National ID", value: "id" },
     { label: "Driver's License", value: "driver" },
 ] as const
 
@@ -270,6 +270,22 @@ export const products = [
   {
     id: "bonds",
     label: "Bonds",
+  },
+  {
+    id: "stocks",
+    label: "Stocks",
+  },
+  {
+    id: "options",
+    label: "Options",
+  },
+  {
+    id: "futures",
+    label: "Futures",
+  },
+  {
+    id: "etfs",
+    label: "ETFs",
   }
 ] as const
 
@@ -309,11 +325,11 @@ export const about_you_primary_schema = z.object({
     message: "You must select a salutation.",
   }),
 
-  first_name: z.string().min(1, {
+  FirstName: z.string().min(1, {
     message: "First name cannot be empty.",
   }),
 
-  middle_name: z.string().optional(),
+  MiddleName: z.string().optional(),
 
   last_name: z.string().min(1, {
     message: "Last name cannot be empty.",

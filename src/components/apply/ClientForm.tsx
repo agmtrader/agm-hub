@@ -15,12 +15,20 @@ const ClientForm = () => {
 
   function stepForward() {
       setStep(step + 1)
+      scrollToTop()
   }
 
   function stepBackward() {
-    if (step > 1) {
+    if (step >= 1) {
       setStep(step - 1)
     }
+  }
+
+  const isBrowser = () => typeof window !== 'undefined'; //The approach recommended by Next.js
+
+  function scrollToTop() {
+      if (!isBrowser()) return;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   return (
