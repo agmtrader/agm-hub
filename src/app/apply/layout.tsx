@@ -9,7 +9,7 @@ import FirebaseAuthProvider from "@/app/FirebaseAuthProvider";
 
 export const metadata: Metadata = {
   title: "AGM Technology",
-  description: "Creado por Andres Aguilar y Ramon Castro",
+  description: "Discover the new trading world.",
 };
 
 const inter = Inter({ subsets: ['latin'] })

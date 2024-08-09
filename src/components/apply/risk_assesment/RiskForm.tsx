@@ -88,6 +88,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
       'AccountNumber':values.account_number,
       'Score':sum,
       'RiskProfileID':riskProfileID,
+      'Answers':values,
     }
 
     await addDocument(risk_profile, 'db/clients/risk_profiles', riskProfileID)
