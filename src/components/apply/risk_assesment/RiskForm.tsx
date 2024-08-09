@@ -15,7 +15,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
 
-import { risk_assesment_schema } from "@/lib/form"
+import { getDefaults, risk_assesment_schema, risk_assesment_schema_spanish } from "@/lib/form"
 import { addDocument } from "@/utils/api"
 import { Input } from "@/components/ui/input"
 import { Map } from "@/lib/types"
@@ -58,14 +58,20 @@ const weights = [
   }
 ]
 
-const RiskForm = () => {
+const RiskForm = ({spanish}:{spanish:boolean}) => {
 
-  // No need for initial values since the schema uses only zod.enum objects
-  const form = useForm<z.infer<typeof risk_assesment_schema>>({
-    resolver: zodResolver(risk_assesment_schema),
+  let formSchema:any;
+  let initialFormValues:any = {};
+
+  formSchema = risk_assesment_schema
+  initialFormValues = getDefaults(formSchema)
+
+  const form = useForm<z.infer<typeof formSchema>>({
+      resolver: zodResolver(formSchema),
+      values: initialFormValues,
   })
 
-  async function onSubmit(values: z.infer<typeof risk_assesment_schema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
 
 
     const timestamp = new Date()
@@ -88,302 +94,601 @@ const RiskForm = () => {
 
   }
 
+  if (spanish) {
+    return (
+      <div className="w-2/3 h-full flex">
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+
+            <FormField
+              control={form.control}
+              name="account_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Número de cuenta</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>¿Qué tipo de inversor te consideras?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="1" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Conservador
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="2.5" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Moderado</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="4" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Agresivo
+                        </FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="loss"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Si tu cartera pierde un 20% de su valor, ¿qué acción tomarías?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="1" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Vender todo</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="2" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Vender algunas inversiones</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="3" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          No hacer nada
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="4" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Invertir más
+                        </FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="gain"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Si tu cartera aumenta un 20% de su valor, ¿qué acción tomarías?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="1" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Vender todo</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="2" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Vender algunas inversiones</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="3" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          No hacer nada
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="4" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Invertir más
+                        </FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="period"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>¿Cuál crees que debería ser el plazo promedio de tu cartera de inversiones?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="4" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          0-5 años
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="3" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          5-10 años
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="2" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          11-20 años
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="1" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Más de 21 años</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="diversification"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Considerando la diversificación de clases de activos, ¿cuál de estos portafolios seleccionarías?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="1" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Portafolio A: 100% bonos, 0% acciones
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="2" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Portafolio B: 80% bonos, 20% acciones
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="3" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Portafolio C: 60% bonos, 40% acciones
+                        </FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="goals"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>¿Cuál de estos portafolios representa mejor tus objetivos con los resultados más aceptables?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="1" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Portafolio A: Rendimiento promedio del 4%
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="2" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Portafolio B: Rendimiento promedio del 5%
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="3" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Portafolio C: Rendimiento promedio del 7%
+                        </FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <Button type="submit">Submit</Button>
+          </form>
+        </Form>
+      </div>
+      
+    )
+  } else {
   return (
-    <div className="w-full h-full flex">
+      <div className="w-2/3 h-full flex">
 
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
 
-      <FormField
+        <FormField
+              control={form.control}
+              name="account_number"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Account number</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+          />
+
+          <FormField
             control={form.control}
-            name="account_number"
+            name="type"
             render={({ field }) => (
-              <FormItem>
-              <FormLabel>Account number</FormLabel>
-              <FormControl>
-                  <Input placeholder="" {...field} />
-              </FormControl>
-              <FormMessage />
+              <FormItem className="space-y-3">
+                <FormLabel>What type of investor do you consider yourself?</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="1" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Conservative
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="2.5" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Moderate</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="4" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Aggresive
+                      </FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
               </FormItem>
-          )}
-        />
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>What type of investor do you consider yourself?</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="1" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Conservative
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="2.5" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Moderate</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="4" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Aggresive
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="loss"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>If your portfolio loses 20% of its value what action would you take?</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="1" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Sell everything</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="2" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Sell some investments</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="3" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Do nothing
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="4" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Invest more
+                      </FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="loss"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>If your portfolio loses 20% of its value what action would you take?</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="1" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Sell everything</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="2" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Sell some investments</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="3" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Do nothing
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="4" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Invest more
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="gain"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>If your portfolio appreciates 20% of its value what action would you take?</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="1" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Sell everything</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="2" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Sell some investments</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="3" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Do nothing
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="4" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Invest more
+                      </FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="gain"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>If your portfolio appreciates 20% of its value what action would you take?</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="1" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Sell everything</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="2" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Sell some investments</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="3" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Do nothing
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="4" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Invest more
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="period"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>What do you think the average term of your investment portfolio should be?</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="4" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        0-5 years
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="3" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        5-10 years
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="2" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        11-20 years
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="1" />
+                      </FormControl>
+                      <FormLabel className="font-normal">More than 21 years</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="period"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>What do you think the average term of your investment portfolio should be?</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="4" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      0-5 years
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="3" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      5-10 years
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="2" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      11-20 years
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="1" />
-                    </FormControl>
-                    <FormLabel className="font-normal">More than 21 years</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="diversification"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>Considering asset class diversification, which of these portfolios would you select?</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="1" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Portfolio A: 100% bonds, 0% equity
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="2" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Portfolio B: 80% bonds, 20% equity
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="3" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Portfolio C: 60% bonds, 40% equity
+                      </FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="diversification"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Considering asset class diversification, which of these portfolios would you select?</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="1" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Portfolio A: 100% bonds, 0% equity
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="2" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Portfolio B: 80% bonds, 20% equity
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="3" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Portfolio C: 60% bonds, 40% equity
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="goals"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Which of these portfolios best represent your goals with the most acceptable outcomes?</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="1" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Portfolio A: Average 4% return
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="2" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                    Portfolio A: Average 5% return
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="3" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Portfolio C: Average 7% return
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
-    </div>
-    
-  )
+          <FormField
+            control={form.control}
+            name="goals"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>Which of these portfolios best represent your goals with the most acceptable outcomes?</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="1" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Portfolio A: Average 4% return
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="2" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                      Portfolio A: Average 5% return
+                      </FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="3" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Portfolio C: Average 7% return
+                      </FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
+      </div>
+      
+    )
+  }
 }
 
 export default RiskForm

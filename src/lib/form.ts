@@ -769,6 +769,27 @@ export const risk_assesment_schema = z.object({
     required_error: "You must select a term.",
   }),
 })
+export const risk_assesment_schema_spanish = z.object({
+  numero_cuenta: z.string().optional(),
+  tipo: z.enum(["1", "2.5", "4"], {
+    required_error: "Debes seleccionar un tipo de inversor.",
+  }),
+  perdida: z.enum(["1", "2", "3", "4"], {
+    required_error: "Debes seleccionar una reacción ante la pérdida.",
+  }),
+  ganancia: z.enum(["1", "2", "3", "4"], {
+    required_error: "Debes seleccionar una reacción ante la ganancia.",
+  }),
+  periodo: z.enum(["1", "2", "3", "4"], {
+    required_error: "Debes seleccionar un plazo.",
+  }),
+  diversificacion: z.enum(["1", "2", "3"], {
+    required_error: "Debes seleccionar una cartera.",
+  }),
+  objetivos: z.enum(["1", "2", "3"], {
+    required_error: "Debes seleccionar un plazo.",
+  }),
+})
 
 // Functions
 export function getDefaults<Schema extends z.AnyZodObject>(schema: Schema) {

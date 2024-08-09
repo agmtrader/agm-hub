@@ -22,20 +22,8 @@ import { Button } from "../ui/button"
 
 const navbarContent = [
   {
-    'name':'Home',
+    'name':'AGM Home',
     'url':'/'
-  },
-  {
-      'name':'AGM Advisor',
-      'url':'/'
-  },
-  {
-      'name':'AGM Trader',
-      'url':'/'
-  },
-  {
-      'name':'AGM Institutional',
-      'url':'/'
   },
   {
       'name':'AGM Dashboard',

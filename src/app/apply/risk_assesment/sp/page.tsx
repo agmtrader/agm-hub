@@ -7,7 +7,7 @@ const page = () => {
     <div>
       <Header bg dark={false}/>
       <div className='w-full px-5 my-28 flex flex-col h-full justify-center'>
-        <RiskForm spanish={false}/>
+        <RiskForm spanish/>
       </div>
     </div>
   )
