@@ -15,13 +15,12 @@ interface Props {
   setCanContinue: any
 }
 
+const columns = ['TicketID', 'Status', 'first_name', 'last_name', 'Advisor']
+
 const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) => {
 
   // Initialize data variables
   const [tickets, setTickets] = useState<Ticket[] | null>(null)
-
-  // Ticket columns - export to dictionary!
-  const columns = ['TicketID', 'Status', 'first_name', 'last_name', 'email', 'country', 'currency']
 
   // Fetch tickets from database
   useEffect(() => {
@@ -30,11 +29,10 @@ const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) 
         setCurrentTicket(null)
 
         let data = await getDocumentsFromCollection('db/clients/tickets/')
-        data = await addColumnsFromJSON(data)
-        data = sortColumns(data, columns)
 
         let tickets:Ticket[] = []
         data.forEach((entry:Map) => {
+          console.log(entry)
           tickets.push(
             {
               'TicketID': entry['TicketID'],
@@ -44,6 +42,10 @@ const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) 
             }
           )
         })
+        
+        tickets = await addColumnsFromJSON(tickets)
+        tickets = sortColumns(tickets, columns)
+        
         setTickets(tickets)
         
     }

@@ -211,7 +211,7 @@ export const salutations = [
     { label: "Ms.", value: "ms" },
     { label: "Mrs.", value: "mrs" },
     { label: "Dr.", value: "dr" },
-    ] as const
+] as const
     
 export const marital_status = [
     { label: "Single", value: "sngl" },
@@ -243,6 +243,10 @@ export const source_of_wealth = [
   {
     id: "income",
     label: "Income",
+  },
+  {
+    id: "pension",
+    label: "Pension",
   },
 ] as const
 
@@ -293,7 +297,31 @@ export const worths = [
   {
     value: "< 5000",
     label: "< 5000",
-  }
+  },
+  {
+    value: "5000-25000",
+    label: "5000-25000",
+  },
+  {
+    value: "25000-50000",
+    label: "25000-50000",
+  },
+  {
+    value: "50000-150000",
+    label: "50000-150000",
+  },
+  {
+    value: "150000-500000",
+    label: "150000-500000",
+  },
+  {
+    value: "500000-1000000",
+    label: "500000-1000000",
+  },
+  {
+    value: "1000000-2000000",
+    label: "1000000-2000000",
+  },
 ] as const
 
 export const phone_types = [
@@ -749,7 +777,7 @@ export function getDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
   return Object.fromEntries(
       Object.entries(schema.shape).map(([key, value]) => {
           if (value instanceof z.ZodDefault) return [key, value._def.defaultValue()]
-          return [key, undefined]
+          return [key, '']
       })
   )
 }

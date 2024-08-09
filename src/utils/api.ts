@@ -97,7 +97,7 @@ export async function getForeignTables(documents:DocumentData[]  ) {
   }
 
 // Find way of using only json strings
-export async function addColumnsFromJSON(documents:DocumentData[]) {
+export async function addColumnsFromJSON(documents:any[]) {
 
     for (const d of documents) {
 

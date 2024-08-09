@@ -11,11 +11,13 @@ import { Ticket } from '@/lib/types';
 
 const page = () => {
 
+  // Variables to control step in the process
   const [step, setStep] = useState<number>(1)
   const [canContinue, setCanContinue] = useState<boolean>(false)
-
-  const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null)
   const [error, setError] = useState<string | null>(null)
+  
+  // Current ticket
+  const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null)
 
   function stepForward(e:React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     if (canContinue) {

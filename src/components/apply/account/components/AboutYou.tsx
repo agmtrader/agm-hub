@@ -74,7 +74,11 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
     delete (values as any).dob_year
 
     Object.keys(values).forEach(async (key) => {
-      await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.${key}`, values[key as keyof object])
+      if (primary) {
+        await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.${key}`, values[key as keyof object])
+      } else {
+        await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.secondary_${key}`, values[key as keyof object])
+      }
     })
 
     console.log(values)
@@ -157,7 +161,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
             <FormField
               control={form.control}
-              name="FirstName"
+              name="first_name"
               render={({ field }) => (
                 <FormItem className="w-full">
                 <FormLabel>First name</FormLabel>
@@ -171,7 +175,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
             <FormField
               control={form.control}
-              name="MiddleName"
+              name="middle_name"
               render={({ field }) => (
                 <FormItem>
                 <FormLabel>Middle name</FormLabel>

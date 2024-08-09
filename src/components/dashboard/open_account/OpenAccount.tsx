@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -18,11 +18,12 @@ import { DocumentData } from 'firebase/firestore'
 
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { addDocument } from "@/utils/api"
+import { addColumnsFromJSON, addDocument, queryDocumentsFromCollection } from "@/utils/api"
 import { formatTimestamp } from "@/utils/dates"
-import { account_access_schema, temp_email_schema } from '@/lib/form'
+import { account_access_schema, getDefaults, temp_email_schema } from '@/lib/form'
 import { useForm } from 'react-hook-form'
-import { Ticket } from '@/lib/types'
+import { Documents, Map, Ticket } from '@/lib/types'
+import { sortColumns } from '@/utils/table'
 
 interface Props {
   currentTicket:Ticket, 
@@ -31,14 +32,14 @@ interface Props {
 
 const OpenAccount = ({currentTicket, setCanContinue}:Props) => {
 
-  let initialFormValues = {
-    temp_email:'',
-    temp_password:'',
-    account_number:''
-  }
+  let formSchema:any
+  let initialFormValues:any
+  
+  formSchema = temp_email_schema
+  initialFormValues = getDefaults(formSchema)
 
-  const form = useForm<z.infer<typeof temp_email_schema>>({
-    resolver: zodResolver(temp_email_schema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     values: initialFormValues,
   })
   
@@ -54,13 +55,45 @@ const OpenAccount = ({currentTicket, setCanContinue}:Props) => {
     
       setCanContinue(true)
   }
+  
+  // Current ticket
+  const [ticket, setTicket] = useState<Ticket[] | null>(null)
+  const ticketID = currentTicket['TicketID']
+
+  // Fetch documents and ticket data associated to current ticket
+  useEffect(() => {
+
+    async function queryData () {
+
+      let data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
+
+      let tickets:Ticket[] = []
+      data.forEach((entry:Map) => {
+        tickets.push(
+          {
+            'TicketID': entry['TicketID'],
+            'Status': entry['Status'],
+            'ApplicationInfo': entry['ApplicationInfo'],
+            'Advisor': entry['Advisor']
+          }
+        )
+      })
+
+      tickets = await addColumnsFromJSON(tickets)
+      setTicket(tickets)
+
+    }
+    
+    queryData()
+
+  }, [])
 
 
   return (
-    <div className='h-full w-full flex flex-col justify-start gap-y-10 items-center'>
+    <div className='h-full w-[70%] flex flex-col justify-start gap-y-10 items-center'>
 
         <h1 className='text-7xl font-bold'>Create a temporary email.</h1>
-        <DataTable data={[currentTicket]}/>
+        {ticket && <DataTable data={ticket} width={100}/>}
 
         <div className="h-full w-full flex flex-col justify-center items-center">
           <Form {...form}>

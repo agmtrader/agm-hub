@@ -20,11 +20,10 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import DocumentViewer from '@/components/dashboard/document_center/DocumentViewer'
-import { ClientDocument, Document, Documents, Map, POA, POI, Ticket } from '@/lib/types';
+import { Document, Documents, Map, POA, POI, Ticket } from '@/lib/types';
 
 
 interface Props {
-  // Fix this
   currentTicket: Ticket,
   setCanContinue: React.Dispatch<React.SetStateAction<boolean>>,
   canContinue: boolean
@@ -32,23 +31,22 @@ interface Props {
 
 const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => {
 
+  // Selection variables
   const [selection, setSelection] = useState<Document | null>(null)
 
+  // Type of document
   const [type, setType] = useState<string>('POA')
 
-  // Initialize data variables
-  // Current Ticket ID
+  // Current ticket
   const [ticket, setTicket] = useState<Ticket[] | null>(null)
   const ticketID = currentTicket['TicketID']
   const ticketColumns = ['TicketID', 'Status']
 
+  // Account number to be used
   const [accountNumber, setAccountNumber] = useState<string | null>(null)
 
-  // Documents -- this map is an array of objects
+  // Documents
   const [documents, setDocuments] = useState<Documents | null>(null)
-
-  // Initialize state variables for refreshing data
-  const [refresh, setRefresh] = useState<boolean>(false)
 
   // Fetch documents and ticket data associated to current ticket
   useEffect(() => {
@@ -151,9 +149,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
     
     queryData()
 
-  }, [refresh])
-
-  console.log(documents)
+  }, [])
 
   // Update ticket status depending on checkbox
   async function updateTicketStatus() {
@@ -164,8 +160,6 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
       await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Ready for application')
     }
   }
-
-  console.log(documents)
 
   const types = ['POA', 'POI']
 
