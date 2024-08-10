@@ -551,9 +551,10 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
             <Button type="submit">Submit</Button>
             {message && <p className="text-green-600">{message}</p>}
             {portfolio &&
-              <div className="lg:w-[30%] w-full flex gap-y-10 flex-col">
+              <div className="lg:w-[30%] w-full flex justify-center items-center gap-y-10 flex-col">
+                {portfolio[0].name && <h1 className="text-xl font-bold">Perfil: {portfolio[0].name}</h1>}
                 <Doughnut data={data} options={options} />
-                {portfolio[0].average_yield && <p className="text-sm font-bold">Rendimiento promedio: {portfolio[0].average_yield}</p>}
+                {portfolio[0].average_yield && <p className="text-sm font-bold">Rendimiento promedio: {Number(portfolio[0].average_yield * 100).toFixed(2)}%</p>}
               </div>
             }
           </form>
@@ -873,7 +874,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
           {message && <p className="text-green-600">{message}</p>}
           {portfolio &&
             <div className="lg:w-[30%] w-full flex justify-center items-center gap-y-10 flex-col">
-              {portfolio[0].name && <h1 className="text-3xl font-bold">Profile: {portfolio[0].name}</h1>}
+              {portfolio[0].name && <h1 className="text-xl font-bold">Profile: {portfolio[0].name}</h1>}
               <Doughnut data={data} options={options} />
               {portfolio[0].average_yield && <p className="text-sm font-bold">Average yield: {Number(portfolio[0].average_yield * 100).toFixed(2)}%</p>}
             </div>
