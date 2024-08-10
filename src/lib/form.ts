@@ -751,22 +751,34 @@ export const account_access_schema = z.object({
 export const risk_assesment_schema = z.object({
   account_number: z.string().optional(),
   type: z.enum(["1", "2.5", "4"], {
-    required_error: "You must select a investor type.",
+    errorMap: (issue, ctx) => {
+      return {message: 'You must select a type.'};
+    },
   }),
   loss: z.enum(["1", "2", "3", "4"], {
-    required_error: "You must select a reaction to loss.",
+    errorMap: (issue, ctx) => {
+      return {message: 'You must select your reaction to loss.'};
+    },
   }),
   gain: z.enum(["1", "2", "3", "4"], {
-    required_error: "You must select a reaction to gain.",
+    errorMap: (issue, ctx) => {
+      return {message: 'You must select your reaction to gain.'};
+    },
   }),
   period: z.enum(["1", "2", "3", "4"], {
-    required_error: "You must select a term.",
+    errorMap: (issue, ctx) => {
+      return {message: 'You must select a period.'};
+    },
   }),
   diversification: z.enum(["1", "2", "3"], {
-    required_error: "You must select a portfolio.",
+    errorMap: (issue, ctx) => {
+      return {message: 'You must select a portfolio.'};
+    },
   }),
   goals: z.enum(["1", "2", "3"], {
-    required_error: "You must select a term.",
+    errorMap: (issue, ctx) => {
+      return {message: 'You must select a term.'};
+    },
   }),
 })
 export const risk_assesment_schema_spanish = z.object({

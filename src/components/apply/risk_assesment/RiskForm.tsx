@@ -4,6 +4,11 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
+
+
+import { Doughnut } from 'react-chartjs-2'
+import 'chart.js/auto'
+
 import {
   Form,
   FormControl,
@@ -23,11 +28,68 @@ import { formatTimestamp } from "@/utils/dates"
 
 const asset_allocation = [
   {
-    name: 'conservative_a',
+    name: 'Conservative A',
     bonds_aaa_a: 0.3,
     bonds_bbb: 0.7,
     bonds_bb: 0,
-    etfs: 0
+    etfs: 0,
+    average_yield: .06103
+  },
+  {
+    name: 'Conservative B',
+    bonds_aaa_a: 0.18,
+    bonds_bbb: 0.54,
+    bonds_bb: .18,
+    etfs: .1,
+    average_yield: .0723
+  },
+  {
+    name: 'Moderate A',
+    bonds_aaa_a: 0.16,
+    bonds_bbb: 0.48,
+    bonds_bb: 0.16,
+    etfs: 0.2,
+    average_yield: .0764
+  },
+  {
+    name: 'Moderate B',
+    bonds_aaa_a: 0.15,
+    bonds_bbb: 0.375,
+    bonds_bb: 0.15,
+    etfs: 0.25,
+    average_yield: .0736
+  },
+  {
+    name: 'Moderate C',
+    bonds_aaa_a: 0.14,
+    bonds_bbb: 0.35,
+    bonds_bb: 0.21,
+    etfs: 0.3,
+    average_yield: .06103
+  },
+  {
+    name: 'Aggressive A',
+    bonds_aaa_a: 0.13,
+    bonds_bbb: 0.325,
+    bonds_bb: .195,
+    etfs: .35,
+    average_yield: .0845
+  },
+  {
+    name: 'Aggressive B',
+    bonds_aaa_a: 0.12,
+    bonds_bbb: 0.30,
+    bonds_bb: 0.18,
+    etfs: 0.4,
+    average_yield: .0865
+  },
+  {
+    name: 'Aggressive C',
+    bonds_aaa_a: 0.05,
+    bonds_bbb: 0.25,
+    bonds_bb: 0.20,
+    etfs: 0.5,
+    average_yield: .0925
   }
 ]
 
@@ -63,6 +125,8 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
   let formSchema:any;
   let initialFormValues:any = {};
 
+  const [message, setMessage] = useState<string | null>(null)
+
   formSchema = risk_assesment_schema
   initialFormValues = getDefaults(formSchema)
 
@@ -70,6 +134,8 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
       resolver: zodResolver(formSchema),
       values: initialFormValues,
   })
+
+  const [portfolio, setPortfolio] = useState<any[] | null>(null)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -93,7 +159,80 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
 
     await addDocument(risk_profile, 'db/clients/risk_profiles', riskProfileID)
 
+    setMessage(spanish ? 'Perfil de riesgo enviado exitosamente.':'Risk profile successfully submitted.')
+
+    let risk_type = ''
+
+    if (sum < .9) {
+      risk_type = 'Conservative A'
+    } else if (sum >= 0.9 && sum < 1.25) {
+      risk_type = 'Conservative B'
+    } else if (sum >= 1.25 && sum < 1.5) {
+      risk_type = 'Moderate A'
+    } else if (sum >= 1.5 && sum < 2) {
+      risk_type = 'Moderate B'
+    } else if (sum >= 2 && sum < 2.5) {
+      risk_type = 'Moderate C'
+    } else if (sum >= 2.5 && sum < 2.75) {
+      risk_type = 'Aggressive A'
+    } else if (sum >= 2.75 && sum < 3) {
+      risk_type = 'Aggressive B'
+    } else if (sum >= 3) {
+      risk_type = 'Aggressive C'
+    }
+    
+    setPortfolio(asset_allocation.filter((element) => element.name === risk_type))
+
   }
+
+  function getAssetAllocation() {
+    let labels:any[] = []
+    let values:any[] = []
+    
+    if (portfolio) {
+      labels = Object.keys(portfolio[0]).filter((element) => element !== 'name' && element !== 'average_yield')
+      labels.forEach((label) => {
+        values.push(portfolio[0][label])
+      })
+    }
+    return {labels, values}
+  }
+  
+  const {labels, values} = getAssetAllocation()
+
+  const data = {
+    backgroundColor: [
+      "rgb(2, 88, 255)",
+      "rgb(249, 151, 0)",
+      "rgb(255, 199, 0)",
+      "rgb(32, 214, 152)",
+    ],
+    labels: labels,
+    datasets: [
+      {
+        label: "Portfolio",
+        data: values,
+        backgroundColor: [
+          "rgb(2, 88, 255)",
+          "rgb(249, 151, 0)",
+          "rgb(255, 199, 0)",
+          "rgb(32, 214, 152)",
+        ],
+        hoverOffset: 4,
+      },
+    ],
+  }
+  
+  const options = {
+    elements: {
+      arc: {
+        weight: 0.5,
+        borderWidth: 1,
+      },
+    },
+  }
+
+  console.log(portfolio)
 
   if (spanish) {
     return (
@@ -387,6 +526,13 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
             />
             
             <Button type="submit">Submit</Button>
+            {message && <p className="text-green-600">{message}</p>}
+            {portfolio &&
+              <div className="w-[30%] flex gap-y-10 flex-col">
+                <Doughnut data={data} options={options} />
+                {portfolio[0].average_yield && <p className="text-sm font-bold">Rendimiento promedio: {portfolio[0].average_yield*100}% anual</p>}
+              </div>
+            }
           </form>
         </Form>
       </div>
@@ -684,6 +830,13 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
           />
           
           <Button type="submit">Submit</Button>
+          {message && <p className="text-green-600">{message}</p>}
+          {portfolio &&
+            <div className="w-[30%] flex gap-y-10 flex-col">
+              <Doughnut data={data} options={options} />
+              {portfolio[0].average_yield && <p className="text-sm font-bold">Average yield:{portfolio[0].average_yield}</p>}
+            </div>
+          }
         </form>
       </Form>
       </div>

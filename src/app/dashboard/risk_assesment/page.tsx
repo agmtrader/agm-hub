@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { Doughnut } from 'react-chartjs-2'
-
 import 'chart.js/auto'
+
 import { Button } from "@/components/ui/button"
 import {
   Form,
