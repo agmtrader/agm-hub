@@ -276,7 +276,7 @@ const page = () => {
               name="account_number"
               render={({ field }) => (
                 <FormItem className="flex w-full h-full flex-col text-start justify-center">
-                  <FormLabel>Account Number</FormLabel>
+                  <FormLabel>Account alias</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -332,9 +332,10 @@ const page = () => {
         </Form>
       }
       {portfolio &&
-        <div className="lg:w-[20%] w-full flex gap-y-10 justify-center items-center flex-col">
+        <div className="lg:w-[25%] w-full flex gap-y-10 justify-center items-center flex-col">
+          {portfolio[0].name && <h1 className="text-3xl font-bold text-white">Profile: {portfolio[0].name}</h1>}
           <Doughnut data={data} options={options} />
-          {portfolio[0].average_yield && <p className="text-sm text-agm-white font-bold">Average yield: {portfolio[0].average_yield} %</p>}
+          {portfolio[0].average_yield && <p className="text-sm text-agm-white font-bold">Average yield: {Number(portfolio[0].average_yield).toFixed(2)}%</p>}
         </div>
       }
 
