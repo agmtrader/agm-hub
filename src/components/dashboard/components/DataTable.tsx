@@ -29,14 +29,16 @@ interface DataTableSelectProps<TData> {
     data: TData[]
     setSelection: React.Dispatch<React.SetStateAction<TData | null>>
     width?: number
+    dark?: boolean
 }
 
 interface DataTableProps<TData> {
   data: TData[]
   width?: number
+  dark?: boolean
 }
 
-export const DataTable = <TData,>({data, width}: DataTableProps<TData>) => {
+export const DataTable = <TData,>({data, width, dark}: DataTableProps<TData>) => {
 
     const [rowSelection, setRowSelection] = useState({})
     const [sorting, setSorting] = useState<SortingState>([])
@@ -76,7 +78,7 @@ export const DataTable = <TData,>({data, width}: DataTableProps<TData>) => {
             <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                 return (
-                    <TableHead key={header.id} className="text-white">
+                    <TableHead key={header.id} className={dark ? "text-white":''}>
                     {header.isPlaceholder
                         ? null
                         : flexRender(

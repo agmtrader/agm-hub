@@ -347,10 +347,10 @@ const page = () => {
       {portfolio &&
         <div className="w-[80%] flex justify-center items-end gap-x-10">
           <div className="w-full flex h-fit">
-            <DataTable data={asset_data} width={100}/>
+            <DataTable dark data={asset_data} width={100}/>
           </div>
           <div className="w-full flex h-fit">
-            <DataTable data={portfolio} width={100}/>
+            <DataTable dark data={portfolio} width={100}/>
           </div>
         </div>
       }
