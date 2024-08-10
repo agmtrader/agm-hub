@@ -127,12 +127,6 @@ const page = () => {
 
     if (response) {
 
-      if (response[1]) {
-
-        setPortfolio(null)
-        console.error('Account cannot have two risk profiles.')
-      }
-
       if (response[0]) {
 
         const score = Number(response[0].Score)

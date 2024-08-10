@@ -871,7 +871,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
           {portfolio &&
             <div className="lg:w-[30%] w-full flex justify-center items-center gap-y-10 flex-col">
               <Doughnut data={data} options={options} />
-              {portfolio[0].average_yield && <p className="text-sm font-bold">Average yield: {portfolio[0].average_yield}</p>}
+              {portfolio[0].average_yield && <p className="text-sm font-bold">Average yield: {portfolio[0].average_yield * 100}</p>}
             </div>
           }
         </form>
