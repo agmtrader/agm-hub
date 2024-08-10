@@ -157,11 +157,19 @@ const page = () => {
           risk_type = 'Aggressive C'
         }
         
-        setPortfolio(asset_allocation.filter((element) => element.name === risk_type))
+        setPortfolio(asset_allocation.filter((element) => element.name === risk_type).map((element) => {element.bonds_aaa_a = element.bonds_aaa_a * 100; element.bonds_bbb = element.bonds_bbb * 100; element.bonds_bb = element.bonds_bb * 100; element.etfs = element.etfs * 100; element.average_yield = element.average_yield * 100; return element}))
       }
     }
 
   }
+
+  enum clant {
+    bonds_aaa_a = 'Bonds AAA-A',
+    bonds_bbb = 'Bonds BBB',
+    bonds_bb = 'Bonds BB',
+    etfs = 'ETFs',
+  }
+
 
   function getAssetAllocation() {
     let labels:any[] = []
@@ -172,21 +180,19 @@ const page = () => {
       labels.forEach((label) => {
         values.push(portfolio[0][label])
       })
+      labels = labels.map((element) => clant[element as keyof typeof clant])
     }
     return {labels, values}
   }
 
-  // Fetch all accounts with a risk profile
+  // Fetch all risk profiles
   useEffect(() => {
 
     async function fetchData () {
 
-        let data = await getDocumentsFromCollection('db/clients/accounts/')
-        let accountNumbers:any[] = []
-
-        data.forEach((element:any) => {
-          setAccountNumbers([...accountNumbers, {label:element.AccountNumber, value:element.AccountNumber}])
-        })
+        let data = await getDocumentsFromCollection('db/clients/risk_profiles/')
+        console.log(data)
+        setAccountNumbers(data.map((element:any) => {element.AccountNumber; return {label: element.AccountNumber + ' ' + element.ClientName, value: element.AccountNumber}}))
         
     }
 
@@ -195,6 +201,33 @@ const page = () => {
   }, [])
   
   const {labels, values} = getAssetAllocation()
+
+  const asset_data = [
+    {
+      "Risk Score": 1,
+      "Asset Class": "STOCKS (ETFs)",
+      "Risk Level": "Most Aggressive",
+      "Asset Type": "STOCKS"
+    },
+    {
+      "Risk Score": 2,
+      "Asset Class": "BONDS BB",
+      "Risk Level": "Moderate",
+      "Asset Type": "BONDS"
+    },
+    {
+      "Risk Score": 3,
+      "Asset Class": "BONDS BBB",
+      "Risk Level": "Moderately Conservative",
+      "Asset Type": "BONDS"
+    },
+    {
+      "Risk Score": 4,
+      "Asset Class": "BONDS AAA",
+      "Risk Level": "Most Conservative",
+      "Asset Type": "BONDS"
+    }
+  ];
 
   const data = {
     backgroundColor: [
@@ -220,6 +253,13 @@ const page = () => {
   }
   
   const options = {
+      plugins: {
+        legend: {
+            labels: {
+                color: "#FFFFFF"
+            },
+        },
+    },
     elements: {
       arc: {
         weight: 0.5,
@@ -235,7 +275,7 @@ const page = () => {
 
       {accountNumbers &&
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6 flex gap-x-5">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/3 space-y-6 flex gap-x-5">
 
           <FormField
               control={form.control}
@@ -298,8 +338,20 @@ const page = () => {
         </Form>
       }
       {portfolio &&
-        <div className="w-[30%] flex">
+        <div className="lg:w-[20%] w-full flex gap-y-10 justify-center items-center flex-col">
           <Doughnut data={data} options={options} />
+          {portfolio[0].average_yield && <p className="text-sm text-agm-white font-bold">Average yield: {portfolio[0].average_yield} %</p>}
+        </div>
+      }
+
+      {portfolio &&
+        <div className="w-[80%] flex justify-center items-end gap-x-10">
+          <div className="w-full flex h-fit">
+            <DataTable data={asset_data} width={100}/>
+          </div>
+          <div className="w-full flex h-fit">
+            <DataTable data={portfolio} width={100}/>
+          </div>
         </div>
       }
 

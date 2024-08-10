@@ -20,11 +20,12 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
 
-import { getDefaults, risk_assesment_schema, risk_assesment_schema_spanish } from "@/lib/form"
+import { getDefaults, risk_assesment_schema } from "@/lib/form"
 import { addDocument } from "@/utils/api"
 import { Input } from "@/components/ui/input"
 import { Map } from "@/lib/types"
 import { formatTimestamp } from "@/utils/dates"
+import { DataTable } from "@/components/dashboard/components/DataTable"
 
 const asset_allocation = [
   {
@@ -145,7 +146,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
 
     let sum = 0
     Object.entries(values).forEach((element) => {
-      if (element[0] !== 'account_number') {
+      if (element[0] !== 'account_number' && element[0] !== 'client_name') {
         sum += weights.filter(el => el['name'] == element[0])[0]['weight'] * Number(element[1])
       }
     })
@@ -194,8 +195,15 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
       labels.forEach((label) => {
         values.push(portfolio[0][label])
       })
+      labels = labels.map((element) => clant[element as keyof typeof clant])
     }
     return {labels, values}
+  }
+  enum clant{
+    bonds_aaa_a = 'Bonds AAA-A',
+    bonds_bbb = 'Bonds BBB',
+    bonds_bb = 'Bonds BB',
+    etfs = 'ETFs',
   }
   
   const {labels, values} = getAssetAllocation()
@@ -232,6 +240,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
     },
   }
 
+
   console.log(portfolio)
 
   if (spanish) {
@@ -247,6 +256,20 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Número de cuenta</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="client_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre del cliente</FormLabel>
                   <FormControl>
                     <Input placeholder="" {...field} />
                   </FormControl>
@@ -528,9 +551,9 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
             <Button type="submit">Submit</Button>
             {message && <p className="text-green-600">{message}</p>}
             {portfolio &&
-              <div className="w-[30%] flex gap-y-10 flex-col">
+              <div className="lg:w-[30%] w-full flex gap-y-10 flex-col">
                 <Doughnut data={data} options={options} />
-                {portfolio[0].average_yield && <p className="text-sm font-bold">Rendimiento promedio: {portfolio[0].average_yield*100}% anual</p>}
+                {portfolio[0].average_yield && <p className="text-sm font-bold">Rendimiento promedio: {portfolio[0].average_yield}</p>}
               </div>
             }
           </form>
@@ -558,6 +581,20 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                 </FormItem>
             )}
           />
+
+          <FormField
+              control={form.control}
+              name="client_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Client name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
           <FormField
             control={form.control}
@@ -832,9 +869,9 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
           <Button type="submit">Submit</Button>
           {message && <p className="text-green-600">{message}</p>}
           {portfolio &&
-            <div className="w-[30%] flex gap-y-10 flex-col">
+            <div className="lg:w-[30%] w-full flex justify-center items-center gap-y-10 flex-col">
               <Doughnut data={data} options={options} />
-              {portfolio[0].average_yield && <p className="text-sm font-bold">Average yield:{portfolio[0].average_yield}</p>}
+              {portfolio[0].average_yield && <p className="text-sm font-bold">Average yield: {portfolio[0].average_yield}</p>}
             </div>
           }
         </form>

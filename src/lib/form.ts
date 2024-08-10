@@ -749,7 +749,10 @@ export const account_access_schema = z.object({
 
 })
 export const risk_assesment_schema = z.object({
-  account_number: z.string().optional(),
+  account_number: z.string().min(1, {
+    message: 'Account number cannot be empty.'
+  }),
+  client_name: z.string().optional(),
   type: z.enum(["1", "2.5", "4"], {
     errorMap: (issue, ctx) => {
       return {message: 'You must select a type.'};
@@ -779,27 +782,6 @@ export const risk_assesment_schema = z.object({
     errorMap: (issue, ctx) => {
       return {message: 'You must select a term.'};
     },
-  }),
-})
-export const risk_assesment_schema_spanish = z.object({
-  numero_cuenta: z.string().optional(),
-  tipo: z.enum(["1", "2.5", "4"], {
-    required_error: "Debes seleccionar un tipo de inversor.",
-  }),
-  perdida: z.enum(["1", "2", "3", "4"], {
-    required_error: "Debes seleccionar una reacción ante la pérdida.",
-  }),
-  ganancia: z.enum(["1", "2", "3", "4"], {
-    required_error: "Debes seleccionar una reacción ante la ganancia.",
-  }),
-  periodo: z.enum(["1", "2", "3", "4"], {
-    required_error: "Debes seleccionar un plazo.",
-  }),
-  diversificacion: z.enum(["1", "2", "3"], {
-    required_error: "Debes seleccionar una cartera.",
-  }),
-  objetivos: z.enum(["1", "2", "3"], {
-    required_error: "Debes seleccionar un plazo.",
   }),
 })
 
