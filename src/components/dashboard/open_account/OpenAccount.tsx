@@ -14,23 +14,22 @@ import { Input } from "@/components/ui/input"
 
 import { DataTable } from '../components/DataTable'
 
-import { DocumentData } from 'firebase/firestore'
-
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { addColumnsFromJSON, addDocument, queryDocumentsFromCollection } from "@/utils/api"
 import { formatTimestamp } from "@/utils/dates"
-import { account_access_schema, getDefaults, temp_email_schema } from '@/lib/form'
+import { getDefaults, temp_email_schema } from '@/lib/form'
 import { useForm } from 'react-hook-form'
-import { Documents, Map, Ticket } from '@/lib/types'
-import { sortColumns } from '@/utils/table'
+import { Map, Ticket } from '@/lib/types'
 
 interface Props {
   currentTicket:Ticket, 
-  setCanContinue: React.Dispatch<React.SetStateAction<boolean>>
+  setCanContinue: React.Dispatch<React.SetStateAction<boolean>>,
+  setAccount: React.Dispatch<React.SetStateAction<any | null>>,
+  account: any
 }
 
-const OpenAccount = ({currentTicket, setCanContinue}:Props) => {
+const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props) => {
 
   let formSchema:any
   let initialFormValues:any
@@ -60,13 +59,18 @@ const OpenAccount = ({currentTicket, setCanContinue}:Props) => {
   const [ticket, setTicket] = useState<Ticket[] | null>(null)
   const ticketID = currentTicket['TicketID']
 
-  // Fetch documents and ticket data associated to current ticket
+  // Fetch account and ticket data associated to current ticket
   useEffect(() => {
 
     async function queryData () {
 
-      let data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
+      let data = await queryDocumentsFromCollection('db/clients/accounts/', 'TicketID', ticketID)
+      if (data.length > 0) {
+        setAccount(data)
+        setCanContinue(true)
+      }
 
+      data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
       let tickets:Ticket[] = []
       data.forEach((entry:Map) => {
         tickets.push(
@@ -78,7 +82,6 @@ const OpenAccount = ({currentTicket, setCanContinue}:Props) => {
           }
         )
       })
-
       tickets = await addColumnsFromJSON(tickets)
       setTicket(tickets)
 
@@ -88,60 +91,95 @@ const OpenAccount = ({currentTicket, setCanContinue}:Props) => {
 
   }, [])
 
-
   return (
     <div className='h-full w-[70%] flex flex-col justify-start gap-y-10 items-center'>
-
-        <h1 className='text-7xl font-bold'>Create a temporary email.</h1>
-        {ticket && <DataTable data={ticket} width={100}/>}
-
-        <div className="h-full w-full flex flex-col justify-center items-center">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" flex-wrap gap-x-5 gap-y-5 h-fit w-full flex flex-col justify-center items-center">
-              <FormField
-                control={form.control}
-                name="temp_email"
-                render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Address</FormLabel>
-                  <FormControl>
-                      <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-              />
-              <FormField
-                control={form.control}
-                name="temp_password"
-                render={({ field }) => (
-                  <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                      <Input placeholder="" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  </FormItem>
-              )}
-              />
-              <h1 className='text-3xl'>Open user's account and save account number.</h1>
-              <FormField
-                control={form.control}
-                name="account_number"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Accout number</FormLabel>
-                    <FormControl>
-                        <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-              />
-              <Button className="bg-green-600 h-full" type="submit">Submit</Button>
-              </form>
-            </Form>
-        </div>
+      {!account && ticket ? 
+          <div>
+            <h1 className='text-7xl font-bold'>Create a temporary email.</h1>
+            <div>
+              <DataTable data={ticket} width={100}/>
+              <div className="h-full w-full flex flex-col justify-center items-center">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className=" flex-wrap gap-x-5 gap-y-5 h-fit w-full flex flex-col justify-center items-center">
+                    <FormField
+                      control={form.control}
+                      name="temp_email"
+                      render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Address</FormLabel>
+                        <FormControl>
+                            <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="temp_password"
+                      render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                            <Input placeholder="" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <h1 className='text-3xl'>Open user's account and save account number.</h1>
+                    <FormField
+                      control={form.control}
+                      name="account_number"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Accout number</FormLabel>
+                          <FormControl>
+                              <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="ibkr_username"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>IBKR Username</FormLabel>
+                          <FormControl>
+                              <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="ibkr_password"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>IBKR Password</FormLabel>
+                          <FormControl>
+                              <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                    />
+                    <Button className="bg-green-600 h-full" type="submit">Submit</Button>
+                    </form>
+                  </Form>
+              </div>
+            </div>
+          </div>
+          :
+          <div className='w-full h-full flex flex-col gap-y-10 items-center justify-center'>
+            <h1 className='text-7xl font-bold'>Account already created.</h1>
+            {ticket && <DataTable data={ticket} width={100}/>}
+            {account && <DataTable data={account} width={100}/>}
+          </div>
+        }
     </div>
   )
 }

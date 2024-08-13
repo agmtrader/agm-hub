@@ -9,9 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 
 import Link from 'next/link';
-import DocumentUploader from '../document_center/DocumentUploader';
-
-import { DataTableSelect } from '@/components/dashboard/components/DataTable';
 
 import {
   Tabs,
@@ -21,21 +18,20 @@ import {
 } from "@/components/ui/tabs"
 import DocumentViewer from '@/components/dashboard/document_center/DocumentViewer'
 import { Document, Documents, Map, POA, POI, Ticket } from '@/lib/types';
+import DocumentCenter from '../document_center/DocumentCenter';
 
 
 interface Props {
   currentTicket: Ticket,
   setCanContinue: React.Dispatch<React.SetStateAction<boolean>>,
-  canContinue: boolean
+  canContinue: boolean,
+  account: any
 }
 
-const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => {
+const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:Props) => {
 
   // Selection variables
   const [selection, setSelection] = useState<Document | null>(null)
-
-  // Type of document
-  const [type, setType] = useState<string>('POA')
 
   // Current ticket
   const [ticket, setTicket] = useState<Ticket[] | null>(null)
@@ -48,7 +44,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
   // Documents
   const [documents, setDocuments] = useState<Documents | null>(null)
 
-  // Fetch documents and ticket data associated to current ticket
+  // Fetch account and ticket data associated to current ticket
   useEffect(() => {
 
     async function queryData () {
@@ -66,9 +62,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
       //let sowData = await queryDocumentsFromCollection('/db/document_center/sow', 'TicketID', ticketID)
       
       data = await queryDocumentsFromCollection('/db/document_center/poa', 'AccountNumber', account_number)
-
       let poaData:POA[] = []
-
       if (data) {
         data.forEach((entry) => {
           poaData.push({
@@ -83,14 +77,8 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
         })
       }
 
-      if (poaData.length !== 0) {
-        setDocuments({'POA':poaData})
-      }
-
       data = await queryDocumentsFromCollection('/db/document_center/poi', 'AccountNumber', account_number)
-
       let poiData:POI[] = []
-
       data.forEach((entry) => {
         poiData.push({
           'TicketID': entry['TicketID'],
@@ -102,9 +90,8 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
         })
       })
       
-      if (poiData.length !== 0) {
-        setDocuments({'POA':poaData, 'POI':poiData})
-      }
+      setDocuments({'POA':poaData,'POI': poiData})
+      
 
       // Fetch ticket
       data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
@@ -161,7 +148,6 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
     }
   }
 
-  const types = ['POA', 'POI']
 
   return (
     <div className='h-full w-full flex flex-col justify-start gap-y-10 items-center'>
@@ -174,23 +160,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue}:Props) => 
           </Button>
       </div>
 
-      <Tabs defaultValue="POA" onValueChange={setType} className="w-[50%]">
-        <TabsList className="grid w-full grid-cols-3">
-            {types.map((type) => (
-              <TabsTrigger key={type} value={type}>{type}</TabsTrigger>
-            ))}
-          </TabsList>
-          {documents && types.map((type) => (
-            <TabsContent key={type} value={type} className='flex flex-col gap-y-10'>
-              {documents[type] && <DataTableSelect data={documents[type]} setSelection={setSelection} width={100}/>}
-            </TabsContent>
-          ))}
-
-      </Tabs>
-
-      {selection && <DocumentViewer document={selection}/>}
-
-      {accountNumber && <DocumentUploader type={type} accountNumber={accountNumber}/>}
+      {documents && accountNumber && <DocumentCenter documents={documents} setSelection={setSelection} accountNumber={accountNumber} selection={selection}/>}
 
       {documents && Object.keys(documents).length === 2 && 
         <div className="items-top flex space-x-2">

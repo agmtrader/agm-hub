@@ -30,7 +30,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import { new_poa_schema, poa_schema } from "@/lib/form"
+import { getDefaults, new_poa_schema, new_poi_schema, poa_schema, poi_schema } from "@/lib/form"
 import { drive } from 'googleapis/build/src/apis/drive'
 import { DocumentData } from 'firebase/firestore'
 import { formatTimestamp } from '@/utils/dates'
@@ -51,50 +51,45 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
 
           // If reuploading
           formSchema = poa_schema
-          initialFormValues = {
-            issued_date:'',
-          }
+          initialFormValues = getDefaults(formSchema)
 
         } else {
 
           // New document
           formSchema = new_poa_schema
-          initialFormValues = {
-            issued_date:'',
-          }
+          initialFormValues = getDefaults(formSchema)
 
           if (!accountNumber) {
             initialFormValues['account_number'] = ''
+          } else {
+            initialFormValues['account_number'] = accountNumber
           }
 
         }
-        driveId = '1wPsX533MjJLAocS7WKQMTO2uB6Ozi2Dy'
+        driveId = '1tuS0EOHoFm9TiJlv3uyXpbMrSgIKC2QL'
         break;
       case 'POI':
+
         if (document) {
 
           // If reuploading
-          formSchema = poa_schema
-          initialFormValues = {
-            issued_date:'',
-            misc:''
-          }
+          formSchema = poi_schema
+          initialFormValues = getDefaults(formSchema)
 
         } else {
 
           // New document
-          formSchema = new_poa_schema
-          initialFormValues = {
-            issued_date:'',
-            misc:''
-          }
+          formSchema = new_poi_schema
+          initialFormValues = getDefaults(formSchema)
 
           if (!accountNumber) {
             initialFormValues['account_number'] = ''
+          } else {
+            initialFormValues['account_number'] = accountNumber
           }
           
         }
-        driveId = '1wPsX533MjJLAocS7WKQMTO2uB6Ozi2Dy'
+        driveId = '1VY0hfcj3EKcDMD6O_d2_gmiKL6rSt_M3'
         break;
     }
 
@@ -104,8 +99,8 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
     })
     
     async function onSubmit(values: z.infer<typeof formSchema>) {
+      setMessage('Loading...')
       const fileInfo = await uploadFile()
-      console.log(fileInfo)
 
       let timestamp = new Date()
       let documentTimestamp = formatTimestamp(timestamp)
@@ -138,6 +133,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
       }
 
       await addDocument(documentInfo, `db/document_center/${documentInfo['Type'].toLowerCase()}`, documentTimestamp)
+      setMessage('File uploaded successfully')
     }
 
     const uploadFile = async () => {
@@ -160,6 +156,8 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
       return fileInfo
     }
 
+    const [message, setMessage] = useState<string>('')
+
   return (
     <div>
         <Dialog>
@@ -169,16 +167,16 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
                     <Upload className="h-5 w-5"/>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="h-[75%] gap-y-5 max-w-[80%] w-full flex-wrap flex">
                 <DialogHeader>
-                <DialogTitle>Upload file</DialogTitle>
+                <DialogTitle>Upload {type}</DialogTitle>
                 <DialogDescription>
-                    Upload files to the document center
+                    Upload {type} to the document center
                 </DialogDescription>
                 </DialogHeader>
                   <Form {...form}>
     
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col justify-center items-center">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="h-[80%] w-full flex flex-col flex-wrap justify-center gap-y-5 gap-x-5 items-center">
 
                       {Object.keys(initialFormValues).map((key:any) => (
                         <FormField
@@ -186,7 +184,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
                         control={form.control}
                         name={key}
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className='w-[20%]'>
                             <FormLabel>{key}</FormLabel>
                             <FormControl>
                                 <Input placeholder="" {...field} />
@@ -197,16 +195,30 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
                         />
                       ))}
 
-                      <Input
-                        placeholder="Picture"
-                        type="file"
-                        accept="image/*, application/pdf, text/csv"
-                        onChange={(e) => setFile(e.target.files![0])}
-                      />
+                      <FormField
+                        control={form.control}
+                        name='file'
+                        render={({ field }) => (
+                            <FormItem className='w-[20%]'>
+                            <FormLabel>File</FormLabel>
+                            <FormControl>
+                            <Input
+                              placeholder="Picture"
+                              type="file"
+                              accept="image/*, application/pdf, text/csv"
+                              onChange={(e) => setFile(e.target.files![0])}
+                            />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
 
                       <Button className="bg-agm-orange" type="submit">
                         Submit
                       </Button>
+
+                      <p>{message}</p>
 
                     </form>
                   </Form>

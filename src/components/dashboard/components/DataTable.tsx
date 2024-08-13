@@ -43,6 +43,12 @@ export const DataTable = <TData,>({data, width, dark}: DataTableProps<TData>) =>
     const [rowSelection, setRowSelection] = useState({})
     const [sorting, setSorting] = useState<SortingState>([])
 
+    if (data.length == 0) {
+      return (
+        <div></div>
+      )
+    }
+    
     function buildColumns(data:Map) {
         const columns:Array<any> = []
   
@@ -120,6 +126,12 @@ export const DataTable = <TData,>({data, width, dark}: DataTableProps<TData>) =>
 
 export const DataTableSelect = <TData,>({data, setSelection, width}: DataTableSelectProps<TData>) => {
 
+    if (data.length == 0) {
+      return (
+        <div></div>
+      )
+    }
+    
     const [rowSelection, setRowSelection] = useState({})
     const [sorting, setSorting] = useState<SortingState>([])
 

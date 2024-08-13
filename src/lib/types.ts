@@ -47,7 +47,7 @@ export type Selection = Document | Ticket
 
 // Document Center
 export interface Documents {
-  [key:string]: Document[] | ClientDocument[]
+  [key:string]: Document[]
 }
 
 export type Document = ClientDocument | STAT

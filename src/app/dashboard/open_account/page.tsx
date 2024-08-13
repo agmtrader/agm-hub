@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 
@@ -19,7 +19,10 @@ const page = () => {
   // Current ticket
   const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null)
 
-  function stepForward(e:React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+  // Current account
+  const [account, setAccount] = useState<any>(null)
+
+  function stepForward() {
     if (canContinue) {
       setStep(step + 1)
       setError(null)
@@ -49,6 +52,8 @@ const page = () => {
     }
   }
 
+  console.log(account, currentTicket)
+
   return (
     
     <div className='w-full h-full flex mt-[20vh] flex-col gap-y-10 justify-center items-center'>
@@ -58,9 +63,9 @@ const page = () => {
 
       {step == 1 && <TicketManager setCurrentTicket={setCurrentTicket} currentTicket={currentTicket} setCanContinue={setCanContinue}/>}
 
-      {(step == 2 && currentTicket) && <OpenAccount currentTicket={currentTicket} setCanContinue={setCanContinue}/>}
+      {(step == 2 && currentTicket) && <OpenAccount currentTicket={currentTicket} setCanContinue={setCanContinue} setAccount={setAccount} account={account}/>}
 
-      {(step == 3 && currentTicket) && <BackupDocuments currentTicket={currentTicket} setCanContinue={setCanContinue} canContinue={canContinue}/>}
+      {(step == 3 && currentTicket) && <BackupDocuments currentTicket={currentTicket} setCanContinue={setCanContinue} canContinue={canContinue} account={account}/>}
 
       {(step == 4 && currentTicket) && <FillApplicationForm currentTicket={currentTicket} setCanContinue={setCanContinue} />}
 
@@ -68,7 +73,7 @@ const page = () => {
 
         <div className='h-fit w-fit flex items-center gap-x-10 justify-start'>
           {step > 1 && <Button variant={'default'} onClick={stepBackwards} >Previous step.</Button>}
-          <Button variant={canContinue ? 'default':'destructive'} className='' onClick={(e) => stepForward(e)}>{step === 4 ? 'Finish.':'Next step.'}</Button>
+          <Button variant={canContinue ? 'default':'destructive'} className='' onClick={(e) => stepForward()}>{step === 4 ? 'Finish.':'Next step.'}</Button>
         </div>
 
         {error && <p className='text-lg'>{error}</p>}

@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react'
 
-import { DataTable, DataTableSelect } from '@/components/dashboard/components/DataTable';
+import { DataTableSelect } from '@/components/dashboard/components/DataTable';
 
 import {
   Tabs,
@@ -11,15 +11,16 @@ import {
 } from "@/components/ui/tabs"
 import DocumentViewer from '@/components/dashboard/document_center/DocumentViewer'
 import DocumentUploader from '@/components/dashboard/document_center/DocumentUploader'
-import { ClientDocument, Document, Documents, Selection } from '@/lib/types';
+import { Document, Documents } from '@/lib/types';
 
 interface Props {
   documents: Documents | null,
   setSelection: React.Dispatch<React.SetStateAction<Document | null>>,
-  selection: Document | null
+  selection: Document | null,
+  accountNumber?: string
 }
 
-const DocumentCenter = ({documents, setSelection, selection}:Props) => {
+const DocumentCenter = ({documents, setSelection, selection, accountNumber}:Props) => {
 
   const [type, setType] = useState<string>('POA')
 
@@ -42,7 +43,7 @@ const DocumentCenter = ({documents, setSelection, selection}:Props) => {
 
       {selection && <DocumentViewer document={selection}/>}
 
-      <DocumentUploader type={type}/>
+      <DocumentUploader accountNumber={accountNumber} type={type}/>
 
     </div>
   )
