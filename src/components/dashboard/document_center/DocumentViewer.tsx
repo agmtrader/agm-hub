@@ -10,12 +10,14 @@ import Link from "next/link"
 import { Document } from "@/lib/types"
 
 const DocumentViewer = ({document}:{document:Document}) => {
+  console.log(document)
   return (
     <Card>
       <CardContent className="flex items-center my-5 justify-center">
         <div className='w-full flex flex-col gap-y-5 justify-center items-center h-fit overflow-hidden'>
           <iframe 
-            src={document ? document['URL' as keyof Document]:''}
+            src={document ? `https://drive.google.com/file/d/${document['FileID' as keyof Document]}/preview`:''}
+            
             width="500" 
             height="600" 
             className=' '

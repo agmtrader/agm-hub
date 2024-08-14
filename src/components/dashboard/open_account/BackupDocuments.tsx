@@ -10,14 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 import Link from 'next/link';
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import DocumentViewer from '@/components/dashboard/document_center/DocumentViewer'
-import { Document, Documents, Map, POA, POI, Ticket } from '@/lib/types';
+import { Document, Documents, Map, Ticket } from '@/lib/types';
 import DocumentCenter from '../document_center/DocumentCenter';
 
 
@@ -62,40 +55,66 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
       //let sowData = await queryDocumentsFromCollection('/db/document_center/sow', 'TicketID', ticketID)
       
       data = await queryDocumentsFromCollection('/db/document_center/poa', 'AccountNumber', account_number)
-      let poaData:POA[] = []
+      let poaData:Document[] = []
       if (data) {
         data.forEach((entry) => {
           poaData.push({
-            'TicketID': entry['TicketID'],
-            'Timestamp': entry['Timestamp'],
+            'DocumentID': entry['DocumentID'],
+            'FileID': entry['FileID'],
+            'FileName': entry['FileName'],
+            'FileInfo': entry['FileInfo'],
             'AccountNumber': entry['AccountNumber'],
-            'IssuedDate': entry['IssuedDate'],
-            'ExpirationDate': entry['ExpirationDate'],
-            'Type': entry['Type'],
-            'URL': entry['URL']
+            'Type': entry['Type']
           })
         })
       }
 
       data = await queryDocumentsFromCollection('/db/document_center/poi', 'AccountNumber', account_number)
-      let poiData:POI[] = []
+      let poiData:Document[] = []
       data.forEach((entry) => {
         poiData.push({
-          'TicketID': entry['TicketID'],
-          'Timestamp': entry['Timestamp'],
+          'DocumentID': entry['DocumentID'],
+          'FileID': entry['FileID'],
+          'FileName': entry['FileName'],
+          'FileInfo': entry['FileInfo'],
           'AccountNumber': entry['AccountNumber'],
-          'IssuedDate': entry['IssuedDate'],
-          'ExpirationDate': entry['ExpirationDate'],
-          'Type': entry['Type'],
+          'Type': entry['Type']
         })
       })
+
+      data = await queryDocumentsFromCollection('/db/document_center/sow', 'AccountNumber', account_number)
+      let sowData:Document[] = []
+      if (data) {
+        data.forEach((entry) => {
+          poaData.push({
+            'DocumentID': entry['DocumentID'],
+            'FileID': entry['FileID'],
+            'FileName': entry['FileName'],
+            'FileInfo': entry['FileInfo'],
+            'AccountNumber': entry['AccountNumber'],
+            'Type': entry['Type']
+          })
+        })
+      }
       
-      setDocuments({'POA':poaData,'POI': poiData})
+      setDocuments({'POA':poaData,'POI': poiData, 'SOW': sowData})
       
 
       // Fetch ticket
-      data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
+      let tickets:Ticket[] = []
+      data.forEach((entry:Map) => {
+        tickets.push(
+          {
+            'TicketID': entry['TicketID'],
+            'Status': entry['Status'],
+            'ApplicationInfo': entry['ApplicationInfo'],
+            'Advisor': entry['Advisor']
+          }
+        )
+      })
 
+      // Fetch ticket
+      data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
       data.forEach((entry:Map) => {
         currentTicket = {
             'TicketID': entry['TicketID'],
@@ -119,18 +138,6 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
       data = await addColumnsFromJSON(data)
       data = sortColumns(data, ticketColumns)
 
-      let tickets:Ticket[] = []
-      data.forEach((entry:Map) => {
-        tickets.push(
-          {
-            'TicketID': entry['TicketID'],
-            'Status': entry['Status'],
-            'ApplicationInfo': entry['ApplicationInfo'],
-            'Advisor': entry['Advisor']
-          }
-        )
-      })
-
       setTicket(tickets)
     }
     
@@ -148,7 +155,6 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
     }
   }
 
-
   return (
     <div className='h-full w-full flex flex-col justify-start gap-y-10 items-center'>
       <h1 className='text-7xl font-bold'>Upload and revise documents.</h1>
@@ -162,7 +168,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
 
       {documents && accountNumber && <DocumentCenter documents={documents} setSelection={setSelection} accountNumber={accountNumber} selection={selection}/>}
 
-      {documents && Object.keys(documents).length === 2 && 
+      {documents && Object.keys(documents).length === 3 && 
         <div className="items-top flex space-x-2">
             <Checkbox
               checked={canContinue}

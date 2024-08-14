@@ -67,11 +67,16 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
     const dob_date = values.dob_day + '/' + values.dob_month + '/' + values.dob_year;
 
-    (values as any).date = dob_date;
+    (values as any).date_of_birth = dob_date;
+    delete (values as any).dob_day;
+    delete (values as any).dob_month;
+    delete (values as any).dob_year;
 
-    delete (values as any).dob_day
-    delete (values as any).dob_month
-    delete (values as any).dob_year
+    const expiration_date = values.id_expiration_month + '/' + values.id_expiration_year;
+
+    (values as any).expiration_date = expiration_date;
+    delete (values as any).id_expiration_month;
+    delete (values as any).id_expiration;
 
     Object.keys(values).forEach(async (key) => {
       if (primary) {

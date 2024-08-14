@@ -353,11 +353,11 @@ export const about_you_primary_schema = z.object({
     message: "You must select a salutation.",
   }),
 
-  FirstName: z.string().min(1, {
+  first_name: z.string().min(1, {
     message: "First name cannot be empty.",
   }),
 
-  MiddleName: z.string().optional(),
+  middle_name: z.string().optional(),
 
   last_name: z.string().min(1, {
     message: "Last name cannot be empty.",
@@ -682,7 +682,6 @@ export const about_you_secondary_schema = z.object({
   }),
 
 })
-
 export const regulatory_schema = z.object({
   annual_net_income: z.string().min(1, {
     message: "You must select a annual net income.",
@@ -705,27 +704,44 @@ export const regulatory_schema = z.object({
 
 // Document Center
 export const poa_schema = z.object({
-  issued_date: z.string().min(1, {
-    message: "You must select at least one investment objectives.",
-  }),
+  account_number: z.string().optional(),
+  type: z.enum(["Utility bill"]).optional(),
+  issued_year: z.string().optional(),
+  issued_month: z.string().optional(),
+  issued_day: z.string().optional(),
 })
 export const new_poa_schema = z.object({
-  account_number: z.ostring(),
-  issued_date: z.string().min(1, {
-    message: "You must select at least one investment objectives.",
-  })
+  account_number: z.string().optional(),
+  type: z.enum(["Utility bill"], {
+    errorMap: (issue, ctx) => {
+      return {message: 'You must select a type.'};
+    },
+  }),
+  issued_year: z.string().min(4, {
+    message: "Year must be 4 digits.",
+  }).max(4, {
+    message: "Year must be 4 digits."
+  }),
+  issued_month: z.string().min(2, {
+    message: "Month must be 2 digits.",
+  }),
+  issued_day: z.string().min(2, {
+    message: "Month must be 2 digits.",
+  }),
 })
-
 export const poi_schema = z.object({
   account_number: z.string().optional(),
   gender: z.string().optional(),
   country_of_issue: z.string().optional(),
-  type: z.string().optional(),
+  type: z.enum(["ID", "Passport", "License"]).optional(),
   full_name: z.string().optional(),
   id_number: z.string().optional(),
-  issued_date: z.string().optional(),
-  expiration_date: z.string().optional(),
-  country_of_birth: z.string().optional()
+  issued_year: z.string().optional(),
+  issued_month: z.string().optional(),
+  issued_day: z.string().optional(),
+  expiration_year: z.string().optional(),
+  expiration_month: z.string().optional(),
+  expiration_day: z.string().optional(),
 })
 export const new_poi_schema = z.object({
   account_number: z.string().optional(),
@@ -763,37 +779,21 @@ export const new_poi_schema = z.object({
     message: "Day must be 2 digits.",
   })
 })
+export const sow_schema = z.object({
+  account_number: z.string().optional(),
+})
+export const new_sow_schema = z.object({
+  account_number: z.string().optional(),
+})
 
 // Account accesses
-export const temp_email_schema = z.object({
-
-  temp_email: z.string(),
-
-  temp_password: z.string(),
-
-  account_number: z.string()
-
-})
-export const account_number_schema = z.object({
-
-  account_number: z.string(),
-
-})
 export const account_access_schema = z.object({
-
-  name: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }).max(50),
-
-  lastname: z.string().min(2, {
-    message: "Email must be at least 2 characters.",
-  }).max(50),
-
-  username: z.string(), 
-
-  password: z.string(),
-
+  user_full_name: z.string(),
+  temp_email: z.string(),
+  temp_password: z.string(),
   account_number: z.string(),
+  ibkr_username: z.string(),
+  ibkr_password: z.string()
 
 })
 export const risk_assesment_schema = z.object({

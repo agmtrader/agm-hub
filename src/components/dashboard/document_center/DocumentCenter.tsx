@@ -28,7 +28,7 @@ const DocumentCenter = ({documents, setSelection, selection, accountNumber}:Prop
     <div className='h-full w-full flex flex-col justify-start gap-y-10 items-center'>
 
       <Tabs defaultValue="POA" onValueChange={setType} className="w-[80%]">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className={`grid w-full grid-cols-3`}>
             {documents && Object.keys(documents).map((type) => (
               <TabsTrigger key={type} value={type}>{type}</TabsTrigger>
             ))}

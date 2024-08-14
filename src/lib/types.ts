@@ -50,28 +50,11 @@ export interface Documents {
   [key:string]: Document[]
 }
 
-export type Document = ClientDocument | STAT
-export type ClientDocument = POA | POI
-
-export type POA = {
-  'TicketID': string
-  'Timestamp': string
+export type Document = {
+  'DocumentID': string
+  'FileID': string
   'AccountNumber': string
-  'IssuedDate': string
-  'ExpirationDate':string
+  'FileName':string
   'Type':string
-  'URL':string | null
-}
-export type POI = {
-  'TicketID': string
-  'Timestamp': string
-  'AccountNumber': string
-  'IssuedDate': string
-  'ExpirationDate':string
-  'Type':string
-}
-export type STAT = {
-  'Timestamp': string
-  'AccountNumber': string
-  'Type':string
+  'FileInfo':Map
 }

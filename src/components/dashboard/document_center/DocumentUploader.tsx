@@ -30,12 +30,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import { getDefaults, new_poa_schema, new_poi_schema, poa_schema, poi_schema } from "@/lib/form"
+import { getDefaults, new_poa_schema, new_poi_schema, new_sow_schema, poa_schema, poi_schema, sow_schema } from "@/lib/form"
 import { drive } from 'googleapis/build/src/apis/drive'
 import { DocumentData } from 'firebase/firestore'
 import { formatTimestamp } from '@/utils/dates'
 import { addDocument } from '@/utils/api'
-import { ClientDocument, Document } from '@/lib/types'
+import { Document } from '@/lib/types'
+import { useSession } from 'next-auth/react'
 
 const DocumentUploader = ({type, document, accountNumber}:{type:string, document?:Document, accountNumber?:string}) => {
   
@@ -45,7 +46,9 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
     const [file, setFile] = useState<File | null>(null)
     let driveId = ''
 
+    // Set initial form values
     switch (type) {
+
       case 'POA':
         if (document) {
 
@@ -68,6 +71,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
         }
         driveId = '1tuS0EOHoFm9TiJlv3uyXpbMrSgIKC2QL'
         break;
+
       case 'POI':
 
         if (document) {
@@ -91,7 +95,34 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
         }
         driveId = '1VY0hfcj3EKcDMD6O_d2_gmiKL6rSt_M3'
         break;
+
+      case 'SOW':
+        if (document) {
+
+          // If reuploading
+          formSchema = sow_schema
+          initialFormValues = getDefaults(formSchema)
+
+        } else {
+
+          // New document
+          formSchema = new_sow_schema
+          initialFormValues = getDefaults(formSchema)
+
+          if (!accountNumber) {
+            initialFormValues['account_number'] = ''
+          } else {
+            initialFormValues['account_number'] = accountNumber
+          }
+          
+        }
+        driveId = '1VY0hfcj3EKcDMD6O_d2_gmiKL6rSt_M3'
+        break;
+    
     }
+    
+    const {data:session} = useSession()
+    console.log(session?.user.email)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -99,6 +130,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
     })
     
     async function onSubmit(values: z.infer<typeof formSchema>) {
+
       setMessage('Loading...')
       const fileInfo = await uploadFile()
 
@@ -107,11 +139,12 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
 
       let documentInfo:any
 
-      // https://drive.google.com/uc?export=download&id=
+      // https://drive.google.com/uc?export=download&id={id}
+      // https://drive.google.com/file/d/{id}/preview
 
       if (fileInfo) {
 
-        documentInfo = {'DocumentID':documentTimestamp, 'FileID':fileInfo['id'], 'URL':`https://drive.google.com/file/d/${fileInfo['id']}/preview`, 'Type':type, 'FileName':fileInfo['name']}
+        documentInfo = {'DocumentID':documentTimestamp, 'FileID':fileInfo['id'], 'Type':type, 'FileName':fileInfo['name'], 'FileInfo':values, 'AGMUser':session?.user.email}
 
         if (document) {
 
@@ -134,9 +167,11 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
 
       await addDocument(documentInfo, `db/document_center/${documentInfo['Type'].toLowerCase()}`, documentTimestamp)
       setMessage('File uploaded successfully')
+
     }
 
     const uploadFile = async () => {
+
       if (!file) return;
 
       const formData = new FormData();
@@ -212,7 +247,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
                             <FormMessage />
                             </FormItem>
                         )}
-                        />
+                      />
 
                       <Button className="bg-agm-orange" type="submit">
                         Submit

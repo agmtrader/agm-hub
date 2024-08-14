@@ -18,7 +18,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { addColumnsFromJSON, addDocument, queryDocumentsFromCollection } from "@/utils/api"
 import { formatTimestamp } from "@/utils/dates"
-import { getDefaults, temp_email_schema } from '@/lib/form'
+import { getDefaults, account_access_schema } from '@/lib/form'
 import { useForm } from 'react-hook-form'
 import { Map, Ticket } from '@/lib/types'
 
@@ -34,7 +34,7 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
   let formSchema:any
   let initialFormValues:any
   
-  formSchema = temp_email_schema
+  formSchema = account_access_schema
   initialFormValues = getDefaults(formSchema)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,7 +42,7 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
     values: initialFormValues,
   })
   
-  async function onSubmit(values: z.infer<typeof temp_email_schema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
 
       let timestamp = new Date()
       let accountTimestamp = formatTimestamp(timestamp)
@@ -58,19 +58,14 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
   // Current ticket
   const [ticket, setTicket] = useState<Ticket[] | null>(null)
   const ticketID = currentTicket['TicketID']
+  console.log(ticketID)
 
   // Fetch account and ticket data associated to current ticket
   useEffect(() => {
 
     async function queryData () {
 
-      let data = await queryDocumentsFromCollection('db/clients/accounts/', 'TicketID', ticketID)
-      if (data.length > 0) {
-        setAccount(data)
-        setCanContinue(true)
-      }
-
-      data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
+      let data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
       let tickets:Ticket[] = []
       data.forEach((entry:Map) => {
         tickets.push(
@@ -85,6 +80,16 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
       tickets = await addColumnsFromJSON(tickets)
       setTicket(tickets)
 
+
+      data = await queryDocumentsFromCollection('db/clients/accounts/', 'TicketID', ticketID)
+      console.log(data)
+      if (data.length > 0) {
+        setAccount(data)
+        setCanContinue(true)
+      } else {
+        setAccount(null)
+      }
+
     }
     
     queryData()
@@ -92,86 +97,82 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
   }, [])
 
   return (
-    <div className='h-full w-[70%] flex flex-col justify-start gap-y-10 items-center'>
+    <div className='h-full w-full flex flex-col justify-star items-center'>
       {!account && ticket ? 
-          <div>
+          <div className='w-[70%] h-full flex flex-col justify-center items-center gap-y-10'>
             <h1 className='text-7xl font-bold'>Create a temporary email.</h1>
-            <div>
-              <DataTable data={ticket} width={100}/>
-              <div className="h-full w-full flex flex-col justify-center items-center">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className=" flex-wrap gap-x-5 gap-y-5 h-fit w-full flex flex-col justify-center items-center">
-                    <FormField
-                      control={form.control}
-                      name="temp_email"
-                      render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Address</FormLabel>
-                        <FormControl>
-                            <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="temp_password"
-                      render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                            <Input placeholder="" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <h1 className='text-3xl'>Open user's account and save account number.</h1>
-                    <FormField
-                      control={form.control}
-                      name="account_number"
-                      render={({ field }) => (
-                      <FormItem>
-                          <FormLabel>Accout number</FormLabel>
-                          <FormControl>
-                              <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                      </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="ibkr_username"
-                      render={({ field }) => (
-                      <FormItem>
-                          <FormLabel>IBKR Username</FormLabel>
-                          <FormControl>
-                              <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                      </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="ibkr_password"
-                      render={({ field }) => (
-                      <FormItem>
-                          <FormLabel>IBKR Password</FormLabel>
-                          <FormControl>
-                              <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                      </FormItem>
-                      )}
-                    />
-                    <Button className="bg-green-600 h-full" type="submit">Submit</Button>
-                    </form>
-                  </Form>
-              </div>
-            </div>
+            <DataTable data={ticket} width={100}/>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className=" flex-wrap gap-x-5 gap-y-5 h-fit w-full flex flex-col justify-center items-center">
+                <FormField
+                  control={form.control}
+                  name="temp_email"
+                  render={({ field }) => (
+                  <FormItem className='w-full h-full'>
+                    <FormLabel>Temporary email address</FormLabel>
+                    <FormControl>
+                        <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+                />
+                <FormField
+                  control={form.control}
+                  name="temp_password"
+                  render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Temporary password</FormLabel>
+                    <FormControl>
+                        <Input placeholder="" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <h1 className='text-7xl font-bold'>IBKR Account Accesses</h1>
+                <FormField
+                  control={form.control}
+                  name="account_number"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>IBKR Accout number</FormLabel>
+                      <FormControl>
+                          <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="ibkr_username"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>IBKR Username</FormLabel>
+                      <FormControl>
+                          <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="ibkr_password"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>IBKR Password</FormLabel>
+                      <FormControl>
+                          <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+                />
+                <Button className="bg-green-600 h-full" type="submit">Submit</Button>
+              </form>
+            </Form>
           </div>
           :
           <div className='w-full h-full flex flex-col gap-y-10 items-center justify-center'>

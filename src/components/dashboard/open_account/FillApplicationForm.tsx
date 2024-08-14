@@ -17,7 +17,6 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
   
   // Initialize data variables
   const [ticket, setTicket] = useState<Ticket[] | null>(null)
-  const [documents, setDocuments] = useState<Documents | null>(null)
 
   // Columns - pass to dict!
   const ticketColumns = ['TicketID', 'Status', 'email', 'username', 'language']
@@ -33,9 +32,6 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
 
       // Fetch ticket
       let data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
-      data = await addColumnsFromJSON(data)
-
-      data = sortColumns(data, ticketColumns)
 
       let tickets:Ticket[] = []
       data.forEach((entry:Map) => {
@@ -48,6 +44,7 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
           }
         )
       })
+      tickets = await addColumnsFromJSON(tickets)
 
       setTicket(tickets)
     }

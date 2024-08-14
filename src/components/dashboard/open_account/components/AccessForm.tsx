@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input"
 
 import { updateFieldInDocument } from "@/utils/api"
 
-import { account_access_schema } from "@/lib/form"
+import { account_access_schema, getDefaults } from "@/lib/form"
 
 interface Props {
   ticketID:string,
@@ -26,24 +26,18 @@ interface Props {
 
 const AccessForm = ({ticketID, setCanContinue}:Props) => {
 
-  let initialValues = {
-    name: '',
-
-    lastname: '',
-
-    username: '',
-
-    password: '',
+  let formSchema:any
+  let initialValues: any
   
-    account_number: ''
-  }
+  formSchema = account_access_schema
+  initialValues = getDefaults(formSchema)
 
-  const form = useForm<z.infer<typeof account_access_schema>>({
-    resolver: zodResolver(account_access_schema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     values: initialValues
   })
 
-  async function onSubmit(values: z.infer<typeof account_access_schema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
 
     // TODO create type for account access form
     const account:any = {'Name':values.name, 'Last name':values.lastname, 'IBKR Username':values.username, 'IBKR Password':values.password, 'Advisor':null}
