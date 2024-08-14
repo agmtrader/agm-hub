@@ -53,10 +53,9 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
   }, [documentColumns, ticketColumns, ticketID])
 
   return (
-    <div className='h-full w-full flex flex-col justify-start gap-y-10 items-center'>
+    <div className='h-full w-[90%] flex flex-col justify-start gap-y-10 items-center'>
         <h1 className='text-7xl font-bold'>Open account.</h1>
-        {ticket && <DataTable data={ticket}/>}
-        <AccessForm ticketID={ticketID} setCanContinue={setCanContinue}/>
+        {ticket && <DataTable data={ticket} dark width={100}/>}
     </div>
   )
 }

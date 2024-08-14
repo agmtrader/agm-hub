@@ -30,6 +30,14 @@ const navbarContent = [
       'url':'/dashboard'
   },
   {
+    'name':'AGM Trader',
+    'url':'https://agmtrader.com'
+  },
+  {
+    'name':'AGM Advisor',
+    'url':'/'
+  },
+  {
     'name':'Apply for an account',
     'url':'/apply'
   },
@@ -43,10 +51,10 @@ const Sidebar = ({setExpandSidebar}:Props) => {
 
   return (
     <div>
-      <div className='bg-black w-[100vw] fixed h-[100vh]  z-10 bg-opacity-50'></div>
-        <motion.div initial={{x:500}} animate={{x:0}} exit={{x:500}} transition={{duration:0.2  , y: { type: "spring", bounce: 0 }}} className='z-10 flex flex-col gap-y-5 items-end justify-start fixed right-0 w-fit p-10 h-full bg-agm-white'>
-        <NavigationMenu className="h-full w-full flex">
-            <NavigationMenuList className="w-full gap-y-5 h-[80vh] justify-between flex flex-col">
+      <div className='bg-black w-[100vw] fixed h-[100vh] z-10 bg-opacity-50'></div>
+        <motion.div initial={{x:500}} animate={{x:0}} exit={{x:500}} transition={{duration:0.2  , y: { type: "spring", bounce: 0 }}} className='z-10 flex flex-col gap-y-5 items-end justify-start fixed right-0 w-fit p-8 h-full bg-agm-white'>
+        <NavigationMenu className="h-full w-full flex justify-start items-start">
+            <NavigationMenuList className="w-full gap-y-5 h-fit justify-between flex flex-col">
               <div className='w-full h-fit flex justify-end items-start'>
                 <Button variant={'ghost'} onClick={() => setExpandSidebar(false)}>
                   X

@@ -175,7 +175,7 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
             </Form>
           </div>
           :
-          <div className='w-full h-full flex flex-col gap-y-10 items-center justify-center'>
+          <div className='w-[70%] h-full flex flex-col gap-y-10 items-center justify-center'>
             <h1 className='text-7xl font-bold'>Account already created.</h1>
             {ticket && <DataTable data={ticket} width={100}/>}
             {account && <DataTable data={account} width={100}/>}

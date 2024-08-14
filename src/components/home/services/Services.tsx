@@ -27,7 +27,6 @@ function Services() {
           {services.map((element, index) => (
               <div key={index} className='w-fit h-full gap-y-10 flex flex-col justify-center items-center rounded-3xl p-[5vw] bg-agm-dark-blue'>
                 {element.icon}
-                <p className='text-white font-bold'>{element.name}</p>
               </div>
           ))}
         </div>
