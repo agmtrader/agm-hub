@@ -36,7 +36,7 @@ const ClientForm = () => {
 
       {step === 1 && <GeneralInfo step={step} stepForward={stepForward} setTicket={setTicket}/>}
       
-        {(ticket && ticket['ApplicationInfo']['account_type'] === 'individual') ? (
+        {(ticket && ticket['ApplicationInfo']['account_type'] === 'Individual') ? (
             (step === 2) ? <AboutYou primary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
             :
               (step === 3) ? <Regulatory ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackwards={stepBackward}/>
@@ -44,7 +44,7 @@ const ClientForm = () => {
                 (step == 4) && 'Done!'
             )
           :
-          (ticket && ticket['ApplicationInfo']['account_type'] === 'joint') && (
+          (ticket && ticket['ApplicationInfo']['account_type'] === 'Joint') && (
 
             (step === 2) ? <AboutYou primary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
             :

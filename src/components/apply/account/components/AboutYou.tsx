@@ -33,7 +33,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_primary_schema, getDefaults, phone_types, about_you_secondary_schema } from "@/lib/form"
+import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_primary_schema, getDefaults, phone_types, about_you_secondary_schema, security_questions } from "@/lib/form"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Ticket } from "@/lib/types"
 import { updateFieldInDocument } from "@/utils/api"
@@ -68,15 +68,10 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
     const dob_date = values.dob_day + '/' + values.dob_month + '/' + values.dob_year;
 
     (values as any).date_of_birth = dob_date;
-    delete (values as any).dob_day;
-    delete (values as any).dob_month;
-    delete (values as any).dob_year;
 
     const expiration_date = values.id_expiration_month + '/' + values.id_expiration_year;
 
     (values as any).expiration_date = expiration_date;
-    delete (values as any).id_expiration_month;
-    delete (values as any).id_expiration;
 
     Object.keys(values).forEach(async (key) => {
       if (primary) {
@@ -85,8 +80,6 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
         await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.secondary_${key}`, values[key as keyof object])
       }
     })
-
-    console.log(values)
 
     stepForward()
 
@@ -508,14 +501,14 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
             <p className="text-sm text-start">Date of birth</p>
 
-            <div className="flex gap-x-5 w-full h-full">
+            <div className="flex gap-x-5 w-full h-full justify-center items-center">
               <FormField
                 control={form.control}
                 name="dob_day"
                 render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-fit">
                     <FormControl>
-                        <Input className="w-16" placeholder="DD" {...field} />
+                        <Input className="w-14" placeholder="DD" {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -526,9 +519,9 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                 control={form.control}
                 name="dob_month"
                 render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-fit">
                     <FormControl>
-                        <Input className="w-16" placeholder="MM" {...field} />
+                        <Input className="w-14" placeholder="MM" {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -539,7 +532,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                 control={form.control}
                 name="dob_year"
                 render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-fit">
                     <FormControl>
                         <Input placeholder="YYYY" className="w-16"{...field} />
                     </FormControl>
@@ -822,14 +815,14 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
             <p className="text-sm">ID Expiration</p>
 
-            <div className="flex gap-x-5 w-full justify-center h-full">
+            <div className="flex w-full gap-x-5 justify-center items-center h-full">
                 <FormField
                 control={form.control}
                 name="id_expiration_month"
                 render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-fit">
                     <FormControl>
-                        <Input className="w-16" placeholder="MM" {...field} />
+                        <Input className="w-14" placeholder="MM" {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -840,7 +833,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                 control={form.control}
                 name="id_expiration_year"
                 render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-fit">
                     <FormControl>
                         <Input placeholder="YYYY" className="w-16"{...field} />
                     </FormControl>
@@ -1197,7 +1190,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                             )}
                           >
                             {field.value
-                              ? marital_status.find(
+                              ? security_questions.find(
                                   (status) => status.value === field.value
                                 )?.label
                               : "Select a security question"}
@@ -1213,15 +1206,15 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                             />
                             <CommandEmpty>No question found.</CommandEmpty>
                             <CommandGroup>
-                              {marital_status.map((status) => (
+                              {security_questions.map((question) => (
                                 <CommandItem
-                                  value={status.label}
-                                  key={status.value}
+                                  value={question.label}
+                                  key={question.value}
                                   onSelect={() => {
-                                    form.setValue("security_q_1", status.value)
+                                    form.setValue("security_q_1", question.value)
                                   }}
                                 >
-                                  {status.label}
+                                  {question.label}
                                 </CommandItem>
                               ))}
   
@@ -1248,7 +1241,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                 )}
               />
   
-              <FormField
+               <FormField
                 control={form.control}
                 name="security_q_2"
                 render={({ field }) => (
@@ -1266,7 +1259,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                             )}
                           >
                             {field.value
-                              ? marital_status.find(
+                              ? security_questions.find(
                                   (status) => status.value === field.value
                                 )?.label
                               : "Select a security question"}
@@ -1282,15 +1275,15 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                             />
                             <CommandEmpty>No question found.</CommandEmpty>
                             <CommandGroup>
-                              {marital_status.map((status) => (
+                              {security_questions.map((question) => (
                                 <CommandItem
-                                  value={status.label}
-                                  key={status.value}
+                                  value={question.label}
+                                  key={question.value}
                                   onSelect={() => {
-                                    form.setValue("security_q_2", status.value)
+                                    form.setValue("security_q_2", question.value)
                                   }}
                                 >
-                                  {status.label}
+                                  {question.label}
                                 </CommandItem>
                               ))}
   
@@ -1335,7 +1328,7 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                             )}
                           >
                             {field.value
-                              ? marital_status.find(
+                              ? security_questions.find(
                                   (status) => status.value === field.value
                                 )?.label
                               : "Select a security question"}
@@ -1351,15 +1344,15 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
                             />
                             <CommandEmpty>No question found.</CommandEmpty>
                             <CommandGroup>
-                              {marital_status.map((status) => (
+                              {security_questions.map((question) => (
                                 <CommandItem
-                                  value={status.label}
-                                  key={status.value}
+                                  value={question.label}
+                                  key={question.value}
                                   onSelect={() => {
-                                    form.setValue("security_q_3", status.value)
+                                    form.setValue("security_q_3", question.value)
                                   }}
                                 >
-                                  {status.label}
+                                  {question.label}
                                 </CommandItem>
                               ))}
   

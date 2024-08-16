@@ -198,38 +198,39 @@ export const countries = [
     { label: "Zambia", value: "zm" },
     { label: "Zimbabwe", value: "zw" },
 ] as const;
-  
 export const account_types = [
-    { label: "Individual", value: "individual" },
-    { label: "Joint", value: "joint" },
-    { label: "Trust", value: "trust" },
-    { label: "Institutional", value: "institutional" },
+    { label: "Individual", value: "Individual" },
+    { label: "Joint", value: "Joint" },
+    { label: "Trust", value: "Trust" },
+    { label: "Institutional", value: "Institutional" },
 ] as const
-
 export const salutations = [
-    { label: "Mr.", value: "mr" },
-    { label: "Ms.", value: "ms" },
-    { label: "Mrs.", value: "mrs" },
-    { label: "Dr.", value: "dr" },
+    { label: "Mr.", value: "Mr" },
+    { label: "Ms.", value: "Ms" },
+    { label: "Mrs.", value: "Mrs" },
+    { label: "Dr.", value: "Dr" },
 ] as const
-    
 export const marital_status = [
     { label: "Single", value: "Single" },
     { label: "Married", value: "Married" },
+    { label: "Divorced", value: "Divorced" },
     { label: "Widowed", value: "Widowed" },
 ] as const
-
 export const id_type = [
     { label: "Passport", value: "Passport" },
     { label: "National ID", value: "ID" },
     { label: "Driver's License", value: "License" },
+    { label: "Alien ID Card", value: "Alien" },
 ] as const
-
 export const employment_status = [
     { label: "Employed", value: "Employed" },
     { label: "Retired", value: "Retired" },
+    { label: "Self-employed", value: "Self-employed" },
+    { label: "At-Home Trader", value: "Trader" },
+    { label: "Student / Intern", value: "Employed" },
+    { label: "Homemaker", value: "Homemaker" },
+    { label: "Unemployed", value: "Unemployed" },
 ] as const
-
 export const currencies = [
   { label: "USD", value: "USD" },
   { label: "AED", value: "AED" },
@@ -256,7 +257,6 @@ export const currencies = [
   { label: "ZAR", value: "ZAR" },
   { label: "KRW", value: "KRW" },
 ] as const
-
 export const source_of_wealth = [
   {
     id: "Allowance",
@@ -295,7 +295,6 @@ export const source_of_wealth = [
     label: "Other",
   },
 ] as const
-
 export const investment_objectives = [
   {
     id: "Capital",
@@ -315,7 +314,6 @@ export const investment_objectives = [
   }
   
 ] as const
-
 export const products = [
   {
     id: "Bonds",
@@ -338,7 +336,6 @@ export const products = [
     label: "ETFs",
   }
 ] as const
-
 export const worths = [
   {
     value: "< 5000",
@@ -373,10 +370,52 @@ export const worths = [
     label: "1000000+",
   },
 ] as const
-
 export const phone_types = [
   { label: "Mobile", value: "Mobile" },
   { label: "Home", value: "Home" },
+] as const
+export const security_questions = [
+  { label: "In what city were you married?", value: "In what city were you married?" },
+  { label: "What is the name of first boyfriend/girlfriend?", value: "What is name of first boyfriend/girlfriend?" },
+  { label: "What is the last name of your favorite politician?", value: "What is the last name of your favorite politician?" },
+  { label: "What is the middle name of your eldest child?", value: "What is the middle name of your eldest child?" },
+  { label: "What is the name of a school you attended?", value: "What is the name of a school you attended?" },
+  { label: "What is the name of your favorite sports team?", value: "What is the name of your favorite sports team?" },
+  { label: "What is your favorite cartoon character?", value: "What is your favorite cartoon character?" },
+  { label: "What is your favorite place to shop?", value: "What is your favorite place to shop?" },
+  { label: "What is your grandmother's first name?", value: "What is your grandmother's first name?" },
+  { label: "What was the first concert you attended?", value: "What was the first concert you attended?" },
+  { label: "What was the name of a best friend during childhood?", value: "What was the name of a best friend during childhood?" },
+  { label: "What was your High School mascot?", value: "What was your High School mascot?" },
+  { label: "What was the name of your first pet?", value: "What was the name of your first pet?" },
+  { label: "What was your childhood nickname?", value: "What was your childhood nickname?" },
+  { label: "What was your father's occupation?", value: "What was your father's occupation?" },
+  { label: "Where did you go on your honeymoon?", value: "Where did you go on your honeymoon?" },
+  { label: "Where is your favorite vacation spot?", value: "Where is your favorite vacation spot?" },
+  { label: "Who was your childhood hero?", value: "Who was your childhood hero?" },
+  { label: "What was the first stock you ever bought?", value: "What was the first stock you ever bought?" },
+  { label: "Where were you when you had your first kiss?", value: "Where were you when you had your first kiss?" },
+  { label: "Name a city you've never visited but would like to?", value: "Name a city you've never visited but would like to?" },
+  { label: "Name a college you applied to but did not attend?", value: "Name a college you applied to but did not attend?" },
+  { label: "What is the name of the teacher who gave you your first A grade?", value: "What is the name of the teacher who gave you your first A grade?" },
+  { label: "What was the name of your first boss?", value: "What was the name of your first boss?" },
+  { label: "Name a favorite teacher?", value: "Name a favorite teacher?" },
+  { label: "What is the title of your favorite book?", value: "What is the title of your favorite book?" },
+  { label: "Who is your favorite musician?", value: "Who is your favorite musician?" },
+  { label: "What is your favorite restaurant?", value: "What is your favorite restaurant?" },
+  { label: "In what city or town did your mother and father meet?", value: "In what city or town did your mother and father meet?" },
+  { label: "Which Olympic athlete do you admire most?", value: "Which Olympic athlete do you admire most?" },
+  { label: "Who was your favorite Nobel Prize winner?", value: "Who was your favorite Nobel Prize winner?" },
+  { label: "What is your favorite candy?", value: "What is your favorite candy?" },
+  { label: "Which museum did you first visit?", value: "Which museum did you first visit?" },
+  { label: "Which is your favorite movie?", value: "Which is your favorite movie?" },
+  { label: "What meal did you first cook?", value: "What meal did you first cook?" },
+  { label: "What age were you when you first traveled internationally?", value: "What age were you when you first traveled internationally?" },
+  { label: "What is the favorite account that you follow on Twitter?", value: "What is the favorite account that you follow on Twitter?" },
+  { label: "Who is your favorite artist?", value: "Who is your favorite artist?" },
+  { label: "Who is your favorite architect?", value: "Who is your favorite architect?" },
+  { label: "Where did you celebrate New Year's Eve In The Year 2000?", value: "Where did you celebrate New Year's Eve In The Year 2000?" },
+  { label: "What is your spouse's middle name?", value: "What is your spouse's middle name?" },
 ] as const
 
   
