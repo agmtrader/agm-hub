@@ -17,66 +17,65 @@ function FAQ({}: Props) {
         <Accordion type="single" collapsible className="w-[80%] text-start">
             <AccordionItem value="item-1" >
                 <AccordionTrigger>
-                    <p className='text-sm font-bold'>¿Cómo crear una cuenta de ahorro/inversión?</p>
+                    <p className='text-sm font-bold'>How to create a savings/investment account?</p>
                 </AccordionTrigger>
                 <AccordionContent>
-                    <p className='text-sm font-light'>Yes. It adheres to the WAI-ARIA design pattern.</p>
+                    <p className='text-sm font-light'></p>
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
                 <AccordionTrigger>
-                    <p className='text-sm font-bold'>¿Qué medidas de seguridad ofrecen?</p>
+                    <p className='text-sm font-bold'>What security measures do you offer?</p>
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                        Cuentas aseguradas sobre el SIPC (Securities, Investor, 
-                        Protection Corporation) y FINRA (Ente regulador de los mercados 
-                        financieros en Estados Unidos).
+                        Accounts are insured under the SIPC (Securities Investor 
+                        Protection Corporation) and FINRA (Financial Industry 
+                        Regulatory Authority in the United States).
                     </p>
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
                 <AccordionTrigger>
-                    <p className='text-sm font-bold'>Qué tipos de cuentas existen en AGM?</p>
+                    <p className='text-sm font-bold'>What types of accounts are available at AGM?</p>
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                        Individuales, mancomunadas y 
-                        corporativas. Atendemos clientes 
-                        tanto institucionales como individuales a nivel internacional.
+                        Individual, joint, and corporate accounts. We serve both 
+                        institutional and individual clients internationally.
                     </p>
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4">
                 <AccordionTrigger>
-                    <p className='text-sm font-bold'>¿Dónde ingresa mi dinero?</p>
+                    <p className='text-sm font-bold'>Where does my money go?</p>
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                        Luego de abrir su cuenta y realizar un primer 
-                        depósito de ahorro/iniversión, el dinero llega a 
-                        su cuenta de AGM, en la cual entrá acceso y monitoreo las 24h.
+                        After opening your account and making an initial 
+                        savings/investment deposit, the money goes to 
+                        your AGM account, which you can access and monitor 24/7.
                     </p>
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-5">
                 <AccordionTrigger>
-                    <p className='text-sm font-bold'>¿Hay impuestos que deban considerarse?</p>
+                    <p className='text-sm font-bold'>Are there any taxes to consider?</p>
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                        No hay impuestos sobre las cuentas.
+                        There are no taxes on the accounts.
                     </p>
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-6">
                 <AccordionTrigger>
-                    <p className='text-sm font-bold'>¿Quién puede mover el dinero en cada cuenta?</p>
+                    <p className='text-sm font-bold'>Who can move the money in each account?</p>
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                        Únicamente el propietario de la cuenta, la primera 
-                        persona designada, puede ser el encargado de mover el dinero.
+                        Only the account owner, the first designated 
+                        person, can be responsible for moving the money.
                     </p>
                 </AccordionContent>
             </AccordionItem>
