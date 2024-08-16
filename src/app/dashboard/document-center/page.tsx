@@ -28,7 +28,8 @@ const page = () => {
           'FileInfo': entry['FileInfo'],
           'AccountNumber': entry['AccountNumber'],
           'FileName': entry['FileName'],
-          'Type': entry['Type']
+          'Type': entry['Type'],
+          'AGMUser': entry['AGMUser'],
         })
       })
 
@@ -43,7 +44,8 @@ const page = () => {
           'FileInfo': entry['FileInfo'],
           'AccountNumber': entry['AccountNumber'],
           'FileName': entry['FileName'],
-          'Type': entry['Type']
+          'Type': entry['Type'],
+          'AGMUser': entry['AGMUser'],
         })
       })
 

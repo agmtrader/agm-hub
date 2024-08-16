@@ -32,15 +32,15 @@ const navbarContent = [
   },
   {
       'name':'Open Account',
-      'url':'/dashboard/open_account'
+      'url':'/dashboard/open-account'
   },
   {
     'name':'Document Center',
-    'url':'/dashboard/document_center'
+    'url':'/dashboard/document-center'
   },
   {
     'name':'Risk Assesment',
-    'url':'/dashboard/risk_assesment'
+    'url':'/dashboard/risk-assesment'
   },
 ]
 

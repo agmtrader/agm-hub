@@ -27,9 +27,8 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
   const [selection, setSelection] = useState<Document | null>(null)
 
   // Current ticket
-  const [ticket, setTicket] = useState<Ticket[] | null>(null)
+  const [tickets, setTickets] = useState<Ticket[] | null>(null)
   const ticketID = currentTicket['TicketID']
-  const ticketColumns = ['TicketID', 'Status']
 
   // Account number to be used
   const [accountNumber, setAccountNumber] = useState<string | null>(null)
@@ -43,17 +42,12 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
     async function queryData () {
 
       let data = await queryDocumentsFromCollection('db/clients/accounts/', 'TicketID', ticketID)
-
       let account_number = ''
-
       if (data) {
         account_number = data[0]['AccountNumber']
       }
-    
       setAccountNumber(account_number)
 
-      //let sowData = await queryDocumentsFromCollection('/db/document_center/sow', 'TicketID', ticketID)
-      
       data = await queryDocumentsFromCollection('/db/document_center/poa', 'AccountNumber', account_number)
       let poaData:Document[] = []
       if (data) {
@@ -64,86 +58,72 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
             'FileName': entry['FileName'],
             'FileInfo': entry['FileInfo'],
             'AccountNumber': entry['AccountNumber'],
-            'Type': entry['Type']
+            'Type': entry['Type'],
+            'AGMUser':entry['AGMUser']
           })
         })
       }
 
       data = await queryDocumentsFromCollection('/db/document_center/poi', 'AccountNumber', account_number)
       let poiData:Document[] = []
-      data.forEach((entry) => {
-        poiData.push({
-          'DocumentID': entry['DocumentID'],
-          'FileID': entry['FileID'],
-          'FileName': entry['FileName'],
-          'FileInfo': entry['FileInfo'],
-          'AccountNumber': entry['AccountNumber'],
-          'Type': entry['Type']
-        })
-      })
-
-      data = await queryDocumentsFromCollection('/db/document_center/sow', 'AccountNumber', account_number)
-      let sowData:Document[] = []
       if (data) {
         data.forEach((entry) => {
-          poaData.push({
+          poiData.push({
             'DocumentID': entry['DocumentID'],
             'FileID': entry['FileID'],
             'FileName': entry['FileName'],
             'FileInfo': entry['FileInfo'],
             'AccountNumber': entry['AccountNumber'],
-            'Type': entry['Type']
+            'Type': entry['Type'],
+            'AGMUser':entry['AGMUser']
           })
         })
       }
-      
-      setDocuments({'POA':poaData,'POI': poiData, 'SOW': sowData})
-      
 
-      // Fetch ticket
-      let tickets:Ticket[] = []
-      data.forEach((entry:Map) => {
-        tickets.push(
-          {
-            'TicketID': entry['TicketID'],
-            'Status': entry['Status'],
-            'ApplicationInfo': entry['ApplicationInfo'],
-            'Advisor': entry['Advisor']
-          }
-        )
-      })
-
-      // Fetch ticket
-      data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
-      data.forEach((entry:Map) => {
-        currentTicket = {
-            'TicketID': entry['TicketID'],
-            'Status': entry['Status'],
-            'ApplicationInfo': entry['ApplicationInfo'],
-            'Advisor': entry['Advisor']
-          }
-      })
-
-      //fix this
-      if (!documents) {
-        await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Missing documents')
-      } else if (currentTicket['Status'] !== 'Ready for application') {
-        await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Documents need revision')
-      } else {
-        setCanContinue(true)
+      data = await queryDocumentsFromCollection('/db/document_center/sow', 'AccountNumber', account_number)
+      let sowData:Document[] = []
+      if (data) {
+        data.forEach((entry) => {
+          sowData.push({
+            'DocumentID': entry['DocumentID'],
+            'FileID': entry['FileID'],
+            'FileName': entry['FileName'],
+            'FileInfo': entry['FileInfo'],
+            'AccountNumber': entry['AccountNumber'],
+            'Type': entry['Type'],
+            'AGMUser':entry['AGMUser']
+          })
+        })
       }
+      console.log({'POA':poaData,'POI': poiData, 'SOW': sowData})
+      setDocuments({'POA':poaData,'POI': poiData, 'SOW': sowData})
+
+      data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
+      console.log(data)
+
+      // Update ticket status      
+      if (data) {
+        if (poaData.length === 0 || poiData.length === 0 || sowData.length === 0) {
+          await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Missing documents')
+        } else if (data[0]['Status'] !== 'Ready for application') {
+          await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Documents need revision')
+        } else {
+          setCanContinue(true)
+        } 
+      }
+
 
       // Fetch ticket with updated status
       data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
-      data = await addColumnsFromJSON(data)
-      data = sortColumns(data, ticketColumns)
+      let tickets = await addColumnsFromJSON(data)
+      tickets = sortColumns(tickets, ['TicketID', 'Status'])
+      setTickets(tickets)
 
-      setTicket(tickets)
     }
     
     queryData()
 
-  }, [])
+  }, [canContinue])
 
   // Update ticket status depending on checkbox
   async function updateTicketStatus() {
@@ -160,10 +140,11 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
       <h1 className='text-7xl font-bold'>Upload and revise documents.</h1>
       <div className='flex gap-x-5'>
           <Button asChild className='w-fit h-fit'>
-            <Link href={'/dashboard/document_center'}>
+            <Link href='/dashboard/document-center' target="_blank" rel="noopener noreferrer">
               Document Center
             </Link>
           </Button>
+          <Button>Refresh</Button>
       </div>
 
       {documents && accountNumber && <DocumentCenter documents={documents} setSelection={setSelection} accountNumber={accountNumber} selection={selection}/>}
@@ -184,7 +165,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
             </div>
         </div>
       }
-      {ticket && <DataTable data={ticket}/>}
+      {tickets && <DataTable data={tickets}/>}
     </div>
   )
 }

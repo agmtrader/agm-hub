@@ -57,4 +57,5 @@ export type Document = {
   'FileName':string
   'Type':string
   'FileInfo':Map
+  'AGMUser':string
 }

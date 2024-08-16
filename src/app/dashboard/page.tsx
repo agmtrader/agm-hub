@@ -23,10 +23,10 @@ const page = () => {
             <Button onClick={(e) => {
               e.preventDefault()
               signIn('google')
-            }}
-            className="flex"
+              }}
+              className="flex"
             >
-              <p className="text-sm">Sign in</p>
+                <p className="text-sm">Sign in</p>
             </Button>
           </div>
           

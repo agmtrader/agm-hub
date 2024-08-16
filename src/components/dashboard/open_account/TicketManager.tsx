@@ -26,22 +26,24 @@ const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) 
   useEffect(() => {
 
     async function fetchData () {
+
         setCurrentTicket(null)
 
         let data = await getDocumentsFromCollection('db/clients/tickets/')
-
         let tickets:Ticket[] = []
-        data.forEach((entry:Map) => {
-          console.log(entry)
-          tickets.push(
-            {
-              'TicketID': entry['TicketID'],
-              'Status': entry['Status'],
-              'ApplicationInfo': entry['ApplicationInfo'],
-              'Advisor': entry['Advisor']
-            }
-          )
-        })
+        if (data) {
+          data.forEach((entry:Map) => {
+            console.log(entry)
+            tickets.push(
+              {
+                'TicketID': entry['TicketID'],
+                'Status': entry['Status'],
+                'ApplicationInfo': entry['ApplicationInfo'],
+                'Advisor': entry['Advisor']
+              }
+            )
+          })
+        }
         
         tickets = await addColumnsFromJSON(tickets)
         tickets = sortColumns(tickets, columns)

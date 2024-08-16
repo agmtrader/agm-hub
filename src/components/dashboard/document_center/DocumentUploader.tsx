@@ -122,7 +122,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
     }
     
     const {data:session} = useSession()
-    console.log(session?.user.email)
+    const [message, setMessage] = useState<string>('')
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -132,6 +132,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
     async function onSubmit(values: z.infer<typeof formSchema>) {
 
       setMessage('Loading...')
+
       const fileInfo = await uploadFile()
 
       let timestamp = new Date()
@@ -142,31 +143,30 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
       // https://drive.google.com/uc?export=download&id={id}
       // https://drive.google.com/file/d/{id}/preview
 
+
       if (fileInfo) {
 
-        documentInfo = {'DocumentID':documentTimestamp, 'FileID':fileInfo['id'], 'Type':type, 'FileName':fileInfo['name'], 'FileInfo':values, 'AGMUser':session?.user.email}
+        if (!session) {return};
+        if (!session.user.email) {return};
 
-        if (document) {
-
-          if (document['Type'] == 'POA') {
-
-            documentInfo['AccountNumber'] = document['AccountNumber']
-
-          }
-
-        } else {
-
-          if (accountNumber) {
-
-            documentInfo['AccountNumber'] = accountNumber
-
-          }
+        documentInfo = {
+          'DocumentID':documentTimestamp, 
+          'FileID':fileInfo['id'], 
+          'Type':type, 
+          'FileName':fileInfo['name'], 
+          'FileInfo':values, 
+          'AGMUser':session?.user.email,
+          'AccountNumber':''
         }
 
-      }
+        if (accountNumber) {
+          documentInfo['AccountNumber'] = accountNumber
+        }
+
 
       await addDocument(documentInfo, `db/document_center/${documentInfo['Type'].toLowerCase()}`, documentTimestamp)
       setMessage('File uploaded successfully')
+      }
 
     }
 
@@ -190,8 +190,6 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
 
       return fileInfo
     }
-
-    const [message, setMessage] = useState<string>('')
 
   return (
     <div>
@@ -256,6 +254,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
                       <p>{message}</p>
 
                     </form>
+
                   </Form>
             </DialogContent>
         </Dialog>

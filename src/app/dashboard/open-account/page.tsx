@@ -51,9 +51,7 @@ const page = () => {
       setError(null)
     }
   }
-
-  console.log(account, currentTicket)
-
+  
   return (
     
     <div className='w-full h-full flex mt-[20vh] flex-col gap-y-10 justify-center items-center'>
@@ -67,18 +65,22 @@ const page = () => {
 
       {(step == 3 && currentTicket) && <BackupDocuments currentTicket={currentTicket} setCanContinue={setCanContinue} canContinue={canContinue} account={account}/>}
 
-      {(step == 4 && currentTicket) && <FillApplicationForm currentTicket={currentTicket} setCanContinue={setCanContinue} />}
+      {(step == 4 && currentTicket) && <FillApplicationForm currentTicket={currentTicket} setCanContinue={setCanContinue}/>}
 
-      <div className='h-full w-full flex flex-col items-center gap-y-10 justify-start'>
+      {(step == 5 && currentTicket) && <p className='text-7xl font-bold'>Finished opening account.</p>}
 
-        <div className='h-fit w-fit flex items-center gap-x-10 justify-start'>
-          {step > 1 && <Button variant={'default'} onClick={stepBackwards} >Previous step.</Button>}
-          <Button variant={canContinue ? 'default':'destructive'} className='' onClick={(e) => stepForward()}>{step === 4 ? 'Finish.':'Next step.'}</Button>
+      {step < 5 && 
+        <div className='h-full w-full flex flex-col items-center gap-y-10 justify-start'>
+
+          <div className='h-fit w-fit flex items-center gap-x-10 justify-start'>
+            {step > 1 && <Button variant={'default'} onClick={stepBackwards} >Previous step.</Button>}
+            <Button variant={canContinue ? 'default':'destructive'} className='' onClick={(e) => stepForward()}>{step === 4 ? 'Finish.':'Next step.'}</Button>
+          </div>
+  
+          {error && <p className='text-lg'>{error}</p>}
+  
         </div>
-
-        {error && <p className='text-lg'>{error}</p>}
-
-      </div>
+      }
     </div>
   )
 }

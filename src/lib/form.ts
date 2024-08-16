@@ -214,57 +214,103 @@ export const salutations = [
 ] as const
     
 export const marital_status = [
-    { label: "Single", value: "sngl" },
-    { label: "Married", value: "mrd" },
-    { label: "Widowed", value: "wdw" },
+    { label: "Single", value: "Single" },
+    { label: "Married", value: "Married" },
+    { label: "Widowed", value: "Widowed" },
 ] as const
 
 export const id_type = [
-    { label: "Passport", value: "passport" },
-    { label: "National ID", value: "id" },
-    { label: "Driver's License", value: "driver" },
+    { label: "Passport", value: "Passport" },
+    { label: "National ID", value: "ID" },
+    { label: "Driver's License", value: "License" },
 ] as const
 
 export const employment_status = [
-    { label: "Employed", value: "employed" },
-    { label: "Retired", value: "retired" },
+    { label: "Employed", value: "Employed" },
+    { label: "Retired", value: "Retired" },
 ] as const
 
 export const currencies = [
-    { label: "USD", value: "usd" },
-    { label: "Euro", value: "eur" },
+  { label: "USD", value: "USD" },
+  { label: "AED", value: "AED" },
+  { label: "AUD", value: "AUD" },
+  { label: "CAD", value: "CAD" },
+  { label: "CHF", value: "CHF" },
+  { label: "CNH", value: "CNH" },
+  { label: "CZK", value: "CZK" },
+  { label: "DKK", value: "DKK" },
+  { label: "EUR", value: "EUR" },
+  { label: "GBP", value: "GBP" },
+  { label: "HKD", value: "HKD" },
+  { label: "HUF", value: "HUF" },
+  { label: "ILS", value: "ILS" },
+  { label: "JPY", value: "JPY" },
+  { label: "MXN", value: "MXN" },
+  { label: "NOK", value: "NOK" },
+  { label: "NZD", value: "NZD" },
+  { label: "PLN", value: "PLN" },
+  { label: "SAR", value: "SAR" },
+  { label: "SEK", value: "SEK" },
+  { label: "SGD", value: "SGD" },
+  { label: "TRY", value: "TRY" },
+  { label: "ZAR", value: "ZAR" },
+  { label: "KRW", value: "KRW" },
 ] as const
 
 export const source_of_wealth = [
   {
-    id: "disability",
-    label: "Disability",
+    id: "Allowance",
+    label: "Allowance / Spousal Income",
   },
   {
-    id: "income",
-    label: "Income",
+    id: "Disability",
+    label: "Disability / Severance / Unemployment",
   },
   {
-    id: "pension",
-    label: "Pension",
+    id: "Income",
+    label: "Income from Employment",
+  },
+  {
+    id: "Inheritance",
+    label: "Inheritance / Gift",
+  },
+  {
+    id: "Interest",
+    label: "Interest / Divident Income",
+  },
+  {
+    id: "Profits",
+    label: "Market Trading Profits",
+  },
+  {
+    id: "Pension",
+    label: "Pension / Government Retirement benefit",
+  },
+  {
+    id: "Property",
+    label: "Property",
+  },
+  {
+    id: "Other",
+    label: "Other",
   },
 ] as const
 
 export const investment_objectives = [
   {
-    id: "capital",
+    id: "Capital",
     label: "Preservation of Capital and Income Generation",
   },
   {
-    id: "growth",
+    id: "Growth",
     label: "Growth",
   },
   {
-    id: "hedging",
+    id: "Hedging",
     label: "Hedging",
   },
   {
-    id: "profits",
+    id: "Profits",
     label:"Profits from Active Trading and Speculation"
   }
   
@@ -272,23 +318,23 @@ export const investment_objectives = [
 
 export const products = [
   {
-    id: "bonds",
+    id: "Bonds",
     label: "Bonds",
   },
   {
-    id: "stocks",
+    id: "Stocks",
     label: "Stocks",
   },
   {
-    id: "options",
+    id: "Options",
     label: "Options",
   },
   {
-    id: "futures",
+    id: "Futures",
     label: "Futures",
   },
   {
-    id: "etfs",
+    id: "ETFs",
     label: "ETFs",
   }
 ] as const
@@ -299,37 +345,41 @@ export const worths = [
     label: "< 5000",
   },
   {
-    value: "5000-25000",
-    label: "5000-25000",
+    value: "5000 - 24999",
+    label: "5000 - 24999",
   },
   {
-    value: "25000-50000",
-    label: "25000-50000",
+    value: "25000 - 49999",
+    label: "25000 - 49999",
   },
   {
-    value: "50000-150000",
-    label: "50000-150000",
+    value: "50000 - 99999",
+    label: "50000 - 99999",
   },
   {
-    value: "150000-500000",
-    label: "150000-500000",
+    value: "100000 - 149999",
+    label: "100000 - 149999",
   },
   {
-    value: "500000-1000000",
-    label: "500000-1000000",
+    value: "150000 - 499999",
+    label: "150000 - 499999",
   },
   {
-    value: "1000000-2000000",
-    label: "1000000-2000000",
+    value: "500000 - 1000000",
+    label: "500000 - 1000000",
+  },
+  {
+    value: "1000000+",
+    label: "1000000+",
   },
 ] as const
 
 export const phone_types = [
-  { label: "Mobile", value: "mobile" },
-  { label: "Home", value: "home" },
+  { label: "Mobile", value: "Mobile" },
+  { label: "Home", value: "Home" },
 ] as const
 
-
+  
 // Schemas
 // Account Application
 export const general_info_schema = z.object({
@@ -788,13 +838,11 @@ export const new_sow_schema = z.object({
 
 // Account accesses
 export const account_access_schema = z.object({
-  user_full_name: z.string(),
   temp_email: z.string(),
   temp_password: z.string(),
   account_number: z.string(),
   ibkr_username: z.string(),
   ibkr_password: z.string()
-
 })
 export const risk_assesment_schema = z.object({
   account_number: z.string().min(1, {
