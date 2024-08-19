@@ -30,13 +30,10 @@ export const authOptions: NextAuthOptions = {
       jwt: async ({ token, user, account }) => {
 
         if (user) {
-          console.log(user)
           token.sub = user.id
         }
         
         if (account) {
-          console.log(account)
-          token.email = user.email
           token.accessToken = account.access_token
           token.refreshToken = account.refresh_token
         }
@@ -48,6 +45,8 @@ export const authOptions: NextAuthOptions = {
         if (session?.user) {
 
           if (token.sub) {
+
+            console.log(token)
 
             session.user.id = token.sub
   
