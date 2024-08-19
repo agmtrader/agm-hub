@@ -46,6 +46,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
       if (data) {
         account_number = data[0]['AccountNumber']
       }
+      console.log(account_number)
       setAccountNumber(account_number)
 
       data = await queryDocumentsFromCollection('/db/document_center/poa', 'AccountNumber', account_number)

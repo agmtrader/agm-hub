@@ -120,6 +120,7 @@ const page = () => {
 
   const [portfolio, setPortfolio] = useState<any[] | null>(null)
   const [accountNumbers, setAccountNumbers] = useState<any[] | null>(null)
+  const[account, setAccount] = useState<any | null>(null)
 
   async function onSubmit(values: z.infer<typeof schema>) {
 
@@ -152,6 +153,7 @@ const page = () => {
         }
         
         setPortfolio(asset_allocation.filter((element) => element.name === risk_type).map((element) => {element.bonds_aaa_a = element.bonds_aaa_a * 100; element.bonds_bbb = element.bonds_bbb * 100; element.bonds_bb = element.bonds_bb * 100; element.etfs = element.etfs * 100; element.average_yield = element.average_yield * 100; return element}))
+        setAccount(response[0])
       }
     }
 
@@ -225,10 +227,10 @@ const page = () => {
 
   const data = {
     backgroundColor: [
-      "rgb(2, 88, 255)",
-      "rgb(249, 151, 0)",
-      "rgb(255, 199, 0)",
-      "rgb(32, 214, 152)",
+      "rgb(102, 204, 255)",
+      "rgb(51, 153, 255)",
+      "rgb(0, 102, 255)",
+      "rgb(0, 51, 204)",
     ],
     labels: labels,
     datasets: [
@@ -236,10 +238,10 @@ const page = () => {
         label: "Portfolio",
         data: values,
         backgroundColor: [
-          "rgb(2, 88, 255)",
-          "rgb(249, 151, 0)",
-          "rgb(255, 199, 0)",
-          "rgb(32, 214, 152)",
+          "rgb(102, 204, 255)",
+          "rgb(51, 153, 255)",
+          "rgb(0, 102, 255)",
+          "rgb(0, 51, 204)",
         ],
         hoverOffset: 4,
       },
@@ -249,10 +251,20 @@ const page = () => {
   const options = {
       plugins: {
         legend: {
-            labels: {
-                color: "#FFFFFF"
-            },
-        },
+          labels: {
+              color: "white",
+              font: {
+                  size: 14
+              },
+              padding: 10,
+          },
+          title: {
+              display: true,
+              text: "",
+              color: "grey",
+              padding: 10
+          }
+      }
     },
     elements: {
       arc: {
@@ -263,20 +275,22 @@ const page = () => {
   }
 
   return (
-    <div className="w-full h-full justify-start items-center flex gap-y-10 flex-col">
+    <div className="w-full h-full justify-start items-center flex gap-y-20 flex-col">
 
-      <h1 className="text-7xl font-bold">Risk Assesment Profiles</h1>
+      <h1 className="text-7xl text-agm-dark-blue font-bold">Risk Profile</h1>
 
-      {accountNumbers &&
+      {accountNumbers && !portfolio &&
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/3 space-y-6 flex gap-x-5">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/3 flex flex-col gap-y-5 justify-center items-center">
+          
+          <p className="text-agm-white font-bold">Account alias</p>
 
+          <div className="flex w-full h-full gap-x-5">
           <FormField
               control={form.control}
               name="account_number"
               render={({ field }) => (
                 <FormItem className="flex w-full h-full flex-col text-start justify-center">
-                  <FormLabel>Account alias</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -325,27 +339,27 @@ const page = () => {
                   <FormMessage />
                 </FormItem>
               )}
-            />
-
-            <Button type="submit">Submit</Button>
+          />
+          <Button className="w-[20%]" type="submit">Submit</Button>
+          </div>
+          
           </form>
         </Form>
       }
-      {portfolio &&
-        <div className="lg:w-[25%] w-full flex gap-y-10 justify-center items-center flex-col">
-          {portfolio[0].name && <h1 className="text-3xl font-bold text-white">Profile: {portfolio[0].name}</h1>}
-          <Doughnut data={data} options={options} />
-          {portfolio[0].average_yield && <p className="text-sm text-agm-white font-bold">Average yield: {Number(portfolio[0].average_yield).toFixed(2)}%</p>}
-        </div>
-      }
 
-      {portfolio &&
-        <div className="w-[80%] flex justify-center items-end gap-x-10">
-          <div className="w-full flex h-fit">
-            <DataTable dark data={asset_data} width={100}/>
-          </div>
-          <div className="w-full flex h-fit">
-            <DataTable dark data={portfolio} width={100}/>
+      {portfolio && account &&
+        <div className="w-full h-full flex gap-y-5 justify-evenly flex-col items-center">
+          <p className="text-5xl font-bold text-agm-white">{account['ClientName']}</p>
+          {portfolio[0].name && <h1 className="text-3xl text-agm-orange">{portfolio[0].name}</h1>}
+          <div className="flex gap-x-5 w-full h-full justify-center items-center text-center">
+            <div className="w-fit mx-10 flex flex-col gap-y-5 justify-center items-center gap-x-10">
+              <DataTable dark data={asset_data} width={100}/>
+              <DataTable dark data={portfolio} width={100}/>
+            </div>
+            <div className="lg:w-[35%] w-full flex gap-y-10 justify-center items-center flex-col">
+              <Doughnut data={data} options={options} />
+              {portfolio[0].average_yield && <p className="text-lg text-agm-white font-semibold">Average yield: {Number(portfolio[0].average_yield).toFixed(2)}%</p>}
+            </div>
           </div>
         </div>
       }

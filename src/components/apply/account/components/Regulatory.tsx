@@ -206,7 +206,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
               name="liquid_net_worth"
               render={({ field }) => (
                 <FormItem className="w-full flex flex-col text-center gap-x-5 font-normal">
-                  <FormLabel>Annual net income</FormLabel>
+                  <FormLabel>Liquid net worth</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -348,14 +348,28 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="amount_to_invest"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Amount to Invest ()</FormLabel>
+                <FormControl>
+                    <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
             
           </div>
 
           <div className="flex gap-x-5 justify-center items-center w-full h-full">
-            <Button className="bg-agm-light-orange" onClick={stepBackwards}>
+            <Button onClick={stepBackwards}>
               Previous step
             </Button>
-            <Button className="bg-agm-light-orange" type="submit">
+            <Button type="submit">
               Next step
             </Button>
           </div>

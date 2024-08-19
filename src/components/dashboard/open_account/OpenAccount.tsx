@@ -53,7 +53,7 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
         'TicketID':currentTicket['TicketID'], 
         'TemporalEmail':values.temp_email, 
         'TemporalPassword':values.temp_password, 
-        'AccountNumber':values.account_number,
+        'AccountNumber':values.ibkr_account_number,
         'IBKRUsername':values.ibkr_username,
         'IBKRPassword':values.ibkr_password
       }

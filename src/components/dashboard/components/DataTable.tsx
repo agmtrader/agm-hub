@@ -105,7 +105,7 @@ export const DataTable = <TData,>({data, width, dark}: DataTableProps<TData>) =>
                 data-state={row.getIsSelected() && "selected"}
                 >
                 {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell className={dark ? "text-white":''} key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                 ))}

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react"
+import React from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -815,7 +814,20 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
             <p className="text-sm">ID Expiration</p>
 
-            <div className="flex w-full gap-x-5 justify-center items-center h-full">
+            <div className="flex gap-x-5 w-full h-full justify-center items-center">
+              <FormField
+                control={form.control}
+                name="id_expiration_day"
+                render={({ field }) => (
+                    <FormItem className="w-fit">
+                    <FormControl>
+                        <Input className="w-14" placeholder="DD" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                /
                 <FormField
                 control={form.control}
                 name="id_expiration_month"

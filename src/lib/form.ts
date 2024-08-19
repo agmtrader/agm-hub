@@ -338,36 +338,36 @@ export const products = [
 ] as const
 export const worths = [
   {
-    value: "< 5000",
-    label: "< 5000",
+    value: "< 5,000",
+    label: "< 5,000",
   },
   {
-    value: "5000 - 24999",
-    label: "5000 - 24999",
+    value: "5,000 - 24,999",
+    label: "5,000 - 24,999",
   },
   {
-    value: "25000 - 49999",
-    label: "25000 - 49999",
+    value: "25,000 - 49,999",
+    label: "25,000 - 49,999",
   },
   {
-    value: "50000 - 99999",
-    label: "50000 - 99999",
+    value: "50,000 - 99,999",
+    label: "50,000 - 99,999",
   },
   {
-    value: "100000 - 149999",
-    label: "100000 - 149999",
+    value: "100,000 - 149,999",
+    label: "100,000 - 149,999",
   },
   {
-    value: "150000 - 499999",
-    label: "150000 - 499999",
+    value: "150,000 - 499,999",
+    label: "150,000 - 499,999",
   },
   {
-    value: "500000 - 1000000",
-    label: "500000 - 1000000",
+    value: "500,000 - 1,000,000",
+    label: "500,000 - 1,000,000",
   },
   {
-    value: "1000000+",
-    label: "1000000+",
+    value: "1,000,000+",
+    label: "1,000,000+",
   },
 ] as const
 export const phone_types = [
@@ -539,6 +539,10 @@ export const about_you_primary_schema = z.object({
     
   id_expiration_month: z.string().min(2, {
     message: "Month must be 2 digits.",
+  }),
+
+  id_expiration_day: z.string().min(2, {
+    message: "Day must be 2 digits.",
   }),
 
   employment_status: z.string().min(1, {
@@ -717,6 +721,10 @@ export const about_you_secondary_schema = z.object({
     message: "Month must be 2 digits.",
   }),
 
+  id_expiration_day: z.string().min(2, {
+    message: "Day must be 2 digits.",
+  }),
+
   employment_status: z.string().min(1, {
     message: 'Employment status cannot be empty.'
   }),
@@ -789,6 +797,8 @@ export const regulatory_schema = z.object({
   products: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You must select at least one product.",
   }).default([]),
+
+  amount_to_invest: z.string()
 })
 
 // Document Center

@@ -2,23 +2,19 @@
 import React, { useEffect, useState } from 'react'
 
 import { DocumentData } from 'firebase/firestore';
-import { Map } from '@/lib/types';
 
-import { getDocumentsFromCollection, getForeignTables } from '@/utils/api';
+import { getDocumentsFromCollection } from '@/utils/api';
 
 import { DataTable } from '@/components/dashboard/components/DataTable';
-import { sortColumns } from '@/utils/table';
 
 const page = () => {
 
   const [clients, setClients] = useState<DocumentData[] | null>(null)
-  const columns = ['TicketID', 'Name', 'Last name', 'TemporalEmail', 'TemporalPassword', 'IBKR Account Number', 'IBKR Username', 'IBKR Password', 'Advisor']
 
   useEffect(() => {
       async function fetchData () {
-          var data = await getDocumentsFromCollection('db/clients/accounts/')
-          data = await getForeignTables(data)
-          setClients(sortColumns(data, columns))
+          let data = await getDocumentsFromCollection('db/clients/accounts/')
+          setClients(data)
       }
       fetchData()
   }, [])

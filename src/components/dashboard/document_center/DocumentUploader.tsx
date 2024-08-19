@@ -156,7 +156,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
           'FileName':fileInfo['name'], 
           'FileInfo':values, 
           'AGMUser':session?.user.email,
-          'AccountNumber':''
+          'AccountNumber':values.account_number
         }
 
         if (accountNumber) {

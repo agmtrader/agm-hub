@@ -21,11 +21,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
 
 import { getDefaults, risk_assesment_schema } from "@/lib/form"
-import { addDocument } from "@/utils/api"
 import { Input } from "@/components/ui/input"
-import { Map } from "@/lib/types"
 import { formatTimestamp } from "@/utils/dates"
-import { DataTable } from "@/components/dashboard/components/DataTable"
+import { addDocument } from "@/utils/api"
 
 const asset_allocation = [
   {
@@ -123,10 +121,18 @@ const weights = [
 
 const RiskForm = ({spanish}:{spanish:boolean}) => {
 
-  let formSchema:any;
-  let initialFormValues:any = {};
+  enum clant{
+    bonds_aaa_a = 'Bonds AAA-A',
+    bonds_bbb = 'Bonds BBB',
+    bonds_bb = 'Bonds BB',
+    etfs = 'ETFs',
+  }
 
   const [message, setMessage] = useState<string | null>(null)
+  const [portfolio, setPortfolio] = useState<any[] | null>(null)
+
+  let formSchema:any;
+  let initialFormValues:any = {};
 
   formSchema = risk_assesment_schema
   initialFormValues = getDefaults(formSchema)
@@ -136,9 +142,9 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
       values: initialFormValues,
   })
 
-  const [portfolio, setPortfolio] = useState<any[] | null>(null)
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
+
+    console.log(values)
 
 
     const timestamp = new Date()
@@ -153,12 +159,18 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
 
     const risk_profile = {
       'AccountNumber':values.account_number,
+      'ClientName': values.client_name,
       'Score':sum,
       'RiskProfileID':riskProfileID,
-      'Answers':values,
     }
 
+    console.log(sum)
+    console.log(risk_profile)
+
     await addDocument(risk_profile, 'db/clients/risk_profiles', riskProfileID)
+
+    delete values.account_number
+    delete values.client_name
 
     setMessage(spanish ? 'Perfil de riesgo enviado exitosamente.':'Risk profile successfully submitted.')
 
@@ -199,12 +211,6 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
     }
     return {labels, values}
   }
-  enum clant{
-    bonds_aaa_a = 'Bonds AAA-A',
-    bonds_bbb = 'Bonds BBB',
-    bonds_bb = 'Bonds BB',
-    etfs = 'ETFs',
-  }
   
   const {labels, values} = getAssetAllocation()
 
@@ -239,9 +245,6 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
       },
     },
   }
-
-
-  console.log(portfolio)
 
   if (spanish) {
     return (
@@ -567,6 +570,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
       <div className="w-2/3 h-full flex">
 
       <Form {...form}>
+
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
 
         <FormField

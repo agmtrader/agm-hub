@@ -21,10 +21,10 @@ const Header = (props: Props) => {
   return (
     <div>
       <AnimatePresence>
-        <div className='flex items-center justify-between w-full h-fit py-5 z-10 bg-transparent'>
+        <div className='flex items-center justify-between w-full h-fit py-10 z-10 bg-transparent'>
         <Link className='w-full h-full flex items-center' href={'/'}>
             <Button variant={'ghost'} className='hover:bg-opacity-0 hover:bg-black'>
-                <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {150} width = {120}/>
+                <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {200} width = {200}/>
             </Button>
             </Link>
         <Button variant={'ghost'} className='hover:bg-black hover:bg-opacity-10' onClick={() => setExpandSidebar(true)}>

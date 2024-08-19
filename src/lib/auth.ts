@@ -22,14 +22,21 @@ export const authOptions: NextAuthOptions = {
     ],
     adapter: FirestoreAdapter(firestoreAdmin),
     callbacks: {
+
+      async signIn({ user }) {
+        return true;
+      },
+
       jwt: async ({ token, user, account }) => {
 
         if (user) {
+          console.log(user)
           token.sub = user.id
-          
         }
         
         if (account) {
+          console.log(account)
+          token.email = user.email
           token.accessToken = account.access_token
           token.refreshToken = account.refresh_token
         }
@@ -37,6 +44,7 @@ export const authOptions: NextAuthOptions = {
         return token
       },
       async session({ session, token }) {
+
         if (session?.user) {
 
           if (token.sub) {
@@ -47,19 +55,14 @@ export const authOptions: NextAuthOptions = {
               admin: false
             }
             
-            if (session.user.email?.split('@')[1] == 'agmtechnology.com') {
+            if (token.accessToken && token.refreshToken) {
               options.admin = true
+              session.user.accessToken = token.accessToken
+              session.user.refreshToken = token.refreshToken
             }
-  
+
             const firebaseToken = await adminAuth.createCustomToken(token.sub, options)
             session.firebaseToken = firebaseToken
-
-          }
-
-          if (token.accessToken && token.refreshToken) {
-
-            session.user.accessToken = token.accessToken
-            session.user.refreshToken = token.refreshToken
 
           }
           
