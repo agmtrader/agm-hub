@@ -23,7 +23,4 @@ const firestoreAdmin = initFirestore({
 
 const adminAuth = admin.auth(firebaseAdmin)
 
-const a = adminAuth.updateUser('sT63SUHnA0zGFwvthUAH', {'email':'admin@agmtechnology.com', 'displayName':'Admin', 'emailVerified':true, 'disabled':false})
-console.log(a)
-
 export { firestoreAdmin, adminAuth }
