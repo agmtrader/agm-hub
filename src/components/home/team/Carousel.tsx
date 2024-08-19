@@ -9,6 +9,18 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
 const team = [
   {
     name: 'Hernan Castro',
@@ -20,10 +32,14 @@ const team = [
   },
   {
     name: 'Cristian Ramirez',
-    title: ''
+    title: 'Chief Financial Officer'
   },
   {
     name: 'Javier Cordero',
+    title: 'Trade Support Specialist'
+  },
+  {
+    name: 'Maria Jose Castro',
     title: 'Trade Support Specialist'
   },
   {
@@ -41,10 +57,22 @@ export function TeamCarousel() {
             <div className="p-1">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <div className="w-full h-full flex flex-col justify-center items-center">
-                    <p className="text-2xl">{member.name}</p>
-                    <p className="text-md font-light">{member.title}</p>
-                  </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <div className="w-full cursor-pointer h-full text-center flex flex-col items-center justify-center">
+                          <p className="text-2xl font-bold">{member.name}</p>
+                          <p className="text-sm">{member.title}</p>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>{member.name}</DialogTitle>
+                          <DialogDescription>{member.title}</DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                 </CardContent>
               </Card>
             </div>
@@ -56,3 +84,5 @@ export function TeamCarousel() {
     </Carousel>
   )
 }
+
+

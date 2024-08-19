@@ -2,7 +2,7 @@
 import React from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import Dashboard from '@/components/dashboard/Dashboard';
-import Account from '@/components/dashboard/sidebar/Account';
+import Account from '@/components/sidebar/Account';
 import { Button } from '@/components/ui/button';
 
 const page = () => {

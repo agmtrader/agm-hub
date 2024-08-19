@@ -38,10 +38,8 @@ import {
 } from "@/components/ui/popover"
 
 import { countries, account_types, general_info_schema, getDefaults } from "@/lib/form"
-import { useSearchParams } from "next/navigation"
+//import { useSearchParams } from "next/navigation"
 import { PersonLinesFill } from "react-bootstrap-icons"
-
-const formSchema = general_info_schema
 
 interface Props {
   stepForward:() => void,
@@ -51,7 +49,7 @@ interface Props {
 
 const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
 
-  const searchParams = useSearchParams()
+  //const searchParams = useSearchParams()
 
   let formSchema:any;
   let initialFormValues:any;
@@ -67,11 +65,11 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
       const timestamp = new Date()
-      const advisor = searchParams.get('ad')
+      //const advisor = searchParams.get('ad')
+      const advisor = ''
       const ticketID = formatTimestamp(timestamp)
 
       const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':advisor}
-      console.log(ticket)
       setTicket(ticket)
 
       await addDocument(ticket, '/db/clients/tickets', ticketID)

@@ -44,39 +44,36 @@ const navbarContent = [
   },
 ]
 
-import Account from "./Account"
+import Account from "@/components/sidebar/Account"
 
 const Sidebar = () => {
 
   return (
-      <div className="w-fit">
+      <div className="w-fit h-full">
           <Card className="border-0 bg-agm-dark-blue w-fit">
             <CardHeader>
-              <CardTitle>
-                <p className='text-3xl text-white font-bold'>AGM Dashboard</p>
-              </CardTitle>
             </CardHeader>
             <CardContent className='flex flex-col w-full h-fit'>
-              <NavigationMenu className="h-full w-full flex">
-                  <NavigationMenuList className="w-full gap-y-5 h-full justify-between flex flex-col">
-                      <div className="w-full h-full flex flex-col justify-start gap-y-5 items-start">
-                          {navbarContent.map((item) => (
-                              <NavigationMenuItem key={item.name} className="flex w-full h-fit justify-start">
-                                  <Link href={item.url} legacyBehavior passHref>
-                                      <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), 'w-full bg-agm-dark-blue hover:bg-agm-light-blue text-white hover:text-white')}>
-                                          <div className="flex w-full text-start">
-                                              <p className="text-sm">{item.name}</p>
-                                          </div>
-                                      </NavigationMenuLink>
-                                  </Link>
-                              </NavigationMenuItem>
-                          ))}
-                      </div>
-                      <NavigationMenuItem className="flex w-full h-fit">
-                          <Account />
+            <NavigationMenu className="h-full w-full flex justify-start items-start">
+              <NavigationMenuList className="w-full gap-y-5 h-full justify-between flex flex-col">
+                <div className='w-full h-fit flex flex-col gap-y-5 justify-start items-start'>
+                  {navbarContent.map((item, index) => (
+                    <NavigationMenuItem key={index} className="flex w-full h-fit bg-transparent justify-start">
+                          <Link href={item.url} legacyBehavior passHref>
+                              <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), 'bg-transparent text-agm-white hover:bg-agm-white/15 hover:text-agm-white')}>
+                                  <div className="flex">
+                                      <p className="text-sm">{item.name}</p>
+                                  </div>
+                              </NavigationMenuLink>
+                          </Link>
                       </NavigationMenuItem>
-                  </NavigationMenuList>
-              </NavigationMenu>
+                  ))}
+                  </div>
+                  <NavigationMenuItem className="flex w-full h-fit">
+                      <Account dark/>
+                  </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
             </CardContent>
           </Card>
       </div>

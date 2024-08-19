@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import mime from 'mime'
 import { Readable } from "stream";

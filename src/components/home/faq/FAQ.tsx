@@ -29,9 +29,9 @@ function FAQ({}: Props) {
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                        Accounts are insured under the SIPC (Securities Investor 
-                        Protection Corporation) and FINRA (Financial Industry 
-                        Regulatory Authority in the United States).
+                    Accounts are insured under the SIPC (Securities Investor Protection Corporation) 
+                    and by Lloyd's in London. The accounts are under regulation of the SEC (Securities and Exchange Commission) 
+                    and FINRA (Financial Industry Regulatory Authority) in the United States.
                     </p>
                 </AccordionContent>
             </AccordionItem>
@@ -52,9 +52,9 @@ function FAQ({}: Props) {
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                        After opening your account and making an initial 
-                        savings/investment deposit, the money goes to 
-                        your AGM account, which you can access and monitor 24/7.
+                    After opening your account and making an initial savings/investment deposit, 
+                    the money goes directly to the custodian in the USA that holds your AGM account in your name, 
+                    you will have access to see and monitor your account 24/7.
                     </p>
                 </AccordionContent>
             </AccordionItem>
@@ -64,7 +64,8 @@ function FAQ({}: Props) {
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                        There are no taxes on the accounts.
+                        There are no interest or capital gains taxes on the account. 
+                        Taxes are only charged on dividends received.
                     </p>
                 </AccordionContent>
             </AccordionItem>
@@ -74,8 +75,9 @@ function FAQ({}: Props) {
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                        Only the account owner, the first designated 
-                        person, can be responsible for moving the money.
+                    Only the account owner, the first designated person, can move the money 
+                    in and out of the account to a bank account in the same name of the account owner. 
+                    The custodian does not allow third party wires for the protection of the client.
                     </p>
                 </AccordionContent>
             </AccordionItem>

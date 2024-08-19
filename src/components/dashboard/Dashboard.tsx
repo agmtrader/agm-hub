@@ -50,7 +50,7 @@ const Dashboard = ({user}: Props) => {
 
         <Sidebar/>
 
-        <div className='flex flex-col gap-y-10 justify-center items-center w-[100%] h-full'>  {/*Create dashboard vertical sections*/}
+        <div className='flex flex-col gap-y-10 justify-center items-center w-[85%] h-full'>  {/*Create dashboard vertical sections*/}
         <div className='flex w-full gap-x-10 h-full flex-row'>
 
             <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
@@ -118,27 +118,38 @@ const Dashboard = ({user}: Props) => {
             <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
             <CardHeader>
                 <CardTitle>
-                <p className='text-3xl'>Open applications</p>
+                <p className='text-3xl'>Notifications</p>
                 </CardTitle>
             </CardHeader>
             </Card>
             <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
             <CardHeader>
                 <CardTitle>
-                <p className='text-3xl'>Open applications</p>
+                <p className='text-3xl'>Advisor changelog</p>
                 </CardTitle>
             </CardHeader>
             </Card>
             <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
             <CardHeader>
                 <CardTitle>
-                <p className='text-3xl'>Open applications</p>
+                <p className='text-3xl'>Other tools</p>
                 </CardTitle>
             </CardHeader>
             </Card>
         </div>
 
-        <iframe title="Realtime Database Google" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=f1d81e10-b10b-4e48-92d7-f8e49e6800b1&autoAuth=true&ctid=34ef35c3-128b-4180-9d21-e764b0c7596d" allowFullScreen={true}></iframe>
+        <div className='flex w-full gap-x-5 flex-row'>
+            <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
+            <CardHeader>
+                <CardTitle>
+                    <p className='text-3xl'>PowerBI Report</p>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <iframe title="Realtime Database Google" width="100%" height="500px" src="https://app.powerbi.com/reportEmbed?reportId=f1d81e10-b10b-4e48-92d7-f8e49e6800b1&autoAuth=true&ctid=34ef35c3-128b-4180-9d21-e764b0c7596d" allowFullScreen={true}></iframe>
+            </CardContent>
+            </Card>
+        </div>
 
         </div>
 

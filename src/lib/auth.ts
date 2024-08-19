@@ -23,16 +23,19 @@ export const authOptions: NextAuthOptions = {
     adapter: FirestoreAdapter(firestoreAdmin),
     callbacks: {
 
-      async signIn({ user }) {
+      async signIn({ user, profile }) {
         return true;
       },
 
       jwt: async ({ token, user, account }) => {
 
+
+        // Get user's
         if (user) {
           token.sub = user.id
         }
         
+        // Get user's credentials
         if (account) {
           token.accessToken = account.access_token
           token.refreshToken = account.refresh_token
@@ -40,24 +43,28 @@ export const authOptions: NextAuthOptions = {
         
         return token
       },
+
       async session({ session, token }) {
 
         if (session?.user) {
 
           if (token.sub) {
-
-            console.log(token)
-
+            
+            // Authenticate Google Drive
             session.user.id = token.sub
-  
-            const options = {
-              admin: false
-            }
             
             if (token.accessToken && token.refreshToken) {
-              options.admin = true
               session.user.accessToken = token.accessToken
               session.user.refreshToken = token.refreshToken
+            }
+
+            // Authenticate Firebase
+            const options = {
+              admin: false,
+            }
+        
+            if (session.user.email?.split('@')[1] == 'agmtechnology.com') {
+              options.admin = true
             }
 
             const firebaseToken = await adminAuth.createCustomToken(token.sub, options)

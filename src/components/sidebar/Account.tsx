@@ -15,22 +15,32 @@ import {
 } from "@/components/ui/popover"
 import Image from 'next/image'
 
-type Props = {}
+type Props = {
+  dark?:boolean
+}
 
-const Account = (props: Props) => {
+const Account = ({dark}: Props) => {
   
     const {data:session} = useSession()
-    console.log(session?.user?.image)
 
   return (
     <div className='h-full w-full flex flex-col justify-end items-end'>
       {session?.user ?
         <Popover>
-          <PopoverTrigger asChild>
-            <Button variant='ghost' className='flex flex-col gap-y-5 w-full h-full'>
+          <PopoverTrigger asChild className='w-full h-full'>
+            <Button variant='ghost' className='flex flex-col gap-y-5 w-full h-full hover:bg-agm-blue/50'>
               <div className='flex w-full h-full items-center gap-x-5'>
-                <img className='rounded-full w-10 h-10' src={session?.user.image!} referrerPolicy="no-referrer" alt={'No image'}/>
-                <p className='text-sm text-black'>{session?.user.name}</p>
+                {session.user.image ?
+                  <img className='rounded-full w-10 h-10' src={session?.user.image!} referrerPolicy="no-referrer" alt={'Missing'}/>
+                  :
+                  <div className='w-10 h-10 rounded-full bg-agm-orange'></div>
+                }
+
+                {session.user.image ?
+                  <p className={cn('text-sm text-agm-black', dark && 'text-agm-white')}>{session?.user.name}</p>
+                  :
+                  <p className={cn('text-sm text-agm-black', dark && 'text-agm-white')}>Anonymous</p>
+                }
               </div>
             </Button>
           </PopoverTrigger>
