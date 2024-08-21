@@ -26,10 +26,6 @@ const navbarContent = [
     'url':'/'
   },
   {
-      'name':'AGM Dashboard',
-      'url':'/dashboard'
-  },
-  {
     'name':'AGM Trader',
     'url':'https://agmtrader.com'
   },
@@ -41,6 +37,10 @@ const navbarContent = [
     'name':'AGM Institutional',
     'url':'https://agm-institutional.vercel.app'
   },
+  {
+    'name':'AGM Dashboard',
+    'url':'/dashboard'
+},
   {
     'name':'Apply for an account',
     'url':'/apply'
