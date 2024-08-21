@@ -49,7 +49,23 @@ const page = () => {
         })
       })
 
-      setDocuments({'POA':poaData,'POI': poiData})
+      data = await getDocumentsFromCollection(`/db/document_center/sow`)
+
+      let sowData:Document[] = []
+
+      data.forEach((entry) => {
+        sowData.push({
+          'DocumentID': entry['DocumentID'],
+          'FileID': entry['FileID'],
+          'FileInfo': entry['FileInfo'],
+          'AccountNumber': entry['AccountNumber'],
+          'FileName': entry['FileName'],
+          'Type': entry['Type'],
+          'AGMUser': entry['AGMUser'],
+        })
+      })
+
+      setDocuments({'POA':poaData,'POI': poiData, 'SOW':sowData})
       
     }
     

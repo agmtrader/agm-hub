@@ -116,7 +116,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
           }
           
         }
-        driveId = '1VY0hfcj3EKcDMD6O_d2_gmiKL6rSt_M3'
+        driveId = '1WNJkWYWPX6LqWGOTsdq6r1ihAkPJPMHb'
         break;
     
     }

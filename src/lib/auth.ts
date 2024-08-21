@@ -24,11 +24,14 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
 
       async signIn({ user, profile }) {
+        
+        //const account = await adminAuth.getUser(user.id)
+        //console.log(account)
+
         return true;
       },
 
       jwt: async ({ token, user, account }) => {
-
 
         // Get user's
         if (user) {

@@ -13,7 +13,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import Image from 'next/image'
 
 type Props = {
   dark?:boolean
@@ -21,7 +20,7 @@ type Props = {
 
 const Account = ({dark}: Props) => {
   
-    const {data:session} = useSession()
+  const {data:session} = useSession()
 
   return (
     <div className='h-full w-full flex flex-col justify-end items-end'>
@@ -36,7 +35,7 @@ const Account = ({dark}: Props) => {
                   <div className='w-10 h-10 rounded-full bg-agm-orange'></div>
                 }
 
-                {session.user.image ?
+                {session.user.name ?
                   <p className={cn('text-sm text-agm-black', dark && 'text-agm-white')}>{session?.user.name}</p>
                   :
                   <p className={cn('text-sm text-agm-black', dark && 'text-agm-white')}>Anonymous</p>
