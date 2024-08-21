@@ -61,7 +61,7 @@ export function TeamCarousel() {
                       <DialogTrigger asChild>
                         <div className="w-full cursor-pointer h-full text-center flex flex-col items-center justify-center">
                           <p className="text-2xl font-bold">{member.name}</p>
-                          <p className="text-sm">{member.title}</p>
+                          <p className="text-sm text-agm-orange">{member.title}</p>
                         </div>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">

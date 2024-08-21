@@ -26,7 +26,7 @@ export const Header = () => {
           <motion.div initial={{y:-100}} animate={{y:0}} transition={{y: { type: "spring", bounce: 0 }}} className='flex items-center justify-between fixed w-full h-fit px-5 py-10 z-10 bg-agm-white'>
               <Link className='w-full h-full flex items-center' href={'/'}>
                 <Button variant={'ghost'}>
-                  <Image src={'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {200} width = {200}/>
+                  <Image src={'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {100} width = {300}/>
                 </Button>
               </Link>
               <Button variant={'ghost'} onClick={() => setExpandSidebar(true)}>
@@ -58,7 +58,7 @@ export const DashboardHeader = () => {
       <div className='flex items-center justify-between w-full h-fit px-5 py-10 z-10 bg-transparent'>
           <Link className='w-full h-full flex items-center' href={'/'}>
             <Button className='bg-transparent w-fit h-full hover:bg-agm-white/5'>
-              <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {200} width = {200}/>
+              <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {100} width = {300}/>
             </Button>
           </Link> 
       </div>
@@ -79,7 +79,7 @@ export const FormHeader = ({dark, bg}: Props) => {
       <div className='flex items-center justify-between px-5 w-full fixed h-fit py-10 z-10 bg-agm-white'>
         <Link className='w-full h-full flex items-center' href={'/'}>
           <Button variant={'ghost'} className='hover:bg-agm-white/5'>
-            <Image src={'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {200} width = {200}/>
+            <Image src={'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {100} width = {300}/>
           </Button>
         </Link>
         <Button variant={'ghost'} onClick={() => setExpandSidebar(true)}>

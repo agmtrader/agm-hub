@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "AGM Technology",
-  description: "Creado por Andres Aguilar y Ramon Castro",
+  description: "",
 };
 
 const inter = Inter({ subsets: ['latin'] })

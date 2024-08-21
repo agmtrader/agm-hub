@@ -28,7 +28,7 @@ const Account = ({dark}: Props) => {
       {session?.user ?
         <Popover>
           <PopoverTrigger asChild className='w-full h-full'>
-            <Button variant='ghost' className='flex flex-col gap-y-5 w-full h-full hover:bg-agm-blue/50'>
+            <Button variant='ghost' className='flex flex-col gap-y-5 w-full h-full hover:bg-agm-black/5'>
               <div className='flex w-full h-full items-center gap-x-5'>
                 {session.user.image ?
                   <img className='rounded-full w-10 h-10' src={session?.user.image!} referrerPolicy="no-referrer" alt={'Missing'}/>

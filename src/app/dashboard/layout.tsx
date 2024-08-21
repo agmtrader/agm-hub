@@ -12,7 +12,7 @@ import { DashboardHeader } from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "AGM Dashboard",
-  description: "Creado por Andres Aguilar y Ramon Castro",
+  description: "",
 };
 
 const inter = Inter({ subsets: ['latin'] })

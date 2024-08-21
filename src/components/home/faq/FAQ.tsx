@@ -20,7 +20,9 @@ function FAQ({}: Props) {
                     <p className='text-sm font-bold'>How to create a savings/investment account?</p>
                 </AccordionTrigger>
                 <AccordionContent>
-                    <p className='text-sm font-light'></p>
+                    <p className='text-sm font-light'>
+                    Please <a className='font-bold' href='/apply'>click here</a> to apply online.
+                    </p>
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">

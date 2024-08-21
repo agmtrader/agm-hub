@@ -55,7 +55,7 @@ const Sidebar = ({setExpandSidebar}:Props) => {
         <motion.div initial={{x:500}} animate={{x:0}} exit={{x:500}} transition={{duration:0.2  , y: { type: "spring", bounce: 0 }}} className='z-10 flex flex-col gap-y-5 items-end justify-start fixed right-0 w-fit py-10 px-6 h-full bg-agm-white'>
         <NavigationMenu className="h-full w-full flex justify-start items-start">
             <NavigationMenuList className="w-full gap-y-5 h-[90vh] justify-between flex flex-col">
-              <div className='w-full h-fit flex flex-col gap-y-5 justify-end items-start'>
+              <div className='w-full h-fit flex flex-col gap-y-5 justify-end items-end'>
                 <Button variant={'ghost'} onClick={() => setExpandSidebar(false)}>
                   X
                 </Button>
