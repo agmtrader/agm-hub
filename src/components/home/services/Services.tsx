@@ -1,22 +1,25 @@
 import { Handshake } from 'lucide-react'
 import React from 'react'
-import { GraphUpArrow, Mortarboard } from 'react-bootstrap-icons'
+import { Bank, GraphUpArrow, Mortarboard } from 'react-bootstrap-icons'
 
 const services = [
   {
     name: 'AGM Trader',
     icon: <GraphUpArrow className='text-white h-[12vw] w-[12vw]'/>,
-    description:''
+    description: 'We provide easy trading and investing access through our mobile, desktop and web applications open to more than 150 financial markets worldwide.',
+    url: 'https://agmtrader.com'
   },
   {
     name: 'AGM Advisor',
-    icon: <Mortarboard className='text-white h-[12vw] w-[12vw]'/>,
-    description:''
+    icon: <Handshake className='text-white h-[12vw] w-[12vw]'/>,
+    description:'We also provide Advisory services for those clients that would like to delegate a portion of their financial assets or wealth through our advisory division.',
+    url:'https://agm-advisor.vercel.app'
   },
   {
     name: 'AGM Institutional',
-    icon: <Handshake className='text-white h-[12vw] w-[12vw]'/>,
-    description:''
+    icon: <Bank className='text-white h-[12vw] w-[12vw]'/>,
+    description:'Our Institutional division provides world class execution services to the most sophisticated institutions like Advisory Firms, Hedge Funds, Broker/Dealers, Wealth Management firms, Insurance companies and more.',
+    url:'https://agm-institutional.vercel.app'
   }
 ]
 
@@ -31,12 +34,13 @@ export function Services() {
   return (
     <div className='flex flex-col h-full w-full'>
       <div className='bg-agm-blue w-full h-full justify-center items-center flex flex-col gap-y-16 py-20'>
+      <p className='font-bold text-5xl text-agm-white'>Learn About Our Services</p>
         <Carousel className="w-full h-full max-w-[70%]">
           <CarouselContent>
             {services.map((service, index) => (
               <CarouselItem key={index} className="basis-1/3">
-                <div className="p-1">
-                  <Card className='bg-agm-dark-blue border-0 text-white'>
+                <div className="flex flex-col w-full justify-center items-center gap-y-5">
+                <Card className='bg-agm-dark-blue p-2 border-0 text-white'>
                     <CardContent className="flex aspect-square items-center justify-center p-6">
                       <Dialog>
                         <DialogTrigger asChild>
@@ -50,11 +54,17 @@ export function Services() {
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
                             <p>{service.description}</p>
+                            <Button asChild>
+                              <Link href={service.url}>
+                                Learn More
+                              </Link>
+                            </Button>
                           </div>
                         </DialogContent>
                       </Dialog>
                     </CardContent>
                   </Card>
+                  <p className='text-agm-white w-fit text-center text-lg font-semibold'>{service.name}</p>
                 </div>
               </CarouselItem>
             ))}
@@ -78,3 +88,6 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+

@@ -8,6 +8,7 @@ import FAQ from "@/components/home/faq/FAQ";
 import MarketOverview from "@/components/MarketOverview";
 import Team from "@/components/home/team/Team";
 import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (

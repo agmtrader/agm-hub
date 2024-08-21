@@ -12,40 +12,35 @@ const Introduction = () => {
         US, Europe, Asia and Latin America, otherwise unavailable to certain investors. 
         </p>
         <p className='text-xl font-light text-agm-gray'>
-        Our clients can trade and invest 24/7 in:
+          Our clients can trade and invest the following assets 24/7 in more than 20 different currencies from a single account:
         </p>
         <ul className='text-xl text-agm-blue font-light text-agm-gray'>
           <li>
-            Stocks/ETFs, 
+            Stocks
+          </li>
+          <li>
+            ETFs
           </li>
           <li>
             Bonds
           </li>
           <li>
-            Mutual Funds, 
+            Mutual Funds
           </li>
           <li>
-            Options,
+            Options
           </li>
           <li>
-            Futures and
+            Futures
           </li>
           <li>
-            other asset classes.
+            and <span className='font-bold'>more</span>.
           </li>
         </ul>
-        <p className='text-xl font-light text-agm-gray'>In more than 20 different currencies from a single account through: </p>
-        <ul className='text-xl font-light text-agm-gray'>
-          <li>
-            AGM Trader - our mobile App
-          </li>
-          <li>
-            AGM Trader Pro - for professional use and 
-          </li>
-          <li>
-            AGM Webtrader - for simple web based trading and investing.
-          </li>
-        </ul>
+        <p className='text-xl font-light'>through our specialized apps and services.</p>
+        <Button>
+          Learn more.
+        </Button>
       </div>
     </div>
   )
