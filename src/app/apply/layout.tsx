@@ -9,8 +9,8 @@ import FirebaseAuthProvider from "@/app/FirebaseAuthProvider";
 import { Header } from "@/components/Header";
 
 export const metadata: Metadata = {
-  title: "AGM Technology",
-  description: "Discover the new trading world.",
+  title: "AGM Account Application",
+  description: "Join the new era of trading.",
 };
 
 const inter = Inter({ subsets: ['latin'] })
