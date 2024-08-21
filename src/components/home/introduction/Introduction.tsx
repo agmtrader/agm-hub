@@ -46,9 +46,6 @@ const Introduction = () => {
             AGM Webtrader - for simple web based trading and investing.
           </li>
         </ul>
-        <Button>
-          <p className='text-sm font-bold'>Learn more.</p>
-        </Button>
       </div>
     </div>
   )

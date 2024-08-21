@@ -21,7 +21,7 @@ function FAQ({}: Props) {
                 </AccordionTrigger>
                 <AccordionContent>
                     <p className='text-sm font-light'>
-                    Please <a className='font-bold' href='/apply'>click here</a> to apply online.
+                    Please <a className='font-bold' href='https://agmtechnology.com/apply' rel="noopener noreferrer" target="_blank">click here</a> to apply online.
                     </p>
                 </AccordionContent>
             </AccordionItem>

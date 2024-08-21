@@ -35,7 +35,11 @@ const navbarContent = [
   },
   {
     'name':'AGM Advisor',
-    'url':'/'
+    'url':'https://agm-advisor.vercel.app'
+  },
+  {
+    'name':'AGM Institutional',
+    'url':'https://agm-institutional.vercel.app'
   },
   {
     'name':'Apply for an account',

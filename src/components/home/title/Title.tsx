@@ -10,7 +10,7 @@ const Title = () => {
       <div className='flex flex-col gap-y-5 z-10 justify-center items-center text-center h-[60vh] w-full text-4xl text-agm-white font-medium'> 
         <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {100} width = {300}/>
         <p className='text-md text-white'>Access to Global Markets</p>
-        <Link href='/apply'>
+        <Link href='/apply' rel="noopener noreferrer" target="_blank">
           <Button asChild>
             <p className='text-sm font-bold'>Open an account.</p>
           </Button>
