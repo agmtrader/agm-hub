@@ -69,7 +69,7 @@ const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) 
   return (
     <div className='h-full w-full flex flex-col justify-start gap-y-10 items-center'>
         <h1 className='text-7xl font-bold'>Select ticket to process.</h1>
-        {tickets && <DataTableSelect data={tickets} setSelection={setCurrentTicket}/>}
+        {tickets && <DataTableSelect dark data={tickets} setSelection={setCurrentTicket}/>}
     </div>
   )
 }

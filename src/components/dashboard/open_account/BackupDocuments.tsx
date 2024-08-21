@@ -100,14 +100,15 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
       setDocuments({'POA':poaData,'POI': poiData, 'SOW': sowData})
 
       data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
-      console.log(data)
 
       // Update ticket status      
       if (data) {
-        if (poaData.length === 0 || poiData.length === 0 || sowData.length === 0) {
-          await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Missing documents')
-        } else if (data[0]['Status'] !== 'Ready for application') {
-          await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Documents need revision')
+        if (data[0]['Status'] !== 'Ready for application') {
+          if ((poaData.length === 0 || poiData.length === 0 || sowData.length === 0)) {
+            await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Missing documents')
+          } else {
+            await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Documents need revision')
+          }
         } else {
           setCanContinue(true)
         } 
@@ -148,7 +149,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
           <Button>Refresh</Button>
       </div>
 
-      {documents && accountNumber && <DocumentCenter documents={documents} setSelection={setSelection} accountNumber={accountNumber} selection={selection}/>}
+      {documents && accountNumber && <DocumentCenter dark documents={documents} setSelection={setSelection} accountNumber={accountNumber} selection={selection}/>}
 
       {documents && Object.keys(documents).length === 3 && 
         <div className="items-top flex space-x-2">
@@ -166,7 +167,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
             </div>
         </div>
       }
-      {tickets && <DataTable data={tickets}/>}
+      {tickets && <DataTable dark data={tickets}/>}
     </div>
   )
 }

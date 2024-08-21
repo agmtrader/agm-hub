@@ -118,7 +118,7 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
       <div className='w-[70%] h-full flex flex-col justify-center items-center gap-y-10'>
       <h1 className='text-7xl font-bold'>Create a temporary email.</h1>
       <p className='text-lg font-semibold'>Ticket</p>
-      <DataTable data={tickets} width={100}/>
+      <DataTable data={tickets} dark width={90}/>
       <p className='text-lg font-semibold'>Account Access Form</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className=" flex-wrap gap-x-5 gap-y-5 h-fit w-full flex flex-col justify-center items-center">
@@ -199,9 +199,9 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
       <div className='w-[70%] h-full flex flex-col gap-y-10 items-center justify-center'>
       <h1 className='text-7xl font-bold'>Account already created.</h1>
       <p className='text-lg font-semibold'>Ticket</p>
-      {tickets && <DataTable data={tickets} width={100}/>}
+      {tickets && <DataTable data={tickets} dark width={90}/>}
       <p className='text-lg font-semibold'>Account</p>
-      {account && <DataTable data={account} width={100}/>}
+      {account && <DataTable data={account} dark width={90}/>}
     </div>
     )
   }

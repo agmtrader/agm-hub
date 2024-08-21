@@ -36,93 +36,95 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
+
+const risk_profile_types = [
+  {
+    name: 'Conservative A',
+    bonds_aaa_a: 0.3,
+    bonds_bbb: 0.7,
+    bonds_bb: 0,
+    etfs: 0,
+    average_yield: .06103
+  },
+  {
+    name: 'Conservative B',
+    bonds_aaa_a: 0.18,
+    bonds_bbb: 0.54,
+    bonds_bb: .18,
+    etfs: .1,
+    average_yield: .0723
+  },
+  {
+    name: 'Moderate A',
+    bonds_aaa_a: 0.16,
+    bonds_bbb: 0.48,
+    bonds_bb: 0.16,
+    etfs: 0.2,
+    average_yield: .0764
+  },
+  {
+    name: 'Moderate B',
+    bonds_aaa_a: 0.15,
+    bonds_bbb: 0.375,
+    bonds_bb: 0.15,
+    etfs: 0.25,
+    average_yield: .0736
+  },
+  {
+    name: 'Moderate C',
+    bonds_aaa_a: 0.14,
+    bonds_bbb: 0.35,
+    bonds_bb: 0.21,
+    etfs: 0.3,
+    average_yield: .06103
+  },
+  {
+    name: 'Aggressive A',
+    bonds_aaa_a: 0.13,
+    bonds_bbb: 0.325,
+    bonds_bb: .195,
+    etfs: .35,
+    average_yield: .0845
+  },
+  {
+    name: 'Aggressive B',
+    bonds_aaa_a: 0.12,
+    bonds_bbb: 0.30,
+    bonds_bb: 0.18,
+    etfs: 0.4,
+    average_yield: .0865
+  },
+  {
+    name: 'Aggressive C',
+    bonds_aaa_a: 0.05,
+    bonds_bbb: 0.25,
+    bonds_bb: 0.20,
+    etfs: 0.5,
+    average_yield: .0925
+  }
+]
 
 
 const page = () => {
 
-  const asset_allocation = [
-    {
-      name: 'Conservative A',
-      bonds_aaa_a: 0.3,
-      bonds_bbb: 0.7,
-      bonds_bb: 0,
-      etfs: 0,
-      average_yield: .06103
-    },
-    {
-      name: 'Conservative B',
-      bonds_aaa_a: 0.18,
-      bonds_bbb: 0.54,
-      bonds_bb: .18,
-      etfs: .1,
-      average_yield: .0723
-    },
-    {
-      name: 'Moderate A',
-      bonds_aaa_a: 0.16,
-      bonds_bbb: 0.48,
-      bonds_bb: 0.16,
-      etfs: 0.2,
-      average_yield: .0764
-    },
-    {
-      name: 'Moderate B',
-      bonds_aaa_a: 0.15,
-      bonds_bbb: 0.375,
-      bonds_bb: 0.15,
-      etfs: 0.25,
-      average_yield: .0736
-    },
-    {
-      name: 'Moderate C',
-      bonds_aaa_a: 0.14,
-      bonds_bbb: 0.35,
-      bonds_bb: 0.21,
-      etfs: 0.3,
-      average_yield: .06103
-    },
-    {
-      name: 'Aggressive A',
-      bonds_aaa_a: 0.13,
-      bonds_bbb: 0.325,
-      bonds_bb: .195,
-      etfs: .35,
-      average_yield: .0845
-    },
-    {
-      name: 'Aggressive B',
-      bonds_aaa_a: 0.12,
-      bonds_bbb: 0.30,
-      bonds_bb: 0.18,
-      etfs: 0.4,
-      average_yield: .0865
-    },
-    {
-      name: 'Aggressive C',
-      bonds_aaa_a: 0.05,
-      bonds_bbb: 0.25,
-      bonds_bb: 0.20,
-      etfs: 0.5,
-      average_yield: .0925
-    }
-  ]
+  const [accountNumbers, setAccountNumbers] = useState<any[] | null>(null)
+  const [riskProfile, setRiskProfile] = useState<any | null>(null)
+  const[account, setAccount] = useState<any | null>(null)
 
+  // Form
   const schema = z.object({
     account_number: z.string().min(1, {
       message: 'Account number cannot be empty.'
     })
   })
-
-  // No need for initial values since the schema uses only zod.enum objects
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   })
 
-  const [portfolio, setPortfolio] = useState<any[] | null>(null)
-  const [accountNumbers, setAccountNumbers] = useState<any[] | null>(null)
-  const[account, setAccount] = useState<any | null>(null)
-
   async function onSubmit(values: z.infer<typeof schema>) {
+
+    console.log(values)
 
     const response:any[] = await queryDocumentsFromCollection('db/clients/risk_profiles', 'AccountNumber', values.account_number)
 
@@ -152,33 +154,11 @@ const page = () => {
           risk_type = 'Aggressive C'
         }
         
-        setPortfolio(asset_allocation.filter((element) => element.name === risk_type).map((element) => {element.bonds_aaa_a = element.bonds_aaa_a * 100; element.bonds_bbb = element.bonds_bbb * 100; element.bonds_bb = element.bonds_bb * 100; element.etfs = element.etfs * 100; element.average_yield = element.average_yield * 100; return element}))
+        setRiskProfile(risk_profile_types.filter((element) => element.name === risk_type).map((element) => {element.bonds_aaa_a = element.bonds_aaa_a * 100; element.bonds_bbb = element.bonds_bbb * 100; element.bonds_bb = element.bonds_bb * 100; element.etfs = element.etfs * 100; element.average_yield = element.average_yield * 100; return element})[0])
         setAccount(response[0])
       }
     }
 
-  }
-
-  enum clant {
-    bonds_aaa_a = 'Bonds AAA-A',
-    bonds_bbb = 'Bonds BBB',
-    bonds_bb = 'Bonds BB',
-    etfs = 'ETFs',
-  }
-
-
-  function getAssetAllocation() {
-    let labels:any[] = []
-    let values:any[] = []
-    
-    if (portfolio) {
-      labels = Object.keys(portfolio[0]).filter((element) => element !== 'name' && element !== 'average_yield')
-      labels.forEach((label) => {
-        values.push(portfolio[0][label])
-      })
-      labels = labels.map((element) => clant[element as keyof typeof clant])
-    }
-    return {labels, values}
   }
 
   // Fetch all risk profiles
@@ -187,7 +167,6 @@ const page = () => {
     async function fetchData () {
 
         let data = await getDocumentsFromCollection('db/clients/risk_profiles/')
-        console.log(data)
         setAccountNumbers(data.map((element:any) => {element.AccountNumber; return {label: element.AccountNumber + ' ' + element.ClientName, value: element.AccountNumber}}))
         
     }
@@ -195,92 +174,13 @@ const page = () => {
     fetchData()
 
   }, [])
-  
-  const {labels, values} = getAssetAllocation()
-
-  const asset_data = [
-    {
-      "Risk Score": 1,
-      "Asset Class": "STOCKS (ETFs)",
-      "Risk Level": "Most Aggressive",
-      "Asset Type": "STOCKS"
-    },
-    {
-      "Risk Score": 2,
-      "Asset Class": "BONDS BB",
-      "Risk Level": "Moderate",
-      "Asset Type": "BONDS"
-    },
-    {
-      "Risk Score": 3,
-      "Asset Class": "BONDS BBB",
-      "Risk Level": "Moderately Conservative",
-      "Asset Type": "BONDS"
-    },
-    {
-      "Risk Score": 4,
-      "Asset Class": "BONDS AAA",
-      "Risk Level": "Most Conservative",
-      "Asset Type": "BONDS"
-    }
-  ];
-
-  const data = {
-    backgroundColor: [
-      "rgb(102, 204, 255)",
-      "rgb(51, 153, 255)",
-      "rgb(0, 102, 255)",
-      "rgb(0, 51, 204)",
-    ],
-    labels: labels,
-    datasets: [
-      {
-        label: "Portfolio",
-        data: values,
-        backgroundColor: [
-          "rgb(102, 204, 255)",
-          "rgb(51, 153, 255)",
-          "rgb(0, 102, 255)",
-          "rgb(0, 51, 204)",
-        ],
-        hoverOffset: 4,
-      },
-    ],
-  }
-  
-  const options = {
-      plugins: {
-        legend: {
-          labels: {
-              color: "white",
-              font: {
-                  size: 14
-              },
-              padding: 10,
-          },
-          title: {
-              display: true,
-              text: "",
-              color: "grey",
-              padding: 10
-          }
-      }
-    },
-    elements: {
-      arc: {
-        weight: 0.5,
-        borderWidth: 1,
-      },
-    },
-  }
 
   return (
     <div className="w-full h-full justify-start items-center flex gap-y-20 flex-col">
 
-      <h1 className="text-7xl text-agm-dark-blue font-bold">Risk Profile</h1>
-
-      {accountNumbers && !portfolio &&
+      {accountNumbers && !riskProfile &&
         <Form {...form}>
+          <h1 className="text-7xl text-agm-dark-blue font-bold">Risk Profiles</h1>
           <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/3 flex flex-col gap-y-5 justify-center items-center">
           
           <p className="text-agm-white font-bold">Account alias</p>
@@ -322,7 +222,7 @@ const page = () => {
                             {accountNumbers.map((accountNumber) => (
                               <CommandItem
                                 value={accountNumber.label}
-                                key={accountNumber.value}
+                                key={accountNumber.label}
                                 onSelect={() => {
                                   form.setValue("account_number", accountNumber.value)
                                 }}
@@ -346,22 +246,10 @@ const page = () => {
           </form>
         </Form>
       }
+      
 
-      {portfolio && account &&
-        <div className="w-full h-full flex gap-y-5 justify-evenly flex-col items-center">
-          <p className="text-5xl font-bold text-agm-white">{account['ClientName']}</p>
-          {portfolio[0].name && <h1 className="text-3xl text-agm-orange">{portfolio[0].name}</h1>}
-          <div className="flex gap-x-5 w-full h-full justify-center items-center text-center">
-            <div className="w-fit mx-10 flex flex-col gap-y-5 justify-center items-center gap-x-10">
-              <DataTable dark data={asset_data} width={100}/>
-              <DataTable dark data={portfolio} width={100}/>
-            </div>
-            <div className="lg:w-[35%] w-full flex gap-y-10 justify-center items-center flex-col">
-              <Doughnut data={data} options={options} />
-              {portfolio[0].average_yield && <p className="text-lg text-agm-white font-semibold">Average yield: {Number(portfolio[0].average_yield).toFixed(2)}%</p>}
-            </div>
-          </div>
-        </div>
+      {riskProfile && account &&
+        <RiskProfile riskProfile={riskProfile} account={account}/>
       }
 
     </div>

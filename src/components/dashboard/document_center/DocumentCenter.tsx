@@ -17,10 +17,11 @@ interface Props {
   documents: Documents | null,
   setSelection: React.Dispatch<React.SetStateAction<Document | null>>,
   selection: Document | null,
-  accountNumber?: string
+  accountNumber?: string,
+  dark?: boolean
 }
 
-const DocumentCenter = ({documents, setSelection, selection, accountNumber}:Props) => {
+const DocumentCenter = ({documents, setSelection, selection, accountNumber, dark}:Props) => {
 
   const [type, setType] = useState<string>('POA')
 
@@ -35,7 +36,7 @@ const DocumentCenter = ({documents, setSelection, selection, accountNumber}:Prop
           </TabsList>
           {documents && Object.keys(documents).map((type) => (
             <TabsContent key={type} value={type} className='flex flex-col gap-y-10'>
-              {document && <DataTableSelect data={documents[type]} setSelection={setSelection} width={100}/>}
+              {document && <DataTableSelect dark={dark} data={documents[type]} setSelection={setSelection} width={100}/>}
             </TabsContent>
           ))}
 

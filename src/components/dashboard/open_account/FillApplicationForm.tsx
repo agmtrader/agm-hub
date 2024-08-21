@@ -86,19 +86,19 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
         {primaryHolderInfo && 
           <div className='w-full h-full gap-y-10 flex flex-col justify-center items-center'>
             <p className='text-lg font-semibold'>Primary Holder Information</p>
-            <DataTable data={[primaryHolderInfo]} dark width={100}/>
+            <DataTable data={[primaryHolderInfo]} dark width={90}/>
           </div>
         }
         {secondaryHolderInfo && 
           <div className='w-full h-full gap-y-10 flex flex-col justify-center items-center'>
             <p className='text-lg font-semibold'>Secondary Holder Information</p>
-            <DataTable data={[secondaryHolderInfo]} dark width={100}/>
+            <DataTable data={[secondaryHolderInfo]} dark width={90}/>
           </div>
         }
         {regulatoryInfo &&
           <div className='w-full h-full gap-y-10 flex flex-col justify-center items-center'>
             <p className='text-lg font-semibold'>Regulatory Information</p>
-            <DataTable data={[regulatoryInfo]} dark width={100}/>
+            <DataTable data={[regulatoryInfo]} dark width={90}/>
           </div>
         }
     </div>

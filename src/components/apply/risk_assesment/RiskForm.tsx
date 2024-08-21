@@ -24,8 +24,10 @@ import { getDefaults, risk_assesment_schema } from "@/lib/form"
 import { Input } from "@/components/ui/input"
 import { formatTimestamp } from "@/utils/dates"
 import { addDocument } from "@/utils/api"
+import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
 
-const asset_allocation = [
+// Risk profiles
+const risk_profile_types = [
   {
     name: 'Conservative A',
     bonds_aaa_a: 0.3,
@@ -92,6 +94,7 @@ const asset_allocation = [
   }
 ]
 
+// Question weights
 const weights = [
   {
     name: 'type',
@@ -119,37 +122,29 @@ const weights = [
   }
 ]
 
-const RiskForm = ({spanish}:{spanish:boolean}) => {
+const RiskForm = () => {
 
-  enum clant{
-    bonds_aaa_a = 'Bonds AAA-A',
-    bonds_bbb = 'Bonds BBB',
-    bonds_bb = 'Bonds BB',
-    etfs = 'ETFs',
-  }
-
+  // Client message and portfolio
   const [message, setMessage] = useState<string | null>(null)
-  const [portfolio, setPortfolio] = useState<any[] | null>(null)
+  const [riskProfile, setRiskProfile] = useState<any | null>(null)
 
+  // Form
   let formSchema:any;
   let initialFormValues:any = {};
-
   formSchema = risk_assesment_schema
   initialFormValues = getDefaults(formSchema)
-
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       values: initialFormValues,
   })
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
-    console.log(values)
-
+    setMessage('Loading...')
 
     const timestamp = new Date()
     const riskProfileID = formatTimestamp(timestamp)
 
+    // Calculate risk score
     let sum = 0
     Object.entries(values).forEach((element) => {
       if (element[0] !== 'account_number' && element[0] !== 'client_name') {
@@ -157,6 +152,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
       }
     })
 
+    // Build a risk profile
     const risk_profile = {
       'AccountNumber':values.account_number,
       'ClientName': values.client_name,
@@ -164,129 +160,81 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
       'RiskProfileID':riskProfileID,
     }
 
-    console.log(sum)
-    console.log(risk_profile)
-
+    // Add risk profile to database
     await addDocument(risk_profile, 'db/clients/risk_profiles', riskProfileID)
 
+    // Remove account number and client name from values !?
     delete values.account_number
     delete values.client_name
 
-    setMessage(spanish ? 'Perfil de riesgo enviado exitosamente.':'Risk profile successfully submitted.')
+    setMessage('Risk profile successfully submitted.')
 
-    let risk_type = ''
-
+    // Calculate risk type
+    let risk_profile_type = ''
     if (sum < .9) {
-      risk_type = 'Conservative A'
+      risk_profile_type = 'Conservative A'
     } else if (sum >= 0.9 && sum < 1.25) {
-      risk_type = 'Conservative B'
+      risk_profile_type = 'Conservative B'
     } else if (sum >= 1.25 && sum < 1.5) {
-      risk_type = 'Moderate A'
+      risk_profile_type = 'Moderate A'
     } else if (sum >= 1.5 && sum < 2) {
-      risk_type = 'Moderate B'
+      risk_profile_type = 'Moderate B'
     } else if (sum >= 2 && sum < 2.5) {
-      risk_type = 'Moderate C'
+      risk_profile_type = 'Moderate C'
     } else if (sum >= 2.5 && sum < 2.75) {
-      risk_type = 'Aggressive A'
+      risk_profile_type = 'Aggressive A'
     } else if (sum >= 2.75 && sum < 3) {
-      risk_type = 'Aggressive B'
+      risk_profile_type = 'Aggressive B'
     } else if (sum >= 3) {
-      risk_type = 'Aggressive C'
+      risk_profile_type = 'Aggressive C'
     }
     
-    setPortfolio(asset_allocation.filter((element) => element.name === risk_type))
+    // Get risk type from asset allocations
+    setRiskProfile(risk_profile_types.filter((element) => element.name === risk_profile_type)[0])
 
   }
 
-  function getAssetAllocation() {
-    let labels:any[] = []
-    let values:any[] = []
-    
-    if (portfolio) {
-      labels = Object.keys(portfolio[0]).filter((element) => element !== 'name' && element !== 'average_yield')
-      labels.forEach((label) => {
-        values.push(portfolio[0][label])
-      })
-      labels = labels.map((element) => clant[element as keyof typeof clant])
-    }
-    return {labels, values}
-  }
-  
-  const {labels, values} = getAssetAllocation()
-
-  const data = {
-    backgroundColor: [
-      "rgb(2, 88, 255)",
-      "rgb(249, 151, 0)",
-      "rgb(255, 199, 0)",
-      "rgb(32, 214, 152)",
-    ],
-    labels: labels,
-    datasets: [
-      {
-        label: "Portfolio",
-        data: values,
-        backgroundColor: [
-          "rgb(2, 88, 255)",
-          "rgb(249, 151, 0)",
-          "rgb(255, 199, 0)",
-          "rgb(32, 214, 152)",
-        ],
-        hoverOffset: 4,
-      },
-    ],
-  }
-  
-  const options = {
-    elements: {
-      arc: {
-        weight: 0.5,
-        borderWidth: 1,
-      },
-    },
-  }
-
-  if (spanish) {
-    return (
+  return (
       <div className="w-2/3 h-full flex">
 
         <Form {...form}>
+
           <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
 
-            <FormField
-              control={form.control}
-              name="account_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Número de cuenta</FormLabel>
+          <FormField
+                control={form.control}
+                name="account_number"
+                render={({ field }) => (
+                  <FormItem>
+                  <FormLabel>Account number</FormLabel>
                   <FormControl>
-                    <Input placeholder="" {...field} />
+                      <Input placeholder="" {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
+                  </FormItem>
               )}
             />
 
             <FormField
-              control={form.control}
-              name="client_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre del cliente</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                control={form.control}
+                name="client_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Client name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
             <FormField
               control={form.control}
               name="type"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>¿Qué tipo de inversor te consideras?</FormLabel>
+                  <FormLabel>What type of investor do you consider yourself?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -298,21 +246,21 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="1" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Conservador
+                          Conservative
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="2.5" />
                         </FormControl>
-                        <FormLabel className="font-normal">Moderado</FormLabel>
+                        <FormLabel className="font-normal">Moderate</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="4" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Agresivo
+                          Aggresive
                         </FormLabel>
                       </FormItem>
                     </RadioGroup>
@@ -327,7 +275,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
               name="loss"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Si tu cartera pierde un 20% de su valor, ¿qué acción tomarías?</FormLabel>
+                  <FormLabel>If your portfolio loses 20% of its value what action would you take?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -338,20 +286,20 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
-                        <FormLabel className="font-normal">Vender todo</FormLabel>
+                        <FormLabel className="font-normal">Sell everything</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="2" />
                         </FormControl>
-                        <FormLabel className="font-normal">Vender algunas inversiones</FormLabel>
+                        <FormLabel className="font-normal">Sell some investments</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="3" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          No hacer nada
+                          Do nothing
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -359,7 +307,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="4" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Invertir más
+                          Invest more
                         </FormLabel>
                       </FormItem>
                     </RadioGroup>
@@ -374,7 +322,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
               name="gain"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Si tu cartera aumenta un 20% de su valor, ¿qué acción tomarías?</FormLabel>
+                  <FormLabel>If your portfolio appreciates 20% of its value what action would you take?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -385,20 +333,20 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
-                        <FormLabel className="font-normal">Vender todo</FormLabel>
+                        <FormLabel className="font-normal">Sell everything</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="2" />
                         </FormControl>
-                        <FormLabel className="font-normal">Vender algunas inversiones</FormLabel>
+                        <FormLabel className="font-normal">Sell some investments</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="3" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          No hacer nada
+                          Do nothing
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -406,7 +354,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="4" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Invertir más
+                          Invest more
                         </FormLabel>
                       </FormItem>
                     </RadioGroup>
@@ -421,7 +369,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
               name="period"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>¿Cuál crees que debería ser el plazo promedio de tu cartera de inversiones?</FormLabel>
+                  <FormLabel>What do you think the average term of your investment portfolio should be?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -433,7 +381,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="4" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          0-5 años
+                          0-5 years
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -441,7 +389,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="3" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          5-10 años
+                          5-10 years
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -449,14 +397,14 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="2" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          11-20 años
+                          11-20 years
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
-                        <FormLabel className="font-normal">Más de 21 años</FormLabel>
+                        <FormLabel className="font-normal">More than 21 years</FormLabel>
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
@@ -470,7 +418,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
               name="diversification"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Considerando la diversificación de clases de activos, ¿cuál de estos portafolios seleccionarías?</FormLabel>
+                  <FormLabel>Considering asset class diversification, which of these portfolios would you select?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -482,7 +430,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="1" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Portafolio A: 100% bonos, 0% acciones
+                          Portfolio A: 100% bonds, 0% equity
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -490,7 +438,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="2" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Portafolio B: 80% bonos, 20% acciones
+                          Portfolio B: 80% bonds, 20% equity
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -498,7 +446,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="3" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Portafolio C: 60% bonos, 40% acciones
+                          Portfolio C: 60% bonds, 40% equity
                         </FormLabel>
                       </FormItem>
                     </RadioGroup>
@@ -513,7 +461,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
               name="goals"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>¿Cuál de estos portafolios representa mejor tus objetivos con los resultados más aceptables?</FormLabel>
+                  <FormLabel>Which of these portfolios best represent your goals with the most acceptable outcomes?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -525,7 +473,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="1" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Portafolio A: Rendimiento promedio del 4%
+                          Portfolio A: Average 4% return
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -533,7 +481,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="2" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Portafolio B: Rendimiento promedio del 5%
+                        Portfolio A: Average 5% return
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -541,7 +489,7 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                           <RadioGroupItem value="3" />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Portafolio C: Rendimiento promedio del 7%
+                          Portfolio C: Average 7% return
                         </FormLabel>
                       </FormItem>
                     </RadioGroup>
@@ -550,345 +498,48 @@ const RiskForm = ({spanish}:{spanish:boolean}) => {
                 </FormItem>
               )}
             />
+
+            {/*TODO AGREGAR FOTOS DE LOUIS */}
             
             <Button type="submit">Submit</Button>
             {message && <p className="text-green-600">{message}</p>}
-            {portfolio &&
-              <div className="lg:w-[30%] w-full flex justify-center items-center gap-y-10 flex-col">
-                {portfolio[0].name && <h1 className="text-xl font-bold">Perfil: {portfolio[0].name}</h1>}
-                <Doughnut data={data} options={options} />
-                {portfolio[0].average_yield && <p className="text-sm font-bold">Rendimiento promedio: {Number(portfolio[0].average_yield * 100).toFixed(2)}%</p>}
+
+          </form>
+
+        </Form>
+
+        <div className="w-full">
+          <Dialog open={riskProfile ? true:false}>
+            <DialogContent className="max-w-fit w-full">
+            <DialogClose className="w-fit h-fit" asChild>
+              <Button type="button" onClick={() => {setRiskProfile(null); setMessage(null)}} variant="secondary">
+                X
+              </Button>
+            </DialogClose>
+            {riskProfile &&
+              <div className="w-full h-full flex flex-col gap-y-5 justify-center items-center">
+                <p className="text-5xl font-bold">Your Risk Profile</p>
+                <RiskProfile riskProfile={riskProfile}/>
+                <p className="text-sm text-red-500 font-bold">Please take a picture of this, as it will be very hard to see it again!</p>
               </div>
             }
-          </form>
-        </Form>
-      </div>
-      
-    )
-  } else {
-  return (
-      <div className="w-2/3 h-full flex">
+            </DialogContent>
+          </Dialog>
+        </div>
 
-      <Form {...form}>
-
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-
-        <FormField
-              control={form.control}
-              name="account_number"
-              render={({ field }) => (
-                <FormItem>
-                <FormLabel>Account number</FormLabel>
-                <FormControl>
-                    <Input placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-          />
-
-          <FormField
-              control={form.control}
-              name="client_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Client name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-          <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>What type of investor do you consider yourself?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="1" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Conservative
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="2.5" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Moderate</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="4" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Aggresive
-                      </FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="loss"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>If your portfolio loses 20% of its value what action would you take?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="1" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Sell everything</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="2" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Sell some investments</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="3" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Do nothing
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="4" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Invest more
-                      </FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="gain"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>If your portfolio appreciates 20% of its value what action would you take?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="1" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Sell everything</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="2" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Sell some investments</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="3" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Do nothing
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="4" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Invest more
-                      </FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="period"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>What do you think the average term of your investment portfolio should be?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="4" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        0-5 years
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="3" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        5-10 years
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="2" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        11-20 years
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="1" />
-                      </FormControl>
-                      <FormLabel className="font-normal">More than 21 years</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="diversification"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Considering asset class diversification, which of these portfolios would you select?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="1" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Portfolio A: 100% bonds, 0% equity
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="2" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Portfolio B: 80% bonds, 20% equity
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="3" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Portfolio C: 60% bonds, 40% equity
-                      </FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="goals"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Which of these portfolios best represent your goals with the most acceptable outcomes?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="1" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Portfolio A: Average 4% return
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="2" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                      Portfolio A: Average 5% return
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="3" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Portfolio C: Average 7% return
-                      </FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-
-          {/*TODO AGREGAR FOTOS DE LOUIS */}
-          
-          <Button type="submit">Submit</Button>
-          {message && <p className="text-green-600">{message}</p>}
-          {portfolio &&
-            <div className="lg:w-[30%] w-full flex justify-center items-center gap-y-10 flex-col">
-              {portfolio[0].name && <h1 className="text-xl font-bold">Profile: {portfolio[0].name}</h1>}
-              <Doughnut data={data} options={options} />
-              {portfolio[0].average_yield && <p className="text-sm font-bold">Average yield: {Number(portfolio[0].average_yield * 100).toFixed(2)}%</p>}
-            </div>
-          }
-        </form>
-      </Form>
-      </div>
-      
-    )
-  }
+      </div> 
+  )
 }
 
 export default RiskForm
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"

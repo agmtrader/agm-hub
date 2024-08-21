@@ -124,7 +124,7 @@ export const DataTable = <TData,>({data, width, dark}: DataTableProps<TData>) =>
     )
 }
 
-export const DataTableSelect = <TData,>({data, setSelection, width}: DataTableSelectProps<TData>) => {
+export const DataTableSelect = <TData,>({data, setSelection, width, dark}: DataTableSelectProps<TData>) => {
 
     if (data.length == 0) {
       return (
@@ -143,6 +143,7 @@ export const DataTableSelect = <TData,>({data, setSelection, width}: DataTableSe
                 id: "select",
                 cell: ({ row }:{row: any}) => (
                   <Checkbox
+                    className={cn(dark && "bg-agm-white")}
                     checked={row.getIsSelected()}
                     onCheckedChange={(value:any) => selectRow(row, !!value)}
                     aria-label="Select row"
@@ -200,7 +201,7 @@ export const DataTableSelect = <TData,>({data, setSelection, width}: DataTableSe
               <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                   return (
-                      <TableHead key={header.id}>
+                      <TableHead className={dark ? "text-white":''} key={header.id}>
                       {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -221,7 +222,7 @@ export const DataTableSelect = <TData,>({data, setSelection, width}: DataTableSe
                   data-state={row.getIsSelected() && "selected"}
                   >
                   {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell className={dark ? "text-white":''} key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                   ))}
