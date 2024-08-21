@@ -34,7 +34,7 @@ export function Services() {
   return (
     <div className='flex flex-col h-full w-full'>
       <div className='bg-agm-blue w-full h-full justify-center items-center flex flex-col gap-y-16 py-20'>
-      <p className='font-bold text-5xl text-agm-white'>Learn About Our Services</p>
+      <p className='font-bold text-5xl text-agm-white'>Our Services</p>
         <Carousel className="w-full h-full max-w-[70%]">
           <CarouselContent>
             {services.map((service, index) => (
