@@ -28,7 +28,7 @@ const Account = ({dark}: Props) => {
         <Popover>
           <PopoverTrigger asChild className='w-full h-full'>
             <Button variant='ghost' className='flex flex-col gap-y-5 w-full h-full hover:bg-agm-black/5'>
-              <div className='flex w-full h-full items-center gap-x-5'>
+              <div className='flex w-full text-agm-dark-blue h-full items-center gap-x-5'>
                 {session.user.image ?
                   <img className='rounded-full w-10 h-10' src={session?.user.image!} referrerPolicy="no-referrer" alt={'Missing'}/>
                   :
@@ -36,16 +36,16 @@ const Account = ({dark}: Props) => {
                 }
 
                 {session.user.name ?
-                  <p className={cn('text-sm text-agm-black', dark && 'text-agm-white')}>{session?.user.name}</p>
+                  <p className={cn('text-sm', dark && 'text-agm-white')}>{session?.user.name}</p>
                   :
-                  <p className={cn('text-sm text-agm-black', dark && 'text-agm-white')}>Anonymous</p>
+                  <p className={cn('text-sm', dark && 'text-agm-white')}>Anonymous</p>
                 }
               </div>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-full h-full flex justify-center items-center">
             {session?.user &&
-              <div className='w-fit h-full flex justify-center items-center'>
+              <div className='w-fit h-full flex text-agm-dark-blue justify-center items-center'>
                   <Button onClick={() => signOut()} className="flex">
                       <p className="text-sm">Sign out</p>
                   </Button>

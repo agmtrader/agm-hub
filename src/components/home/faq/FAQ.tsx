@@ -12,7 +12,7 @@ type Props = {}
 
 function FAQ({}: Props) {
   return (
-    <div className='w-full h-full flex flex-col justify-center gap-y-16 items-center'>
+    <div className='w-full h-full flex flex-col justify-center text-agm-dark-blue gap-y-16 items-center'>
       <p className='text-5xl text-center font-bold'>Frequently Asked Questions</p>
         <Accordion type="single" collapsible className="w-[80%] text-start">
             <AccordionItem value="item-1" >

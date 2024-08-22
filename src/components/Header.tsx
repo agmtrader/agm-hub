@@ -9,7 +9,6 @@ import useScrollPositions from '@/hooks/useScrollPositions'
 import {motion, AnimatePresence} from 'framer-motion'
 import { List } from 'react-bootstrap-icons'
 import Sidebar from './sidebar/Sidebar'
-import { cn } from '@/lib/utils'
 
 const maxScroll = 100
 
@@ -30,7 +29,7 @@ export const Header = () => {
                 </Button>
               </Link>
               <Button variant={'ghost'} onClick={() => setExpandSidebar(true)}>
-                <List className='text-2xl'/>
+                <List className='text-2xl text-agm-dark-blue'/>
               </Button>
           </motion.div>
           :
@@ -54,14 +53,26 @@ export const Header = () => {
 
 export const DashboardHeader = () => {
 
+  const [expandSidebar, setExpandSidebar] = useState(false)
+
   return (
-      <div className='flex items-center justify-between w-full h-fit px-5 py-10 z-10 bg-transparent'>
-          <Link className='w-full h-full flex items-center' href={'/'}>
-            <Button className='bg-transparent w-fit h-full hover:bg-agm-white/5'>
-              <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {200} width = {200}/>
-            </Button>
-          </Link> 
+    <div className='w-full h-full flex'>
+      <div className='flex items-center justify-between px-5 w-full fixed h-fit py-10 z-10 bg-agm-white'>
+        <Link className='w-full h-full flex items-center' href={'/'}>
+          <Button variant={'ghost'} className='hover:bg-agm-white/5'>
+            <Image src={'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {200} width = {200}/>
+          </Button>
+        </Link>
+        <Button variant={'ghost'} onClick={() => setExpandSidebar(true)}>
+          <List className='text-2xl text-agm-dark-blue'/>
+        </Button>
       </div>
+      <AnimatePresence>
+        {expandSidebar &&
+          <Sidebar setExpandSidebar={setExpandSidebar}/>
+        }
+      </AnimatePresence>
+    </div>
   )
 }
 
@@ -83,7 +94,7 @@ export const FormHeader = ({dark, bg}: Props) => {
           </Button>
         </Link>
         <Button variant={'ghost'} onClick={() => setExpandSidebar(true)}>
-          <List className='text-2xl'/>
+          <List className='text-2xl text-agm-dark-blue'/>
         </Button>
       </div>
       <AnimatePresence>

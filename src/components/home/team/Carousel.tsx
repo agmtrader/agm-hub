@@ -59,13 +59,13 @@ export function TeamCarousel() {
                 <CardContent className="flex aspect-square items-center justify-center p-6">
                     <Dialog>
                       <DialogTrigger asChild>
-                        <div className="w-full cursor-pointer h-full text-center flex flex-col items-center justify-center">
+                        <div className="w-full text-agm-dark-blue cursor-pointer h-full text-center flex flex-col items-center justify-center">
                           <p className="text-2xl font-bold">{member.name}</p>
                           <p className="text-sm text-agm-orange">{member.title}</p>
                         </div>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
+                        <DialogHeader className="text-agm-dark-blue">
                           <DialogTitle>{member.name}</DialogTitle>
                           <DialogDescription>{member.title}</DialogDescription>
                         </DialogHeader>

@@ -6,7 +6,7 @@ const services = [
   {
     name: 'AGM Trader',
     icon: <GraphUpArrow className='text-white h-[12vw] w-[12vw]'/>,
-    description: 'We provide easy trading and investing access through our mobile, desktop and web applications open to more than 150 financial markets worldwide.',
+    description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
     url: 'https://agmtrader.com'
   },
   {
@@ -40,7 +40,7 @@ export function Services() {
             {services.map((service, index) => (
               <CarouselItem key={index} className="basis-1/3">
                 <div className="flex flex-col w-full justify-center items-center gap-y-5">
-                <Card className='bg-agm-dark-blue p-2 border-0 text-white'>
+                <Card className='bg-agm-dark-blue p-2 border-0 text-agm-white'>
                     <CardContent className="flex aspect-square items-center justify-center p-6">
                       <Dialog>
                         <DialogTrigger asChild>
@@ -50,9 +50,9 @@ export function Services() {
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                           <DialogHeader>
-                            <DialogTitle>{service.name}</DialogTitle>
+                            <DialogTitle className='text-agm-dark-blue'>{service.name}</DialogTitle>
                           </DialogHeader>
-                          <div className="grid gap-4 py-4">
+                          <div className="text-agm-dark-blue grid gap-4 py-4">
                             <p>{service.description}</p>
                             <Button asChild>
                               <Link href={service.url}>
