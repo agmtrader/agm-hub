@@ -23,7 +23,7 @@ const Account = ({dark}: Props) => {
   const {data:session} = useSession()
 
   return (
-    <div className='h-full w-full flex flex-col'>
+    <div className='h-fit w-full flex flex-col'>
       {session?.user ?
         <Popover>
           <PopoverTrigger asChild className='w-fit h-full'>

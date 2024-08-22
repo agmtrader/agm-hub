@@ -56,17 +56,20 @@ export const DashboardHeader = () => {
   const [expandSidebar, setExpandSidebar] = useState(false)
 
   return (
-    <div className='w-full h-full flex'>
-      <div className='flex items-center justify-between px-5 w-full h-fit py-10 z-10'>
-        <Link className='w-full h-full flex items-center' href={'/'}>
-          <Button variant={'ghost'} className='hover:bg-agm-white/5'>
-            <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {200} width = {200}/>
-          </Button>
-        </Link>
-        <Button variant={'ghost'} className='hover:bg-agm-white/20' onClick={() => setExpandSidebar(true)}>
-          <List className='text-2xl text-agm-white'/>
-        </Button>
-      </div>
+    <div>
+      <AnimatePresence>
+          <div className='flex items-center justify-between fixed px-5 w-full h-fit py-10 z-10 bg-transparent'>
+            <Link className='w-full h-full flex items-center' href={'/'}>
+                <Button variant={'ghost'}>
+                  <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {200} width = {200}/>
+                </Button>
+              </Link>
+            <Button onClick={() => setExpandSidebar(true)}>
+              <List className='text-2xl'/>
+            </Button>
+          </div>
+      </AnimatePresence>
+
       <AnimatePresence>
         {expandSidebar &&
           <Sidebar setExpandSidebar={setExpandSidebar}/>
@@ -86,17 +89,20 @@ export const FormHeader = ({dark, bg}: Props) => {
   const [expandSidebar, setExpandSidebar] = useState(false)
 
   return (
-    <div className='w-full h-full flex mb-16'>
-      <div className='flex items-center justify-between px-5 w-full fixed h-fit py-10 z-10 bg-agm-white'>
-        <Link className='w-full h-full flex items-center' href={'/'}>
-          <Button variant={'ghost'} className='hover:bg-agm-white/5'>
-            <Image src={'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {200} width = {200}/>
-          </Button>
-        </Link>
-        <Button variant={'ghost'} onClick={() => setExpandSidebar(true)}>
-          <List className='text-2xl text-agm-dark-blue'/>
-        </Button>
-      </div>
+    <div>
+      <AnimatePresence>
+          <div className='flex items-center justify-between fixed px-5 w-full h-fit py-10 z-10 bg-agm-white'>
+            <Link className='w-full h-full flex items-center' href={'/'}>
+                <Button variant={'ghost'}>
+                  <Image src={'/images/brand/agm-logo.png'} alt = 'AGM Logo' height = {200} width = {200}/>
+                </Button>
+              </Link>
+            <Button onClick={() => setExpandSidebar(true)}>
+              <List className='text-2xl'/>
+            </Button>
+          </div>
+      </AnimatePresence>
+
       <AnimatePresence>
         {expandSidebar &&
           <Sidebar setExpandSidebar={setExpandSidebar}/>
