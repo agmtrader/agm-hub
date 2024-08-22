@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
             prompt: "consent",
             access_type: "offline",
             response_type: "code",
-            scope: "openid https://www.googleapis.com/auth/drive"
+            scope: "openid https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
           }
         }
       }),
@@ -23,19 +23,14 @@ export const authOptions: NextAuthOptions = {
     adapter: FirestoreAdapter(firestoreAdmin),
     callbacks: {
 
-      async signIn({ user, profile }) {
-        
-        //const account = await adminAuth.getUser(user.id)
-        //console.log(account)
-
-        return true;
-      },
-
       jwt: async ({ token, user, account }) => {
 
         // Get user's
         if (user) {
           token.sub = user.id
+          token.email = user.email
+          token.name = user.name
+          token.picture = user.image
         }
         
         // Get user's credentials
@@ -51,13 +46,33 @@ export const authOptions: NextAuthOptions = {
 
         if (session?.user) {
 
+          if (token.email) {
+            console.log(token.email)
+          }
+
+          if (token.name) {
+            console.log(token.name)
+          }
+          
           if (token.sub) {
-            
+
             // Authenticate Google Drive
             session.user.id = token.sub
-            
-            if (token.accessToken && token.refreshToken) {
+
+            // Build profile
+            if (token.picture) {
+              session.user.image = token.picture
+            }
+            if (token.name) {
+              session.user.name = token.name
+            }
+            if (token.email) {
+              session.user.email = token.email
+            }
+            if (token.accessToken) {
               session.user.accessToken = token.accessToken
+            }
+            if (token.refreshToken) {
               session.user.refreshToken = token.refreshToken
             }
 
@@ -68,6 +83,7 @@ export const authOptions: NextAuthOptions = {
         
             if (session.user.email?.split('@')[1] == 'agmtechnology.com') {
               options.admin = true
+              session.user.admin = true
             }
 
             const firebaseToken = await adminAuth.createCustomToken(token.sub, options)

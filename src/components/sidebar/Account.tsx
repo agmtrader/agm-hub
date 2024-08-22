@@ -23,10 +23,10 @@ const Account = ({dark}: Props) => {
   const {data:session} = useSession()
 
   return (
-    <div className='h-full w-full flex flex-col justify-end items-end'>
+    <div className='h-full w-full flex flex-col'>
       {session?.user ?
         <Popover>
-          <PopoverTrigger asChild className='w-full h-full'>
+          <PopoverTrigger asChild className='w-fit h-full'>
             <Button variant='ghost' className='flex flex-col gap-y-5 w-full h-full hover:bg-agm-black/5'>
               <div className='flex w-full text-agm-dark-blue h-full items-center gap-x-5'>
                 {session.user.image ?
@@ -61,14 +61,21 @@ const Account = ({dark}: Props) => {
           </PopoverContent>
         </Popover>
         :
-        <Button onClick={(e) => {
-            e.preventDefault()
-            signIn('google')
-          }}
-          className="flex"
-        >
-            <p className="text-sm">Sign in</p>
-        </Button>
+        <div className='flex w-full gap-x-5 justify-center items-center'>
+          <Button onClick={(e) => {
+              e.preventDefault()
+              signIn()
+            }}
+            className="flex w-fit h-full justify-center items-center"
+          >
+              <p className="text-sm">Sign in</p>
+          </Button>
+          <Button>
+            <Link href='/create-account'>
+              <p className="text-sm">Register</p>
+            </Link>
+          </Button>
+        </div>
       }
     </div>
   )

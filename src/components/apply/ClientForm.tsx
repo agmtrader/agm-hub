@@ -6,6 +6,7 @@ import AboutYouPrimary from './account/components/AboutYou';
 import Regulatory from './account/components/Regulatory';
 import { Ticket } from '@/lib/types';
 import AboutYou from './account/components/AboutYou';
+import { FormHeader } from '../Header';
 
 const ClientForm = () => {
 
@@ -32,7 +33,9 @@ const ClientForm = () => {
   }
 
   return (
-    <div className='w-full h-full flex flex-col mt-10 mb-10 justify-center items-start'>
+    <div className='w-full h-full flex flex-col justify-center items-start'>
+      
+      <FormHeader />
 
       {step === 1 && <GeneralInfo step={step} stepForward={stepForward} setTicket={setTicket}/>}
       
