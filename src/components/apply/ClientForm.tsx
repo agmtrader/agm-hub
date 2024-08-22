@@ -36,6 +36,7 @@ const ClientForm = () => {
     <div className='w-full h-full flex flex-col justify-center items-start'>
       
       <FormHeader />
+      <div className='w-full h-full justify-center items-center flex flex-col my-20'>
 
       {step === 1 && <GeneralInfo step={step} stepForward={stepForward} setTicket={setTicket}/>}
       
@@ -58,6 +59,7 @@ const ClientForm = () => {
                 (step == 5) && 'Done!'
             )
         }
+      </div>
 
     </div>
 )}

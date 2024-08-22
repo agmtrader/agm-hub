@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Lock } from 'lucide-react';
+import { Lock, User } from 'lucide-react';
 import Sidebar from '@/components/dashboard/sidebar/Sidebar';
 import Account from '@/components/sidebar/Account';
 import { ClientDashboard } from '@/components/dashboard/Dashboard';
@@ -42,7 +42,8 @@ export default function Layout({
                     }
                   </div>
                   :
-                  <div className='w-full h-full flex flex-col justify-center items-center text-center gap-y-5'>
+                  <div className='w-full h-[60vh] flex flex-col justify-center items-center text-center gap-y-5'>
+                    <Lock size={100}/>
                     <p className='text-7xl font-bold'>Oops!</p>
                     <p className='text-xl text-subtitle'> Sign in to access your personal dashboard.</p>
                     <Account/>
