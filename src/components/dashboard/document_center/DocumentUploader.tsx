@@ -185,6 +185,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
         method: "POST",
         body: formData,
       });
+      console.log(response)
 
       const fileInfo = await response.json();
 

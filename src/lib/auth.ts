@@ -4,6 +4,8 @@ import { NextAuthOptions } from "next-auth"
 
 import GoogleProvider from 'next-auth/providers/google'
 
+
+// Borrar drive y poner solo profile?!
 export const authOptions: NextAuthOptions = {
     providers: [
       GoogleProvider({
@@ -15,7 +17,7 @@ export const authOptions: NextAuthOptions = {
             prompt: "consent",
             access_type: "offline",
             response_type: "code",
-            scope: "openid https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
+            scope: "openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
           }
         }
       }),
