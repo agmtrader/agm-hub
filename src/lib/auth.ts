@@ -47,14 +47,6 @@ export const authOptions: NextAuthOptions = {
       async session({ session, token }) {
 
         if (session?.user) {
-
-          if (token.email) {
-            console.log(token.email)
-          }
-
-          if (token.name) {
-            console.log(token.name)
-          }
           
           if (token.sub) {
 

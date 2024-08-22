@@ -15,8 +15,7 @@ export default function Layout({
 }) {
 
   const {data:session} = useSession()
-  if (session)
-  console.log(session?.firebaseToken)
+
   return (
       <div className='h-full w-full flex flex-col items-start justify-start'>
         <div className='w-full h-full flex justify-start'>
@@ -42,9 +41,9 @@ export default function Layout({
                     }
                   </div>
                   :
-                  <div className='w-full h-[60vh] flex flex-col justify-center items-center text-center gap-y-5'>
+                  <div className='w-full h-[60vh] text-agm-white flex flex-col justify-center items-center text-center gap-y-5'>
                     <Lock size={100}/>
-                    <p className='text-7xl font-bold'>Oops!</p>
+                    <p className='text-7xl font-bold'>Locked out.</p>
                     <p className='text-xl text-subtitle'> Sign in to access your personal dashboard.</p>
                     <Account/>
                   </div>

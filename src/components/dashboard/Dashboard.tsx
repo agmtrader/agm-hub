@@ -18,6 +18,7 @@ import Sidebar from '@/components/dashboard/sidebar/Sidebar';
 import { useSession } from 'next-auth/react';
 import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Session, User } from 'next-auth';
+import { Drill, Lock } from 'lucide-react';
 
 export const Dashboard = () => {
 
@@ -136,48 +137,12 @@ export const ClientDashboard = () => {
 
   return (
 
-    <div className='flex flex-row justify-center items-start w-full gap-x-5'> {/*Sidebar separator*/}
+    <div className='flex flex-row justify-center h-[60vh] items-start w-full gap-x-5'> {/*Sidebar separator*/}
 
-        <Sidebar/>
-
-        <div className='flex flex-col gap-y-10 justify-center items-center w-[85%] h-full'>  {/*Create dashboard vertical sections*/}
-        
-            <div className='flex w-full gap-x-10 h-full flex-row'>
-
-                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
-                <CardHeader>
-                    <CardTitle>
-                    <p className='text-3xl'>Net Asset Value</p>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className='text-5xl text-agm-green'>$12,800</p>
-                </CardContent>
-                </Card>
-
-                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
-                <CardHeader>
-                    <CardTitle>
-                    <p className='text-3xl'>Yield</p>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className='text-5xl text-agm-green'>+3</p>
-                </CardContent>
-                </Card>
-
-                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
-                <CardHeader>
-                    <CardTitle>
-                    <p className='text-3xl'>Profit in fees</p>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className='text-5xl text-agm-green'>+$120</p>
-                </CardContent>
-                </Card>
-            </div>
-
+        <div className='flex flex-col text-agm-white text-center gap-y-10 justify-center items-center w-[50%] h-full'>  {/*Create dashboard vertical sections*/}
+            <Drill size={100}/>
+            <p className='text-7xl font-bold'>Work in progress.</p>
+            <p className='text-xl font-light'>The AGM Client dashboard is currently in development, please check back later.</p>
         </div>
 
     </div>
