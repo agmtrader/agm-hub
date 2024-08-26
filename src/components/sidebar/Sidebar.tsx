@@ -19,6 +19,7 @@ import { motion } from "framer-motion"
 
 import Account from "./Account"
 import { Button } from "../ui/button"
+import { useTranslationProvider } from "@/app/TranslationProvider"
 
 const navbarContent = [
   {
@@ -56,6 +57,23 @@ interface Props {
 
 const Sidebar = ({setExpandSidebar}:Props) => {
 
+  const {lang} = useTranslationProvider()
+
+  function formatURL(path:string) {
+    if (path.includes('https://')) {
+      return path
+    }
+
+    if (!path.includes('/en') && !path.includes('/es')) {
+      let paths = path.split('/')
+      paths.splice(1, 0, lang)
+      let paths1 = paths.join('/')
+      return paths1
+    }
+
+    return path
+  }
+
   return (
     <div>
       <div className='bg-black w-[100vw] fixed h-[100vh] z-10 bg-opacity-50'></div>
@@ -68,7 +86,7 @@ const Sidebar = ({setExpandSidebar}:Props) => {
                 </Button>
                 {navbarContent.map((item, index) => (
                     <NavigationMenuItem key={index} onClick={() => setExpandSidebar(false)} className="flex w-full h-fit justify-end">
-                        <Link href={item.url} legacyBehavior passHref>
+                        <Link href={formatURL(item.url)} legacyBehavior passHref>
                             <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
                                 <div className="flex">
                                     <p className="text-sm">{item.name}</p>

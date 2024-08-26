@@ -17,7 +17,7 @@ export default function Layout({
   const {data:session} = useSession()
 
   return (
-    <div className='flex-col my-20 flex w-full justify-center items-center h-full'>
+    <div className='flex-col my-36 flex w-full justify-center items-center h-full'>
       <div className='flex w-[90%] h-full'>
 
         {session?.user ?

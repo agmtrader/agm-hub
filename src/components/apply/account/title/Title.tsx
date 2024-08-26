@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import Image from 'next/image'
 import Link from 'next/link'
 import Account from '@/components/sidebar/Account'
-import { DashboardHeader } from '@/components/Header'
+import { Header } from '@/components/Header'
 import { useSession } from 'next-auth/react'
 
 interface Props {
@@ -17,8 +17,8 @@ const Title = ({setStarted}:Props) => {
 
   return (
     <div className='w-full h-fit flex flex-col'>
-      <DashboardHeader/>
-      <div className='flex flex-col gap-y-10 bg-[url(/images/wallst.jpeg)] h-[100vh] w-full bg-cover bg-center z-0 justify-center items-center'>
+      <Header/>
+      <div className='flex flex-col gap-y-10 bg-[url(/images/bull.jpg)] h-[100vh] w-full bg-cover bg-center z-0 justify-center items-center'>
         <div className='w-full h-full opacity-40 bg-[#001A4C] absolute z-1'></div>
         <div className='z-10 flex flex-col gap-y-5 justify-center items-center'>
           <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {100} width = {300}/>
