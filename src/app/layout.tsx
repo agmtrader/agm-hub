@@ -13,9 +13,13 @@ export default function RootLayout({
 }>) {
 
   const path = usePathname()
-  if (path === '/') {
-    redirect('/en')
+  if (!path.includes('/en') && !path.includes('/es')) {
+    let paths = path.split('/')
+    paths.splice(1, 0, 'en')
+    let paths1 = paths.join('/')
+    redirect(paths1)
   }
+  
 
   return (
 
