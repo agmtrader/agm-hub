@@ -58,9 +58,9 @@ export const DashboardHeader = () => {
   return (
     <div>
       <AnimatePresence>
-          <div className='flex items-center justify-between fixed px-5 w-full h-fit py-10 z-10 bg-transparent'>
+          <div className='flex items-center fixed justify-between px-5 w-full h-fit py-10 z-10 bg-agm-dark-blue'>
             <Link className='w-full h-full flex items-center' href={'/'}>
-                <Button variant={'ghost'}>
+                <Button variant='ghost'>
                   <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {200} width = {200}/>
                 </Button>
               </Link>

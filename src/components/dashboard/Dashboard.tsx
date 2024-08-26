@@ -14,11 +14,9 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-import Sidebar from '@/components/dashboard/sidebar/Sidebar';
 import { useSession } from 'next-auth/react';
 import { DataTable } from '@/components/dashboard/components/DataTable';
-import { Session, User } from 'next-auth';
-import { Drill, Lock } from 'lucide-react';
+import { Drill } from 'lucide-react';
 
 export const Dashboard = () => {
 
@@ -47,9 +45,7 @@ export const Dashboard = () => {
 
     <div className='flex flex-row justify-center items-start w-full gap-x-5'> {/*Sidebar separator*/}
 
-        <Sidebar/>
-
-        <div className='flex flex-col gap-y-10 justify-center items-center w-[85%] h-full'>  {/*Create dashboard vertical sections*/}
+        <div className='flex flex-col gap-y-10 justify-center items-center w-full h-full'>  {/*Create dashboard vertical sections*/}
         
             <div className='flex w-full gap-x-10 h-full flex-row'>
 

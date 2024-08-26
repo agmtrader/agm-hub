@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import "../globals.css";
+import "../../globals.css"
 
 import { Inter } from 'next/font/google'
 import { cn } from "@/lib/utils";
 
-import { Header } from "@/components/Header";
+import { NextAuthProvider } from "../../NextAuthProvider";
+import FirebaseAuthProvider from "../../FirebaseAuthProvider";
 
-import { NextAuthProvider } from "../NextAuthProvider";
-import FirebaseAuthProvider from "../FirebaseAuthProvider";
 import Footer from "@/components/Footer";
+import { DashboardHeader } from "@/components/Header";
 
 export const metadata: Metadata = {
-  title: "AGM Technology",
-  description: "Discover the new trading world.",
+  title: "AGM Dashboard",
+  description: "",
 };
 
 const inter = Inter({ subsets: ['latin'] })
@@ -25,13 +25,13 @@ export default function RootLayout({
 
   return (
 
-    <html lang="en" className={cn(inter.className, "flex flex-col h-fit w-full bg-agm-white overflow-x-hidden scroll-smooth")}>
-      <body className='h-full w-full flex flex-row'>
+    <html lang="en" className={cn(inter.className, "flex flex-col h-fit w-full  bg-agm-white overflow-x-hidden scroll-smooth")}>
+      <body className='h-full w-full flex flex-row scroll-smooth '>
         <div className="h-full w-full  flex flex-row">
           <NextAuthProvider>
             <FirebaseAuthProvider>
-            <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
-              <Header />
+            <div className="flex flex-col bg-agm-blue scrollbar-hide h-full min-h-[100vh] w-full gap-y-20 scroll-smooth">
+              <DashboardHeader />
               {children}
               <Footer />
             </div>
