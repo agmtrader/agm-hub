@@ -1,15 +1,21 @@
+'use client'
 import "./globals.css"
-
 import { Inter } from 'next/font/google'
 import { cn } from "@/lib/utils";
+import { redirect, usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const path = usePathname()
+  if (path === '/') {
+    redirect('/en')
+  }
 
   return (
 
@@ -19,5 +25,5 @@ export default function RootLayout({
       </body>
     </html>
 
-  );
+  )
 }

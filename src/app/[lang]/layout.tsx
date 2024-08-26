@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation"
 import "../globals.css"
 import { TranslationProvider } from "../TranslationProvider"
 
