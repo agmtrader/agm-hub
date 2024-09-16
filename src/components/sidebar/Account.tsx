@@ -32,7 +32,7 @@ const Account = ({dark}: Props) => {
                 {session.user.image ?
                   <img className='rounded-full w-10 h-10' src={session?.user.image!} referrerPolicy="no-referrer" alt={'Missing'}/>
                   :
-                  <div className='w-10 h-10 rounded-full bg-agm-orange'></div>
+                  <div className='w-10 h-10 rounded-full bg-primary'></div>
                 }
 
                 {session.user.name ?

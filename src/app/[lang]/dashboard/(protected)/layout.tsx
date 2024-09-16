@@ -4,9 +4,8 @@ import { useSession } from 'next-auth/react';
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
-import Sidebar from '@/components/dashboard/sidebar/Sidebar';
 import Account from '@/components/sidebar/Account';
-import { ClientDashboard } from '@/components/dashboard/Dashboard';
+import { Dashboard } from '@/components/dashboard/Dashboard';
 
 export default function Layout({
   children,
@@ -17,8 +16,8 @@ export default function Layout({
   const {data:session} = useSession()
 
   return (
-    <div className='flex-col my-36 flex w-full justify-center items-center h-full'>
-      <div className='flex w-[90%] h-full'>
+    <div className='flex-col flex w-full justify-center items-center h-full'>
+      <div className='flex w-full h-full'>
 
         {session?.user ?
           <div className='flex w-full h-full  justify-center items-center'>
@@ -29,13 +28,12 @@ export default function Layout({
                   animate={{opacity:1}}
                   className='w-full h-full gap-x-10 flex justify-center items-start'
                 >
-                  <Sidebar/>
                   {children}
                 </motion.div>
               </AnimatePresence>
               :
-              <motion.div key={2} initial={{opacity:0}} animate={{opacity:1}} className='w-[90%] h-full flex flex-col justify-center items-center gap-y-5'> {/*No auth*/}
-                <ClientDashboard />
+              <motion.div key={2} initial={{opacity:0}} animate={{opacity:1}} className='w-full h-full flex flex-col justify-center items-center gap-y-5'> {/*No auth*/}
+                <Dashboard />
               </motion.div>
             }
           </div>

@@ -33,10 +33,11 @@ const ClientForm = () => {
   }
 
   return (
-    <div className='w-full h-full flex flex-col justify-center items-start'>
-      
+    <div className='w-full h-full flex flex-col'>
+
       <FormHeader />
-      <div className='w-full h-full justify-center items-center flex flex-col my-20'>
+
+      <div className='flex w-full h-full justify-center items-center'>
 
       {step === 1 && <GeneralInfo step={step} stepForward={stepForward} setTicket={setTicket}/>}
       

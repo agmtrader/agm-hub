@@ -81,7 +81,7 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
       <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
         <div className='flex relative flex-row h-full mt-20 w-full justify-center items-center z-0 gap-x-5'>
             <div key={step} className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
-              <PersonLinesFill className='h-24 w-24 text-agm-blue'/>
+              <PersonLinesFill className='h-24 w-24 text-secondary'/>
               <p className='text-5xl font-bold'>{step}. <span className='font-light'>General Info</span></p>
             </div>
         </div>
@@ -216,7 +216,7 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
               )}
             />
 
-            <Button className="bg-agm-orange" type="submit">
+            <Button type="submit">
               Start my application
             </Button>
 

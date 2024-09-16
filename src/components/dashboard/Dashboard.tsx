@@ -1,147 +1,135 @@
-"use client"
-import React, {useState, useEffect} from 'react';
-import { DocumentData } from 'firebase/firestore/lite';
+'use client'
 
-import { addColumnsFromJSON, getDocumentsFromCollection } from '@/utils/api';
-import { sortColumns } from '@/utils/table';
+import React from 'react'
+import { User, Trash, Users, Bell as BellIcon, Ticket, Plus, Bell } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useSession } from 'next-auth/react'
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-
-import { useSession } from 'next-auth/react';
-import { DataTable } from '@/components/dashboard/components/DataTable';
-import { Drill } from 'lucide-react';
-
-export const Dashboard = () => {
-
-    const {data:session} = useSession()
-
-    // Initialize data variables
-  const [tickets, setTickets] = useState<DocumentData[] | null>(null)
-
-  // Ticket columns - export to dictionary!
-  const columns = ['TicketID', 'Status', 'first_name', 'last_name']
-
-  // Fetch tickets from database
-  useEffect(() => {
-
-    async function fetchData () {
-        let data = await getDocumentsFromCollection('db/clients/tickets/')
-        data = await addColumnsFromJSON(data)
-        setTickets(sortColumns(data, columns))
-    }
-    fetchData()
-
-  }, [])
-
-
+function SidebarItem({ icon: Icon, label, count }: { icon: React.ElementType, label: string, count?: number }) {
   return (
-
-    <div className='flex flex-row justify-center items-start w-full gap-x-5'> {/*Sidebar separator*/}
-
-        <div className='flex flex-col gap-y-10 justify-center items-center w-full h-full'>  {/*Create dashboard vertical sections*/}
-        
-            <div className='flex w-full gap-x-10 h-full flex-row'>
-
-                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
-                <CardHeader>
-                    <CardTitle>
-                    <p className='text-3xl'>Assets Under Management</p>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className='text-5xl text-agm-green'>45.33M</p>
-                </CardContent>
-                </Card>
-
-                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
-                <CardHeader>
-                    <CardTitle>
-                    <p className='text-3xl'>New clients</p>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className='text-5xl text-agm-green'>+3</p>
-                </CardContent>
-                </Card>
-
-                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
-                <CardHeader>
-                    <CardTitle>
-                    <p className='text-3xl'>Profit in fees</p>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className='text-5xl text-agm-green'>+$120</p>
-                </CardContent>
-                </Card>
-            </div>
-
-            <div className='flex w-full gap-x-5 flex-row'>
-                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
-                <CardHeader>
-                    <CardTitle>
-                    <p className='text-3xl'>Welcome back,</p>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {session && <p className='text-7xl'>{session.user.name}</p>}
-                </CardContent>
-                </Card>
-            </div>
-            
-            <div className='flex w-full gap-x-5 flex-row'>
-                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
-                <CardHeader>
-                    <CardTitle>
-                    <p className='text-3xl'>Open applications</p>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {tickets && <DataTable data={tickets} width={100}/>}
-                </CardContent>
-                </Card>
-            </div>
-
-            <div className='flex w-full gap-x-5 flex-row'>
-                <Card className="w-full bg-agm-dark-blue border-0 text-agm-white">
-                <CardHeader>
-                    <CardTitle>
-                        <p className='text-3xl'>PowerBI Report</p>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <iframe title="Realtime Database Google" width="100%" height="500px" src="https://app.powerbi.com/reportEmbed?reportId=f1d81e10-b10b-4e48-92d7-f8e49e6800b1&autoAuth=true&ctid=34ef35c3-128b-4180-9d21-e764b0c7596d" allowFullScreen={true}></iframe>
-                </CardContent>
-                </Card>
-            </div>
-
-        </div>
-
+    <div className="flex items-center justify-between py-2 px-4 hover:bg-muted rounded-md cursor-pointer">
+      <div className="flex items-center space-x-3">
+        <Icon className="w-5 h-5" />
+        <span>{label}</span>
+      </div>
+      {count !== undefined && <span className="text-gray-400">{count}</span>}
     </div>
   )
 }
 
-export const ClientDashboard = () => {
-
+export function Dashboard() {
+  
+  const {data:session} = useSession();
 
   return (
-
-    <div className='flex flex-row justify-center h-[60vh] items-start w-full gap-x-5'> {/*Sidebar separator*/}
-
-        <div className='flex flex-col text-agm-white text-center gap-y-10 justify-center items-center w-[50%] h-full'>  {/*Create dashboard vertical sections*/}
-            <Drill size={100}/>
-            <p className='text-7xl font-bold'>Work in progress.</p>
-            <p className='text-xl font-light'>The AGM Client dashboard is currently in development, please check back later.</p>
+    <div className="flex w-full h-full">
+      {/* Sidebar */}
+      <aside className="w-64 border-r border-subtitle">
+        <div className="p-4">
+          <nav className="space-y-2">
+            <SidebarItem icon={Trash} label="Document Center" />
+            <SidebarItem icon={Plus} label="Open an account" count={3} />
+            <div className="border-t border-subtitle my-2"></div>
+            <SidebarItem icon={Users} label="Accounts" />
+            <SidebarItem icon={Ticket} label="Tickets" />
+            <SidebarItem icon={BellIcon} label="Reports" />
+            <SidebarItem icon={BellIcon} label="Risk profiles" />
+          </nav>
         </div>
+      </aside>
 
+      {/* Main content */}
+      <div className="flex-1">
+        <header className="flex items-center justify-between p-4 border-b border-subtitle">
+          <div className="flex items-center space-x-4">
+            <User className="w-8 h-8" />
+            <h2 className="text-xl font-semibold">{session?.user?.name}</h2>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Input type="search" placeholder="Search..." className="w-64" />
+            <Bell className="w-6 h-6" />
+          </div>
+        </header>
+        <main className="flex-grow p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Dashboard</h1>
+          </div>
+          <Tabs defaultValue="overview">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="reports">Reports</TabsTrigger>
+              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview" className="space-y-4">
+              <div className="grid grid-cols-5 grid-rows-5 gap-4">
+                <Card className="col-span-1 row-span-1">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">$2,231.89</div>
+                    <p className="text-xs">+20.1% from last month</p>
+                  </CardContent>
+                </Card>
+                <Card className="col-span-1 row-span-1">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">New clients</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">+12</div>
+                    <p className="text-xs">+180.1% from last month</p>
+                  </CardContent>
+                </Card>
+                <Card className="col-span-1 row-span-1">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Commissions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">+$435</div>
+                    <p className="text-xs">+19% from last month</p>
+                  </CardContent>
+                </Card>
+                <Card className="col-span-1 row-span-1">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Users Trading Today</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">+10</div>
+                    <p className="text-xs">+4 since last hour</p>
+                  </CardContent>
+                </Card>
+                <Card className="col-span-3 row-span-2 row-start-2">
+                  <CardHeader>
+                    <CardTitle>Open account applications</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pl-2">
+                    
+                  </CardContent>
+                </Card>
+                <Card className="row-span-2 col-start-4 row-start-2">
+                  <CardHeader>
+                    <CardTitle>Test</CardTitle>
+                    <CardContent>
+                      <p className="text-sm"></p>
+                    </CardContent>
+                  </CardHeader>
+                  <CardContent>
+                  </CardContent>
+                </Card>
+                <Card className="col-span-2 row-span-2 row-start-4">
+                  {/* Add content for the new card in position 13 */}
+                </Card>
+                <Card className="col-span-2 row-span-2 col-start-3 row-start-4">
+                  {/* Add content for the new card in position 14 */}
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </main>
+      </div>
     </div>
   )
 }
-

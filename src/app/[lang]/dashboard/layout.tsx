@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import "../../globals.css";
 
-import { DashboardHeader } from "@/components/Header";
 import { NextAuthProvider } from "../../NextAuthProvider";
 import FirebaseAuthProvider from "../../FirebaseAuthProvider";
 import Footer from "@/components/Footer";
-import MarketOverview from "@/components/MarketOverview";
 
 export const metadata: Metadata = {
   title: "AGM Technology",
@@ -23,7 +21,6 @@ export default function Layout({
       <NextAuthProvider>
         <FirebaseAuthProvider>
         <div className="flex flex-col bg-agm-blue scrollbar-hide h-full w-full scroll-smooth">
-          <DashboardHeader />
           {children}
           <Footer />
         </div>

@@ -4,9 +4,6 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
-
-
-import { Doughnut } from 'react-chartjs-2'
 import 'chart.js/auto'
 
 import {
@@ -195,17 +192,17 @@ const RiskForm = () => {
   }
 
   return (
-      <div className="w-2/3 h-full flex">
+      <div className="w-2/3 h-fit flex">
 
         <Form {...form}>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full gap-y-10">
 
           <FormField
                 control={form.control}
                 name="account_number"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col justify-start items-start">
                   <FormLabel>Account number</FormLabel>
                   <FormControl>
                       <Input placeholder="" {...field} />
@@ -219,7 +216,7 @@ const RiskForm = () => {
                 control={form.control}
                 name="client_name"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col justify-start items-start">
                     <FormLabel>Client name</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} />
@@ -233,7 +230,7 @@ const RiskForm = () => {
               control={form.control}
               name="type"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="space-y-3 flex flex-col justify-start items-start">
                   <FormLabel>What type of investor do you consider yourself?</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -274,21 +271,21 @@ const RiskForm = () => {
               control={form.control}
               name="loss"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="space-y-3 flex flex-col justify-start items-start">
                   <FormLabel>If your portfolio loses 20% of its value what action would you take?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex flex-col"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex gap-x-3">
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
                         <FormLabel className="font-normal">Sell everything</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex  items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="2" />
                         </FormControl>
@@ -321,7 +318,7 @@ const RiskForm = () => {
               control={form.control}
               name="gain"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="space-y-3 flex flex-col justify-start items-start">
                   <FormLabel>If your portfolio appreciates 20% of its value what action would you take?</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -368,7 +365,7 @@ const RiskForm = () => {
               control={form.control}
               name="period"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="space-y-3 flex flex-col justify-start items-start">
                   <FormLabel>What do you think the average term of your investment portfolio should be?</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -417,7 +414,7 @@ const RiskForm = () => {
               control={form.control}
               name="diversification"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="space-y-3 flex flex-col justify-start items-start">
                   <FormLabel>Considering asset class diversification, which of these portfolios would you select?</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -460,7 +457,7 @@ const RiskForm = () => {
               control={form.control}
               name="goals"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="space-y-3 flex flex-col justify-start items-start">
                   <FormLabel>Which of these portfolios best represent your goals with the most acceptable outcomes?</FormLabel>
                   <FormControl>
                     <RadioGroup
