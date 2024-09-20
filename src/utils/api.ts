@@ -1,124 +1,30 @@
-import { 
-    collection, 
-    doc, 
-    getDocs, 
-    getDoc, 
-    setDoc, 
-    DocumentData, 
-    query, 
-    where, 
-    updateDoc
-} from "firebase/firestore/lite";
+import { Map } from "../lib/types"
 
-import { db } from "@/utils/firestore";
+export async function accessAPI(url:string, type:string, params?:Map) {
 
-export async function getDocumentsFromCollection(path: string) {
-
-    const documents:Array<DocumentData> = []
-
-    const documentsCollection = await getDocs(collection(db,path)).then(async (data) => await data)
-
-    documentsCollection.forEach((document) => {
-        documents.push(document.data())
-    })
-
-    return documents
-}
-
-export async function queryDocumentsFromCollection(path: string, key: string, value:string | null) {
-
-    const documents:Array<DocumentData> = []
-
-    const q = query(collection(db, path), where(key, '==', value));
-    const documentsCollection = await getDocs(q).then(async (data) => await data)
-
-    documentsCollection.forEach((document) => {
-        documents.push(document.data())
-    })
-
-    return documents
-}
-
-export async function addDocument(data: {}, path:string, id:string) {
-
-    console.log('Adding document: ', data)
-    await setDoc(doc(db, path, id), data)
-  
-}
-
-export async function getDocument(path:string) {
-
-    var document = null;
-
-    const documentReference = await getDoc(doc(db,path)).then(async (data) => await data)
-    document = documentReference.data()
-    
-    return document
-
-}
-
-export async function getDocumentReference(path:string) {
-
-    const documentReference = doc(db,path)
-    
-    return documentReference
-
-}
-
-// Find way of only using foreign tables
-export async function getForeignTables(documents:DocumentData[]  ) {
-
-    for (const d of documents) {
-
-        for (const key of Object.keys(d)) {
-    
-            if (typeof(d[key]) == 'object') {
-
-                const foreignTablePath = d[key].path
-                
-                console.log(foreignTablePath)
-
-                const foreignTable = await getDocument(foreignTablePath)
-                console.log(foreignTable)
-                
-                // Check if foreign table is table or column
-                // Append each column if is table
-
-                delete d[key]
-                if (foreignTable) {
-                    Object.keys(foreignTable!).forEach((col) => {
-                        d[col] = foreignTable![col]
-                    })
-                }
-            }
-        }
+    async function getData() {
+        const data = await fetch('http://10.4.178.76:5001' + url, {
+        headers:{'Cache-Control': 'no-cache'}
+        }).then(response => response.json()).then(async (data) => await data)
+        return data
     }
-    return documents
-  }
 
-// Find way of using only json strings
-export async function addColumnsFromJSON(documents:any[]) {
-
-    for (const d of documents) {
-
-        for (const key of Object.keys(d)) {
-
-            if (typeof(d[key]) == 'object' && d[key]) {
-                let json = d[key]
-                Object.keys(json).forEach((col) => {
-                    d[col] = json[col]
-                })
-                delete d[key]
-            }
-        }
+    async function postData() {
+        const data = await fetch('http://10.4.178.76:5001' + url, {
+        method: 'POST',
+        headers:{'Cache-Control': 'no-cache'},
+        body: JSON.stringify(params),
+        }).then(response => response.json()).then(async (data) => await data)
+        return data
     }
-    return documents
-}
 
-export async function updateFieldInDocument(path:string, key:string, value:string) {
+    let data = null
 
-    await updateDoc(doc(db, path), {
-        [key]: value
-    })
+    if (type === 'GET') {
+        data = await getData()
+    } else {
+        data = await postData()
+    }
 
+    return data
 }

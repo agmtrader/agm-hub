@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import ClientForm from '@/components/apply/ClientForm';
+import ClientForm from '@/components/apply/account/ClientForm';
 import Title from '@/components/apply/account/title/Title';
 
 const page = () => {

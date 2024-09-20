@@ -5,8 +5,6 @@ import { useForm } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
 import { Ticket } from "@/lib/types"
-
-import { addDocument } from "@/utils/api"
 import { formatTimestamp } from "@/utils/dates"
 
 import { Button } from "@/components/ui/button"
@@ -40,6 +38,8 @@ import {
 import { countries, account_types, general_info_schema, getDefaults } from "@/lib/form"
 //import { useSearchParams } from "next/navigation"
 import { PersonLinesFill } from "react-bootstrap-icons"
+import { accessAPI } from "@/utils/api"
+import { useState } from "react"
 
 interface Props {
   stepForward:() => void,
@@ -50,6 +50,8 @@ interface Props {
 const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
 
   //const searchParams = useSearchParams()
+
+  const [generating, setGenerating] = useState(false)
 
   let formSchema:any;
   let initialFormValues:any;
@@ -64,22 +66,25 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
-      const timestamp = new Date()
-      //const advisor = searchParams.get('ad')
-      const advisor = ''
-      const ticketID = formatTimestamp(timestamp)
+    setGenerating(true)
+    const timestamp = new Date()
+    //const advisor = searchParams.get('ad')
+    const advisor = ''
+    const ticketID = formatTimestamp(timestamp)
 
-      const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':advisor}
-      setTicket(ticket)
+    const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':advisor}
+    setTicket(ticket)
 
-      await addDocument(ticket, '/db/clients/tickets', ticketID)
-      stepForward()
+    const response = await accessAPI('/database/create', 'POST', {'data':ticket, 'path':'db/clients/tickets', 'id':ticketID})
+    setGenerating(false)
+    stepForward()
       
   }
 
   return (
-      <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
-        <div className='flex relative flex-row h-full mt-20 w-full justify-center items-center z-0 gap-x-5'>
+      <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
+        
+        <div className='flex'>
             <div key={step} className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
               <PersonLinesFill className='h-24 w-24 text-secondary'/>
               <p className='text-5xl font-bold'>{step}. <span className='font-light'>General Info</span></p>
@@ -88,7 +93,7 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
         
         <Form {...form}>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col justify-center items-center">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-64 flex flex-col gap-y-5 justify-center items-center">
 
             <FormField
               control={form.control}
@@ -108,7 +113,7 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
               control={form.control}
               name="country"
               render={({ field }) => (
-                <FormItem className="flex w-full h-full flex-col text-start justify-center">
+                <FormItem className="">
                   <FormLabel>Country of Residence</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -129,7 +134,7 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
+                    <PopoverContent className="p-0">
                       <Command>
                         <CommandList>
                           <CommandInput
@@ -164,7 +169,7 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
               control={form.control}
               name="account_type"
               render={({ field }) => (
-                <FormItem className="flex flex-col text-start justify-center">
+                <FormItem className="">
                   <FormLabel>Account Type</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -173,7 +178,7 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
                           variant="outline"
                           role="combobox"
                           className={cn(
-                            "w-[200px] text-sm justify-between",
+                            "text-sm justify-between",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -185,7 +190,7 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
+                    <PopoverContent className="p-0">
                       <Command>
                         <CommandList>
                           <CommandInput
@@ -217,11 +222,12 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
             />
 
             <Button type="submit">
-              Start my application
+              {generating ? 'Starting...' : 'Start my application'}
             </Button>
 
           </form>
         </Form>
+
       </div>
     )
 }

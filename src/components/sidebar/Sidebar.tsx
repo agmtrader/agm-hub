@@ -19,7 +19,7 @@ import { motion } from "framer-motion"
 
 import Account from "./Account"
 import { Button } from "../ui/button"
-import { useTranslationProvider } from "@/app/TranslationProvider"
+import { useTranslationProvider } from "@/utils/TranslationProvider"
 
 const navbarContent = [
   {

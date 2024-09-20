@@ -1,49 +1,100 @@
 'use client'
 
 import React from 'react'
-import { User, Trash, Users, Bell as BellIcon, Ticket, Plus, Bell } from 'lucide-react'
+import { User, Trash, Users, Bell as BellIcon, Ticket, Plus, Bell, ArrowLeft, AlarmClockPlusIcon } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSession } from 'next-auth/react'
+import Image from 'next/image'
+import { Button } from '../ui/button'
+import Link from 'next/link'
 
-function SidebarItem({ icon: Icon, label, count }: { icon: React.ElementType, label: string, count?: number }) {
-  return (
-    <div className="flex items-center justify-between py-2 px-4 hover:bg-muted rounded-md cursor-pointer">
-      <div className="flex items-center space-x-3">
-        <Icon className="w-5 h-5" />
-        <span>{label}</span>
-      </div>
-      {count !== undefined && <span className="text-gray-400">{count}</span>}
-    </div>
-  )
-}
+import {NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerStyle} from "@/components/ui/navigation-menu"
+import { cn } from '@/lib/utils'
+import { useTranslationProvider } from '@/utils/TranslationProvider'
+import { formatURL } from '@/utils/lang'
+
+const navbarContent = [
+  {
+    name: 'Overview',
+    url: '/dashboard',
+    icon: BellIcon,  
+  },
+  {
+    name: 'Users',
+    url: '/dashboard/users',
+    icon: Users,
+  },
+  {
+    name: 'Open an account',
+    url: '/dashboard/open-account',
+    icon: Plus,
+    badge: 3
+  },
+  {
+    name: 'Trade tickets',
+    url: '/dashboard/trade-tickets',
+    icon: Ticket,
+  }, 
+  {
+    name: 'Reporting',
+    url: '/dashboard/reporting',
+    icon: Bell,
+  },
+  {
+    name: 'Accounting',
+    url: '/dashboard/accounting',
+    icon: AlarmClockPlusIcon,
+  }
+]
 
 export function Dashboard() {
   
   const {data:session} = useSession();
+  const {lang} = useTranslationProvider()
 
   return (
     <div className="flex w-full h-full">
+      
       {/* Sidebar */}
-      <aside className="w-64 border-r border-subtitle">
-        <div className="p-4">
-          <nav className="space-y-2">
-            <SidebarItem icon={Trash} label="Document Center" />
-            <SidebarItem icon={Plus} label="Open an account" count={3} />
-            <div className="border-t border-subtitle my-2"></div>
-            <SidebarItem icon={Users} label="Accounts" />
-            <SidebarItem icon={Ticket} label="Tickets" />
-            <SidebarItem icon={BellIcon} label="Reports" />
-            <SidebarItem icon={BellIcon} label="Risk profiles" />
-          </nav>
-        </div>
-      </aside>
+      <nav className="flex flex-col justify-center items-center text-foreground w-64 h-fit gap-y-10 bg-background">
+        <Image src={'/images/brand/agm-logo.png'} alt='logo' width={150} height={100}/>
+        <NavigationMenu className="px-3 py-2 h-fit">
+          <NavigationMenuList className="w-full gap-y-2 flex flex-col h-full justify-between">
+            <NavigationMenuItem className='flex w-full h-fit'>
+              <Button asChild variant='ghost' className='w-full justify-start'>
+                <Link href={formatURL('/', lang)} legacyBehavior passHref>
+                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-start w-full")}>
+                    <ArrowLeft className='mr-2 h-4 w-4' />
+                    Go back home
+                  </NavigationMenuLink>
+                </Link>
+              </Button>
+            </NavigationMenuItem>
+            {navbarContent.map((item, index) => (
+              <NavigationMenuItem key={index} className="flex w-full h-fit">
+                <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
+                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-start w-full")}>
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {item.name}
+                    {item.badge && (
+                      <span className="ml-auto bg-primary text-background rounded-full px-2 py-0.5 text-xs">
+                        {item.badge}
+                      </span>
+                    )}
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
+      </nav>
 
       {/* Main content */}
       <div className="flex-1">
-        <header className="flex items-center justify-between p-4 border-b border-subtitle">
-          <div className="flex items-center space-x-4">
+        <header className="flex items-center justify-between p-4 border-b border-muted">
+          <div className="flex items-center text-foreground space-x-4">
             <User className="w-8 h-8" />
             <h2 className="text-xl font-semibold">{session?.user?.name}</h2>
           </div>
@@ -53,9 +104,6 @@ export function Dashboard() {
           </div>
         </header>
         <main className="flex-grow p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-          </div>
           <Tabs defaultValue="overview">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>

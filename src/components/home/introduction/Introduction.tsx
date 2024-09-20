@@ -2,7 +2,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 
-import { useTranslationProvider } from '@/app/TranslationProvider'
+import { useTranslationProvider } from '@/utils/TranslationProvider'
 
 const Introduction = () => {
 

@@ -16,7 +16,7 @@ export default function Layout({
   const {data:session} = useSession()
 
   return (
-    <div className='flex-col flex w-full justify-center items-center h-full'>
+    <div className='flex-col flex w-full justify-center items-center p-10 h-full'>
       <div className='flex w-full h-full'>
 
         {session?.user ?
@@ -38,8 +38,8 @@ export default function Layout({
             }
           </div>
           :
-          <div className='w-full h-[60vh] text-agm-white flex flex-col justify-center items-center text-center gap-y-5'>
-            <Lock size={100}/>
+          <div className='w-full h-[60vh] text-agm-white flex flex-col text-foreground justify-center items-center text-center gap-y-5'>
+            <Lock size={100} className='text-foreground'/>
             <p className='text-7xl font-bold'>Locked out.</p>
             <p className='text-xl text-subtitle'> Sign in to access your personal dashboard.</p>
             <Account/>

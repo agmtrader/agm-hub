@@ -1,14 +1,13 @@
-import RiskForm from '@/components/apply/risk_assesment/RiskForm'
+import RiskForm from '@/components/apply/risk/RiskForm'
 import { FormHeader } from '@/components/Header'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import React from 'react'
 
 const page = () => {
   return (
-    <div className='w-full h-full flex flex-col justify-center items-start'>
+    <div className='w-full flex flex-col h-full'>
       <FormHeader />
-      <div className='w-full px-5 my-10 flex flex-col h-full justify-center'>
-        <RiskForm/>
-      </div>
+      <RiskForm/>
     </div>
   )
 }
