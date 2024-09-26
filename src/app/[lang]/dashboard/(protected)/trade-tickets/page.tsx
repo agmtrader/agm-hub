@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { accessAPI } from '@/utils/api'
 
@@ -37,7 +37,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function TradeTickets() {
 
-    const [ticketId, setTicketId] = useState('986431')
+    const [ticketId, setTicketId] = useState<string | null>(null)
 
     const [generating, setGenerating] = useState(false)
     const [error, setError] = useState(false)
@@ -49,17 +49,19 @@ export default function TradeTickets() {
     const [clientMessage, setClientMessage] = useState<string | null>(null)
 
     async function fetchTickets() {
+      if (!ticketId) return;
       setGenerating(true)
       const response = await accessAPI('/flex_query/fetch', 'POST', {'queryIds': [ticketId]})
       setGenerating(false)
       setError(response['status'] === 'error' ? true : false)
-      setTicket(response['content'][ticketId])
+      setTicket(response['content'][ticketId as string])
       setDialogOpen(true)
     }
 
     async function generateTradeTicket() {
       if (!indices) return;
       if (!ticket) return;
+
       if (indices.length == 0) return;
       let response = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {'flex_query_dict': ticket, 'indices': indices.toString()})
       response = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': response['content']})
@@ -69,7 +71,9 @@ export default function TradeTickets() {
 
     async function sendToClient() {
       if (!clientMessage) return;
-      const response = await accessAPI('/email/send_client_email', 'POST', {'data': clientMessage, 'client_email': 'aa@agmtechnology.com', 'subject': 'Trade Ticket'})
+
+      const clientEmails = "lchavarria@acobo.com,arodriguez@acobo.com, rcontreras@acobo.com"
+      const response = await accessAPI('/email/send_client_email', 'POST', {'data': clientMessage, 'client_email': clientEmails, 'subject': 'Confirmación de Transacción'})
       console.log(response)
     }
 
@@ -79,6 +83,8 @@ export default function TradeTickets() {
         id: '986431'
       }
     ]
+
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
   return (
     <div className="w-full h-full">
@@ -104,7 +110,7 @@ export default function TradeTickets() {
           </CardContent>
         </Card>
         
-        {clientMessage && 
+        {clientMessage &&
           <Card>
             <CardHeader>
               <CardTitle>Generated Trade Ticket</CardTitle>
@@ -116,21 +122,37 @@ export default function TradeTickets() {
                   placeholder="Generated report will appear here..."
                   className="min-h-64 min-w-96"
                 />
-                <Button className='w-fit' onClick={() => sendToClient()}>Send to Client</Button>
+                <Button className='w-fit' onClick={() => setConfirmDialogOpen(true)}>Send to Client</Button>
+                <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Confirm Send to Client</DialogTitle>
+                      <DialogDescription>
+                        Make sure you have reviewed the trade ticket before sending it to the client.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
+                      <Button onClick={() => { sendToClient(); setConfirmDialogOpen(false); }}>Confirm</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
             </CardContent>
           </Card>
         }
 
-        <Button onClick={fetchTickets} disabled={generating}>
-          {!ticket && generating ? (
-            <>
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            'Generate Flex Query'
-          )}
-        </Button>
+        {!clientMessage && ticketId &&
+          <Button onClick={fetchTickets} disabled={generating}>
+            {!ticket && generating ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              'Generate Flex Query'
+            )}
+          </Button>
+        }
       </div>
       
       {error && (

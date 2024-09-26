@@ -1,6 +1,5 @@
 "use client"
 import { Button } from '@/components/ui/button'
-import { updateFieldInDocument } from '@/utils/api'
 import { useSession } from 'next-auth/react'
 import React from 'react'
 
@@ -40,7 +39,7 @@ const page = () => {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     if (session) {
-      await updateFieldInDocument(`users/${session.user.id}`, 'email', data.email)
+      //await updateFieldInDocument(`users/${session.user.id}`, 'email', data.email)
     }
   }
 

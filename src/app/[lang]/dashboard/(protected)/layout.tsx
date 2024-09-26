@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
 import Account from '@/components/sidebar/Account';
 import { Dashboard } from '@/components/dashboard/Dashboard';
+import Sidebar from '@/components/dashboard/Sidebar';
 
 export default function Layout({
   children,
@@ -28,6 +29,7 @@ export default function Layout({
                   animate={{opacity:1}}
                   className='w-full h-full gap-x-10 flex justify-center items-start'
                 >
+                  <Sidebar/>
                   {children}
                 </motion.div>
               </AnimatePresence>

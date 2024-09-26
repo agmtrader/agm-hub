@@ -36,7 +36,6 @@ import {
 } from "@/components/ui/popover"
 
 import { countries, account_types, general_info_schema, getDefaults } from "@/lib/form"
-//import { useSearchParams } from "next/navigation"
 import { PersonLinesFill } from "react-bootstrap-icons"
 import { accessAPI } from "@/utils/api"
 import { useState } from "react"

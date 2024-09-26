@@ -15,8 +15,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-import { updateFieldInDocument } from "@/utils/api"
-
 import { account_access_schema, getDefaults } from "@/lib/form"
 
 interface Props {
@@ -42,9 +40,9 @@ const AccessForm = ({ticketID, setCanContinue}:Props) => {
     // TODO create type for account access form
     const account:any = {'Name':values.name, 'Last name':values.lastname, 'IBKR Username':values.username, 'IBKR Password':values.password, 'Advisor':null}
 
-    Object.keys(account).forEach(async key =>  {
-      await updateFieldInDocument(`db/clients/accounts/${ticketID}`, key, account[key])
-    })
+    //Object.keys(account).forEach(async key =>  {
+    //  await updateFieldInDocument(`db/clients/accounts/${ticketID}`, key, account[key])
+    //})
 
   }
 

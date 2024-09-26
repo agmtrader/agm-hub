@@ -45,7 +45,11 @@ const ClientForm = () => {
               :
                 (step === 3) ? <Regulatory ticket={ticket} stepForward={stepForward} stepBackwards={stepBackward}/>
                 : 
-                  (step == 4) && 'Done!'
+                  (step == 4) && 
+                  <div className='h-full w-full flex flex-col justify-center items-center'>
+                    <h1 className='text-7xl font-bold'>Done!</h1>
+                    <p className='text-xl font-bold'>Your application has been submitted</p>
+                  </div>
               )
             :
             (ticket && ticket['ApplicationInfo']['account_type'] === 'Joint') && (

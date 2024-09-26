@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 
 import { sortColumns } from '@/utils/table';
-import { addColumnsFromJSON, queryDocumentsFromCollection, updateFieldInDocument } from '@/utils/api';
 
 import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import Link from 'next/link';
 
 import { Document, Documents, Map, Ticket } from '@/lib/types';
 import DocumentCenter from '../document_center/DocumentCenter';
+import { accessAPI } from '@/utils/api';
 
 
 interface Props {
@@ -41,18 +41,20 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
 
     async function queryData () {
 
-      let data = await queryDocumentsFromCollection('db/clients/accounts/', 'TicketID', ticketID)
+      let response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'key': 'TicketID', 'value': ticketID})
+      let data = response['content']
       let account_number = ''
-      if (data) {
+      if (data && data.length == 1) {
         account_number = data[0]['AccountNumber']
       }
       console.log(account_number)
       setAccountNumber(account_number)
 
-      data = await queryDocumentsFromCollection('/db/document_center/poa', 'AccountNumber', account_number)
+      response = await accessAPI('/database/read', 'POST', {'path': 'db/document_center/poa', 'key': 'AccountNumber', 'value': account_number})
+      data = response['content']
       let poaData:Document[] = []
       if (data) {
-        data.forEach((entry) => {
+        data.forEach((entry:any) => {
           poaData.push({
             'DocumentID': entry['DocumentID'],
             'FileID': entry['FileID'],
@@ -65,10 +67,11 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
         })
       }
 
-      data = await queryDocumentsFromCollection('/db/document_center/poi', 'AccountNumber', account_number)
+      response = await accessAPI('/database/read', 'POST', {'path': 'db/document_center/poi', 'key': 'AccountNumber', 'value': account_number})
+      data = response['content']
       let poiData:Document[] = []
       if (data) {
-        data.forEach((entry) => {
+        data.forEach((entry:any) => {
           poiData.push({
             'DocumentID': entry['DocumentID'],
             'FileID': entry['FileID'],
@@ -81,10 +84,11 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
         })
       }
 
-      data = await queryDocumentsFromCollection('/db/document_center/sow', 'AccountNumber', account_number)
+      response = await accessAPI('/database/read', 'POST', {'path': 'db/document_center/sow', 'key': 'AccountNumber', 'value': account_number})
+      data = response['content']
       let sowData:Document[] = []
       if (data) {
-        data.forEach((entry) => {
+        data.forEach((entry:any) => {
           sowData.push({
             'DocumentID': entry['DocumentID'],
             'FileID': entry['FileID'],
@@ -99,15 +103,16 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
       console.log({'POA':poaData,'POI': poiData, 'SOW': sowData})
       setDocuments({'POA':poaData,'POI': poiData, 'SOW': sowData})
 
-      data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
+      response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets', 'key': 'TicketID', 'value': ticketID})
+      data = response['content']
 
       // Update ticket status      
       if (data) {
         if (data[0]['Status'] !== 'Ready for application') {
           if ((poaData.length === 0 || poiData.length === 0 || sowData.length === 0)) {
-            await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Missing documents')
+            await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets/${ticketID}`, 'key': 'Status', 'value': 'Missing documents'})
           } else {
-            await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Documents need revision')
+            await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets/${ticketID}`, 'key': 'Status', 'value': 'Documents need revision'})
           }
         } else {
           setCanContinue(true)
@@ -116,9 +121,9 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
 
 
       // Fetch ticket with updated status
-      data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
-      let tickets = await addColumnsFromJSON(data)
-      tickets = sortColumns(tickets, ['TicketID', 'Status'])
+      response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets', 'key': 'TicketID', 'value': ticketID})
+      data = response['content']
+      let tickets = sortColumns(data, ['TicketID', 'Status'])
       setTickets(tickets)
 
     }
@@ -131,9 +136,9 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
   async function updateTicketStatus() {
     setCanContinue(!canContinue)
     if (canContinue) {
-      await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Documents need revision')
+      await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets/${ticketID}`, 'key': 'Status', 'value': 'Documents need revision'})
     } else {
-      await updateFieldInDocument(`db/clients/tickets/${ticketID}`, 'Status','Ready for application')
+      await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets/${ticketID}`, 'key': 'Status', 'value': 'Ready for application'})
     }
   }
 
@@ -149,7 +154,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
           <Button>Refresh</Button>
       </div>
 
-      {documents && accountNumber && <DocumentCenter dark documents={documents} setSelection={setSelection} accountNumber={accountNumber} selection={selection}/>}
+      {documents && accountNumber && <DocumentCenter documents={documents} setSelection={setSelection} accountNumber={accountNumber} selection={selection}/>}
 
       {documents && Object.keys(documents).length === 3 && 
         <div className="items-top flex space-x-2">
@@ -167,7 +172,7 @@ const BackupDocuments = ({currentTicket, setCanContinue, canContinue, account}:P
             </div>
         </div>
       }
-      {tickets && <DataTable dark data={tickets}/>}
+      {tickets && <DataTable data={tickets}/>}
     </div>
   )
 }

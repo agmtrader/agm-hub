@@ -6,90 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSession } from 'next-auth/react'
-import Image from 'next/image'
-import { Button } from '../ui/button'
-import Link from 'next/link'
-
-import {NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerStyle} from "@/components/ui/navigation-menu"
-import { cn } from '@/lib/utils'
-import { useTranslationProvider } from '@/utils/TranslationProvider'
-import { formatURL } from '@/utils/lang'
-
-const navbarContent = [
-  {
-    name: 'Overview',
-    url: '/dashboard',
-    icon: BellIcon,  
-  },
-  {
-    name: 'Users',
-    url: '/dashboard/users',
-    icon: Users,
-  },
-  {
-    name: 'Open an account',
-    url: '/dashboard/open-account',
-    icon: Plus,
-    badge: 3
-  },
-  {
-    name: 'Trade tickets',
-    url: '/dashboard/trade-tickets',
-    icon: Ticket,
-  }, 
-  {
-    name: 'Reporting',
-    url: '/dashboard/reporting',
-    icon: Bell,
-  },
-  {
-    name: 'Accounting',
-    url: '/dashboard/accounting',
-    icon: AlarmClockPlusIcon,
-  }
-]
 
 export function Dashboard() {
   
   const {data:session} = useSession();
-  const {lang} = useTranslationProvider()
 
   return (
     <div className="flex w-full h-full">
-      
-      {/* Sidebar */}
-      <nav className="flex flex-col justify-center items-center text-foreground w-64 h-fit gap-y-10 bg-background">
-        <Image src={'/images/brand/agm-logo.png'} alt='logo' width={150} height={100}/>
-        <NavigationMenu className="px-3 py-2 h-fit">
-          <NavigationMenuList className="w-full gap-y-2 flex flex-col h-full justify-between">
-            <NavigationMenuItem className='flex w-full h-fit'>
-              <Button asChild variant='ghost' className='w-full justify-start'>
-                <Link href={formatURL('/', lang)} legacyBehavior passHref>
-                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-start w-full")}>
-                    <ArrowLeft className='mr-2 h-4 w-4' />
-                    Go back home
-                  </NavigationMenuLink>
-                </Link>
-              </Button>
-            </NavigationMenuItem>
-            {navbarContent.map((item, index) => (
-              <NavigationMenuItem key={index} className="flex w-full h-fit">
-                <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
-                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-start w-full")}>
-                    <item.icon className="mr-2 h-4 w-4" />
-                    {item.name}
-                    {item.badge && (
-                      <span className="ml-auto bg-primary text-background rounded-full px-2 py-0.5 text-xs">
-                        {item.badge}
-                      </span>
-                    )}
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-      </nav>
+    
 
       {/* Main content */}
       <div className="flex-1">
