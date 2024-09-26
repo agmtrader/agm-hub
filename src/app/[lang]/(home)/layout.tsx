@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "../../globals.css";
 
 import { Header } from "@/components/Header";
-import { NextAuthProvider } from "../../NextAuthProvider";
+import { NextAuthProvider } from "../../../utils/NextAuthProvider";
 import FirebaseAuthProvider from "../../FirebaseAuthProvider";
 import Footer from "@/components/Footer";
 import MarketOverview from "@/components/MarketOverview";
@@ -19,14 +19,12 @@ export default function Layout({
 }>) {
 
   return (
-    <div className="h-full w-full  flex flex-row">
+    <div className="h-full w-full">
       <NextAuthProvider>
         <FirebaseAuthProvider>
-        <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
+        <div className="flex flex-col h-full w-full">
           <Header />
           {children}
-          <Footer />
-          <MarketOverview/>
         </div>
         </FirebaseAuthProvider>
       </NextAuthProvider>

@@ -8,7 +8,7 @@ import BackupDocuments from '@/components/dashboard/open_account/BackupDocuments
 import FillApplicationForm from '@/components/dashboard/open_account/FillApplicationForm';
 import OpenAccount from '@/components/dashboard/open_account/OpenAccount';
 import { Ticket } from '@/lib/types';
-import { updateFieldInDocument } from '@/utils/api';
+import { accessAPI } from '@/utils/api';
 
 const page = () => {
 
@@ -29,7 +29,7 @@ const page = () => {
       setError(null)
       setCanContinue(false)
       if (step === 4 && currentTicket) {
-        await updateFieldInDocument(`db/clients/tickets/${currentTicket['TicketID']}`, 'Status','Closed')
+        await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets/${currentTicket['TicketID']}`, 'key': 'Status', 'value': 'Closed'})
       }
     } else {
       switch (step) {
@@ -58,10 +58,7 @@ const page = () => {
   
   return (
     
-    <div className='w-full h-full flex mt-[20vh] flex-col gap-y-10 justify-center items-center'>
-      <div className='w-full h-fit flex justify-center items-center'>
-        <p className='text-7xl font-bold'>{step}.</p>
-      </div>
+    <div className='w-full h-fit gap-y-10 py-5 text-foreground flex flex-col justify-center items-center'>
 
       {step == 1 && <TicketManager setCurrentTicket={setCurrentTicket} currentTicket={currentTicket} setCanContinue={setCanContinue}/>}
 
@@ -74,15 +71,9 @@ const page = () => {
       {(step == 5 && currentTicket) && <p className='text-7xl font-bold'>Finished opening account.</p>}
 
       {step < 5 && 
-        <div className='h-full w-full flex flex-col items-center gap-y-10 justify-start'>
-
-          <div className='h-fit w-fit flex items-center gap-x-10 justify-start'>
-            {step > 1 && <Button variant={'default'} onClick={stepBackwards} >Previous step.</Button>}
-            <Button variant={canContinue ? 'default':'destructive'} onClick={(e) => stepForward()}>{step === 4 ? 'Finish.':'Next step.'}</Button>
-          </div>
-  
-          {error && <p className='text-lg'>{error}</p>}
-  
+        <div className='h-fit w-fit'>
+          {step > 1 && <Button onClick={stepBackwards} >Previous step.</Button>}
+          <Button onClick={(e) => stepForward()} variant={canContinue ? 'primary':'ghost'}>{step === 4 ? 'Finish.':'Next step.'}</Button>
         </div>
       }
     </div>

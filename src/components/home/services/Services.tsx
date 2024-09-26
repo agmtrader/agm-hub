@@ -33,38 +33,40 @@ import {
 export function Services() {
   return (
     <div className='flex flex-col h-full w-full'>
-      <div className='bg-agm-blue w-full h-full justify-center items-center flex flex-col gap-y-16 py-20'>
-      <p className='font-bold text-5xl text-agm-white'>Our Services</p>
+      <div className='bg-secondary w-full h-full justify-center items-center flex flex-col gap-y-16 py-20'>
+      <p className='font-bold text-5xl text-background'>Our Services</p>
         <Carousel className="w-full h-full max-w-[70%]">
           <CarouselContent>
             {services.map((service, index) => (
               <CarouselItem key={index} className="basis-1/3">
                 <div className="flex flex-col w-full justify-center items-center gap-y-5">
-                <Card className='bg-agm-dark-blue p-2 border-0 text-agm-white'>
+                <Card className='bg-primary-dark p-2 border-0 text-agm-white'>
                     <CardContent className="flex aspect-square items-center justify-center p-6">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <div className='w-full h-full flex justify-center items-center cursor-pointer'>
+                          <div className='w-full h-full flex justify-center text-foreground items-center cursor-pointer'>
                             {service.icon}
                           </div>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-[425px] bg-background">
                           <DialogHeader>
-                            <DialogTitle className='text-agm-dark-blue'>{service.name}</DialogTitle>
+                            <DialogTitle className='text-foreground'>{service.name}</DialogTitle>
                           </DialogHeader>
-                          <div className="text-agm-dark-blue grid gap-4 py-4">
-                            <p>{service.description}</p>
-                            <Button asChild>
+                          <DialogDescription>
+                            {service.description}
+                          </DialogDescription>
+                          <DialogFooter>
+                          <Button asChild>
                               <Link href={service.url}>
                                 Learn More
                               </Link>
                             </Button>
-                          </div>
+                          </DialogFooter>
                         </DialogContent>
                       </Dialog>
                     </CardContent>
                   </Card>
-                  <p className='text-agm-white w-fit text-center text-lg font-semibold'>{service.name}</p>
+                  <p className='text-background w-fit text-center text-lg font-semibold'>{service.name}</p>
                 </div>
               </CarouselItem>
             ))}

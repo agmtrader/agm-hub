@@ -1,30 +1,22 @@
 "use client"
+
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
-import { addMonths, subMonths } from "date-fns"
 
-type DateAttributes = {
-  date: Date
-  setDate: React.Dispatch<React.SetStateAction<Date>>
-}
-
-export type CalendarProps = React.ComponentProps<typeof DayPicker> & DateAttributes
+export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  date,
-  setDate,
   ...props
 }: CalendarProps) {
   return (
     <DayPicker
-      month={date}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
@@ -39,7 +31,7 @@ function Calendar({
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
+        table: "w-full border-muted space-y-1",
         head_row: "flex",
         head_cell:
           "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
@@ -51,7 +43,7 @@ function Calendar({
         ),
         day_range_end: "day-range-end",
         day_selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+          "bg-primary text-background hover:bg-primary hover:text-background focus:bg-primary focus:text-background",
         day_today: "bg-accent text-accent-foreground",
         day_outside:
           "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
@@ -62,8 +54,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft onClick={() => setDate(subMonths(date, 1))} className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight onClick={() => setDate(addMonths(date, 1))} className="h-4 w-4" />,
+        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />

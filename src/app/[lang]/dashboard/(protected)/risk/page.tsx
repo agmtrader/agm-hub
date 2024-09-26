@@ -15,7 +15,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { getDocumentsFromCollection, queryDocumentsFromCollection } from "@/utils/api"
 
 import { useEffect, useState } from "react"
 import { DataTable } from "@/components/dashboard/components/DataTable"
@@ -126,7 +125,8 @@ const page = () => {
 
     console.log(values)
 
-    const response:any[] = await queryDocumentsFromCollection('db/clients/risk_profiles', 'AccountNumber', values.account_number)
+    //const response:any[] = await queryDocumentsFromCollection('db/clients/risk_profiles', 'AccountNumber', values.account_number)
+    const response:any[] = []
 
     if (response) {
 
@@ -166,8 +166,8 @@ const page = () => {
 
     async function fetchData () {
 
-        let data = await getDocumentsFromCollection('db/clients/risk_profiles/')
-        setAccountNumbers(data.map((element:any) => {element.AccountNumber; return {label: element.AccountNumber + ' ' + element.ClientName, value: element.AccountNumber}}))
+        //let data = await getDocumentsFromCollection('db/clients/risk_profiles/')
+        //setAccountNumbers(data.map((element:any) => {element.AccountNumber; return {label: element.AccountNumber + ' ' + element.ClientName, value: element.AccountNumber}}))
         
     }
 

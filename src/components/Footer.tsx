@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Facebook, Linkedin, Instagram } from 'react-bootstrap-icons'
+import MarketOverview from './MarketOverview'
 
 const Footer = () => {
   return (
@@ -10,7 +11,8 @@ const Footer = () => {
             <Instagram size={'2vh'} color='#2571A5'/>
             <Linkedin size={'2vh'} color='#2571A5'/>
           </div>
-          <p className='text-agm-light-blue'>© 2023 AGM Trader Broker & Advisor, all rights reserved.</p>
+          <p className='text-secondary-light'>© 2023 AGM Trader Broker & Advisor, all rights reserved.</p>
+          <MarketOverview/>
       </div>
   )
 }

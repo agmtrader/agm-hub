@@ -4,9 +4,6 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
-
-
-import { Doughnut } from 'react-chartjs-2'
 import 'chart.js/auto'
 
 import {
@@ -23,7 +20,6 @@ import { useState } from "react"
 import { getDefaults, risk_assesment_schema } from "@/lib/form"
 import { Input } from "@/components/ui/input"
 import { formatTimestamp } from "@/utils/dates"
-import { addDocument } from "@/utils/api"
 import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
 
 // Risk profiles
@@ -161,7 +157,7 @@ const RiskForm = () => {
     }
 
     // Add risk profile to database
-    await addDocument(risk_profile, 'db/clients/risk_profiles', riskProfileID)
+    //await addDocument(risk_profile, 'db/clients/risk_profiles', riskProfileID)
 
     // Remove account number and client name from values !?
     delete values.account_number
@@ -195,11 +191,11 @@ const RiskForm = () => {
   }
 
   return (
-      <div className="w-2/3 h-full flex">
+      <div className="w-3/4 px-10 pb-10 h-fit flex">
 
         <Form {...form}>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-10">
 
           <FormField
                 control={form.control}
@@ -233,7 +229,7 @@ const RiskForm = () => {
               control={form.control}
               name="type"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem>
                   <FormLabel>What type of investor do you consider yourself?</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -241,7 +237,7 @@ const RiskForm = () => {
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
@@ -249,13 +245,13 @@ const RiskForm = () => {
                           Conservative
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="2.5" />
                         </FormControl>
                         <FormLabel className="font-normal">Moderate</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="4" />
                         </FormControl>
@@ -274,27 +270,27 @@ const RiskForm = () => {
               control={form.control}
               name="loss"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem>
                   <FormLabel>If your portfolio loses 20% of its value what action would you take?</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex flex-col"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
                         <FormLabel className="font-normal">Sell everything</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="2" />
                         </FormControl>
                         <FormLabel className="font-normal">Sell some investments</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="3" />
                         </FormControl>
@@ -302,7 +298,7 @@ const RiskForm = () => {
                           Do nothing
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="4" />
                         </FormControl>
@@ -321,7 +317,7 @@ const RiskForm = () => {
               control={form.control}
               name="gain"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem>
                   <FormLabel>If your portfolio appreciates 20% of its value what action would you take?</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -329,19 +325,19 @@ const RiskForm = () => {
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
                         <FormLabel className="font-normal">Sell everything</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="2" />
                         </FormControl>
                         <FormLabel className="font-normal">Sell some investments</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="3" />
                         </FormControl>
@@ -349,7 +345,7 @@ const RiskForm = () => {
                           Do nothing
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="4" />
                         </FormControl>
@@ -368,7 +364,7 @@ const RiskForm = () => {
               control={form.control}
               name="period"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem>
                   <FormLabel>What do you think the average term of your investment portfolio should be?</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -376,7 +372,7 @@ const RiskForm = () => {
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="4" />
                         </FormControl>
@@ -384,7 +380,7 @@ const RiskForm = () => {
                           0-5 years
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="3" />
                         </FormControl>
@@ -392,7 +388,7 @@ const RiskForm = () => {
                           5-10 years
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="2" />
                         </FormControl>
@@ -400,7 +396,7 @@ const RiskForm = () => {
                           11-20 years
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
@@ -417,7 +413,7 @@ const RiskForm = () => {
               control={form.control}
               name="diversification"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem>
                   <FormLabel>Considering asset class diversification, which of these portfolios would you select?</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -425,7 +421,7 @@ const RiskForm = () => {
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
@@ -433,7 +429,7 @@ const RiskForm = () => {
                           Portfolio A: 100% bonds, 0% equity
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="2" />
                         </FormControl>
@@ -441,7 +437,7 @@ const RiskForm = () => {
                           Portfolio B: 80% bonds, 20% equity
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="3" />
                         </FormControl>
@@ -460,7 +456,7 @@ const RiskForm = () => {
               control={form.control}
               name="goals"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem>
                   <FormLabel>Which of these portfolios best represent your goals with the most acceptable outcomes?</FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -468,7 +464,7 @@ const RiskForm = () => {
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="1" />
                         </FormControl>
@@ -476,7 +472,7 @@ const RiskForm = () => {
                           Portfolio A: Average 4% return
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="2" />
                         </FormControl>
@@ -484,7 +480,7 @@ const RiskForm = () => {
                         Portfolio A: Average 5% return
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex flex-row gap-x-2">
                         <FormControl>
                           <RadioGroupItem value="3" />
                         </FormControl>
@@ -507,6 +503,7 @@ const RiskForm = () => {
           </form>
 
         </Form>
+
 
         <div className="w-full">
           <Dialog open={riskProfile ? true:false}>
@@ -536,10 +533,7 @@ export default RiskForm
 import {
   Dialog,
   DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogContent
 } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
+

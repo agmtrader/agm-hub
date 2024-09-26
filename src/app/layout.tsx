@@ -23,8 +23,8 @@ export default function RootLayout({
 
   return (
 
-    <html lang="en" className={cn(inter.className, "flex flex-col h-fit w-fullbg-agm-white overflow-x-hidden scroll-smooth")}>
-      <body className='h-full w-full flex flex-row scroll-smooth '>
+    <html lang="en" className={cn(inter.className, "h-screen w-screen")}>
+      <body className='h-full w-full'>
         {children}
       </body>
     </html>

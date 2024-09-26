@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import "../globals.css"
-import { TranslationProvider } from "../TranslationProvider"
+import { TranslationProvider } from "../../utils/TranslationProvider"
+import { NextAuthProvider } from "../../utils/NextAuthProvider"
 
 export default async function Layout({
   children, params:{lang}
@@ -10,10 +11,12 @@ export default async function Layout({
 }>) {
 
   return (
-    <div className="h-full w-full flex flex-col">
-      <TranslationProvider lang={lang}>
-        {children}
-      </TranslationProvider>
+    <div className="h-full w-full">
+      <NextAuthProvider>
+        <TranslationProvider lang={lang}>
+          {children}
+        </TranslationProvider>
+      </NextAuthProvider>
     </div>
   )
 }
