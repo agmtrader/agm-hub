@@ -1,11 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 
-import { addColumnsFromJSON, queryDocumentsFromCollection } from '@/utils/api';
-
 import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Map, Ticket } from '@/lib/types';
 import { about_you_primary_schema, about_you_secondary_schema, getDefaults, regulatory_schema } from '@/lib/form';
+import { accessAPI } from '@/utils/api';
 
 interface Props {
   currentTicket: Ticket,
@@ -32,43 +31,36 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
     async function queryData () {
 
       // Fetch ticket
-      let data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
+      let response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets', 'key': 'TicketID', 'value': ticketID})
+      let data = response['content']
+      let ticket:Ticket | null = null
 
-      let tickets:Ticket[] = []
-      if (data) {
-        data.forEach((entry:Map) => {
-          tickets.push(
-            {
-              'TicketID': entry['TicketID'],
-              'Status': entry['Status'],
-              'ApplicationInfo': entry['ApplicationInfo'],
-              'Advisor': entry['Advisor']
-            }
-          )
-        })
+      if (data && data.length === 1) {
+        ticket = data[0]
+      } else {
+        throw new Error('Ticket not found')
       }
-      tickets = await addColumnsFromJSON(tickets)
 
       let primaryHolderInfo:Map = {}
-      if (tickets) {
+      if (ticket) {
         Object.keys(primaryDefaultValues).forEach((key:any) => {
-          primaryHolderInfo[key] = tickets[0][key as keyof Ticket]
+          primaryHolderInfo[key] = ticket['ApplicationInfo'][key as keyof Ticket]
         })
       }
       setPrimaryHolderInfo(primaryHolderInfo)
 
       let secondaryHolderInfo:Map = {}
-      if (tickets) {
+      if (ticket) {
         Object.keys(secondaryDefaultValues).forEach((key:any) => {
-          secondaryHolderInfo[key] = tickets[0]['secondary_' + key as keyof Ticket]
+          secondaryHolderInfo[key] = ticket['ApplicationInfo']['secondary_' + key as keyof Ticket]
         })
       }
       setSecondaryHolderInfo(secondaryHolderInfo)
 
       let regulatoryInfo:Map = {}
-      if (tickets) {
+      if (ticket) {
         Object.keys(regulatoryDefaultValues).forEach((key:any) => {
-          regulatoryInfo[key] = tickets[0][key as keyof Ticket]
+          regulatoryInfo[key] = ticket['ApplicationInfo'][key as keyof Ticket]
         })
       }
       setRegulatoryInfo(regulatoryInfo)
@@ -86,19 +78,19 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
         {primaryHolderInfo && 
           <div className='w-full h-full gap-y-10 flex flex-col justify-center items-center'>
             <p className='text-lg font-semibold'>Primary Holder Information</p>
-            <DataTable data={[primaryHolderInfo]} dark width={90}/>
+            <DataTable data={[primaryHolderInfo]} width={90}/>
           </div>
         }
         {secondaryHolderInfo && 
           <div className='w-full h-full gap-y-10 flex flex-col justify-center items-center'>
             <p className='text-lg font-semibold'>Secondary Holder Information</p>
-            <DataTable data={[secondaryHolderInfo]} dark width={90}/>
+            <DataTable data={[secondaryHolderInfo]} width={90}/>
           </div>
         }
         {regulatoryInfo &&
           <div className='w-full h-full gap-y-10 flex flex-col justify-center items-center'>
             <p className='text-lg font-semibold'>Regulatory Information</p>
-            <DataTable data={[regulatoryInfo]} dark width={90}/>
+            <DataTable data={[regulatoryInfo]} width={90}/>
           </div>
         }
     </div>

@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react'
 
 import { DocumentData } from 'firebase/firestore';
 
-import { getDocumentsFromCollection } from '@/utils/api';
-
 import { DataTable } from '@/components/dashboard/components/DataTable';
 
 const page = () => {
@@ -13,8 +11,8 @@ const page = () => {
 
   useEffect(() => {
       async function fetchData () {
-          let data = await getDocumentsFromCollection('db/clients/accounts/')
-          setClients(data)
+          //let data = await getDocumentsFromCollection('db/clients/accounts/')
+          //setClients(data)
       }
       fetchData()
   }, [])

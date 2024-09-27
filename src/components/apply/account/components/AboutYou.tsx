@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useState } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -35,20 +35,21 @@ import {
 import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, about_you_primary_schema, getDefaults, phone_types, about_you_secondary_schema, security_questions } from "@/lib/form"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Ticket } from "@/lib/types"
-import { updateFieldInDocument } from "@/utils/api"
-
+import { accessAPI } from "@/utils/api"
+import { PersonLinesFill } from "react-bootstrap-icons"
 interface Props {
   stepForward:() => void,
   stepBackward:() => void,
   ticket: Ticket,
-  setTicket:React.Dispatch<React.SetStateAction<Ticket | null>>
   primary: boolean
 }
 
-const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props) => {
+const AboutYou = ({primary, stepForward, stepBackward, ticket}:Props) => {
 
   let formSchema:any;
   let initialFormValues:any = {};
+
+  const [generating, setGenerating] = useState(false)
 
   if (primary) {
     formSchema = about_you_primary_schema 
@@ -64,6 +65,8 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
+    setGenerating(true)
+
     const dob_date = values.dob_day + '/' + values.dob_month + '/' + values.dob_year;
 
     (values as any).date_of_birth = dob_date;
@@ -74,28 +77,32 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
 
     Object.keys(values).forEach(async (key) => {
       if (primary) {
-        await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.${key}`, values[key as keyof object])
+        const response = await accessAPI('/database/update', 'POST', {'path':`db/clients/tickets/${ticket.TicketID}`, 'key':`ApplicationInfo.${key}`, 'value':values[key as keyof object]})
+        console.log(response)
       } else {
-        await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.secondary_${key}`, values[key as keyof object])
+        const response = await accessAPI('/database/update', 'POST', {'path':`db/clients/tickets/${ticket.TicketID}`, 'key':`ApplicationInfo.secondary_${key}`, 'value':values[key as keyof object]})
+        console.log(response)
       }
     })
-
+    
+    setGenerating(false)
     stepForward()
 
   }
 
-  console.log(form.formState.errors)
-
   return (
-    <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
-      <div className="flex flex-col justify-center items-center">
-        <h1 className='text-7xl font-bold'>About you</h1>
-        <h1 className='text-3xl font-light'>{primary ? 'Primary holder':'Secondary holder'}</h1>
+    <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
+
+      <div className='flex'>
+        <div key={'about-you'} className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
+          <PersonLinesFill className='h-24 w-24 text-secondary'/>
+          <p className='text-5xl font-bold'>2. <span className='font-light'>About you</span></p>
+        </div>
       </div>
 
       <Form {...form}>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="gap-y-8 text-center flex flex-col justify-center items-center">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-64 flex flex-col gap-y-5 justify-center items-center">
 
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
             <p className="text-xl font-bold">Basic info</p>
@@ -1437,16 +1444,17 @@ const AboutYou = ({primary, stepBackward, stepForward, ticket, setTicket}:Props)
           }
 
           <div className="flex gap-x-5 justify-center items-center w-full h-full">
-            <Button variant={'default'} type="button" onClick={stepBackward}>
+            <Button type="button" variant='ghost' onClick={stepBackward}>
               Previous step
             </Button>
-            <Button variant={'default'} type="submit">
-              Next step
+            <Button type="submit">
+              {generating ? 'Saving...' : 'Next step'}
             </Button>
           </div>
 
         </form>
       </Form>
+
     </div>
   )
 }

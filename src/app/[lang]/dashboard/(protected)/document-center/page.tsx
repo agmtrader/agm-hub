@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { getDocumentsFromCollection } from '@/utils/api';
 
 import { Document, Documents } from '@/lib/types';
 import DocumentCenter from '@/components/dashboard/document_center/DocumentCenter';
@@ -17,53 +16,13 @@ const page = () => {
 
     async function queryData () {
 
-      let data = await getDocumentsFromCollection(`/db/document_center/poa`)
+      //let data = await getDocumentsFromCollection(`/db/document_center/poa`)
 
       let poaData:Document[] = []
 
-      data.forEach((entry) => {
-        poaData.push({
-          'DocumentID': entry['DocumentID'],
-          'FileID': entry['FileID'],
-          'FileInfo': entry['FileInfo'],
-          'AccountNumber': entry['AccountNumber'],
-          'FileName': entry['FileName'],
-          'Type': entry['Type'],
-          'AGMUser': entry['AGMUser'],
-        })
-      })
-
-      data = await getDocumentsFromCollection(`/db/document_center/poi`)
-
       let poiData:Document[] = []
 
-      data.forEach((entry) => {
-        poiData.push({
-          'DocumentID': entry['DocumentID'],
-          'FileID': entry['FileID'],
-          'FileInfo': entry['FileInfo'],
-          'AccountNumber': entry['AccountNumber'],
-          'FileName': entry['FileName'],
-          'Type': entry['Type'],
-          'AGMUser': entry['AGMUser'],
-        })
-      })
-
-      data = await getDocumentsFromCollection(`/db/document_center/sow`)
-
       let sowData:Document[] = []
-
-      data.forEach((entry) => {
-        sowData.push({
-          'DocumentID': entry['DocumentID'],
-          'FileID': entry['FileID'],
-          'FileInfo': entry['FileInfo'],
-          'AccountNumber': entry['AccountNumber'],
-          'FileName': entry['FileName'],
-          'Type': entry['Type'],
-          'AGMUser': entry['AGMUser'],
-        })
-      })
 
       setDocuments({'POA':poaData,'POI': poiData, 'SOW':sowData})
       

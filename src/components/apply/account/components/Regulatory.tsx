@@ -37,18 +37,17 @@ import {
 
 import { getDefaults, investment_objectives, products, regulatory_schema, salutations, worths } from "@/lib/form"
 import { Ticket } from "@/lib/types"
-import { updateFieldInDocument } from "@/utils/api"
-
-const formSchema = regulatory_schema
+import { accessAPI } from "@/utils/api"
 
 interface Props {
   stepForward:() => void,
   stepBackwards?:() => void,
   ticket: Ticket,
-  setTicket:React.Dispatch<SetStateAction<Ticket | null>>
 }
 
-const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
+const Regulatory = ({stepBackwards, ticket, stepForward}:Props) => {
+
+  const [generating, setGenerating] = useState(false)
 
   let formSchema:any;
   let initialFormValues:any;
@@ -63,14 +62,17 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
+    setGenerating(true)
+
     Object.keys(values).forEach(async (key) => {
-      await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, `ApplicationInfo.${key}`, values[key as keyof object])
+      const response = await accessAPI('/database/update', 'POST', {'path':`db/clients/tickets/${ticket.TicketID}`, 'key':`ApplicationInfo.${key}`, 'value':values[key as keyof object]})
+      console.log(response)
     })
 
-    await updateFieldInDocument(`db/clients/tickets/${ticket.TicketID}`, 'Status', 'Open')
-    
-    //setTicket(ticket)
+    const response = await accessAPI('/database/update', 'POST', {'path':`db/clients/tickets/${ticket.TicketID}`, 'key':`Status`, 'value':'Open'})
+    console.log(response)
 
+    setGenerating(false)
     stepForward()
 
   }
@@ -79,7 +81,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
     <div className="h-full w-full flex flex-col justify-center items-center gap-y-10">
 
       <div className="flex flex-col justify-center items-center">
-        <h1 className='text-7xl font-bold'>Regulatory information</h1>
+        <h1 className='text-7xl font-bold'>Regulatory Information</h1>
       </div>
 
       <Form {...form}>
@@ -370,7 +372,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
               Previous step
             </Button>
             <Button type="submit">
-              Next step
+              {generating ? 'Saving...' : 'Finish'}
             </Button>
           </div>
 

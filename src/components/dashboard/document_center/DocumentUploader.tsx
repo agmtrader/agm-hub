@@ -31,10 +31,7 @@ import {
 } from "@/components/ui/form"
 
 import { getDefaults, new_poa_schema, new_poi_schema, new_sow_schema, poa_schema, poi_schema, sow_schema } from "@/lib/form"
-import { drive } from 'googleapis/build/src/apis/drive'
-import { DocumentData } from 'firebase/firestore'
 import { formatTimestamp } from '@/utils/dates'
-import { addDocument } from '@/utils/api'
 import { Document } from '@/lib/types'
 import { useSession } from 'next-auth/react'
 
@@ -164,7 +161,7 @@ const DocumentUploader = ({type, document, accountNumber}:{type:string, document
         }
 
 
-      await addDocument(documentInfo, `db/document_center/${documentInfo['Type'].toLowerCase()}`, documentTimestamp)
+      //await addDocument(documentInfo, `db/document_center/${documentInfo['Type'].toLowerCase()}`, documentTimestamp)
       setMessage('File uploaded successfully')
       }
 

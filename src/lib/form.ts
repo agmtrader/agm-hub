@@ -422,7 +422,7 @@ export const security_questions = [
 // Schemas
 // Account Application
 export const general_info_schema = z.object({
-
+  
   email: z.string().min(1, {
     message: "Email cannot be empty.",
   }),
@@ -887,11 +887,21 @@ export const new_sow_schema = z.object({
 
 // Account accesses
 export const account_access_schema = z.object({
-  temp_email: z.string(),
-  temp_password: z.string(),
-  account_number: z.string(),
-  ibkr_username: z.string(),
-  ibkr_password: z.string()
+  temp_email: z.string().min(1, {
+    message: 'You must enter an email.'
+  }),
+  temp_password: z.string().min(1, {
+    message: 'You must enter a password.'
+  }),
+  account_number: z.string().min(1, {
+    message: 'Account number cannot be empty.'
+  }),
+  ibkr_username: z.string().min(1, {
+    message: 'You must enter an IBKR username.'
+  }),
+  ibkr_password: z.string().min(1, {
+    message: 'You must enter an IBKR password.'
+  })
 })
 export const risk_assesment_schema = z.object({
   account_number: z.string().min(1, {

@@ -16,11 +16,12 @@ import { DataTable } from '../components/DataTable'
 
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { addColumnsFromJSON, addDocument, queryDocumentsFromCollection } from "@/utils/api"
 import { formatTimestamp } from "@/utils/dates"
 import { getDefaults, account_access_schema } from '@/lib/form'
 import { useForm } from 'react-hook-form'
 import { Map, Ticket } from '@/lib/types'
+import { accessAPI } from '@/utils/api'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface Props {
   currentTicket:Ticket, 
@@ -58,10 +59,13 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
         'IBKRPassword':values.ibkr_password
       }
       
-      await addDocument(account_details, 'db/clients/accounts', currentTicket['TicketID'])
+      let response = await accessAPI('/database/create', 'POST', {'path': 'db/clients/accounts', 'data': account_details, 'id': accountTimestamp})
+      console.log(response)
     
       setCanContinue(true)
   }
+
+  console.log(form.formState.errors)
   
   // Current ticket
   const [tickets, setTickets] = useState<Ticket[] | null>(null)
@@ -75,15 +79,8 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
       setTickets(null)
       setAccount(null)
 
-      let data = await queryDocumentsFromCollection('db/clients/accounts/', 'TicketID', ticketID)
-      if (data.length > 0) {
-        setAccount(data)
-        setCanContinue(true)
-      } else {
-        setAccount(null)
-      }
-
-      data = await queryDocumentsFromCollection('db/clients/tickets/', 'TicketID', ticketID)
+      let response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets', 'key': 'TicketID', 'value': ticketID})
+      let data = response['content']
       let tickets:Ticket[] = []
       if (data) {
         data.forEach((entry:Map) => {
@@ -97,9 +94,18 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
           )
         })
       }
-      tickets = await addColumnsFromJSON(tickets)
       setTickets(tickets)
 
+      response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'key': 'TicketID', 'value': ticketID})
+      let accounts = response['content']
+      if (accounts.length == 1) {
+        setAccount(accounts)
+        setCanContinue(true)
+      } else {
+        console.error('No account or too many accounts found for ticket.')
+        setAccount(null)
+        setCanContinue(false)
+      }
 
     }
     
@@ -115,13 +121,13 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
 
   if (tickets && !account) {
     return (
-      <div className='w-[70%] h-full flex flex-col justify-center items-center gap-y-10'>
-      <h1 className='text-7xl font-bold'>Create a temporary email.</h1>
-      <p className='text-lg font-semibold'>Ticket</p>
-      <DataTable data={tickets} dark width={90}/>
-      <p className='text-lg font-semibold'>Account Access Form</p>
+    <div className='w-full h-fit justify-center items-center flex flex-col gap-y-10'>
+      <h1 className='text-7xl font-bold'>Open the user's IBKR account.</h1>
+      <p className='text-2xl text-subtitle'>Current Ticket</p>
+      <DataTable data={tickets} width={90}/>
+      <p className='text-2xl text-subtitle'>Internal IBKR Account Access Form</p>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className=" flex-wrap gap-x-5 gap-y-5 h-fit w-full flex flex-col justify-center items-center">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-10">
           <FormField
             control={form.control}
             name="temp_email"
@@ -150,7 +156,7 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
           />
           <FormField
             control={form.control}
-            name="ibkr_account_number"
+            name="account_number"
             render={({ field }) => (
             <FormItem>
                 <FormLabel>IBKR Accout number</FormLabel>
@@ -196,12 +202,12 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
 
   if (tickets && account) {
     return (
-      <div className='w-[70%] h-full flex flex-col gap-y-10 items-center justify-center'>
-      <h1 className='text-7xl font-bold'>Account already created.</h1>
+      <div className='w-full h-full flex flex-col gap-y-10'>
+      <h1 className='text-7xl font-bold'>User already has an IBKR account.</h1>
       <p className='text-lg font-semibold'>Ticket</p>
-      {tickets && <DataTable data={tickets} dark width={90}/>}
-      <p className='text-lg font-semibold'>Account</p>
-      {account && <DataTable data={account} dark width={90}/>}
+      {tickets && <DataTable data={tickets} width={90}/>}
+      <p className='text-lg font-semibold'>IBKR Account Details</p>
+      {account && <DataTable data={account} width={90}/>}
     </div>
     )
   }

@@ -13,13 +13,10 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 const team = [
   {
@@ -61,7 +58,7 @@ export function TeamCarousel() {
                       <DialogTrigger asChild>
                         <div className="w-full text-agm-dark-blue cursor-pointer h-full text-center flex flex-col items-center justify-center">
                           <p className="text-2xl font-bold">{member.name}</p>
-                          <p className="text-sm text-agm-orange">{member.title}</p>
+                          <p className="text-sm text-primary">{member.title}</p>
                         </div>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">

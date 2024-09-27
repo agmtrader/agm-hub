@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../../globals.css";
 
-import { NextAuthProvider } from "../../NextAuthProvider";
+import { NextAuthProvider } from "../../../utils/NextAuthProvider";
 import FirebaseAuthProvider from "../../FirebaseAuthProvider";
 
 export const metadata: Metadata = {
