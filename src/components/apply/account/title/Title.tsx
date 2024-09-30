@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Account from '@/components/sidebar/Account'
 import { Header } from '@/components/Header'
-import { useSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -24,9 +24,25 @@ const Title = ({setStarted}:Props) => {
           <p className='text-7xl font-bold text-background'>Open your</p>
           <Image src={'/images/brand/agm-logo-white.png'} alt = 'AGM Logo' height = {100} width = {300}/>
           <p className='text-3xl text-background'>trading account now.</p>
-          <div className='flex flex-col justify-center items-center gap-y-5'>
+          {!session?.user ? 
+            <div className='flex w-full gap-x-5 justify-center items-center'>
+              <Button onClick={(e) => {
+                  e.preventDefault()
+                  signIn()
+                }}
+                className="flex w-fit h-full justify-center items-center"
+              >
+                  <p className="text-sm">Sign in</p>
+              </Button>
+              <Button>
+                <Link href='/create-account'>
+                  <p className="text-sm">Register</p>
+                </Link>
+              </Button>
+            </div>
+            :
             <Button onClick={() => setStarted(true)}>Get started.</Button>
-          </div>
+          }
         </div>
       </div>
     </div>

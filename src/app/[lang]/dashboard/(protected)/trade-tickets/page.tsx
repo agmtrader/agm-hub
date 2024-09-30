@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { accessAPI } from '@/utils/api'
@@ -40,23 +39,30 @@ export default function TradeTickets() {
     const [ticketId, setTicketId] = useState<string | null>(null)
 
     const [generating, setGenerating] = useState(false)
-    const [error, setError] = useState(false)
+    const [flexQueryError, setFlexQueryError] = useState(false)
     const [dialogOpen, setDialogOpen] = useState(false)
 
     const [ticket, setTicket] = useState<any[] | null>(null)
     const [indices, setIndices] = useState<number[] | null>(null)
+    const [processingError, setProcessingError] = useState<boolean | null>(null)
 
     const [clientMessage, setClientMessage] = useState<string | null>(null)
-    const [messageStatus, setMessageStatus] = useState<string | null>(null)
+    const [sending, setSending] = useState<boolean>(false)
+
+    const [emailError, setEmailError] = useState<boolean>(false)
 
     async function fetchTickets() {
       if (!ticketId) return;
       setGenerating(true)
       const response = await accessAPI('/flex_query/fetch', 'POST', {'queryIds': [ticketId]})
       setGenerating(false)
-      setError(response['status'] === 'error' ? true : false)
-      setTicket(response['content'][ticketId as string])
-      setDialogOpen(true)
+      if (response['status'] === 'error') {
+        setFlexQueryError(true)
+      }
+      else {
+        setTicket(response['content'][ticketId as string])
+        setDialogOpen(true)
+      }
     }
 
     async function generateTradeTicket() {
@@ -66,15 +72,28 @@ export default function TradeTickets() {
       if (indices.length == 0) return;
       let response = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {'flex_query_dict': ticket, 'indices': indices.toString()})
       response = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': response['content']})
-      setClientMessage(response['content']['message'])
-      setDialogOpen(false)
+      if (response['status'] === 'error') {
+        setProcessingError(true)
+      }
+      else {
+        setProcessingError(response['status'] === 'error' ? true : false)
+        setClientMessage(response['content']['message'])
+        setDialogOpen(false)
+      }
     }
 
     async function sendToClient() {
       if (!clientMessage) return;
+      setSending(true)
       const clientEmails = "lchavarria@acobo.com,arodriguez@acobo.com, rcontreras@acobo.com"
+      //const clientEmails = "aa@agmtechnology.com"
       const response = await accessAPI('/email/send_client_email', 'POST', {'data': clientMessage, 'client_email': clientEmails, 'subject': 'Confirmación de Transacción'})
-      console.log(response)
+      setSending(false)
+      if (response['status'] === 'error') {
+        setEmailError(true)
+      } else {
+        setEmailError(false)
+      }
     }
 
     const ticketIds = [
@@ -107,9 +126,31 @@ export default function TradeTickets() {
                 ))}
               </SelectContent>
             </Select>
+            {flexQueryError && <p className='text-red-500'>Error fetching flex query. Try again.</p>}
           </CardContent>
         </Card>
-        
+
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="w-2/3 h-2/3 flex justify-evenly items-center flex-col max-w-7xl">
+            <DialogHeader>
+                <DialogTitle className='text-5xl font-bold'>Generated Flex Query</DialogTitle>
+                <DialogDescription>Please select one or more tickets to generate trade tickets for.</DialogDescription>
+            </DialogHeader>
+            <ScrollArea className='w-full h-full flex justify-center items-center'>
+              {ticket &&<DataTableSelect data={ticket} setSelection={setIndices} width={100}/>}
+            </ScrollArea>
+            <Button onClick={generateTradeTicket} disabled={generating}>
+              {!generating ? 'Generate Trade Ticket' : (
+                <>
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              )}
+            </Button>
+            {processingError && <p className='text-red-500'>Error processing trade ticket. Try again.</p>}
+          </DialogContent>
+        </Dialog>
+
         {clientMessage &&
           <Card>
             <CardHeader>
@@ -122,10 +163,18 @@ export default function TradeTickets() {
                   placeholder="Generated report will appear here..."
                   className="min-h-64 min-w-96"
                 />
-                <Button className='w-fit' onClick={() => setConfirmDialogOpen(true)}>Send to Client</Button>
+                <Button className='w-fit' disabled={sending} onClick={() => setConfirmDialogOpen(true)}>
+                  {sending ? 
+                    <>
+                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  :
+                    'Send to Client'
+                  }
+                </Button>
 
-                {messageStatus === 'success' && <p className='text-green-500'>Sucesss</p>}
-                {messageStatus === 'error' && <p className='text-red-500'>Error</p>}
+                {emailError && <p className='text-red-500'>Error sending to client</p>}
 
                 <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
                   <DialogContent>
@@ -157,29 +206,8 @@ export default function TradeTickets() {
             )}
           </Button>
         }
-      </div>
-      
-      {error && (
-        <Alert variant="destructive" className="">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="w-2/3 h-2/3 flex justify-evenly items-center flex-col max-w-7xl">
-          <DialogHeader>
-              <DialogTitle className='text-5xl font-bold'>Generated Flex Query</DialogTitle>
-              <DialogDescription>Please select one or more tickets to generate trade tickets for.</DialogDescription>
-          </DialogHeader>
-          <ScrollArea className='w-full h-full flex justify-center items-center'>
-            {ticket &&<DataTableSelect data={ticket} setSelection={setIndices} width={100}/>}
-          </ScrollArea>
-          <Button onClick={generateTradeTicket}>
-            Generate Trade Ticket
-          </Button>
-        </DialogContent>
-      </Dialog>
+      </div>
 
     </div>
   )

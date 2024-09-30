@@ -24,8 +24,11 @@ export default function FinancialDashboard() {
         const response = await accessAPI('/reporting/extract', 'GET')
         setGenerating(false)
         setBatchFiles(response['content'])
-        setError(response['status'] === 'error' ? true : false)
-        if (!error) setDialogOpen(true)
+        if (response['status'] === 'error') {
+            setError(true)
+        } else {
+          setDialogOpen(true)
+        }
     }
 
     async function transformReports() {
