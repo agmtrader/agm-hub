@@ -1,10 +1,10 @@
-import { Baby, Handshake, ArrowUp } from 'lucide-react'
+import { Handshake } from 'lucide-react'
 import React from 'react'
 
 const services = [
   {
     name: 'AGM Trader',
-    icon: <ArrowUp className='text-white h-[12vw] w-[12vw]'/>,
+    icon: <GraphUpArrow className='text-white h-[12vw] w-[12vw]'/>,
     description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
     url: 'https://agmtrader.com'
   },
@@ -16,7 +16,7 @@ const services = [
   },
   {
     name: 'AGM Institutional',
-    icon: <Baby className='text-white h-[12vw] w-[12vw]'/>,
+    icon: <Building className='text-white h-[12vw] w-[12vw]'/>,
     description:'Our Institutional division provides world class execution services to the most sophisticated institutions like Advisory Firms, Hedge Funds, Broker/Dealers, Wealth Management firms, Insurance companies and more.',
     url:'https://agm-institutional.vercel.app'
   }
@@ -91,4 +91,5 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { BarChart, Building, GraphUpArrow } from 'react-bootstrap-icons'
 
