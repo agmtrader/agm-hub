@@ -1,5 +1,3 @@
-import { DocumentReference } from "firebase/firestore"
-
 export enum DeviceTypes{
     PC,
     MOBILE

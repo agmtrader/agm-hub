@@ -73,22 +73,22 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
   }, [])
 
   return (
-    <div className='h-full w-[90%] flex flex-col justify-start gap-y-10 items-center'>
+    <div className='h-full w-[50%] flex flex-col justify-start gap-y-10 items-center'>
         <h1 className='text-7xl font-bold'>Open account.</h1>
         {primaryHolderInfo && 
-          <div className='w-full h-full gap-y-10 flex flex-col justify-center items-center'>
+          <div className=''>
             <p className='text-lg font-semibold'>Primary Holder Information</p>
             <DataTable data={[primaryHolderInfo]} width={90}/>
           </div>
         }
         {secondaryHolderInfo && 
-          <div className='w-full h-full gap-y-10 flex flex-col justify-center items-center'>
+          <div className=''>
             <p className='text-lg font-semibold'>Secondary Holder Information</p>
             <DataTable data={[secondaryHolderInfo]} width={90}/>
           </div>
         }
         {regulatoryInfo &&
-          <div className='w-full h-full gap-y-10 flex flex-col justify-center items-center'>
+          <div className=''>
             <p className='text-lg font-semibold'>Regulatory Information</p>
             <DataTable data={[regulatoryInfo]} width={90}/>
           </div>

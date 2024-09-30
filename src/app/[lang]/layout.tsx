@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation"
 import "../globals.css"
-import { TranslationProvider } from "../../utils/TranslationProvider"
-import { NextAuthProvider } from "../../utils/NextAuthProvider"
+import { TranslationProvider } from "../../utils/providers/TranslationProvider"
+import { NextAuthProvider } from "../../utils/providers/NextAuthProvider"
 
 export default async function Layout({
   children, params:{lang}

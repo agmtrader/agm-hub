@@ -2,7 +2,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 
-import { useTranslationProvider } from '@/utils/TranslationProvider'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 const Introduction = () => {
 
@@ -12,7 +12,7 @@ const Introduction = () => {
   
   
   return (
-    <div className='flex flex-col h-full w-full justify-center items-center py-10'>
+    <div className='flex flex-col h-fit w-full justify-center items-center py-10'>
       <div className='flex flex-col h-full text-agm-dark-blue w-[50%] text-center gap-y-10 justify-center items-center'>
         <p className='text-5xl font-bold'>{t("home.introduction.title")}</p>
         <p className='text-xl font-light'>

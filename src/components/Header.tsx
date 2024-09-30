@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import useScrollPositions from '@/hooks/useScrollPositions'
 
 import {motion, AnimatePresence} from 'framer-motion'
-import { List } from 'react-bootstrap-icons'
+import { List } from 'lucide-react'
 import Sidebar from './sidebar/Sidebar'
 
 const maxScroll = 100

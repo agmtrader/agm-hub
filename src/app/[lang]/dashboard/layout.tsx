@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "../../globals.css";
-import FirebaseAuthProvider from "../../FirebaseAuthProvider";
-import Footer from "@/components/Footer";
+import FirebaseAuthProvider from "../../../utils/providers/FirebaseAuthProvider";
 
 export const metadata: Metadata = {
   title: "AGM Technology",

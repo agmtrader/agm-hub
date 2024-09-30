@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "../../globals.css";
-
-import { NextAuthProvider } from "../../../utils/NextAuthProvider";
-import FirebaseAuthProvider from "../../FirebaseAuthProvider";
+import FirebaseAuthProvider from "../../../utils/providers/FirebaseAuthProvider";
 
 export const metadata: Metadata = {
   title: "AGM Technology",
@@ -17,13 +15,11 @@ export default function Layout({
 
   return (
     <div className="h-full w-full  flex flex-row">
-      <NextAuthProvider>
-        <FirebaseAuthProvider>
+      <FirebaseAuthProvider>
         <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
           {children}
         </div>
-        </FirebaseAuthProvider>
-      </NextAuthProvider>
+      </FirebaseAuthProvider>
     </div>
   );
 }

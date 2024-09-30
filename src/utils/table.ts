@@ -1,5 +1,4 @@
-import { DocumentData } from "firebase/firestore/lite";
-import { Map, Ticket } from "@/lib/types";
+import { Map } from "@/lib/types";
 
 export function sortColumns(data: any[], columns:string[]) {
 

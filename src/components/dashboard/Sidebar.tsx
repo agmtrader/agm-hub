@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
 import { formatURL } from '@/utils/lang'
 import { AlarmClockPlusIcon, ArrowLeft, Bell, BellIcon, FileText, Plus, RefreshCcw, Table, Ticket, Users } from 'lucide-react'
-import { useTranslationProvider } from '@/utils/TranslationProvider'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 import { cn } from '@/lib/utils'
 

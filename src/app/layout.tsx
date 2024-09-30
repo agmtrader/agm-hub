@@ -19,7 +19,6 @@ export default function RootLayout({
     let paths1 = paths.join('/')
     redirect(paths1)
   }
-  
 
   return (
 

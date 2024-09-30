@@ -1,6 +1,6 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getTranslations } from "../app/[lang]/dictionaries";
+import React, { createContext, useContext } from 'react';
+import { getTranslations } from "../../app/[lang]/dictionaries";
 
 // Laserfocus provider
 export type TranslatorType = {

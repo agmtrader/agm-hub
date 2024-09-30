@@ -1,4 +1,3 @@
-
 export function formatURL(path:string, lang:string) {
     if (path.includes('https://')) {
       return path
