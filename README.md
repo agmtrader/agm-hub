@@ -1,4 +1,4 @@
-# AGM Technology\
+# AGM Technology
 
 ## Home website for AGM Technology
 
