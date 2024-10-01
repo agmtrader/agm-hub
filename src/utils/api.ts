@@ -2,28 +2,52 @@ import { Map } from "../lib/types"
 
 export async function accessAPI(url:string, type:string, params?:Map) {
 
-    async function getData() {
-        const data = await fetch("http://10.4.178.122:5001" + url, {
-        headers:{'Cache-Control': 'no-cache'}
+    async function getToken() {
+        const data = await fetch(`${api_url}/login`, {
+        method: 'POST',
+        headers:{
+            'Cache-Control': 'no-cache',
+        },
+        body: JSON.stringify({username: "admin", password: "password"}),
+        }).then(response => response.json()).then(async (data) => await data)
+        try {
+            return data['access_token']
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+    }
+
+    async function getData(token:string) {
+        const data = await fetch(`${api_url}${url}`, {
+        headers:{
+            'Cache-Control': 'no-cache',
+            'Authorization': 'Bearer ' + token
+        },
         }).then(response => response.json()).then(async (data) => await data)
         return data
     }
 
-    async function postData() {
-        const data = await fetch("http://10.4.178.122:5001" + url, {
+    async function postData(token:string) {
+        const data = await fetch(`${api_url}${url}`, {
         method: 'POST',
-        headers:{'Cache-Control': 'no-cache'},
+        headers:{
+            'Cache-Control': 'no-cache',
+            'Authorization': 'Bearer ' + token
+        },
         body: JSON.stringify(params),
         }).then(response => response.json()).then(async (data) => await data)
         return data
     }
 
     let data = null
+    const api_url = "http://10.4.178.143:5002"
+    const token = await getToken()
 
     if (type === 'GET') {
-        data = await getData()
+        data = await getData(token)
     } else {
-        data = await postData()
+        data = await postData(token)
     }
 
     return data

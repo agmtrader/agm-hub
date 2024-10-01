@@ -60,6 +60,7 @@ export default function TradeTickets() {
         setFlexQueryError(true)
       }
       else {
+        console.log(response['content'][ticketId as string])
         setTicket(response['content'][ticketId as string])
         setDialogOpen(true)
       }
@@ -85,7 +86,7 @@ export default function TradeTickets() {
     async function sendToClient() {
       if (!clientMessage) return;
       setSending(true)
-      const clientEmails = "lchavarria@acobo.com,arodriguez@acobo.com, rcontreras@acobo.com"
+      const clientEmails = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
       //const clientEmails = "aa@agmtechnology.com"
       const response = await accessAPI('/email/send_client_email', 'POST', {'data': clientMessage, 'client_email': clientEmails, 'subject': 'Confirmación de Transacción'})
       setSending(false)
@@ -251,7 +252,7 @@ const DataTableSelect = <TData,>({data, setSelection, width, dark}: DataTableSel
             }
       )
 
-      const keysToInclude = ['Symbol', 'Description', 'Quantity', 'Price', 'Value'];
+      const keysToInclude = ['Symbol', 'Description', 'Quantity', 'Price', 'Value', 'Quantity', 'Date/Time', 'AccountAlias', 'UnderlyingSymbol', 'StrikePrice', 'ExpirationDate'];
       Object.keys(data[0]).forEach((column) => {
         if (keysToInclude.includes(column)) {
           columns.push({
@@ -280,7 +281,7 @@ const DataTableSelect = <TData,>({data, setSelection, width, dark}: DataTableSel
       },
       initialState: {
         pagination: {
-          pageSize: 30
+          pageSize: 150
         }
       }
   })
