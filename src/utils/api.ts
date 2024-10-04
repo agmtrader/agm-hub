@@ -41,7 +41,7 @@ export async function accessAPI(url:string, type:string, params?:Map) {
     }
 
     let data = null
-    const api_url = "http://10.4.178.143:5002"
+    const api_url = "https://agm-api-m11y.onrender.com"
     const token = await getToken()
 
     if (type === 'GET') {
