@@ -4,7 +4,7 @@
 
 ### Description 
 
-This website is designed to showcase the AGM Technology brand and services while also providing a platform for the company to share news, updates, and insights with its clients and partners.
+This website is designed to showcase the AGM Technology brand and services while also providing a platform for the company to share news, updates, and insights with its clients and partners
 
 ### Roadmap
 
