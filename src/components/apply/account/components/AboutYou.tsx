@@ -71,9 +71,9 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket}:Props) => {
 
     (values as any).date_of_birth = dob_date;
 
-    const expiration_date = values.id_expiration_month + '/' + values.id_expiration_year;
+    const id_expiration_date = values.id_expiration_month + '/' + values.id_expiration_year;
 
-    (values as any).expiration_date = expiration_date;
+    (values as any).id_expiration_date = id_expiration_date;
 
     Object.keys(values).forEach(async (key) => {
       if (primary) {
