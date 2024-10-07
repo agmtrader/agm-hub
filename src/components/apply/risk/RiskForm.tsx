@@ -121,8 +121,9 @@ const weights = [
 const RiskForm = () => {
 
   // Client message and portfolio
-  const [message, setMessage] = useState<string | null>(null)
+  const [error, setError] = useState<boolean>(false)
   const [riskProfile, setRiskProfile] = useState<any | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
   // Form
   let formSchema:any;
@@ -135,8 +136,7 @@ const RiskForm = () => {
   })
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
-    setMessage('Loading...')
-
+    setSubmitting(true)
     const timestamp = new Date()
     const riskProfileID = formatTimestamp(timestamp)
 
@@ -155,15 +155,17 @@ const RiskForm = () => {
       'Score':sum,
       'RiskProfileID':riskProfileID,
     }
-
-    // Add risk profile to database
-    //await addDocument(risk_profile, 'db/clients/risk_profiles', riskProfileID)
+    let data = await accessAPI('/database/create', 'POST', {data: risk_profile, path:'db/clients/risk', id:riskProfileID})
+    console.log(data)
+    if (data.status === 'error') {
+      setError(true)
+      setSubmitting(false)
+      return
+    }
 
     // Remove account number and client name from values !?
     delete values.account_number
     delete values.client_name
-
-    setMessage('Risk profile successfully submitted.')
 
     // Calculate risk type
     let risk_profile_type = ''
@@ -187,11 +189,12 @@ const RiskForm = () => {
     
     // Get risk type from asset allocations
     setRiskProfile(risk_profile_types.filter((element) => element.name === risk_profile_type)[0])
+    setSubmitting(false)
 
   }
 
   return (
-      <div className="w-3/4 px-10 pb-10 h-fit flex">
+      <div className="w-full px-10 pb-10 h-fit flex">
 
         <Form {...form}>
 
@@ -497,11 +500,16 @@ const RiskForm = () => {
 
             {/*TODO AGREGAR FOTOS DE LOUIS */}
             
-            <Button type="submit">Submit</Button>
-            {message && <p className="text-green-600">{message}</p>}
-
+            <Button type="submit" disabled={submitting}>{submitting ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              'Submit'
+            )}</Button>
+            {error && <p className="text-red-600">Error submitting risk profile. Contact support or try again later.</p>}
           </form>
-
         </Form>
 
 
@@ -509,7 +517,7 @@ const RiskForm = () => {
           <Dialog open={riskProfile ? true:false}>
             <DialogContent className="max-w-fit w-full">
             <DialogClose className="w-fit h-fit" asChild>
-              <Button type="button" onClick={() => {setRiskProfile(null); setMessage(null)}} variant="secondary">
+              <Button type="button" onClick={() => {setRiskProfile(null); setError(false)}} variant="secondary">
                 X
               </Button>
             </DialogClose>
@@ -536,4 +544,6 @@ import {
   DialogContent
 } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { accessAPI } from "@/utils/api"
+import { ReloadIcon } from "@radix-ui/react-icons"
 

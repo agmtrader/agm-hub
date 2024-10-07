@@ -36,6 +36,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
+import { accessAPI } from "@/utils/api"
 
 const risk_profile_types = [
   {
@@ -168,7 +169,8 @@ const page = () => {
 
         //let data = await getDocumentsFromCollection('db/clients/risk_profiles/')
         //setAccountNumbers(data.map((element:any) => {element.AccountNumber; return {label: element.AccountNumber + ' ' + element.ClientName, value: element.AccountNumber}}))
-        
+        let data = await accessAPI('risk','POST', {})
+        console.log(data)
     }
 
     fetchData()
