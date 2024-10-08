@@ -3,6 +3,7 @@ import "./globals.css"
 import { Inter } from 'next/font/google'
 import { cn } from "@/lib/utils";
 import { redirect, usePathname } from "next/navigation";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en" className={cn(inter.className, "h-screen w-screen")}>
       <body className='h-full w-full'>
         {children}
+        <Toaster />
       </body>
     </html>
 

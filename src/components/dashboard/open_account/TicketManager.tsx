@@ -1,11 +1,12 @@
 "use client"
 import React, { useState, useEffect } from 'react'
 
-import { sortColumns } from '@/utils/table';
+import { addColumnsFromJSON, sortColumns } from '@/utils/table';
 
 import { DataTableSelect } from '@/components/dashboard/components/DataTable';
 import { Map, Ticket } from '@/lib/types';
 import { accessAPI } from '@/utils/api';
+import { Loader2 } from 'lucide-react';
 
 interface Props {
   setCurrentTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
@@ -40,12 +41,13 @@ const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) 
                 'TicketID': entry['TicketID'],
                 'Status': entry['Status'],
                 'ApplicationInfo': entry['ApplicationInfo'],
-                'Advisor': entry['Advisor']
+                'Advisor': entry['Advisor'],
               }
             )
           })
         }
 
+        tickets = await addColumnsFromJSON(tickets)
         tickets = sortColumns(tickets, columns)
         
         setTickets(tickets)
@@ -70,7 +72,13 @@ const TicketManager = ({setCurrentTicket, currentTicket, setCanContinue}:Props) 
     <div className='h-fit w-full flex flex-col justify-start gap-y-10 items-center'>
         <h1 className='text-7xl font-bold'>Open a new account.</h1>
         <p className='text-2xl text-subtitle'>Open Account Applications</p>
-        {tickets && <DataTableSelect data={tickets} setSelection={setCurrentTicket}/>}
+        {tickets ? 
+          <DataTableSelect data={tickets} setSelection={setCurrentTicket}/> 
+          : 
+          <div className='flex w-full h-full items-center justify-center'>
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+          </div>
+        }
     </div>
   )
 }

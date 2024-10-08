@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.2.0",
+    "@faker-js/faker": "^9.0.3",
     "@google-cloud/local-auth": "^2.1.0",
     "@googleapis/drive": "^8.8.0",
     "@hookform/resolvers": "^3.3.4",
@@ -42,7 +43,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
-    "@radix-ui/react-toast": "^1.2.1",
+    "@radix-ui/react-toast": "^1.2.2",
     "@tanstack/react-table": "^8.16.0",
     "axios": "^1.6.8",
     "bootstrap-icons": "^1.11.3",

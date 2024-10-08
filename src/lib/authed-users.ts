@@ -1,1 +1,0 @@
-export const authedUsers:Array<any> = ['aguilarcarboni@gmail.com']

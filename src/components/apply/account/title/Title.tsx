@@ -28,7 +28,7 @@ const Title = ({setStarted}:Props) => {
             <div className='flex w-full gap-x-5 justify-center items-center'>
               <Button onClick={(e) => {
                   e.preventDefault()
-                  signIn()
+                  signIn('', {callbackUrl: '/apply/account'})
                 }}
                 className="flex w-fit h-full justify-center items-center"
               >

@@ -36,7 +36,7 @@ const DocumentCenter = ({documents, setSelection, selection, accountNumber, dark
           </TabsList>
           {documents && Object.keys(documents).map((type) => (
             <TabsContent key={type} value={type} className='flex flex-col gap-y-10'>
-              {document && <DataTableSelect dark={dark} data={documents[type]} setSelection={setSelection} width={100}/>}
+              {document && <DataTableSelect data={documents[type]} setSelection={setSelection} width={100}/>}
             </TabsContent>
           ))}
 

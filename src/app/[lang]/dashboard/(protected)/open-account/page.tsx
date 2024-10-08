@@ -9,50 +9,51 @@ import FillApplicationForm from '@/components/dashboard/open_account/FillApplica
 import OpenAccount from '@/components/dashboard/open_account/OpenAccount';
 import { Ticket } from '@/lib/types';
 import { accessAPI } from '@/utils/api';
+import { useToast } from '@/hooks/use-toast';
 
 const page = () => {
 
-  // Variables to control step in the process
   const [step, setStep] = useState<number>(1)
   const [canContinue, setCanContinue] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
   
-  // Current ticket
   const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null)
-
-  // Current account
   const [account, setAccount] = useState<any>(null)
+
+  const { toast } = useToast()
 
   async function stepForward() {
     if (canContinue) {
-      setStep(step + 1)
-      setError(null)
       setCanContinue(false)
+      setStep(step + 1)
       if (step === 4 && currentTicket) {
         await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets/${currentTicket['TicketID']}`, 'key': 'Status', 'value': 'Closed'})
       }
     } else {
+      let errorMessage = '';
       switch (step) {
         case 1:
-          setError('You must select one ticket to continue');
+          errorMessage = 'You must select one ticket to continue';
           break;
         case 2:
-          setError('Must submit form information to continue.');
+          errorMessage = 'Must submit form information to continue.';
           break;
         case 3:
-          setError('Ticket has no documents');
+          errorMessage = 'Ticket has no documents';
           break;
-        default:
-          setError(null)
-          break;
-    }
+      }
+      if (errorMessage) {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     }
   }
 
   function stepBackwards() {
     if (step > 1) {
       setStep(step - 1)
-      setError(null)
     }
   }
   
@@ -71,7 +72,7 @@ const page = () => {
       {(step == 5 && currentTicket) && <p className='text-7xl font-bold'>Finished opening account.</p>}
 
       {step < 5 && 
-        <div className='h-fit w-fit'>
+        <div className='h-fit w-fit flex gap-x-5'>
           {step > 1 && <Button onClick={stepBackwards} >Previous step.</Button>}
           <Button onClick={(e) => stepForward()} variant={canContinue ? 'primary':'ghost'}>{step === 4 ? 'Finish.':'Next step.'}</Button>
         </div>

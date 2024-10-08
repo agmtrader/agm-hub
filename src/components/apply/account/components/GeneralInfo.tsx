@@ -2,6 +2,7 @@
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { useSearchParams } from 'next/navigation'
 
 import { cn } from "@/lib/utils"
 import { Ticket } from "@/lib/types"
@@ -39,24 +40,26 @@ import { countries, account_types, general_info_schema, getDefaults } from "@/li
 import { PersonLinesFill } from "react-bootstrap-icons"
 import { accessAPI } from "@/utils/api"
 import { useState } from "react"
+import CountriesFormField from "@/components/ui/CountriesFormField"
+import { Loader2 } from "lucide-react"
 
 interface Props {
-  stepForward:() => void,
+  stepForward: () => void,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
-  step: number
+  step: number,
+  ticket: Ticket | null
 }
 
-const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
-
-  //const searchParams = useSearchParams()
-
+const GeneralInfo = ({ stepForward, setTicket, step, ticket }: Props) => {
   const [generating, setGenerating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
 
-  let formSchema:any;
-  let initialFormValues:any;
+  let formSchema: any;
+  let initialFormValues: any;
 
   formSchema = general_info_schema
-  initialFormValues = getDefaults(formSchema)
+  initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema)
 
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -64,21 +67,36 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
     setGenerating(true)
-    const timestamp = new Date()
-    //const advisor = searchParams.get('ad')
-    const advisor = ''
-    const ticketID = formatTimestamp(timestamp)
+    setError(null)
+    try {
+      const timestamp = new Date()
+      const advisor = searchParams.get('ad') || ''
+      const ticketID = ticket?.TicketID || formatTimestamp(timestamp)
 
-    const ticket:Ticket = {'TicketID':ticketID, 'Status':'Started', 'ApplicationInfo':values, 'Advisor':advisor}
-    setTicket(ticket)
+      const updatedTicket: Ticket = {
+        'TicketID': ticketID,
+        'Status': 'Started',
+        'ApplicationInfo': values,
+        'Advisor': advisor,
+      }
+      setTicket(updatedTicket)
 
-    const response = await accessAPI('/database/create', 'POST', {'data':ticket, 'path':'db/clients/tickets', 'id':ticketID})
-    setGenerating(false)
-    stepForward()
-      
+      const response = await accessAPI('/database/create', 'POST', { 'data': updatedTicket, 'path': 'db/clients/tickets', 'id': ticketID })
+
+      if (response['status'] !== 'success') {
+        throw new Error('Failed to create ticket')
+      }
+
+      stepForward()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred')
+    } finally {
+      setGenerating(false)
+    }
   }
+
+  console.log(form.formState.errors)
 
   return (
       <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
@@ -91,95 +109,36 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
         </div>
         
         <Form {...form}>
-
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-64 flex flex-col gap-y-5 justify-center items-center">
-
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-y-5 justify-center items-center">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                    <Input placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem className="">
-                  <FormLabel>Country of Residence</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full text-sm justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? countries.find(
-                                (country) => country.value === field.value
-                              )?.label
-                            : "Select a country"}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandInput
-                            placeholder="Search countries..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No country found.</CommandEmpty>
-                          <CommandGroup>
-                            {countries.map((country) => (
-                              <CommandItem
-                                value={country.label}
-                                key={country.value}
-                                onSelect={() => {
-                                  form.setValue("country", country.value)
-                                }}
-                              >
-                                {country.label}
-                              </CommandItem>
-                            ))}
-
-                          </CommandGroup>
-                          </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <FormLabel>Email</FormLabel>
                   <FormMessage />
+                  <FormControl>
+                    <Input {...field} placeholder="Enter your email" />
+                  </FormControl>
                 </FormItem>
               )}
             />
+          
+            <CountriesFormField form={form} element={{ name: "country", title: "Country of Residence" }} />
 
             <FormField
               control={form.control}
               name="account_type"
               render={({ field }) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Account Type</FormLabel>
+                  <FormMessage />
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
-                          variant="outline"
+                          variant="form"
                           role="combobox"
-                          className={cn(
-                            "text-sm justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
                         >
                           {field.value
                             ? account_types.find(
@@ -189,12 +148,11 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="p-0">
+                    <PopoverContent>
                       <Command>
                         <CommandList>
                           <CommandInput
                             placeholder="Search account types..."
-                            className="h-9"
                           />
                           <CommandEmpty>No account type found.</CommandEmpty>
                           <CommandGroup>
@@ -209,21 +167,27 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
                                 {type.label}
                               </CommandItem>
                             ))}
-
                           </CommandGroup>
-                          </CommandList>
+                        </CommandList>
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button type="submit">
-              {generating ? 'Starting...' : 'Start my application'}
-            </Button>
+            {error && <p>{error}</p>}
 
+            <Button type="submit" disabled={generating}>
+              {generating ? (
+                <>
+                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  Starting...
+                </>
+              ) : (
+                'Start my application'
+              )}
+            </Button>
           </form>
         </Form>
 
@@ -232,4 +196,3 @@ const GeneralInfo = ({stepForward, setTicket, step}:Props) => {
 }
 
 export default GeneralInfo
-  

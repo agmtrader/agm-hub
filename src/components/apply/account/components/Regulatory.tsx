@@ -43,9 +43,10 @@ interface Props {
   stepForward:() => void,
   stepBackwards?:() => void,
   ticket: Ticket,
+  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
 }
 
-const Regulatory = ({stepBackwards, ticket, stepForward}:Props) => {
+const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
 
   const [generating, setGenerating] = useState(false)
 
@@ -61,20 +62,46 @@ const Regulatory = ({stepBackwards, ticket, stepForward}:Props) => {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
     setGenerating(true)
 
-    Object.keys(values).forEach(async (key) => {
-      const response = await accessAPI('/database/update', 'POST', {'path':`db/clients/tickets/${ticket.TicketID}`, 'key':`ApplicationInfo.${key}`, 'value':values[key as keyof object]})
-      console.log(response)
-    })
+    try {
+      const updatedApplicationInfo = { ...ticket.ApplicationInfo }
 
-    const response = await accessAPI('/database/update', 'POST', {'path':`db/clients/tickets/${ticket.TicketID}`, 'key':`Status`, 'value':'Open'})
-    console.log(response)
+      for (const [key, value] of Object.entries(values)) {
+        updatedApplicationInfo[key] = value
+        const response = await accessAPI('/database/update', 'POST', {
+          'path': `db/clients/tickets/${ticket.TicketID}`,
+          'key': `ApplicationInfo.${key}`,
+          'value': value
+        })
+        if (response.status !== 'success') {
+          throw new Error(`Failed to update ${key}`)
+        }
+      }
 
-    setGenerating(false)
-    stepForward()
+      const statusResponse = await accessAPI('/database/update', 'POST', {
+        'path': `db/clients/tickets/${ticket.TicketID}`,
+        'key': 'Status',
+        'value': 'Open'
+      })
+      if (statusResponse.status !== 'success') {
+        throw new Error('Failed to update ticket status')
+      }
 
+      const updatedTicket: Ticket = {
+        ...ticket,
+        ApplicationInfo: updatedApplicationInfo,
+        Status: 'Open'
+      }
+      setTicket(updatedTicket)
+
+      stepForward()
+    } catch (error) {
+      console.error('Error updating ticket:', error)
+      // Handle error (e.g., show error message to user)
+    } finally {
+      setGenerating(false)
+    }
   }
 
   return (
@@ -86,7 +113,7 @@ const Regulatory = ({stepBackwards, ticket, stepForward}:Props) => {
 
       <Form {...form}>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="gap-y-8 text-center py-10 flex flex-col justify-center items-center">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-y-5 justify-center items-center">
 
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
             <p className="text-xl font-bold">Basic info</p>
@@ -101,12 +128,8 @@ const Regulatory = ({stepBackwards, ticket, stepForward}:Props) => {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant="outline"
+                            variant="form"
                             role="combobox"
-                            className={cn(
-                              "w-full flex text-sm",
-                              !field.value && "text-muted-foreground"
-                            )}
                           >
                           {field.value
                             ? worths.find(
@@ -157,12 +180,8 @@ const Regulatory = ({stepBackwards, ticket, stepForward}:Props) => {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant="outline"
+                            variant="form"
                             role="combobox"
-                            className={cn(
-                              "w-full flex text-sm",
-                              !field.value && "text-muted-foreground"
-                            )}
                           >
                           {field.value
                             ? worths.find(
@@ -213,12 +232,8 @@ const Regulatory = ({stepBackwards, ticket, stepForward}:Props) => {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant="outline"
+                            variant="form"
                             role="combobox"
-                            className={cn(
-                              "w-full flex text-sm",
-                              !field.value && "text-muted-foreground"
-                            )}
                           >
                           {field.value
                             ? worths.find(
@@ -356,9 +371,9 @@ const Regulatory = ({stepBackwards, ticket, stepForward}:Props) => {
               name="amount_to_invest"
               render={({ field }) => (
                 <FormItem>
-                <FormLabel>Amount to Invest ()</FormLabel>
+                <FormLabel>Amount to Invest ($)</FormLabel>
                 <FormControl>
-                    <Input placeholder="" {...field} />
+                    <Input placeholder="Enter an amount" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -371,8 +386,15 @@ const Regulatory = ({stepBackwards, ticket, stepForward}:Props) => {
             <Button onClick={stepBackwards}>
               Previous step
             </Button>
-            <Button type="submit">
-              {generating ? 'Saving...' : 'Finish'}
+            <Button type="submit" disabled={generating}>
+              {generating ? (
+                <>
+                  <span className="mr-2">Saving...</span>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                </>
+              ) : (
+                'Finish'
+              )}
             </Button>
           </div>
 

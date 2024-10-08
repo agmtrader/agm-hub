@@ -1,16 +1,3 @@
-export enum DeviceTypes{
-    PC,
-    MOBILE
-}
-
-export enum osTypes {
-    WINDOWS,
-    LINUX,
-    MACOS,
-    ANDROID,
-    IOS
-}
-
 // Array of objects or object of any
 export interface Map {
     [key: string]: any
@@ -41,7 +28,6 @@ export interface Account {
 
 // Table
 export type Selection = Document | Ticket
-
 
 // Document Center
 export interface Documents {

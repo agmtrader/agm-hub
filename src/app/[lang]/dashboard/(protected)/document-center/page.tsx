@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 
 import { Document, Documents } from '@/lib/types';
 import DocumentCenter from '@/components/dashboard/document_center/DocumentCenter';
+import { accessAPI } from '@/utils/api';
+import { addColumnsFromJSON } from '@/utils/table';
 
 const page = () => {
   
@@ -16,13 +18,32 @@ const page = () => {
 
     async function queryData () {
 
-      //let data = await getDocumentsFromCollection(`/db/document_center/poa`)
+      let poaFetch = await accessAPI('/database/read', 'POST', {'path': 'db/document_center/poa'})
 
       let poaData:Document[] = []
+      if (poaFetch) {
+        poaFetch['content'].forEach((entry:Document) => {
+          poaData.push(entry)
+        })
+      }
+
+      let poaFiles = await accessAPI('/drive/get_files_in_folder', 'POST', {'parent_id': '1tuS0EOHoFm9TiJlv3uyXpbMrSgIKC2QL'})
+      console.log(poaFiles)
+
+      poaData = await addColumnsFromJSON(poaData)
 
       let poiData:Document[] = []
+      poiData = await addColumnsFromJSON(poiData)
 
       let sowData:Document[] = []
+      let sowFetch = await accessAPI('/database/read', 'POST', {'path': 'db/document_center/sow'})
+      if (sowFetch) {
+        sowFetch['content'].forEach((entry:Document) => {
+          sowData.push(entry)
+        })
+      }
+
+      sowData = await addColumnsFromJSON(sowData)
 
       setDocuments({'POA':poaData,'POI': poiData, 'SOW':sowData})
       

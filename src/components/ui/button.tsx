@@ -15,6 +15,7 @@ const buttonVariants = cva(
         outline: "border border-muted bg-background hover:bg-muted hover:text-foreground",
         ghost: "bg-background hover:bg-muted hover:text-foreground",
         link: "text-foreground underline-offset-4 hover:underline",
+        form: "w-full text-sm hover:text-foreground text-subtitle bg-muted justify-between",
       },
       size: {
         default: "h-10 px-4 py-2",
