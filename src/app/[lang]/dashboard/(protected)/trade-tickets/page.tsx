@@ -56,8 +56,8 @@ export default function TradeTickets() {
 
     async function sendToClient() {
       if (!clientMessage) return;
-      //const clientEmails = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
-      const clientEmails = "aa@agmtechnology.com"
+      const clientEmails = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
+      //const clientEmails = "aa@agmtechnology.com"
       const response = await accessAPI('/email/send_client_email', 'POST', {'data': clientMessage, 'client_email': clientEmails, 'subject': 'Confirmación de Transacción'})
       if (response['status'] === 'error') {
         throw new Error(response['content'])
