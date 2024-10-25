@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
 import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Map, Ticket } from '@/lib/types';
@@ -7,19 +8,19 @@ import { about_you_primary_schema, about_you_secondary_schema, getDefaults, regu
 import { accessAPI } from '@/utils/api';
 
 interface Props {
-  currentTicket: Ticket,
+  ticket: Ticket,
   setCanContinue: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
+const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
   
   // Initialize data variables
   const [primaryHolderInfo, setPrimaryHolderInfo] = useState<Map | null>(null)
   const [secondaryHolderInfo, setSecondaryHolderInfo] = useState<Map | null>(null)
   const [regulatoryInfo, setRegulatoryInfo] = useState<Map | null>(null)
 
-  // Current Ticket ID
-  const ticketID = currentTicket['TicketID']
+  console.log(ticket)
+  console.log(primaryHolderInfo, secondaryHolderInfo, regulatoryInfo)
 
   const primaryDefaultValues = getDefaults(about_you_primary_schema)
   const secondaryDefaultValues = getDefaults(about_you_secondary_schema)
@@ -30,29 +31,18 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
     
     async function queryData () {
 
-      // Fetch ticket
-      let response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets', 'key': 'TicketID', 'value': ticketID})
-      let data = response['content']
-      let ticket:Ticket | null = null
-
-      if (data && data.length === 1) {
-        ticket = data[0]
-      } else {
-        throw new Error('Ticket not found')
-      }
-
       let primaryHolderInfo:Map = {}
       if (ticket) {
         Object.keys(primaryDefaultValues).forEach((key:any) => {
-          primaryHolderInfo[key] = ticket['ApplicationInfo'][key as keyof Ticket]
+          primaryHolderInfo[key] = ticket[key as keyof Ticket]
         })
       }
       setPrimaryHolderInfo(primaryHolderInfo)
 
       let secondaryHolderInfo:Map = {}
-      if (ticket) {
+      if (ticket && ticket['account_type' as keyof Ticket] === 'Joint') {
         Object.keys(secondaryDefaultValues).forEach((key:any) => {
-          secondaryHolderInfo[key] = ticket['ApplicationInfo']['secondary_' + key as keyof Ticket]
+          secondaryHolderInfo[key] = ticket['secondary_' + key as keyof Ticket]
         })
       }
       setSecondaryHolderInfo(secondaryHolderInfo)
@@ -60,7 +50,7 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
       let regulatoryInfo:Map = {}
       if (ticket) {
         Object.keys(regulatoryDefaultValues).forEach((key:any) => {
-          regulatoryInfo[key] = ticket['ApplicationInfo'][key as keyof Ticket]
+          regulatoryInfo[key] = ticket[key as keyof Ticket]
         })
       }
       setRegulatoryInfo(regulatoryInfo)
@@ -72,28 +62,56 @@ const FillApplicationForm = ({currentTicket, setCanContinue}:Props) => {
     queryData()
   }, [])
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.3 
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        type: 'spring',
+        stiffness: 100
+      }
+    }
+  }
+
   return (
-    <div className='h-full w-[50%] flex flex-col justify-start gap-y-10 items-center'>
-        <h1 className='text-7xl font-bold'>Open account.</h1>
-        {primaryHolderInfo && 
-          <div className=''>
-            <p className='text-lg font-semibold'>Primary Holder Information</p>
-            <DataTable data={[primaryHolderInfo]} width={90}/>
-          </div>
-        }
-        {secondaryHolderInfo && 
-          <div className=''>
-            <p className='text-lg font-semibold'>Secondary Holder Information</p>
-            <DataTable data={[secondaryHolderInfo]} width={90}/>
-          </div>
-        }
-        {regulatoryInfo &&
-          <div className=''>
-            <p className='text-lg font-semibold'>Regulatory Information</p>
-            <DataTable data={[regulatoryInfo]} width={90}/>
-          </div>
-        }
-    </div>
+    <motion.div 
+      className='w-full max-w-7xl h-fit gap-5 flex flex-col justify-center items-center'
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.h1 
+        className='text-7xl text-foreground font-bold'
+        variants={itemVariants}
+      >
+        Open account.
+      </motion.h1>
+      
+      {primaryHolderInfo && Object.keys(primaryHolderInfo).length > 0 && 
+        <motion.div className='w-full' variants={itemVariants}>
+          <p className='text-lg font-semibold'>Primary Holder Information</p>
+          <DataTable data={[primaryHolderInfo]} width={100}/>
+        </motion.div>
+      }
+      
+      {regulatoryInfo && Object.keys(regulatoryInfo).length > 0 &&
+        <motion.div className='w-full' variants={itemVariants}>
+          <p className='text-lg font-semibold'>Regulatory Information</p>
+          <DataTable data={[regulatoryInfo]} width={100}/>
+        </motion.div>
+      }
+    </motion.div>
   )
 }
 

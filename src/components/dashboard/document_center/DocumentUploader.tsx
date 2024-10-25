@@ -1,266 +1,190 @@
 "use client"
-import React, { useEffect, useState } from 'react'
-
+import React, { useState } from 'react'
 import { Upload } from "lucide-react"
 import { Button } from '@/components/ui/button'
-import { google } from 'googleapis'
-
 import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from '@/components/ui/input'
-
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-
-import { getDefaults, new_poa_schema, new_poi_schema, new_sow_schema, poa_schema, poi_schema, sow_schema } from "@/lib/form"
-import { formatTimestamp } from '@/utils/dates'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { poa_schema, poi_schema, sow_schema } from "@/lib/form"
+import { useToast } from '@/hooks/use-toast'
+import POAForm from './forms/POAForm'
+import POIForm from './forms/POIForm'
+import SOWForm from './forms/SOWForm'
+import { accessAPI } from '@/utils/api'
 import { Document } from '@/lib/types'
 import { useSession } from 'next-auth/react'
+import { formatTimestamp } from '@/utils/dates'
+import { FolderDictionary } from './DocumentCenter'
+import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from '@/components/ui/file-upload'
 
-const DocumentUploader = ({type, document, accountNumber}:{type:string, document?:Document, accountNumber?:string}) => {
-  
-    let formSchema:any;
-    let initialFormValues:any;
+interface DocumentUploaderProps {
+  folderDictionary: FolderDictionary[]
+  accountNumber?: string
+}
 
-    const [file, setFile] = useState<File | null>(null)
-    let driveId = ''
+const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, accountNumber }) => {
 
-    // Set initial form values
-    switch (type) {
+    const { data: session } = useSession()
+    const [selectedType, setSelectedType] = useState<string>(folderDictionary[0].id)
+    const { toast } = useToast()
 
-      case 'POA':
-        if (document) {
+    const [files, setFiles] = useState<File[] | null>(null)
 
-          // If reuploading
-          formSchema = poa_schema
-          initialFormValues = getDefaults(formSchema)
+    const typeFields = folderDictionary.map(folder => ({
+        ...folder,
+        schema: folder.id === 'poa' ? poa_schema :
+                folder.id === 'identity' ? poi_schema :
+                folder.id === 'sow' ? sow_schema :
+                null
+    }))
 
-        } else {
-
-          // New document
-          formSchema = new_poa_schema
-          initialFormValues = getDefaults(formSchema)
-
-          if (!accountNumber) {
-            initialFormValues['account_number'] = ''
-          } else {
-            initialFormValues['account_number'] = accountNumber
-          }
-
+    const renderForm = () => {
+        switch(selectedType) {
+            case 'poa':
+                return <POAForm onSubmit={(values) => handleSubmit(values, files)} driveId={typeFields[0].id} />
+            case 'identity':
+                return <POIForm onSubmit={(values) => handleSubmit(values, files)} driveId={typeFields[1].id} />
+            case 'sow':
+                return <SOWForm onSubmit={(values) => handleSubmit(values, files)} driveId={typeFields[2].id} />
+            default:
+                return null
         }
-        driveId = '1tuS0EOHoFm9TiJlv3uyXpbMrSgIKC2QL'
-        break;
-
-      case 'POI':
-
-        if (document) {
-
-          // If reuploading
-          formSchema = poi_schema
-          initialFormValues = getDefaults(formSchema)
-
-        } else {
-
-          // New document
-          formSchema = new_poi_schema
-          initialFormValues = getDefaults(formSchema)
-
-          if (!accountNumber) {
-            initialFormValues['account_number'] = ''
-          } else {
-            initialFormValues['account_number'] = accountNumber
-          }
-          
-        }
-        driveId = '1VY0hfcj3EKcDMD6O_d2_gmiKL6rSt_M3'
-        break;
-
-      case 'SOW':
-        if (document) {
-
-          // If reuploading
-          formSchema = sow_schema
-          initialFormValues = getDefaults(formSchema)
-
-        } else {
-
-          // New document
-          formSchema = new_sow_schema
-          initialFormValues = getDefaults(formSchema)
-
-          if (!accountNumber) {
-            initialFormValues['account_number'] = ''
-          } else {
-            initialFormValues['account_number'] = accountNumber
-          }
-          
-        }
-        driveId = '1WNJkWYWPX6LqWGOTsdq6r1ihAkPJPMHb'
-        break;
-    
-    }
-    
-    const {data:session} = useSession()
-    const [message, setMessage] = useState<string>('')
-
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        values: initialFormValues,
-    })
-    
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-
-      setMessage('Loading...')
-
-      const fileInfo = await uploadFile()
-
-      let timestamp = new Date()
-      let documentTimestamp = formatTimestamp(timestamp)
-
-      let documentInfo:any
-
-      // https://drive.google.com/uc?export=download&id={id}
-      // https://drive.google.com/file/d/{id}/preview
-
-
-      if (fileInfo) {
-
-        if (!session) {return};
-        if (!session.user.email) {return};
-
-        documentInfo = {
-          'DocumentID':documentTimestamp, 
-          'FileID':fileInfo['id'], 
-          'Type':type, 
-          'FileName':fileInfo['name'], 
-          'FileInfo':values, 
-          'AGMUser':session?.user.email,
-          'AccountNumber':values.account_number
-        }
-
-        if (accountNumber) {
-          documentInfo['AccountNumber'] = accountNumber
-        }
-
-
-      //await addDocument(documentInfo, `db/document_center/${documentInfo['Type'].toLowerCase()}`, documentTimestamp)
-      setMessage('File uploaded successfully')
-      }
-
     }
 
-    const uploadFile = async () => {
+    const handleSubmit = async (values: any, files: File[] | null) => {
+        try {
+            if (!files || files.length === 0) {
+                throw new Error("Please select a file to upload");
+            }
 
-      if (!file) return;
+            const file = files[0]; // We're only using the first file
 
-      const formData = new FormData();
+            const timestamp = formatTimestamp(new Date())
 
-      formData.append('file', file)
-      formData.append('driveId', driveId)
+            // Read the file as a data URL
+            const base64File = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
 
-      if (!driveId) return;
+            let filePayload = {
+                file: base64File, // This now includes the full data URL
+                fileName: file.name,
+                mimeType: file.type,
+                parentFolderId: typeFields.find((field) => field.id === selectedType)?.drive_id || ''
+            }
 
-      const response = await fetch("/api/drive", {
-        method: "POST",
-        body: formData,
-      });
-      console.log(response)
+            console.log(filePayload)
 
-      const fileInfo = await response.json();
+            let fileInfo = await accessAPI('/drive/upload_file', 'POST', filePayload);
 
-      return fileInfo
+            if (fileInfo['status'] !== 'success') {
+                throw new Error(fileInfo['content']);
+            }
+
+            console.log(fileInfo)
+            
+            let documentPayload:Document = {
+                Category: selectedType,
+                DocumentID: timestamp,
+                FileInfo: fileInfo['content'],
+                DocumentInfo: values,
+                Uploader: session?.user?.email || 'Error finding uploader.'
+            }
+
+            let response = await accessAPI('/database/create', 'POST', {
+                data: documentPayload,
+                path: `db/document_center/${selectedType}`,
+                id: timestamp
+            })
+            console.log(response)
+
+            toast({
+                title: "Success",
+                description: "Document uploaded successfully",
+                variant: "default",
+            });
+
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+                variant: "destructive",
+            });
+        }
     }
 
-  return (
-    <div>
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button className='w-fit h-fit flex gap-x-5' >
-                    {document ? <p>Reupload {type}</p>:<p>Upload new {type}</p>}
-                    <Upload className="h-5 w-5"/>
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="h-[75%] gap-y-5 max-w-[80%] w-full flex-wrap flex">
-                <DialogHeader>
-                <DialogTitle>Upload {type}</DialogTitle>
-                <DialogDescription>
-                    Upload {type} to the document center
-                </DialogDescription>
-                </DialogHeader>
-                  <Form {...form}>
-    
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="h-[80%] w-full flex flex-col flex-wrap justify-center gap-y-5 gap-x-5 items-center">
-
-                      {Object.keys(initialFormValues).map((key:any) => (
-                        <FormField
-                        key={key}
-                        control={form.control}
-                        name={key}
-                        render={({ field }) => (
-                            <FormItem className='w-[20%]'>
-                            <FormLabel>{key}</FormLabel>
-                            <FormControl>
-                                <Input placeholder="" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                      ))}
-
-                      <FormField
-                        control={form.control}
-                        name='file'
-                        render={({ field }) => (
-                            <FormItem className='w-[20%]'>
-                            <FormLabel>File</FormLabel>
-                            <FormControl>
-                            <Input
-                              placeholder="Picture"
-                              type="file"
-                              accept="image/*, application/pdf, text/csv"
-                              onChange={(e) => setFile(e.target.files![0])}
-                            />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                      />
-
-                      <Button className="bg-agm-orange" type="submit">
-                        Submit
-                      </Button>
-
-                      <p>{message}</p>
-
-                    </form>
-
-                  </Form>
-            </DialogContent>
-        </Dialog>
-    </div>
-  )
-    
+    return (
+        <div>
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button className='w-fit h-fit flex gap-x-5'>
+                        <Upload className="h-5 w-5"/>
+                        Upload
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle>Upload</DialogTitle>
+                        <DialogDescription>
+                            Upload to the document center
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Select 
+                        onValueChange={(value) => setSelectedType(value)}
+                        defaultValue={selectedType}
+                    >
+                        <SelectTrigger className="w-[200px]">
+                            <SelectValue placeholder="Select document type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {typeFields.map(field => (
+                                <SelectItem key={field.id} value={field.id}>{field.label}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <FileUploader
+                        value={files}
+                        onValueChange={setFiles}
+                        dropzoneOptions={{
+                            maxFiles: 1,
+                            maxSize: 10 * 1024 * 1024, // 10MB
+                            accept: {
+                                'application/pdf': ['.pdf'],
+                                'image/*': ['.png', '.jpg', '.jpeg']
+                            }
+                        }}
+                    >
+                        <FileInput>
+                            <div className="flex flex-col items-center justify-center p-4 text-center">
+                                <Upload className="h-10 w-10 text-muted-foreground mb-2" />
+                                <p className="text-sm text-muted-foreground">
+                                    Drag & drop or click to upload
+                                </p>
+                            </div>
+                        </FileInput>
+                        <FileUploaderContent>
+                            {files?.map((f, i) => (
+                                <FileUploaderItem key={i} index={i}>
+                                    {f.name}
+                                </FileUploaderItem>
+                            ))}
+                        </FileUploaderContent>
+                    </FileUploader>
+                    {renderForm()}
+                    
+                </DialogContent>
+            </Dialog>
+        </div>
+    )
 }
 
 export default DocumentUploader
-
-//https://drive.google.com/file/d/{id}/preview

@@ -1,53 +1,192 @@
-"use client"
-import React, { useState } from 'react'
+'use client'
 
-import { DataTableSelect } from '@/components/dashboard/components/DataTable';
+import { useEffect, useState } from 'react'
+import { Button } from "@/components/ui/button"
+import { Loader2 } from 'lucide-react'
+import { ColumnDefinition, DataTable } from '../components/DataTable'
+import { accessAPI } from '@/utils/api'
+import DocumentUploader from './DocumentUploader'
+import { toast } from "@/hooks/use-toast"
+import { Drive, Document as CustomDocument, Map } from '@/lib/types'
+import LoadingComponent from '@/components/misc/LoadingComponent'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import DocumentViewer from '@/components/dashboard/document_center/DocumentViewer'
-import DocumentUploader from '@/components/dashboard/document_center/DocumentUploader'
-import { Document, Documents } from '@/lib/types';
-
-interface Props {
-  documents: Documents | null,
-  setSelection: React.Dispatch<React.SetStateAction<Document | null>>,
-  selection: Document | null,
-  accountNumber?: string,
-  dark?: boolean
+export type FolderDictionary = {
+  drive_id: string
+  id: string
+  name: string
+  label: string
 }
 
-const DocumentCenter = ({documents, setSelection, selection, accountNumber, dark}:Props) => {
+// Static folder dictionary
+export const folderDictionary = [
+  { drive_id: '1tuS0EOHoFm9TiJlv3uyXpbMrSgIKC2QL', id: 'poa', name: 'POA', label: 'Proof of Address' },
+  { drive_id: '1VY0hfcj3EKcDMD6O_d2_gmiKL6rSt_M3', id: 'identity', name: 'Identity', label: 'Proof of Identity' },
+  { drive_id: '1WNJkWYWPX6LqWGOTsdq6r1ihAkPJPMHb', id: 'sow', name: 'SOW', label: 'Source of Wealth' },
+]
 
-  const [type, setType] = useState<string>('POA')
+interface DocumentCenterProps {
+  folderDictionary?: typeof folderDictionary;
+  query?: Map;
+}
 
-  return (
-    <div className='h-full w-full flex flex-col justify-start gap-y-10 items-center'>
+export default function DocumentCenter({ folderDictionary: propsFolderDictionary, query }: DocumentCenterProps) {
 
-      <Tabs defaultValue="POA" onValueChange={setType} className="w-[80%]">
-        <TabsList className={`grid w-full grid-cols-3`}>
-            {documents && Object.keys(documents).map((type) => (
-              <TabsTrigger key={type} value={type}>{type}</TabsTrigger>
-            ))}
-          </TabsList>
-          {documents && Object.keys(documents).map((type) => (
-            <TabsContent key={type} value={type} className='flex flex-col gap-y-10'>
-              {document && <DataTableSelect data={documents[type]} setSelection={setSelection} width={100}/>}
-            </TabsContent>
-          ))}
+  const [view, setView] = useState<'list' | 'columns'>('list')
+  const [files, setFiles] = useState<Drive>({})
+  const [loading, setLoading] = useState<boolean>(true)
+  const [currentFolderID, setCurrentFolderID] = useState<string | null>(null)
 
-      </Tabs>
+  // Use the prop folderDictionary if provided, otherwise use the default
+  const activeFolderDictionary = propsFolderDictionary || folderDictionary
 
-      {selection && <DocumentViewer document={selection}/>}
+  const columns = [
+    { accessorKey: 'FileInfo.name', header: 'Name' },
+    { accessorKey: 'DocumentID', header: 'Document ID' },
+    { accessorKey: 'FileInfo', header: 'File Info' },
+    { accessorKey: 'DocumentInfo', header: 'Document Info' },
+    { accessorKey: 'Uploader', header: 'Uploaded By' },
+  ] as ColumnDefinition<CustomDocument>[]
 
-      <DocumentUploader accountNumber={accountNumber} type={type}/>
+  if (query && Object.keys(query).includes('DocumentInfo.account_number')) {
+    console.log(query['DocumentInfo.account_number'])
+  }
 
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true)
+      let files:Drive = {}
+
+      // Use the activeFolderDictionary instead of the hardcoded folderDictionary
+      for (let folder of activeFolderDictionary) {
+        const response = await accessAPI('/database/read', 'POST', {
+          'path': `db/document_center/${folder.id}`,
+          'query': query
+        })
+        if (response['content'] && response['content'].length > 0) {
+          files[folder.id] = response['content']
+        }
+      }
+
+      if (Object.keys(files).length === 0) {
+        toast({
+          title: "No files found.",
+          description: "Please upload some files.",
+          variant: "destructive",
+        })
+        setLoading(false)
+      }
+
+      setFiles(files)
+      setCurrentFolderID(Object.keys(files)[0] || null)
+      setLoading(false)
+    }
+    fetchData()
+  }, [activeFolderDictionary])
+
+  const handleDownload = (row: any) => {
+    console.log(row)
+    toast({
+      title: "Downloading",
+      description: `Downloading ${row.FileInfo.name}...`,
+    })
+  }
+
+  const handleDelete = (row: any) => {
+    // Implement delete logic here
+    toast({
+      title: "Deleting",
+      description: `Deleting ${row.name}...`,
+    })
+  }
+
+  const rowActions = [
+    {
+      label: "Download",
+      onClick: handleDownload,
+    },
+    {
+      label: "Delete",
+      onClick: handleDelete,
+    },
+  ]
+
+  const getFolderLabel = (folderId: string) => {
+    const folder = activeFolderDictionary.find(f => f.id === folderId)
+    return folder ? folder.label : folderId
+  }
+
+  if (loading) return (
+    <div className='w-full h-full flex justify-center items-center'>
+      <Loader2 className='animate-spin text-foreground h-10 w-10 text-primary' />
     </div>
   )
-}
 
-export default DocumentCenter
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className='w-full h-fit gap-5 flex flex-col justify-center items-center'
+    >
+      <motion.div
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5, staggerChildren: 0.1 }}
+        className="flex gap-2"
+      >
+        {Object.keys(files).map((folderId, index) => (
+          <motion.div key={folderId} custom={index} variants={{
+            hidden: { x: -20, opacity: 0 },
+            visible: (i) => ({ x: 0, opacity: 1, transition: { delay: i * 0.1 } })
+          }} initial="hidden" animate="visible">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentFolderID(folderId)}
+              className={cn(currentFolderID === folderId && 'font-bold text-foreground', 'text-foreground')}
+            >
+              {getFolderLabel(folderId)}
+            </Button>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="flex w-full flex-col justify-center items-center gap-5"
+      >
+        <AnimatePresence mode="wait">
+          {files && currentFolderID && files[currentFolderID] && files[currentFolderID].length > 0 && (
+            <motion.div
+              className="w-full"
+              key={currentFolderID}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <DataTable 
+                enableRowActions 
+                columns={columns}
+                data={files[currentFolderID]} 
+                rowActions={rowActions}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <DocumentUploader accountNumber={query && query['DocumentInfo.account_number']} folderDictionary={activeFolderDictionary} />
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  )
+
+}

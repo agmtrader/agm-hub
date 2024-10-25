@@ -11,45 +11,42 @@ type Props = {
 
 const RiskProfile = ({riskProfile, account, dark}: Props) => {
 
-    function getAssetAllocation() {
-        let labels:any[] = []
-        let values:any[] = []
-        
-        if (riskProfile) {
-            labels = Object.keys(riskProfile).filter((element) => element !== 'name' && element !== 'average_yield')
-            labels.forEach((label) => {
-            values.push(riskProfile[label])
-            })
-        }
-        return {labels, values}
-    }
-    const {labels, values} = getAssetAllocation()
-    
+  function getAssetAllocation() {
+      let labels:string[] = []
+      let values:number[] = []
+      
+      if (riskProfile) {
+          labels = Object.keys(riskProfile).filter((element) => element !== 'name' && element !== 'average_yield')
+          labels.forEach((label) => {
+              // Convert decimal to percentage
+              riskProfile[label] = riskProfile[label] * 100
+              values.push(riskProfile[label])
+          })
+      }
+      return {labels, values}
+  }
+  const {labels, values} = getAssetAllocation()
 
   const asset_data = [
     {
-      "Risk Score": 1,
-      "Asset Class": "STOCKS (ETFs)",
-      "Risk Level": "Most Aggressive",
-      "Asset Type": "STOCKS"
-    },
-    {
-      "Risk Score": 2,
-      "Asset Class": "BONDS BB",
-      "Risk Level": "Moderate",
-      "Asset Type": "BONDS"
-    },
-    {
-      "Risk Score": 3,
-      "Asset Class": "BONDS BBB",
-      "Risk Level": "Moderately Conservative",
-      "Asset Type": "BONDS"
-    },
-    {
-      "Risk Score": 4,
-      "Asset Class": "BONDS AAA",
+      "Asset Class": "Bonds AAA - A",
+      "Allocation": `${riskProfile.bonds_aaa_a.toFixed(2)}%`,
       "Risk Level": "Most Conservative",
-      "Asset Type": "BONDS"
+    },
+    {
+      "Asset Class": "Bonds BBB",
+      "Allocation": `${riskProfile.bonds_bbb.toFixed(2)}%`,
+      "Risk Level": "Moderately Conservative",
+    },
+    {
+      "Asset Class": "Bonds BB",
+      "Allocation": `${riskProfile.bonds_bb.toFixed(2)}%`,
+      "Risk Level": "Moderate",
+    },
+    {
+      "Asset Class": "Stocks (ETFs)",
+      "Allocation": `${riskProfile.etfs.toFixed(2)}%`,
+      "Risk Level": "Most Aggressive",
     }
   ]
 
@@ -79,37 +76,49 @@ const RiskProfile = ({riskProfile, account, dark}: Props) => {
   const options = {
       plugins: {
         legend: {
-          labels: {
-              color: dark ? 'white' : 'black',
-              font: {
-                  size: 14
-              },
-              padding: 20,
-          },
-          position: "bottom" as const, 
-      }
-    },
-    elements: {
-      arc: {
-        weight: 0.5,
-        borderWidth: 1,
+          display: false
       },
-    },
+      tooltip: {
+          callbacks: {
+              label: function(context: any) {
+                  let label = context.label || '';
+                  if (label) {
+                      label += ': ';
+                  }
+                  if (context.parsed !== undefined) {
+                      label += context.parsed.toFixed(2) + '%';
+                  }
+                  return label;
+              }
+          }
+      },
+      elements: {
+        arc: {
+          weight: 0.5,
+          borderWidth: 1,
+        },
+      },
+    }
   }
 
   return (
     <div className="w-full h-fit flex gap-y-5 justify-center flex-col items-center">
         {account && <p className={cn("text-5xl font-bold text-agm-black", dark && 'text-agm-white')}>{account['ClientName']}</p>}
         {riskProfile.name && <h1 className="text-3xl text-agm-orange">{riskProfile.name}</h1>}
-        <div className="flex gap-x-5 w-full h-fit justify-center items-center text-center">
-        <div className="w-fit h-fit mx-10 flex flex-col gap-y-5 justify-center items-start gap-x-10">
+        <div className="flex flex-col lg:flex-row gap-5 w-full h-fit justify-center items-center text-center">
+          <div className="w-full lg:w-1/2 flex flex-col gap-y-5 justify-center items-center">
+            <h2 className={cn("text-2xl font-semibold", dark && 'text-agm-white')}>Asset Allocation</h2>
             <DataTable dark={dark} data={asset_data} width={100}/>
-            <DataTable dark={dark} data={[riskProfile]} width={100}/>
-        </div>
-        <div className="w-full lg:w-[35%] flex gap-y-10 justify-center items-center flex-col">
-            <Doughnut data={data} options={options} />
-            {riskProfile.average_yield && <p className={cn("text-lg text-agm-black font-semibold", dark && 'text-agm-white')}>Average yield: {Number(riskProfile.average_yield).toFixed(2)}%</p>}
-        </div>
+            <p className={cn("text-lg font-semibold", dark && 'text-agm-white')}>
+              Average yield: {(riskProfile.average_yield * 100).toFixed(2)}%
+            </p>
+          </div>
+          <div className="w-full lg:w-1/2 flex gap-y-5 justify-center items-center flex-col">
+            <h2 className={cn("text-2xl font-semibold", dark && 'text-agm-white')}>Portfolio Visualization</h2>
+            <div className="w-full max-w-md">
+              <Doughnut data={data} options={options} />
+            </div>
+          </div>
         </div>
     </div>
   )

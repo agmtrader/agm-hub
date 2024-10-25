@@ -17,9 +17,9 @@ const navbarContent = [
     icon: BellIcon,  
   },
   {
-    name: 'Table tool',
-    url: '/dashboard/tables',
-    icon: Table,
+    name: 'Document Center',
+    url: '/dashboard/document-center',
+    icon: FileText,
   }
 ]
 
@@ -38,7 +38,7 @@ const tools = [
     name: 'Generate reports',
     url: '/dashboard/reporting',
     icon: RefreshCcw,
-  },
+  }
 ]
 
 const Sidebar = () => {
@@ -64,7 +64,6 @@ const Sidebar = () => {
                   </Link>
                 </NavigationMenuItem>
               ))}
-              <div className="w-full h-px bg-gray-200 my-2"></div>
               {tools.map((item, index) => (
                 <NavigationMenuItem key={index} className="flex w-full h-fit">
                   <Link href={formatURL(item.url, lang)} legacyBehavior passHref>

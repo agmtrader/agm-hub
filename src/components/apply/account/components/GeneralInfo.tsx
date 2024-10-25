@@ -182,10 +182,10 @@ const GeneralInfo = ({ stepForward, setTicket, step, ticket }: Props) => {
               {generating ? (
                 <>
                   <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                  Starting...
+                  Submitting...
                 </>
               ) : (
-                'Start my application'
+                'Next step'
               )}
             </Button>
           </form>

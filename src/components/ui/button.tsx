@@ -13,7 +13,7 @@ const buttonVariants = cva(
         secondary: "bg-background text-primary hover:bg-muted hover:text-primary",
         athena: "bg-secondary text-background hover:bg-secondary-dark",
         outline: "border border-muted bg-background hover:bg-muted hover:text-foreground",
-        ghost: "bg-background hover:bg-muted hover:text-foreground",
+        ghost: "bg-background text-foreground hover:bg-muted hover:text-foreground",
         link: "text-foreground underline-offset-4 hover:underline",
         form: "w-full text-sm hover:text-foreground text-subtitle bg-muted justify-between",
       },

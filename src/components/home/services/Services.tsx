@@ -1,95 +1,123 @@
+'use client'
 import { Handshake } from 'lucide-react'
 import React from 'react'
+import { motion } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import Link from 'next/link'
 
-const services = [
-  {
-    name: 'AGM Trader',
-    icon: <GraphUpArrow className='text-white h-[12vw] w-[12vw]'/>,
-    description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
-    url: 'https://agmtrader.com'
-  },
-  {
-    name: 'AGM Advisor',
-    icon: <Handshake className='text-white h-[12vw] w-[12vw]'/>,
-    description:'We also provide Advisory services for those clients that would like to delegate a portion of their financial assets or wealth through our advisory division.',
-    url:'https://agm-advisor.vercel.app'
-  },
-  {
-    name: 'AGM Institutional',
-    icon: <Building className='text-white h-[12vw] w-[12vw]'/>,
-    description:'Our Institutional division provides world class execution services to the most sophisticated institutions like Advisory Firms, Hedge Funds, Broker/Dealers, Wealth Management firms, Insurance companies and more.',
-    url:'https://agm-institutional.vercel.app'
+interface Service {
+  name: string;
+  icon: React.ReactNode;
+  description: string;
+  url: string;
+}
+
+interface ServicesProps {
+  services: Service[];
+}
+
+const Services = ({ services }: ServicesProps) => {
+  
+  const [ref, inView] = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  })
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.2
+      }
+    }
   }
-]
 
-import { Card, CardContent } from "@/components/ui/card"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel"
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.5 }
+    }
+  }
 
-export function Services() {
+  const getGridColumns = (length: number) => {
+    if (length === 1) return 'grid-cols-1';
+    if (length === 2) return 'grid-cols-1 md:grid-cols-2';
+    if (length === 3) return 'grid-cols-1 md:grid-cols-3';
+    if (length === 4) return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
+    return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+  };
+
   return (
-    <div className='flex flex-col h-fit w-full'>
-      <div className='bg-secondary w-full h-full justify-center items-center flex flex-col gap-y-16 py-20'>
-      <p className='font-bold text-5xl text-background'>Our Services</p>
-        <Carousel className="w-full h-full max-w-[90%]">
-          <CarouselContent>
-            {services.map((service, index) => (
-              <CarouselItem key={index} className="basis-1/3">
-                <div className="flex flex-col w-full justify-center items-center gap-y-5">
-                <Card className='bg-primary-dark p-2 border-0 text-agm-white'>
-                    <CardContent className="flex aspect-square items-center justify-center p-6">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <div className='w-full h-full flex justify-center text-foreground items-center cursor-pointer'>
-                            {service.icon}
-                          </div>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px] bg-background">
-                          <DialogHeader>
-                            <DialogTitle className='text-foreground'>{service.name}</DialogTitle>
-                          </DialogHeader>
-                          <DialogDescription>
-                            {service.description}
-                          </DialogDescription>
-                          <DialogFooter>
-                          <Button asChild>
-                              <Link href={service.url}>
-                                Learn More
-                              </Link>
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </CardContent>
-                  </Card>
-                  <p className='text-background w-fit text-center text-lg font-semibold'>{service.name}</p>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
+    <motion.div 
+      ref={ref}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      variants={containerVariants}
+      className='flex flex-col h-fit w-full'
+    >
+      <div className='bg-secondary w-full h-full justify-center items-center flex flex-col gap-y-20 py-20'>
+        <div className='flex flex-col gap-y-5 items-center'> 
+        <motion.p 
+          variants={itemVariants}
+          className='font-bold text-5xl text-background'
+        >
+          Our Services
+        </motion.p>
+        <motion.p 
+          variants={itemVariants}
+          className='text-center text-lg text-background'
+        >
+          Explore our services and find the one that best suits your needs.
+        </motion.p>
+        </div>
+        <div className={`grid ${getGridColumns(services.length)} gap-8 w-full max-w-6xl px-4`}>
+          {services.map((service, index) => (
+            <motion.div 
+              key={index}
+              variants={itemVariants}
+              className="flex flex-col w-full justify-center items-center gap-y-5"
+            >
+              <Card className='bg-primary-dark p-2 border-0 text-agm-white transition-transform duration-300 hover:scale-110'>
+                <CardContent className="flex aspect-square items-center justify-center p-6">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div className='w-full h-full flex justify-center text-foreground items-center cursor-pointer'>
+                        {service.icon}
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px] bg-background flex flex-col gap-y-5 justify-center items-center">
+                      <DialogHeader>
+                        <DialogTitle className='text-foreground'>{service.name}</DialogTitle>
+                      </DialogHeader>
+                      <DialogDescription>
+                        {service.description}
+                      </DialogDescription>
+                      <DialogFooter>
+                        <Button asChild>
+                          <Link href={service.url}>
+                            Learn More
+                          </Link>
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </CardContent>
+              </Card>
+              <p className='text-background w-fit text-center text-lg font-semibold'>{service.name}</p>
+            </motion.div>
+          ))}
+        </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
 export default Services
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { BarChart, Building, GraphUpArrow } from 'react-bootstrap-icons'
-

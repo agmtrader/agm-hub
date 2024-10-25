@@ -1,5 +1,7 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+
+import { motion } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
 
@@ -7,38 +9,41 @@ import TicketManager from '@/components/dashboard/open_account/TicketManager';
 import BackupDocuments from '@/components/dashboard/open_account/BackupDocuments';
 import FillApplicationForm from '@/components/dashboard/open_account/FillApplicationForm';
 import OpenAccount from '@/components/dashboard/open_account/OpenAccount';
-import { Ticket } from '@/lib/types';
+import { Account, Ticket } from '@/lib/types';
 import { accessAPI } from '@/utils/api';
 import { useToast } from '@/hooks/use-toast';
+import Confetti from '@/components/ui/confetti';
+import { Check } from 'lucide-react';
+import Link from 'next/link';
 
 const page = () => {
 
   const [step, setStep] = useState<number>(1)
   const [canContinue, setCanContinue] = useState<boolean>(false)
   
-  const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null)
-  const [account, setAccount] = useState<any>(null)
+  const [ticket, setTicket] = useState<Ticket | null>(null)
+  const [account, setAccount] = useState<Account | null>(null)
 
   const { toast } = useToast()
 
   async function stepForward() {
-    if (canContinue) {
+    if (canContinue && ticket) {
       setCanContinue(false)
       setStep(step + 1)
-      if (step === 4 && currentTicket) {
-        await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets/${currentTicket['TicketID']}`, 'key': 'Status', 'value': 'Closed'})
+      if (step === 4) {
+        await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets`, 'query': {'TicketID': ticket['TicketID']}, 'data': {'Status': 'Opened'}})
       }
     } else {
       let errorMessage = '';
       switch (step) {
         case 1:
-          errorMessage = 'You must select one ticket to continue';
+          errorMessage = 'You must select one ticket to continue.';
           break;
         case 2:
           errorMessage = 'Must submit form information to continue.';
           break;
         case 3:
-          errorMessage = 'Ticket has no documents';
+          errorMessage = 'AGM User must verify documents before continuing.';
           break;
       }
       if (errorMessage) {
@@ -59,17 +64,17 @@ const page = () => {
   
   return (
     
-    <div className='w-full h-fit gap-y-10 py-5 text-foreground flex flex-col justify-center items-center'>
+    <div className='w-full h-fit gap-5 flex flex-col justify-center items-center'>
 
-      {step == 1 && <TicketManager setCurrentTicket={setCurrentTicket} currentTicket={currentTicket} setCanContinue={setCanContinue}/>}
+      {step == 1 && <TicketManager setTicket={setTicket} ticket={ticket} setCanContinue={setCanContinue}/>}
 
-      {(step == 2 && currentTicket) && <OpenAccount currentTicket={currentTicket} setCanContinue={setCanContinue} setAccount={setAccount} account={account}/>}
+      {(step == 2 && ticket) && <OpenAccount ticket={ticket} setCanContinue={setCanContinue} setAccount={setAccount} account={account}/>}
 
-      {(step == 3 && currentTicket) && <BackupDocuments currentTicket={currentTicket} setCanContinue={setCanContinue} canContinue={canContinue} account={account}/>}
+      {(step == 3 && ticket) && <BackupDocuments ticket={ticket} setCanContinue={setCanContinue} canContinue={canContinue} account={account}/>}
 
-      {(step == 4 && currentTicket) && <FillApplicationForm currentTicket={currentTicket} setCanContinue={setCanContinue}/>}
+      {(step == 4 && ticket) && <FillApplicationForm ticket={ticket} setCanContinue={setCanContinue}/>}
 
-      {(step == 5 && currentTicket) && <p className='text-7xl font-bold'>Finished opening account.</p>}
+      {(step == 5 && ticket) && <Final />}
 
       {step < 5 && 
         <div className='h-fit w-fit flex gap-x-5'>
@@ -82,3 +87,44 @@ const page = () => {
 }
 
 export default page
+
+const Final = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className='relative h-full w-full flex flex-col justify-center items-center gap-y-8 py-16'
+    >
+      <Confetti/>
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      >
+        <Check className='w-24 h-24 text-green-500' />
+      </motion.div>
+      <motion.p
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className='text-2xl font-semibold text-gray-700'
+      >
+        You have successfully opened a new account.
+      </motion.p>
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className='flex flex-col items-center gap-y-4'
+      >
+        <Button asChild>
+          <Link href='/dashboard/open-account'>Open another account</Link>
+        </Button>
+        <Button variant='ghost' asChild>
+          <Link href='/'>Go back home</Link>
+        </Button>
+      </motion.div>
+    </motion.div>
+  )
+}

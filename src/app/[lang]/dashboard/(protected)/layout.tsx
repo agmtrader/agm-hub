@@ -7,6 +7,7 @@ import { Lock } from 'lucide-react';
 import Account from '@/components/sidebar/Account';
 import { Dashboard } from '@/components/dashboard/Dashboard';
 import Sidebar from '@/components/dashboard/Sidebar';
+import LoadingComponent from '@/components/misc/LoadingComponent';
 
 export default function Layout({
   children,
@@ -14,14 +15,20 @@ export default function Layout({
   children: React.ReactNode,
 }) {
 
-  const {data:session} = useSession()
+  const { data: session, status } = useSession();
+
+  if (status === 'loading') {
+    return (
+      <LoadingComponent/>
+    );
+  }
 
   return (
     <div className='flex-col flex w-full justify-center items-center p-10 h-full'>
       <div className='flex w-full h-full'>
 
         {session?.user ?
-          <div className='flex w-full h-full  justify-center items-center'>
+          <div className='flex w-full h-full justify-center items-center'>
             {session.user.admin ? 
               <AnimatePresence>
                 <motion.div 

@@ -438,7 +438,6 @@ export const general_info_schema = z.object({
   }),
 
 })
-
 const base_about_you_schema = z.object({
   salutation: z.string().min(1, {
     message: "You must select a salutation.",
@@ -573,7 +572,6 @@ export const about_you_secondary_schema = base_about_you_schema.extend({
       message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
     }),
 })
-
 export const regulatory_schema = z.object({
   annual_net_income: z.string().min(1, {
     message: "You must select a annual net income.",
@@ -602,86 +600,25 @@ export const regulatory_schema = z.object({
 // TODO
 // Document Center
 export const poa_schema = z.object({
-  account_number: z.string().optional(),
-  type: z.enum(["Utility bill"]).optional(),
-  issued_year: z.string().optional(),
-  issued_month: z.string().optional(),
-  issued_day: z.string().optional(),
-})
-export const new_poa_schema = z.object({
-  account_number: z.string().optional(),
-  type: z.enum(["Utility bill"], {
-    errorMap: (issue, ctx) => {
-      return {message: 'You must select a type.'};
-    },
-  }),
-  issued_year: z.string().min(4, {
-    message: "Year must be 4 digits.",
-  }).max(4, {
-    message: "Year must be 4 digits."
-  }),
-  issued_month: z.string().min(2, {
-    message: "Month must be 2 digits.",
-  }),
-  issued_day: z.string().min(2, {
-    message: "Month must be 2 digits.",
-  }),
+  account_number: z.string(),
+  type: z.enum(["Utility bill", "Bank Statement", "Tax Return"]),
+  issued_date: z.date(),
 })
 export const poi_schema = z.object({
-  account_number: z.string().optional(),
-  gender: z.string().optional(),
-  country_of_issue: z.string().optional(),
-  type: z.enum(["ID", "Passport", "License"]).optional(),
-  full_name: z.string().optional(),
-  id_number: z.string().optional(),
-  issued_year: z.string().optional(),
-  issued_month: z.string().optional(),
-  issued_day: z.string().optional(),
-  expiration_year: z.string().optional(),
-  expiration_month: z.string().optional(),
-  expiration_day: z.string().optional(),
-})
-export const new_poi_schema = z.object({
-  account_number: z.string().optional(),
-  gender: z.string().min(1, {
-    message: "You must enter an ID number.",
-  }),
-  country_of_issue: z.string().min(1, {
-    message: "You must select at least one country of birth.",
-  }),
-  type: z.enum(["ID", "Passport", "License"], {
-    errorMap: (issue, ctx) => {
-      return {message: 'You must select a type.'};
-    },
-  }),
-  full_name: z.string().min(1, {
-    message: "You must select at least one type of document.",
-  }),
-  id_number: z.string().min(1, {
-    message: "You must enter an ID number.",
-  }),
-  
-  issued_year: z.string().optional(),
-  issued_month: z.string().optional(),
-  issued_day: z.string().optional(),
-
-  expiration_year: z.string().min(4, {
-    message: "Year must be 4 digits.",
-  }).max(4, {
-    message: "Year must be 4 digits."
-  }),
-  expiration_month: z.string().min(2, {
-    message: "Month must be 2 digits.",
-  }),
-  expiration_day: z.string().min(2, {
-    message: "Day must be 2 digits.",
-  })
+  account_number: z.string(),
+  gender: z.string(),
+  country_of_issue: z.string(),
+  type: z.enum(["ID", "Passport", "License"]),
+  full_name: z.string(),
+  id_number: z.string(),
+  issued_date: z.date(),
+  date_of_birth: z.date(),
+  expiration_date: z.date(),
+  country_of_birth: z.string(),
 })
 export const sow_schema = z.object({
-  account_number: z.string().optional(),
-})
-export const new_sow_schema = z.object({
-  account_number: z.string().optional(),
+  account_number: z.string(),
+  type: z.enum(["???"]),
 })
 
 // Account accesses

@@ -13,7 +13,7 @@ export async function accessAPI(url:string, type:string, params?:Map) {
         try {
             return data['access_token']
         } catch (error) {
-            console.log(error)
+            console.error(error)
             return null
         }
     }
@@ -41,10 +41,8 @@ export async function accessAPI(url:string, type:string, params?:Map) {
     }
 
     let data = null
-    const api_url = "https://agm-api-m11y.onrender.com"
+    const api_url = process.env.API_URL
     const token = await getToken()
-
-    console.log(params)
 
     if (type === 'GET') {
         data = await getData(token)

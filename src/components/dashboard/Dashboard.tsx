@@ -6,6 +6,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSession } from 'next-auth/react'
+import { motion } from 'framer-motion'
+
+// Add these animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5
+    }
+  }
+}
 
 export function Dashboard() {
   
@@ -36,68 +59,89 @@ export function Dashboard() {
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
-              <div className="grid grid-cols-5 grid-rows-5 gap-4">
-                <Card className="col-span-1 row-span-1">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">$2,231.89</div>
-                    <p className="text-xs">+20.1% from last month</p>
-                  </CardContent>
-                </Card>
-                <Card className="col-span-1 row-span-1">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">New clients</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">+12</div>
-                    <p className="text-xs">+180.1% from last month</p>
-                  </CardContent>
-                </Card>
-                <Card className="col-span-1 row-span-1">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Commissions</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">+$435</div>
-                    <p className="text-xs">+19% from last month</p>
-                  </CardContent>
-                </Card>
-                <Card className="col-span-1 row-span-1">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Users Trading Today</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">+10</div>
-                    <p className="text-xs">+4 since last hour</p>
-                  </CardContent>
-                </Card>
-                <Card className="col-span-3 row-span-2 row-start-2">
-                  <CardHeader>
-                    <CardTitle>Open account applications</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pl-2">
-                    
-                  </CardContent>
-                </Card>
-                <Card className="row-span-2 col-start-4 row-start-2">
-                  <CardHeader>
-                    <CardTitle>Test</CardTitle>
+              <motion.div 
+                className="grid grid-cols-5 grid-rows-5 gap-4"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <motion.div variants={cardVariants}>
+                  <Card className="col-span-1 row-span-1">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                    </CardHeader>
                     <CardContent>
-                      <p className="text-sm"></p>
+                      <div className="text-2xl font-bold">$2,231.89</div>
+                      <p className="text-xs">+20.1% from last month</p>
                     </CardContent>
-                  </CardHeader>
-                  <CardContent>
-                  </CardContent>
-                </Card>
-                <Card className="col-span-2 row-span-2 row-start-4">
-                  {/* Add content for the new card in position 13 */}
-                </Card>
-                <Card className="col-span-2 row-span-2 col-start-3 row-start-4">
-                  {/* Add content for the new card in position 14 */}
-                </Card>
-              </div>
+                  </Card>
+                </motion.div>
+                <motion.div variants={cardVariants}>
+                  <Card className="col-span-1 row-span-1">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">New clients</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">+12</div>
+                      <p className="text-xs">+180.1% from last month</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+                <motion.div variants={cardVariants}>
+                  <Card className="col-span-1 row-span-1">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Commissions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">+$435</div>
+                      <p className="text-xs">+19% from last month</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+                <motion.div variants={cardVariants}>
+                  <Card className="col-span-1 row-span-1">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Users Trading Today</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">+10</div>
+                      <p className="text-xs">+4 since last hour</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+                <motion.div variants={cardVariants}>
+                  <Card className="col-span-3 row-span-2 row-start-2">
+                    <CardHeader>
+                      <CardTitle>Open account applications</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pl-2">
+                      
+                    </CardContent>
+                  </Card>
+                </motion.div>
+                <motion.div variants={cardVariants}>
+                  <Card className="row-span-2 col-start-4 row-start-2">
+                    <CardHeader>
+                      <CardTitle>Test</CardTitle>
+                      <CardContent>
+                        <p className="text-sm"></p>
+                      </CardContent>
+                    </CardHeader>
+                    <CardContent>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+                <motion.div variants={cardVariants}>
+                  <Card className="col-span-2 row-span-2 row-start-4">
+                    {/* Add content for the new card in position 13 */}
+                  </Card>
+                </motion.div>
+                <motion.div variants={cardVariants}>
+                  <Card className="col-span-2 row-span-2 col-start-3 row-start-4">
+                    {/* Add content for the new card in position 14 */}
+                  </Card>
+                </motion.div>
+              </motion.div>
             </TabsContent>
           </Tabs>
         </main>

@@ -7,7 +7,15 @@ const page = () => {
   return (
     <div className='w-full flex flex-col h-full'>
       <FormHeader />
-      <RiskForm/>
+      <div className="w-full max-w-4xl gap-y-20 flex flex-col mx-auto px-4 py-6">
+        <div>
+          <h2 className="text-5xl font-semibold text-center mb-4">Risk Assessment Questionnaire</h2>
+          <p className="text-center text-muted-foreground">
+            Please complete this form to help us understand your risk tolerance and investment preferences.
+          </p>
+        </div>
+        <RiskForm/>
+      </div>
     </div>
   )
 }

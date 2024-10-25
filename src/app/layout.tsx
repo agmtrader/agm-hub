@@ -23,7 +23,7 @@ export default function RootLayout({
 
   return (
 
-    <html lang="en" className={cn(inter.className, "h-screen w-screen")}>
+    <html lang="en" className={cn(inter.className, "h-screen select-none w-screen")}>
       <body className='h-full w-full'>
         {children}
         <Toaster />

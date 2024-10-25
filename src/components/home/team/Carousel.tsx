@@ -1,14 +1,10 @@
 import * as React from "react"
+import useEmblaCarousel from 'embla-carousel-react'
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-
 import {
   Dialog,
   DialogContent,
@@ -17,6 +13,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 const team = [
   {
@@ -52,42 +50,90 @@ const team = [
 ]
 
 export function TeamCarousel() {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: 'start', slidesToScroll: 1 })
+
   return (
-    <Carousel className="w-full h-full max-w-[65%]">
-      <CarouselContent>
-        {team.map((member, index) => (
-          <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-            <div className="p-1">
-              <Card>
-                <CardContent className="flex aspect-square items-center justify-center p-6">
+    <div className="w-full flex justify-center items-center h-full max-w-[65%] relative">
+      <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full shadow-md"
+          onClick={() => emblaApi?.scrollPrev()}
+        >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex">
+          {team.map((member, index) => (
+            <div key={index} className="flex-[0_0_33.33%] min-w-0 px-4">
+              <div className="p-1 group">
+                <Card className="border-none shadow-md hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
+                  <CardContent className="flex aspect-square items-center justify-center p-6">
                     <Dialog>
                       <DialogTrigger asChild>
-                        <div className="w-full text-agm-dark-blue cursor-pointer h-full text-center flex flex-col items-center justify-center">
-                          <p className="text-2xl font-bold">{member.name}</p>
-                          <p className="text-sm text-primary">{member.title}</p>
+                        <div className="w-full text-agm-dark-blue cursor-pointer h-full text-center flex flex-col items-center justify-center space-y-4">
+                          <Avatar className="w-24 h-24 border-2 border-agm-dark-blue">
+                            <AvatarFallback className="text-2xl font-bold bg-white text-agm-dark-blue">
+                              {member.name.split(' ').map(n => n[0]).join('')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-xl font-semibold">{member.name}</p>
+                            <p className="text-sm text-gray-600 mt-1">{member.title}</p>
+                          </div>
                         </div>
                       </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader className="text-agm-dark-blue">
-                          <DialogTitle>{member.name}</DialogTitle>
-                          <DialogDescription>{member.title}</DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                          <p className="text-sm font-light">
-                          {member.description}
-                          </p>
-                        </div>
+                      <DialogContent className="sm:max-w-[500px] overflow-hidden">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <DialogHeader className="text-agm-dark-blue">
+                            <DialogTitle className="text-3xl font-bold">{member.name}</DialogTitle>
+                            <DialogDescription className="text-lg text-primary font-medium">{member.title}</DialogDescription>
+                          </DialogHeader>
+                          <div className="mt-6">
+                            <motion.p 
+                              className="text-base leading-relaxed text-gray-700"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.2, duration: 0.3 }}
+                            >
+                              {member.description}
+                            </motion.p>
+                          </div>
+                          <motion.div 
+                            className="mt-6 flex justify-end"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4, duration: 0.3 }}
+                          >
+                            <button className="px-4 py-2 bg-agm-dark-blue text-white rounded-md hover:bg-opacity-90 transition-colors">
+                              Learn More
+                            </button>
+                          </motion.div>
+                        </motion.div>
                       </DialogContent>
                     </Dialog>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
+          ))}
+        </div>
+      </div>
+      <div className="flex justify-between mt-4">
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full shadow-md"
+          onClick={() => emblaApi?.scrollNext()}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
   )
 }
 

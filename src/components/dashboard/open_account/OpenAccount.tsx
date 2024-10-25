@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -11,15 +12,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-
-import { DataTable } from '../components/DataTable'
-
+import { ColumnDefinition, DataTable } from '../components/DataTable'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { formatTimestamp } from "@/utils/dates"
 import { getDefaults, account_access_schema } from '@/lib/form'
 import { useForm } from 'react-hook-form'
-import { Map, Ticket } from '@/lib/types'
+import { Account, Map, Ticket } from '@/lib/types'
 import { accessAPI } from '@/utils/api'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { addColumnsFromJSON, sortColumns } from '@/utils/table'
@@ -27,124 +26,83 @@ import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
 
 interface Props {
-  currentTicket:Ticket, 
+  ticket:Ticket, 
   setCanContinue: React.Dispatch<React.SetStateAction<boolean>>,
   setAccount: React.Dispatch<React.SetStateAction<any | null>>,
   account: any
 }
 
-const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props) => {
+const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
 
+  // Form schema for account details
   let formSchema:any
-  let initialFormValues:any
-  
   formSchema = account_access_schema
-  initialFormValues = getDefaults(formSchema)
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    values: initialFormValues,
+    values: getDefaults(formSchema),
   })
 
   const {toast} = useToast()
-  
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    try {
-      let timestamp = new Date()
-      let accountTimestamp = formatTimestamp(timestamp)
-      
-      // TODO create type for this
-      const account_details:any = {
-        'AccountID':accountTimestamp, 
-        'TicketID':currentTicket['TicketID'], 
-        'TemporalEmail':values.temp_email, 
-        'TemporalPassword':values.temp_password, 
-        'AccountNumber':values.account_number,
-        'IBKRUsername':values.ibkr_username,
-        'IBKRPassword':values.ibkr_password
-      }
-      
-      let response = await accessAPI('/database/create', 'POST', {'path': 'db/clients/accounts', 'data': account_details, 'id': accountTimestamp})
-      
-      if (response.status !== 'success') {
-        throw new Error('Failed to create account');
-      }
 
-      setCanContinue(true);
-      setAccount(account_details);
-    } catch (err) {
-      toast({
-        title: 'Error',
-        description: err instanceof Error ? err.message : 'An unexpected error occurred',
-        variant: 'destructive'
-      })
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+  const ticketColumns = [
+    { accessorKey: 'TicketID', header: 'Ticket ID' },
+    { accessorKey: 'Status', header: 'Status' },
+    { accessorKey: 'first_name', header: 'First Name' },
+    { accessorKey: 'last_name', header: 'Last Name' },
+    { accessorKey: 'Advisor', header: 'Advisor' },
+  ]
+
+  const accountColumns = [
+    { accessorKey: 'AccountID', header: 'Account ID' },
+    { accessorKey: 'AccountNumber', header: 'Account Number' },
+  ]
   
   // Current ticket
-  const [tickets, setTickets] = useState<Ticket[] | null>(null)
-  const ticketID = currentTicket['TicketID']
-
-  const ticketColumns = ['TicketID', 'Status', 'first_name', 'last_name', 'Advisor']
-  const accountColumns = ['AccountID', 'TicketID', 'TemporalEmail', 'TemporalPassword', 'AccountNumber', 'IBKRUsername', 'IBKRPassword']
-
+  const ticketID = ticket['TicketID']
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch account and ticket data associated to current ticket
+  // Try to fetch account and ticket data associated to current ticket
   useEffect(() => {
 
     async function queryData () {
       try {
         setIsLoading(true)
-        setTickets(null)
         setAccount(null)
 
-        let response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets', 'key': 'TicketID', 'value': ticketID})
-        if (response.status !== 'success') {
-          throw new Error('Failed to fetch ticket data');
-        }
-        let data = response['content']
-        let tickets:Ticket[] = []
-        if (data) {
-          data.forEach((entry:Map) => {
-            tickets.push(
-              {
-                'TicketID': entry['TicketID'],
-                'Status': entry['Status'],
-                'ApplicationInfo': entry['ApplicationInfo'],
-                'Advisor': entry['Advisor']
-              }
-            )
-          })
-        }
-        tickets = await addColumnsFromJSON(tickets)
-        tickets = sortColumns(tickets, ticketColumns)
-        setTickets(tickets)
-
-        response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'query': {'TicketID': ticketID}})
+        // Fetch account data
+        let response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'query': {'TicketID': ticketID}})
         if (response.status !== 'success') {
           throw new Error('Failed to fetch account data');
         }
         let accounts = response['content']
-        console.log(accounts)
+
+        // Verify there is only one account
         if (accounts.length === 1) {
+          if (ticket['Status'] !== 'Ready for application' && ticket['Status'] !== 'Opened') {
+            response = await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets`, 'query': {'TicketID': ticketID}, 'data': {'Status': 'Documents need revision'}})
+            if (response.status !== 'success') {
+              throw new Error('Failed to update ticket status')
+            }
+          }
           accounts = await addColumnsFromJSON(accounts)
-          accounts = sortColumns(accounts, accountColumns)
-          setAccount(accounts)
+          setAccount(accounts[0])
           setCanContinue(true)
+
         } else if (accounts.length === 0) {
-          throw new Error('No account found for ticket.')
+          response = await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets`, 'query': {'TicketID': ticketID}, 'data': {'Status': 'Missing IBKR account'}})
+          if (response.status !== 'success') {
+            throw new Error('Failed to update ticket status')
+          }
+
         } else if (accounts.length > 1) {
-          throw new Error('Too many accounts found for ticket.')
+          throw new Error('More than one account found.')
+
         } else {
           throw new Error('An unexpected error occurred.')
         }
+
       } catch (error) {
-        console.error(error)
         toast({
           title: 'Error',
           description: error instanceof Error ? error.message : 'An unexpected error occurred',
@@ -161,26 +119,107 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
 
   }, [])
 
+  // Submit account details when creating a new account in IBKR
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    
+    setIsSubmitting(true);
+    
+    try {
+      let timestamp = new Date()
+      let accountTimestamp = formatTimestamp(timestamp)
+      
+      // TODO create type for this
+      const account_details:Account = {
+        'AccountID':accountTimestamp, 
+        'TicketID':ticket['TicketID'], 
+        'TemporalEmail':values.temp_email, 
+        'TemporalPassword':values.temp_password, 
+        'AccountNumber':values.account_number,
+        'IBKRUsername':values.ibkr_username,
+        'IBKRPassword':values.ibkr_password,
+        'Advisor':ticket['Advisor']
+      }
+      
+      let response = await accessAPI('/database/create', 'POST', {'path': 'db/clients/accounts', 'data': account_details, 'id': accountTimestamp})
+      
+      if (response.status !== 'success') {
+        throw new Error('Failed to create account');
+      }
+
+      response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'query': {'TicketID': ticketID}})
+      if (response.status !== 'success') {
+        throw new Error('Failed to fetch account data');
+      }
+      let accounts = response['content']
+      if (accounts.length === 1) {
+        accounts = await addColumnsFromJSON(accounts)
+        setAccount(accounts[0])
+        response = await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets`, 'query': {'TicketID': ticketID}, 'data': {'Status': 'Documents need revision'}})
+        if (response.status !== 'success') {
+          throw new Error('Failed to update ticket status')
+        }
+      } else {
+        throw new Error('An unexpected error occurred.')
+      }
+      setCanContinue(true);
+
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: err instanceof Error ? err.message : 'An unexpected error occurred',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.5 } }
+  }
+
+  const slideUp = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  }
+
   if (isLoading) {
     return (
-      <div className="flex flex-col w-full h-full items-center justify-center gap-y-10">
-        <p className='text-7xl font-bold'>Checking account status...</p>
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
-      </div>
+      <motion.div 
+        className="flex flex-col w-full h-full items-center justify-center gap-y-10"
+        initial="hidden"
+        animate="visible"
+        variants={fadeIn}
+      >
+        <motion.p className='text-7xl font-bold text-foreground' variants={fadeIn}>Checking account status...</motion.p>
+        <motion.div variants={fadeIn}>
+          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </motion.div>
+      </motion.div>
     )
   }
 
-  if (tickets && !account) {
+  if (!account) {
     return (
-    <div className='w-fit h-fit justify-center items-center flex flex-col gap-y-10'>
-      <h1 className='text-7xl font-bold'>Open a new IBKR account.</h1>
-      <p className='text-2xl text-subtitle'>Current Ticket</p>
-      <div className='w-full h-full'>
-      {tickets && <DataTable data={tickets} width={100}/>}
-      </div>
-      <p className='text-2xl text-subtitle'>Internal IBKR Account Access Form</p>
+    <motion.div 
+      className='w-fit h-fit justify-center items-center flex flex-col gap-y-10'
+      initial="hidden"
+      animate="visible"
+      variants={fadeIn}
+    >
+      <motion.h1 className='text-7xl font-bold text-foreground' variants={slideUp}>Open a new IBKR account.</motion.h1>
+      <motion.p className='text-2xl text-subtitle' variants={slideUp}>Current Ticket</motion.p>
+      <motion.div className='w-full h-full' variants={slideUp}>
+        <DataTable data={[ticket]} width={100} columns={ticketColumns as ColumnDefinition<Ticket>[]}/>
+      </motion.div>
+      <motion.p className='text-2xl text-subtitle' variants={slideUp}>Internal IBKR Account Access Form</motion.p>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-10 w-full">
+        <motion.form 
+          onSubmit={form.handleSubmit(onSubmit)} 
+          className="flex flex-col gap-y-10 w-full"
+          variants={slideUp}
+        >
           <FormField
             control={form.control}
             name="temp_email"
@@ -246,24 +285,45 @@ const OpenAccount = ({currentTicket, setCanContinue, setAccount, account}:Props)
             </FormItem>
             )}
           />
-          <div className='w-full h-full flex justify-center items-center'>
-            <Button className="bg-green-600 h-full w-fit" type="submit">Submit</Button>
-          </div>
-        </form>
+          <motion.div 
+            className='w-full h-full flex justify-center items-center'
+            variants={slideUp}
+          >
+            {isSubmitting ? 
+              <Button className="bg-success hover:bg-success h-full w-fit" type="submit">
+                <Loader2 className="h-4 w-4 animate-spin text-background" /> 
+                Submitting...
+              </Button>
+              : 
+              <Button className="bg-success hover:bg-success h-full w-fit text-background" type="submit">Submit</Button>
+            }
+          </motion.div>
+        </motion.form>
       </Form>
-    </div>
+    </motion.div>
     )
-  }
-
-  if (tickets && account) {
+  } 
+  
+  else if (account) {
     return (
-      <div className='w-full h-full flex flex-col items-center justify-center gap-y-10'>
-      <h1 className='text-7xl font-bold'>Active IBKR account</h1>
-      <p className='text-lg text-subtitle'>Ticket</p>
-      {tickets && <DataTable data={tickets} width={90}/>}
-      <p className='text-lg text-subtitle'>IBKR Account Details</p>
-      {account && <DataTable data={account} width={90}/>}
-    </div>
+      <motion.div 
+        className='w-full h-full flex flex-col items-center justify-center gap-y-10'
+        initial="hidden"
+        animate="visible"
+        variants={fadeIn}
+      >
+        <motion.h1 className='text-7xl font-bold text-foreground' variants={slideUp}>Active IBKR account</motion.h1>
+        <motion.p className='text-lg text-subtitle' variants={slideUp}>Ticket</motion.p>
+        <motion.div variants={slideUp}>
+          <DataTable columns={ticketColumns as ColumnDefinition<Ticket>[]} data={[ticket]} width={100}/>
+        </motion.div>
+        <motion.p className='text-lg text-subtitle' variants={slideUp}>IBKR Account Details</motion.p>
+        {account && (
+          <motion.div variants={slideUp}>
+            <DataTable columns={accountColumns as ColumnDefinition<Account>[]} data={[account]} width={100}/>
+          </motion.div>
+        )}
+      </motion.div>
     )
   }
 }

@@ -41,6 +41,7 @@ import { accessAPI } from "@/utils/api"
 import { PersonLinesFill } from "react-bootstrap-icons"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
+import { useToast } from "@/hooks/use-toast"
 
 interface Props {
   stepForward:() => void,
@@ -54,6 +55,8 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
 
   let formSchema:any;
   let initialFormValues:any = {};
+
+  const { toast } = useToast()
 
   const [generating, setGenerating] = useState(false)
 
@@ -107,19 +110,24 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
       }
 
       const response = await accessAPI('/database/update', 'POST', {
-        'path': `db/clients/tickets/${ticket.TicketID}`,
-        'key': 'ApplicationInfo',
-        'value': updatedApplicationInfo
+        path: `db/clients/tickets`,
+        query: { TicketID: ticket.TicketID },
+        data: { ApplicationInfo: updatedApplicationInfo }
       })
 
-      if (response.status !== 'success') {
-        throw new Error('Failed to update ticket')
+      if (response['status'] !== 'success') {
+        throw new Error(response['message'] || 'Failed to update ticket')
       }
 
       setTicket(updatedTicket)
       stepForward()
     } catch (err) {
-      console.log(err)
+      console.error(err)
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "An unexpected error occurred",
+        variant: "destructive",
+      })
     } finally {
       setGenerating(false)
     }

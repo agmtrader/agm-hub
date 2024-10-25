@@ -18,28 +18,35 @@ export interface Account {
   'TemporalEmail':string
   'TemporalPassword':string
   'AccountNumber':string
-  'Name':string
-  'LastName':string, 
   'IBKRUsername':string, 
   'IBKRPassword':string, 
   'Advisor':string | null
 }
 
-
 // Table
 export type Selection = Document | Ticket
 
 // Document Center
-export interface Documents {
-  [key:string]: Document[]
-}
-
 export type Document = {
   'DocumentID': string
-  'FileID': string
-  'AccountNumber': string
-  'FileName':string
-  'Type':string
+  'DocumentInfo':Map
   'FileInfo':Map
-  'AGMUser':string
+  'Uploader':string
+  'Category':string
+}
+export type Drive = {
+  [key: string]: Document[]
+}
+
+// Download types
+export enum DeviceTypes{
+  PC,
+  MOBILE
+}
+export enum osTypes {
+  WINDOWS,
+  LINUX,
+  MACOS,
+  ANDROID,
+  IOS
 }

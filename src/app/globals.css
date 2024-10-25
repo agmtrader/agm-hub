@@ -14,6 +14,10 @@ html {
   @apply rounded-md;
 }
 
+.tooltip-fast {
+  animation-duration: 150ms;
+}
+
 @layer base {
   :root {
     
@@ -24,9 +28,16 @@ html {
     --subtitle: 215 16% 47%;
 
     --radius: 0.5rem;
-  }
-  * {
-    @apply border-accent;
+
+    --color-1: 0 100% 63%;
+
+    --color-2: 270 100% 63%;
+
+    --color-3: 210 100% 63%;
+
+    --color-4: 195 100% 63%;
+
+    --color-5: 90 100% 63%;
   }
   body {
     @apply bg-background text-foreground;
@@ -41,6 +52,16 @@ html {
     --subtitle: 215 16% 80%;
 
     --radius: 0.5rem;
+
+    --color-1: 0 100% 63%;
+
+    --color-2: 270 100% 63%;
+
+    --color-3: 210 100% 63%;
+
+    --color-4: 195 100% 63%;
+
+    --color-5: 90 100% 63%;
   }
 }
 

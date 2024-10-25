@@ -21,6 +21,7 @@ import { getDefaults, risk_assesment_schema } from "@/lib/form"
 import { Input } from "@/components/ui/input"
 import { formatTimestamp } from "@/utils/dates"
 import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
+import { motion, AnimatePresence } from "framer-motion"
 
 // Risk profiles
 const risk_profile_types = [
@@ -134,38 +135,40 @@ const RiskForm = () => {
       resolver: zodResolver(formSchema),
       values: initialFormValues,
   })
-  async function onSubmit(values: z.infer<typeof formSchema>) {
 
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setSubmitting(true)
+    
     const timestamp = new Date()
     const riskProfileID = formatTimestamp(timestamp)
 
     // Calculate risk score
     let sum = 0
+    const answers: Record<string, any> = {}
     Object.entries(values).forEach((element) => {
-      if (element[0] !== 'account_number' && element[0] !== 'client_name') {
-        sum += weights.filter(el => el['name'] == element[0])[0]['weight'] * Number(element[1])
+      const [key, value] = element
+      if (key !== 'account_number' && key !== 'client_name') {
+        const weight = weights.find(el => el.name === key)?.weight || 0
+        sum += weight * Number(value)
+        answers[key] = value
       }
     })
 
     // Build a risk profile
     const risk_profile = {
-      'AccountNumber':values.account_number,
-      'ClientName': values.client_name,
-      'Score':sum,
-      'RiskProfileID':riskProfileID,
+      AccountNumber: values.account_number,
+      ClientName: values.client_name,
+      Score: sum,
+      RiskProfileID: riskProfileID,
+      Answers: answers,
     }
+
     let data = await accessAPI('/database/create', 'POST', {data: risk_profile, path:'db/clients/risk', id:riskProfileID})
-    console.log(data)
     if (data.status === 'error') {
       setError(true)
       setSubmitting(false)
       return
     }
-
-    // Remove account number and client name from values !?
-    delete values.account_number
-    delete values.client_name
 
     // Calculate risk type
     let risk_profile_type = ''
@@ -188,18 +191,32 @@ const RiskForm = () => {
     }
     
     // Get risk type from asset allocations
-    setRiskProfile(risk_profile_types.filter((element) => element.name === risk_profile_type)[0])
+    setRiskProfile(risk_profile_types.find((element) => element.name === risk_profile_type) || null)
     setSubmitting(false)
 
+    // Reset the form after submission
+    form.reset(initialFormValues)
   }
 
+  const handleDialogClose = () => {
+    setRiskProfile(null);
+  };
+
   return (
-      <div className="w-full px-10 pb-10 h-fit flex">
-
-        <Form {...form}>
-
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-10">
-
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="w-full px-10 pb-10 h-fit flex justify-center items-center"
+    >
+      <Form {...form}>
+        <motion.form 
+          onSubmit={form.handleSubmit(onSubmit)} 
+          className="flex flex-col gap-y-10 w-full justify-center items-center"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <FormField
                 control={form.control}
                 name="account_number"
@@ -207,10 +224,10 @@ const RiskForm = () => {
                   <FormItem>
                   <FormLabel>Account number</FormLabel>
                   <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input placeholder="Enter your account number..." {...field} />
                   </FormControl>
                   <FormMessage />
-                  </FormItem>
+                </FormItem>
               )}
             />
 
@@ -219,9 +236,9 @@ const RiskForm = () => {
                 name="client_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Client name</FormLabel>
+                    <FormLabel>Full name</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input placeholder="Enter your name..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -500,39 +517,76 @@ const RiskForm = () => {
 
             {/*TODO AGREGAR FOTOS DE LOUIS */}
             
-            <Button type="submit" disabled={submitting}>{submitting ? (
-              <>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                Submitting...
-              </>
-            ) : (
-              'Submit'
-            )}</Button>
-            {error && <p className="text-red-600">Error submitting risk profile. Contact support or try again later.</p>}
-          </form>
-        </Form>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? (
+                <>
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                'Submit'
+              )}
+            </Button>
+            {error && (
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-red-600"
+              >
+                Error submitting risk profile. Contact support or try again later.
+              </motion.p>
+            )}
+        </motion.form>
+      </Form>
 
+      <div className="w-full">
+        <AnimatePresence>
+          {riskProfile && (
+            <Dialog open={!!riskProfile} onOpenChange={handleDialogClose}>
+              <DialogContent className="max-w-fit w-full">
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.1 }}
+                  className="w-full h-full flex flex-col gap-y-5 justify-center items-center"
+                >
+                  <DialogClose className="absolute right-4 top-4" asChild>
+                    <Button type="button" variant="ghost" size="icon">
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </DialogClose>
+                  <motion.p 
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-5xl font-bold"
+                  >
+                    Your Risk Profile
+                  </motion.p>
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <RiskProfile riskProfile={riskProfile}/>
+                  </motion.div>
+                  <motion.p 
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="text-sm text-red-500 font-bold"
+                  >
+                    Please take a picture of this, as it will be very hard to see it again!
+                  </motion.p>
+                </motion.div>
+              </DialogContent>
+            </Dialog>
+          )}
+        </AnimatePresence>
+      </div>
 
-        <div className="w-full">
-          <Dialog open={riskProfile ? true:false}>
-            <DialogContent className="max-w-fit w-full">
-            <DialogClose className="w-fit h-fit" asChild>
-              <Button type="button" onClick={() => {setRiskProfile(null); setError(false)}} variant="secondary">
-                X
-              </Button>
-            </DialogClose>
-            {riskProfile &&
-              <div className="w-full h-full flex flex-col gap-y-5 justify-center items-center">
-                <p className="text-5xl font-bold">Your Risk Profile</p>
-                <RiskProfile riskProfile={riskProfile}/>
-                <p className="text-sm text-red-500 font-bold">Please take a picture of this, as it will be very hard to see it again!</p>
-              </div>
-            }
-            </DialogContent>
-          </Dialog>
-        </div>
-
-      </div> 
+    </motion.div>
   )
 }
 
@@ -543,7 +597,6 @@ import {
   DialogClose,
   DialogContent
 } from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { accessAPI } from "@/utils/api"
 import { ReloadIcon } from "@radix-ui/react-icons"
-
+import { X } from "lucide-react"
