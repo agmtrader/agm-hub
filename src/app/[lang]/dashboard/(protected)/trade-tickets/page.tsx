@@ -31,13 +31,12 @@ export default function TradeTickets() {
 
     async function fetchTickets() {
       if (!ticketId) return;
+
       const response = await accessAPI('/flex_query/fetch', 'POST', {'queryIds': [ticketId]})
-      if (response['status'] === 'error') {
+      if (response['status'] !== 'success') {
         throw new Error(response['content'])
       }
-      else {
-        setTicket(response['content'][ticketId as string])
-      }
+      setTicket(response['content'][ticketId as string])
     }
 
     async function generateTradeTicket() {
@@ -94,6 +93,8 @@ export default function TradeTickets() {
       }
     ]
 
+    console.log(ticket)
+
   return (
     <div className="w-full h-full flex flex-col gap-y-10 justify-center items-center">
       
@@ -117,11 +118,20 @@ export default function TradeTickets() {
           <div className='w-full h-fit flex flex-col gap-y-5 justify-center items-center'>
             <p className='text-subtitle'>Please select one or more tickets to generate trade tickets for. All tickets must be of the same symbol.</p>
             <ScrollArea className='w-full h-full flex justify-center items-center'>
-              {ticket && <DataTable columns={columns} enableSelection data={ticket}/>}
+              {ticket !== null ?
+                ticket.length > 0 ? 
+                  <div className='w-full h-full flex flex-col gap-y-5 justify-center items-center'>
+                    <DataTable columns={columns} enableSelection data={ticket}/> 
+                    <Button onClick={generateTradeTicket}>
+                      Generate Trade Ticket
+                    </Button>
+                  </div>
+                  : 
+                  <p className='text-foreground text-center'>Account has executed no trades today.</p>
+                :
+                null
+              }
             </ScrollArea>
-            <Button onClick={generateTradeTicket}>
-              Generate Trade Ticket
-            </Button>
           </div>
 
           <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
@@ -138,6 +148,7 @@ export default function TradeTickets() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          
         </div>
 
         {clientMessage &&
