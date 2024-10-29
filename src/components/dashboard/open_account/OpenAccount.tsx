@@ -18,10 +18,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { formatTimestamp } from "@/utils/dates"
 import { getDefaults, account_access_schema } from '@/lib/form'
 import { useForm } from 'react-hook-form'
-import { Account, Map, Ticket } from '@/lib/types'
+import { Account, Ticket } from '@/lib/types'
 import { accessAPI } from '@/utils/api'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { addColumnsFromJSON, sortColumns } from '@/utils/table'
+import { addColumnsFromJSON } from '@/utils/table'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
 
@@ -34,9 +33,9 @@ interface Props {
 
 const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
 
-  // Form schema for account details
   let formSchema:any
   formSchema = account_access_schema
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     values: getDefaults(formSchema),
@@ -217,7 +216,7 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
       <Form {...form}>
         <motion.form 
           onSubmit={form.handleSubmit(onSubmit)} 
-          className="flex flex-col gap-y-10 w-full"
+          className="flex flex-col text-foreground gap-y-10 w-full"
           variants={slideUp}
         >
           <FormField
@@ -289,13 +288,15 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
             className='w-full h-full flex justify-center items-center'
             variants={slideUp}
           >
-            {isSubmitting ? 
-              <Button className="bg-success hover:bg-success h-full w-fit" type="submit">
-                <Loader2 className="h-4 w-4 animate-spin text-background" /> 
-                Submitting...
-              </Button>
-              : 
-              <Button className="bg-success hover:bg-success h-full w-fit text-background" type="submit">Submit</Button>
+            {
+              isSubmitting ? (
+                <Button className="h-full w-fit" type="submit">
+                  <Loader2 className="h-4 w-4 animate-spin text-background" /> 
+                  Submitting...
+                </Button>
+              ) : (
+                <Button className="h-full w-fit text-background" type="submit">Submit</Button>
+              )
             }
           </motion.div>
         </motion.form>

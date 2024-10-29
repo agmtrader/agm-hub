@@ -42,17 +42,18 @@ import { accessAPI } from "@/utils/api"
 import { useState } from "react"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { Loader2 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface Props {
   stepForward: () => void,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
-  step: number,
   ticket: Ticket | null
+  step: number,
 }
 
 const GeneralInfo = ({ stepForward, setTicket, step, ticket }: Props) => {
+
   const [generating, setGenerating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const searchParams = useSearchParams()
 
   let formSchema: any;
@@ -66,9 +67,11 @@ const GeneralInfo = ({ stepForward, setTicket, step, ticket }: Props) => {
       values: initialFormValues,
   })
 
+  const {toast} = useToast()
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+
     setGenerating(true)
-    setError(null)
     try {
       const timestamp = new Date()
       const advisor = searchParams.get('ad') || ''
@@ -89,27 +92,30 @@ const GeneralInfo = ({ stepForward, setTicket, step, ticket }: Props) => {
       }
 
       stepForward()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred')
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      })
+      throw new Error('An unexpected error occurred')
     } finally {
       setGenerating(false)
     }
   }
 
-  console.log(form.formState.errors)
-
   return (
       <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
         
         <div className='flex'>
-            <div key={step} className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
-              <PersonLinesFill className='h-24 w-24 text-secondary'/>
-              <p className='text-5xl font-bold'>{step}. <span className='font-light'>General Info</span></p>
-            </div>
+          <div className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
+            <PersonLinesFill className='h-24 w-24 text-secondary'/>
+            <p className='text-5xl font-bold'>General Information</p>
+          </div>
         </div>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-y-5 justify-center items-center">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-96 flex flex-col gap-y-5 justify-center items-center">
             <FormField
               control={form.control}
               name="email"
@@ -175,8 +181,6 @@ const GeneralInfo = ({ stepForward, setTicket, step, ticket }: Props) => {
                 </FormItem>
               )}
             />
-
-            {error && <p>{error}</p>}
 
             <Button type="submit" disabled={generating}>
               {generating ? (

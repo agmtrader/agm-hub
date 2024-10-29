@@ -2,14 +2,14 @@ import React from 'react'
 import { DataTable } from '../components/DataTable'
 import { Doughnut } from 'react-chartjs-2'
 import { cn } from '@/lib/utils'
+import 'chart.js/auto'
 
 type Props = {
     riskProfile: any,
     account?: any,
-    dark?: boolean
 }
 
-const RiskProfile = ({riskProfile, account, dark}: Props) => {
+const RiskProfile = ({riskProfile, account}: Props) => {
 
   function getAssetAllocation() {
       let labels:string[] = []
@@ -102,19 +102,19 @@ const RiskProfile = ({riskProfile, account, dark}: Props) => {
   }
 
   return (
-    <div className="w-full h-fit flex gap-y-5 justify-center flex-col items-center">
-        {account && <p className={cn("text-5xl font-bold text-agm-black", dark && 'text-agm-white')}>{account['ClientName']}</p>}
-        {riskProfile.name && <h1 className="text-3xl text-agm-orange">{riskProfile.name}</h1>}
+    <div className="w-full h-full flex gap-y-5 justify-start flex-col items-center text-foreground">
+        <p className="text-7xl text-foreground font-bold">{account ? account : 'Anonymous'}</p>
+        {riskProfile.name && <h1 className="text-3xl font-bold">{riskProfile.name}</h1>}
         <div className="flex flex-col lg:flex-row gap-5 w-full h-fit justify-center items-center text-center">
           <div className="w-full lg:w-1/2 flex flex-col gap-y-5 justify-center items-center">
-            <h2 className={cn("text-2xl font-semibold", dark && 'text-agm-white')}>Asset Allocation</h2>
-            <DataTable dark={dark} data={asset_data} width={100}/>
-            <p className={cn("text-lg font-semibold", dark && 'text-agm-white')}>
+            <h2 className="text-2xl font-semibold">Asset Allocation</h2>
+            <DataTable data={asset_data} width={100}/>
+            <p className="text-lg font-semibold">
               Average yield: {(riskProfile.average_yield * 100).toFixed(2)}%
             </p>
           </div>
           <div className="w-full lg:w-1/2 flex gap-y-5 justify-center items-center flex-col">
-            <h2 className={cn("text-2xl font-semibold", dark && 'text-agm-white')}>Portfolio Visualization</h2>
+            <h2 className="text-2xl font-semibold">Portfolio Visualization</h2>
             <div className="w-full max-w-md">
               <Doughnut data={data} options={options} />
             </div>

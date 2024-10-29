@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import useScrollPositions from '@/hooks/useScrollPositions'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { List } from 'react-bootstrap-icons'
 import Sidebar from './sidebar/Sidebar'
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
@@ -33,12 +33,11 @@ export const Header = () => {
                 {scroll > maxScroll && <Image src="/images/brand/agm-logo.png" alt="AGM Logo" height={200} width={200} />}
               </Button>
             </Link>
-            <Button 
-              variant="ghost" 
+            <Button
               onClick={() => setExpandSidebar(true)}
-              className="z-20"
+              className="z-20 text-background"
             >
-              <List className="text-2xl text-foreground" />
+              <List className="text-2xl" />
             </Button>
           </div>
         </div>

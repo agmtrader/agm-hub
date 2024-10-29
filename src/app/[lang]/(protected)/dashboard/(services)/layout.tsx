@@ -1,0 +1,20 @@
+import "../../../../globals.css";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "AGM Dashboard",
+    description: "Dashboard",
+};
+
+export default function Layout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+
+  return (
+    <div className="bg-background flex text-background h-full w-full scroll-smooth">
+        {children}
+    </div>
+  )
+}

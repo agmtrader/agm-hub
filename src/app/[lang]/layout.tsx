@@ -10,12 +10,10 @@ export default async function Layout({
 }>) {
 
   return (
-    <div className="h-full w-full">
-      <NextAuthProvider>
-        <TranslationProvider lang={lang}>
-          {children}
-        </TranslationProvider>
-      </NextAuthProvider>
-    </div>
+    <NextAuthProvider>
+      <TranslationProvider lang={lang}>
+        {children}
+      </TranslationProvider>
+    </NextAuthProvider>
   )
 }

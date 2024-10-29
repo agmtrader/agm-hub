@@ -1,11 +1,10 @@
-import Title from "../../../../../components/home/title/Title";
-import Introduction from "../../../../../components/home/introduction/Introduction"
-import Services from "@/components/home/services/Services";
-import FAQ from "@/components/home/faq/FAQ";
-import Team from "@/components/home/team/Team";
-import Footer from "@/components/Footer";
-import { Building, Clock, Database, TrendingUp, Monitor, DollarSign, Smartphone, Globe, Headphones, Shield, BarChart, BookOpen, Lock } from "lucide-react";
-import { GraphUpArrow } from "react-bootstrap-icons";
+import Title from "../../../../components/home/title/Title";
+import Introduction from "../../../../components/home/introduction/Introduction"
+import Services from "../../../../components/home/services/Services";
+import FAQ from "../../../../components/home/faq/FAQ";
+import Footer from "../../../../components/Footer";
+
+import { Building, Clock, Database, TrendingUp, Monitor, DollarSign, Smartphone, Globe, Headphones, Shield, BarChart, BookOpen } from "lucide-react";
 import { Handshake } from "lucide-react";
 import Download from "@/components/home/download/Download";
 

@@ -34,6 +34,8 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
     const [selectedType, setSelectedType] = useState<string>(folderDictionary[0].id)
     const { toast } = useToast()
 
+    const [uploading, setUploading] = useState<boolean>(false)
+
     const [files, setFiles] = useState<File[] | null>(null)
 
     const typeFields = folderDictionary.map(folder => ({
@@ -47,17 +49,18 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
     const renderForm = () => {
         switch(selectedType) {
             case 'poa':
-                return <POAForm onSubmit={(values) => handleSubmit(values, files)} driveId={typeFields[0].id} />
+                return <POAForm onSubmit={(values) => handleSubmit(values, files)} accountNumber={accountNumber} uploading={uploading} />
             case 'identity':
-                return <POIForm onSubmit={(values) => handleSubmit(values, files)} driveId={typeFields[1].id} />
+                return <POIForm onSubmit={(values) => handleSubmit(values, files)} accountNumber={accountNumber} uploading={uploading} />
             case 'sow':
-                return <SOWForm onSubmit={(values) => handleSubmit(values, files)} driveId={typeFields[2].id} />
+                return <SOWForm onSubmit={(values) => handleSubmit(values, files)} accountNumber={accountNumber} uploading={uploading} />
             default:
                 return null
         }
     }
 
     const handleSubmit = async (values: any, files: File[] | null) => {
+        setUploading(true)
         try {
             if (!files || files.length === 0) {
                 throw new Error("Please select a file to upload");
@@ -113,6 +116,8 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                 variant: "default",
             });
 
+            setUploading(false)
+
         } catch (error) {
             toast({
                 title: "Error",
@@ -127,7 +132,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
             <Dialog>
                 <DialogTrigger asChild>
                     <Button className='w-fit h-fit flex gap-x-5'>
-                        <Upload className="h-5 w-5"/>
+                        <Upload className='h-4 w-4' />
                         Upload
                     </Button>
                 </DialogTrigger>
@@ -180,7 +185,6 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                         </FileUploaderContent>
                     </FileUploader>
                     {renderForm()}
-                    
                 </DialogContent>
             </Dialog>
         </div>

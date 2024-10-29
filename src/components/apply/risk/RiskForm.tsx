@@ -23,8 +23,18 @@ import { formatTimestamp } from "@/utils/dates"
 import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
 import { motion, AnimatePresence } from "framer-motion"
 
-// Risk profiles
-const risk_profile_types = [
+import {
+  Dialog,
+  DialogClose,
+  DialogContent
+} from "@/components/ui/dialog"
+import { accessAPI } from "@/utils/api"
+import { ReloadIcon } from "@radix-ui/react-icons"
+import { X } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+
+// Risk profile types
+export const risk_profile_types = [
   {
     name: 'Conservative A',
     bonds_aaa_a: 0.3,
@@ -119,10 +129,15 @@ const weights = [
   }
 ]
 
+// Each question in the form has a weight and each answer in the question has a weight
+// The risk score is calculated by summing the weighted values of the answers
+
+// Question weight is stored in the weights array
+// Answer weight is stored in the question schema
+
 const RiskForm = () => {
 
   // Client message and portfolio
-  const [error, setError] = useState<boolean>(false)
   const [riskProfile, setRiskProfile] = useState<any | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -136,6 +151,8 @@ const RiskForm = () => {
       values: initialFormValues,
   })
 
+  const {toast} = useToast()
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setSubmitting(true)
     
@@ -144,31 +161,15 @@ const RiskForm = () => {
 
     // Calculate risk score
     let sum = 0
-    const answers: Record<string, any> = {}
+
+    // Loop through form values, ignore certain fields and calculate risk score using the category and question weights
     Object.entries(values).forEach((element) => {
       const [key, value] = element
       if (key !== 'account_number' && key !== 'client_name') {
         const weight = weights.find(el => el.name === key)?.weight || 0
         sum += weight * Number(value)
-        answers[key] = value
       }
     })
-
-    // Build a risk profile
-    const risk_profile = {
-      AccountNumber: values.account_number,
-      ClientName: values.client_name,
-      Score: sum,
-      RiskProfileID: riskProfileID,
-      Answers: answers,
-    }
-
-    let data = await accessAPI('/database/create', 'POST', {data: risk_profile, path:'db/clients/risk', id:riskProfileID})
-    if (data.status === 'error') {
-      setError(true)
-      setSubmitting(false)
-      return
-    }
 
     // Calculate risk type
     let risk_profile_type = ''
@@ -190,17 +191,47 @@ const RiskForm = () => {
       risk_profile_type = 'Aggressive C'
     }
     
-    // Get risk type from asset allocations
-    setRiskProfile(risk_profile_types.find((element) => element.name === risk_profile_type) || null)
+    // Get risk profile type from dictionary
+    const profile = risk_profile_types.find((type) => type.name === risk_profile_type) || null
+
+    // Build a risk profile for the user
+    delete values.account_number
+    delete values.client_name
+
+    const risk_profile = {
+      AccountNumber: values.account_number,
+      ClientName: values.client_name,
+      Score: sum,
+      Answers: values,
+      RiskProfileID: riskProfileID,
+      RiskProfile: profile
+    }
+
+    // Save the user's risk profile in the database
+    let data = await accessAPI('/database/create', 'POST', {data: risk_profile, path:'db/clients/risk', id:riskProfileID})
     setSubmitting(false)
+
+    if (data.status === 'error') {
+      toast({
+        title: 'Error submitting risk profile',
+        description: 'Contact support or try again later.',
+        variant: 'destructive'
+      })
+
+      throw new Error(data.message)
+    }
+    
+    // Display the risk profile
+    setRiskProfile(profile)
 
     // Reset the form after submission
     form.reset(initialFormValues)
+
   }
 
   const handleDialogClose = () => {
     setRiskProfile(null);
-  };
+  }
 
   return (
     <motion.div 
@@ -222,7 +253,7 @@ const RiskForm = () => {
                 name="account_number"
                 render={({ field }) => (
                   <FormItem>
-                  <FormLabel>Account number</FormLabel>
+                  <FormLabel>Account number (enter . if no account)</FormLabel>
                   <FormControl>
                       <Input placeholder="Enter your account number..." {...field} />
                   </FormControl>
@@ -527,15 +558,6 @@ const RiskForm = () => {
                 'Submit'
               )}
             </Button>
-            {error && (
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-red-600"
-              >
-                Error submitting risk profile. Contact support or try again later.
-              </motion.p>
-            )}
         </motion.form>
       </Form>
 
@@ -588,15 +610,7 @@ const RiskForm = () => {
 
     </motion.div>
   )
+
 }
 
 export default RiskForm
-
-import {
-  Dialog,
-  DialogClose,
-  DialogContent
-} from "@/components/ui/dialog"
-import { accessAPI } from "@/utils/api"
-import { ReloadIcon } from "@radix-ui/react-icons"
-import { X } from "lucide-react"

@@ -11,6 +11,7 @@ import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FormHeader, Header } from '@/components/Header';
+import ApplicationEnd from './components/ApplicationEnd';
 
 const ClientForm = () => {
 
@@ -29,6 +30,7 @@ const ClientForm = () => {
   }
 
   const isBrowser = () => typeof window !== 'undefined';
+  
   function scrollToTop() {
       if (!isBrowser()) return;
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -38,12 +40,106 @@ const ClientForm = () => {
     initial: { opacity: 0, x: '-100%' },
     in: { opacity: 1, x: 0 },
     out: { opacity: 0, x: '100%' },
-  };
+  }
 
   const pageTransition = {
     type: 'tween',
     ease: 'anticipate',
     duration: 0.5,
+  }
+
+  const renderFormStep = () => {
+    if (!ticket) {
+      return step === 1 && (
+        <GeneralInfo 
+          step={step} 
+          ticket={ticket} 
+          stepForward={stepForward} 
+          setTicket={setTicket}
+        />
+      );
+    }
+
+    if (ticket.ApplicationInfo.account_type === 'Individual') {
+      if (step === 1) {
+        return (
+          <GeneralInfo 
+            step={step} 
+            ticket={ticket} 
+            stepForward={stepForward} 
+            setTicket={setTicket}
+          />
+        );
+      } else if (step === 2) {
+        return (
+          <AboutYou 
+            primary 
+            ticket={ticket} 
+            setTicket={setTicket} 
+            stepForward={stepForward} 
+            stepBackward={stepBackward}
+          />
+        );
+      } else if (step === 3) {
+        return (
+          <Regulatory 
+            ticket={ticket} 
+            setTicket={setTicket} 
+            stepForward={stepForward} 
+            stepBackwards={stepBackward}
+          />
+        );
+      } else if (step === 4) {
+        return <ApplicationEnd />;
+      }
+    }
+
+    if (ticket.ApplicationInfo.account_type === 'Joint') {
+      if (step === 1) {
+        return (
+          <GeneralInfo 
+            step={step} 
+            ticket={ticket} 
+            stepForward={stepForward} 
+            setTicket={setTicket}
+          />
+        );
+      } else if (step === 2) {
+        return (
+          <AboutYou 
+            primary 
+            ticket={ticket} 
+            setTicket={setTicket} 
+            stepForward={stepForward} 
+            stepBackward={stepBackward}
+          />
+        );
+      } else if (step === 3) {
+        return (
+          <AboutYou 
+            primary={false} 
+            ticket={ticket} 
+            setTicket={setTicket} 
+            stepForward={stepForward} 
+            stepBackward={stepBackward}
+          />
+        );
+      } else if (step === 4) {
+        return (
+          <Regulatory 
+            ticket={ticket} 
+            setTicket={setTicket} 
+            stepForward={stepForward} 
+            stepBackwards={stepBackward}
+          />
+        );
+      } else if (step === 5) {
+        return <ApplicationEnd />;
+      }
+    }
+
+    return null;
+    
   };
 
   return (
@@ -61,29 +157,7 @@ const ClientForm = () => {
           transition={pageTransition}
           className='w-fit h-fit flex flex-col justify-center items-center pb-10'
         >
-          {step === 1 && <GeneralInfo step={step} ticket={ticket} stepForward={stepForward} setTicket={setTicket}/>}
-          
-          {(ticket && ticket['ApplicationInfo']['account_type'] === 'Individual') ? (
-              (step === 2) ? <AboutYou primary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
-              :
-                (step === 3) ? <Regulatory ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackwards={stepBackward}/>
-                : 
-                  (step == 4) && 
-                  <Final/>
-              )
-            :
-            (ticket && ticket['ApplicationInfo']['account_type'] === 'Joint') && (
-
-              (step === 2) ? <AboutYou primary ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
-              :
-                (step === 3) ? <AboutYou primary={false} ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackward={stepBackward}/>
-                : 
-                  (step == 4) ? <Regulatory ticket={ticket} setTicket={setTicket} stepForward={stepForward} stepBackwards={stepBackward}/>
-                  :
-                  (step == 5) && 
-                  <Final/>
-              )
-          }
+          {renderFormStep()}
         </motion.div>
       </AnimatePresence>
 
@@ -91,24 +165,3 @@ const ClientForm = () => {
 )}
 
 export default ClientForm
-
-const Final = () => {
-  return (
-    <div className='relative h-full w-full flex flex-col justify-center items-center gap-y-8 py-16'>
-      <Confetti
-        className="absolute left-0 top-0 -z-10 size-full pointer-events-none"
-      />
-      <Check className='w-24 h-24 text-green-500' />
-      <p className='text-2xl font-semibold text-gray-700'>Your application has been successfully submitted.</p>
-      <div className='flex flex-col items-center gap-y-4'>
-        <p className='text-lg text-gray-600'>Thank you for choosing our services. We'll review your application and get back to you soon.</p>
-      </div>
-      <Button>
-        <Link href='/apply'>Apply for another account</Link>
-      </Button>
-      <Button variant='ghost'>
-        <Link href='/'>Go back home</Link>
-      </Button>
-    </div>
-  )
-}

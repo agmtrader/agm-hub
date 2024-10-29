@@ -597,7 +597,6 @@ export const regulatory_schema = z.object({
 })
 
 
-// TODO
 // Document Center
 export const poa_schema = z.object({
   account_number: z.string(),
@@ -618,7 +617,6 @@ export const poi_schema = z.object({
 })
 export const sow_schema = z.object({
   account_number: z.string(),
-  type: z.enum(["???"]),
 })
 
 // Account accesses
@@ -643,6 +641,8 @@ export const account_access_schema = z.object({
     message: 'You must enter an IBKR password.'
   })
 })
+
+// Risk assessment
 export const risk_assesment_schema = z.object({
   account_number: z.string().min(1, {
     message: 'Account number cannot be empty.'

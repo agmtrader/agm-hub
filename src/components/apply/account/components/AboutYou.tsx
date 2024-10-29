@@ -4,7 +4,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { faker } from '@faker-js/faker';
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -53,6 +53,8 @@ interface Props {
 
 const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props) => {
 
+  const backdoor = false
+
   let formSchema:any;
   let initialFormValues:any = {};
 
@@ -66,29 +68,10 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
     formSchema = about_you_secondary_schema
   }
 
-  // Check if ticket.ApplicationInfo has all keys in the schema
-  const hasAllKeys = Object.keys(formSchema.shape).every(key => 
-    primary ? ticket.ApplicationInfo.hasOwnProperty(key) : ticket.ApplicationInfo.hasOwnProperty(`secondary_${key}`)
-  );
-
-  if (hasAllKeys) {
-    initialFormValues = primary 
-      ? ticket.ApplicationInfo
-      : Object.fromEntries(
-          Object.entries(ticket.ApplicationInfo)
-            .filter(([key]) => key.startsWith('secondary_'))
-            .map(([key, value]) => [key.replace('secondary_', ''), value])
-        );
-  } else {
-    initialFormValues = getDefaults(formSchema);
-  }
-
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       values: initialFormValues,
   })
-
-  console.log(form.formState.errors)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setGenerating(true)
@@ -134,6 +117,7 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
   }
 
   const fillWithFakeData = () => {
+
     const fakeData:z.infer<typeof formSchema> = {
       salutation: faker.helpers.arrayElement(salutations).value,
       first_name: faker.person.firstName(),
@@ -190,24 +174,28 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
     <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
 
       <div className='flex'>
-        <div key={'about-you'} className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
+        <div className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
           <PersonLinesFill className='h-24 w-24 text-secondary'/>
-          <p className='text-5xl font-bold'>2. <span className='font-light'>About you</span></p>
+          <p className='text-5xl font-bold'>About You</p>
+          <p>{primary ? 'Primary' : 'Secondary'} Holder</p>
         </div>
       </div>
 
       <Form {...form}>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-y-5 justify-center items-center">
-          <Button
-            type="button"
-            variant="primary"
-            onClick={fillWithFakeData}
-            className="mb-4"
-          >
-            Fill with Fake Data
-            <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-96 flex flex-col gap-y-5 justify-center items-center">
+
+          {backdoor && 
+            <Button
+              type="button"
+              variant="primary"
+              onClick={fillWithFakeData}
+              className="mb-4"
+            >
+              Fill with Fake Data
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          }
 
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
             <p className="text-3xl font-bold">Basic info</p>
@@ -1138,8 +1126,8 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
             <Button type="submit" disabled={generating}>
               {generating ? (
                 <>
-                  <span className="mr-2">Saving...</span>
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  Submitting...
                 </>
               ) : (
                 'Next step'

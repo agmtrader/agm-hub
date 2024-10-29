@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getDefaults, poi_schema } from "@/lib/form"
@@ -15,21 +15,25 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { countries } from "@/lib/form"
 
 interface POIFormProps {
   onSubmit: (values: any, files: File[] | null) => Promise<void>
-  driveId: string
+  accountNumber?: string
+  uploading: boolean
 }
 
-const POIForm: React.FC<POIFormProps> = ({ onSubmit, driveId }) => {
+const POIForm: React.FC<POIFormProps> = ({ onSubmit, accountNumber, uploading }) => {
+
+  const defaultValues = getDefaults(poi_schema)
+  if (accountNumber) defaultValues.account_number = accountNumber
   
   const form = useForm({
     resolver: zodResolver(poi_schema),
-    defaultValues: getDefaults(poi_schema),
+    defaultValues: defaultValues,
   })
 
   const handleSubmit = (values: any) => {
@@ -301,11 +305,18 @@ const POIForm: React.FC<POIFormProps> = ({ onSubmit, driveId }) => {
           )}
         />
 
-
-        <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
-        
+        {
+          uploading ? (
+            <Button className="h-fit w-fit" type="submit">
+              <Loader2 className="h-4 w-4 animate-spin text-background" /> 
+              Submitting...
+            </Button>
+          ) : (
+            <Button className="h-fit w-fit text-background" type="submit">
+                Submit
+            </Button>
+          )
+        }
       </form>
     </Form>
   )

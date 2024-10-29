@@ -13,6 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
+  // Make sure to redirect to the default language if the path is not the default language
   const path = usePathname()
   if (!path.includes('/en') && !path.includes('/es')) {
     let paths = path.split('/')
@@ -23,7 +24,7 @@ export default function RootLayout({
 
   return (
 
-    <html lang="en" className={cn(inter.className, "h-screen select-none w-screen")}>
+    <html lang="en" className={cn(inter.className, "h-screen scrollbar-hide select-none w-screen")}>
       <body className='h-full w-full'>
         {children}
         <Toaster />

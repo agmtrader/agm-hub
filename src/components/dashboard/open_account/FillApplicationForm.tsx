@@ -19,9 +19,6 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
   const [secondaryHolderInfo, setSecondaryHolderInfo] = useState<Map | null>(null)
   const [regulatoryInfo, setRegulatoryInfo] = useState<Map | null>(null)
 
-  console.log(ticket)
-  console.log(primaryHolderInfo, secondaryHolderInfo, regulatoryInfo)
-
   const primaryDefaultValues = getDefaults(about_you_primary_schema)
   const secondaryDefaultValues = getDefaults(about_you_secondary_schema)
   const regulatoryDefaultValues = getDefaults(regulatory_schema)
@@ -104,6 +101,13 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
           <DataTable data={[primaryHolderInfo]} width={100}/>
         </motion.div>
       }
+
+      {secondaryHolderInfo && Object.keys(secondaryHolderInfo).length > 0 &&
+        <motion.div className='w-full' variants={itemVariants}>
+          <p className='text-lg font-semibold'>Secondary Holder Information</p>
+          <DataTable data={[secondaryHolderInfo]} width={100}/>
+        </motion.div>
+      }
       
       {regulatoryInfo && Object.keys(regulatoryInfo).length > 0 &&
         <motion.div className='w-full' variants={itemVariants}>
@@ -111,6 +115,7 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
           <DataTable data={[regulatoryInfo]} width={100}/>
         </motion.div>
       }
+
     </motion.div>
   )
 }

@@ -13,22 +13,23 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-// Add these imports
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
+import { DateTimePicker } from '@/components/ui/datetime-picker'
+import { Loader2 } from 'lucide-react'
 
 interface SOWFormProps {
   onSubmit: (values: any, files: File[] | null) => Promise<void>
-  driveId: string
+  accountNumber?: string
+  uploading: boolean
 }
 
-const SOWForm: React.FC<SOWFormProps> = ({ onSubmit, driveId }) => {
+const SOWForm: React.FC<SOWFormProps> = ({ onSubmit, accountNumber, uploading }) => {
+
+  const defaultValues = getDefaults(sow_schema)
+  if (accountNumber) defaultValues.account_number = accountNumber
+
   const form = useForm({
     resolver: zodResolver(sow_schema),
-    defaultValues: getDefaults(sow_schema),
+    defaultValues: defaultValues,
   })
 
   const handleSubmit = (values: any) => {
@@ -80,45 +81,24 @@ const SOWForm: React.FC<SOWFormProps> = ({ onSubmit, driveId }) => {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Document Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <DateTimePicker {...field} granularity="day" />
               <FormMessage />
             </FormItem>
           )}
         />
-
-        <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
+        
+        {
+          uploading ? (
+            <Button className="h-fit w-fit" type="submit">
+              <Loader2 className="h-4 w-4 animate-spin text-background" /> 
+              Submitting...
+            </Button>
+          ) : (
+            <Button className="h-fit w-fit text-background" type="submit">
+                Submit
+            </Button>
+          )
+        }
         
       </form>
     </Form>

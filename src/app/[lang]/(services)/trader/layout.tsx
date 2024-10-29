@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import "../../globals.css";
+import "../../../globals.css";
 import { Header } from "@/components/Header";
-import FirebaseAuthProvider from "../../../utils/providers/FirebaseAuthProvider";
 import { TranslationProvider } from "@/utils/providers/TranslationProvider";
 
 export const metadata: Metadata = {
-  title: "AGM Technology",
+  title: "AGM Trader",
   description: "Discover the new trading world.",
 };
 
@@ -18,12 +17,12 @@ export default function Layout({
 }>) {
   return (
     <TranslationProvider lang={params.lang}>
-      <FirebaseAuthProvider>
-        <div className="flex flex-col min-h-screen w-full">
-          <Header />
-          {children}
-        </div>
-      </FirebaseAuthProvider>
+      <div className="flex flex-col min-h-screen w-full">
+        <Header />
+        <main className="flex-grow">
+            {children}
+          </main>
+      </div>
     </TranslationProvider>
   );
 }
