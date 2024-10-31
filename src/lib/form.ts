@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-// Dictionaries
+// Dictionaries for Selects
 export const countries = [
     { label: "Afghanistan", value: "af" },
     { label: "Albania", value: "al" },
@@ -257,6 +257,8 @@ export const currencies = [
   { label: "ZAR", value: "ZAR" },
   { label: "KRW", value: "KRW" },
 ] as const
+
+// Dictionaries for Checklists
 export const source_of_wealth = [
   {
     id: "Allowance",

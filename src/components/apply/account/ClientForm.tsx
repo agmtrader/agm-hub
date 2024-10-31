@@ -2,15 +2,11 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Confetti } from '@/components/ui/confetti';
 import GeneralInfo from './components/GeneralInfo';
 import Regulatory from './components/Regulatory';
 import { Ticket } from '@/lib/types';
 import AboutYou from './components/AboutYou';
-import { Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { FormHeader, Header } from '@/components/Header';
+import { FormHeader } from '@/components/Header';
 import ApplicationEnd from './components/ApplicationEnd';
 
 const ClientForm = () => {
@@ -52,8 +48,7 @@ const ClientForm = () => {
     if (!ticket) {
       return step === 1 && (
         <GeneralInfo 
-          step={step} 
-          ticket={ticket} 
+          ticket={ticket}
           stepForward={stepForward} 
           setTicket={setTicket}
         />
@@ -64,7 +59,6 @@ const ClientForm = () => {
       if (step === 1) {
         return (
           <GeneralInfo 
-            step={step} 
             ticket={ticket} 
             stepForward={stepForward} 
             setTicket={setTicket}
@@ -98,7 +92,6 @@ const ClientForm = () => {
       if (step === 1) {
         return (
           <GeneralInfo 
-            step={step} 
             ticket={ticket} 
             stepForward={stepForward} 
             setTicket={setTicket}

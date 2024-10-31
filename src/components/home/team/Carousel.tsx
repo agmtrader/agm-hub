@@ -67,13 +67,13 @@ export function TeamCarousel() {
           {team.map((member, index) => (
             <div key={index} className="flex-[0_0_33.33%] min-w-0 px-4">
               <div className="p-1 group">
-                <Card className="border-none shadow-md hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
+                <Card>
                   <CardContent className="flex aspect-square items-center justify-center p-6">
                     <Dialog>
                       <DialogTrigger asChild>
-                        <div className="w-full text-agm-dark-blue cursor-pointer h-full text-center flex flex-col items-center justify-center space-y-4">
+                        <div className="w-full text-foreground cursor-pointer h-full text-center flex flex-col items-center justify-center space-y-4">
                           <Avatar className="w-24 h-24 border-2 border-agm-dark-blue">
-                            <AvatarFallback className="text-2xl font-bold bg-white text-agm-dark-blue">
+                            <AvatarFallback className="text-2xl font-bold bg-background text-foreground">
                               {member.name.split(' ').map(n => n[0]).join('')}
                             </AvatarFallback>
                           </Avatar>
@@ -89,7 +89,7 @@ export function TeamCarousel() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
                         >
-                          <DialogHeader className="text-agm-dark-blue">
+                          <DialogHeader className="text-foreground">
                             <DialogTitle className="text-3xl font-bold">{member.name}</DialogTitle>
                             <DialogDescription className="text-lg text-primary font-medium">{member.title}</DialogDescription>
                           </DialogHeader>

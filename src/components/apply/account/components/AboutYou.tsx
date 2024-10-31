@@ -53,7 +53,7 @@ interface Props {
 
 const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props) => {
 
-  const backdoor = false
+  const backdoor = true
 
   let formSchema:any;
   let initialFormValues:any = {};
@@ -77,6 +77,7 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
     setGenerating(true)
 
     try {
+
       const updatedApplicationInfo = { ...ticket.ApplicationInfo }
 
       for (const [key, value] of Object.entries(values)) {
@@ -104,13 +105,15 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
 
       setTicket(updatedTicket)
       stepForward()
+
     } catch (err) {
-      console.error(err)
+
       toast({
         title: "Error",
         description: err instanceof Error ? err.message : "An unexpected error occurred",
         variant: "destructive",
       })
+
     } finally {
       setGenerating(false)
     }

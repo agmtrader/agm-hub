@@ -1,5 +1,5 @@
 "use client"
-import React, {SetStateAction, useState} from "react"
+import React, {useState} from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -42,7 +42,7 @@ import { PersonLinesFill } from "react-bootstrap-icons"
 
 interface Props {
   stepForward:() => void,
-  stepBackwards?:() => void,
+  stepBackwards:() => void,
   ticket: Ticket,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
 }
@@ -68,6 +68,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
     setGenerating(true)
 
     try {
+      
       const updatedApplicationInfo = { ...ticket.ApplicationInfo, ...values };
 
       const response = await accessAPI('/database/update', 'POST', {
@@ -88,8 +89,10 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
         ApplicationInfo: updatedApplicationInfo,
         Status: 'Filled'
       };
+
       setTicket(updatedTicket);
       stepForward();
+
     } catch (error) {
       console.error('Error updating ticket:', error);
       toast({

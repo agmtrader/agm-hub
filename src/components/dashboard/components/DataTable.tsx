@@ -90,6 +90,7 @@ export const DataTable = <TData,>({
     pageIndex: 0,
     pageSize: 10,
   })
+  const [isPageTransition, setIsPageTransition] = useState(false)
 
   if (data.length === 0) {
     return <div></div>
@@ -207,7 +208,10 @@ export const DataTable = <TData,>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
+    onPaginationChange: (updater) => {
+      setIsPageTransition(true)
+      setPagination(updater)
+    },
     state: {
       sorting,
       rowSelection,
@@ -215,6 +219,11 @@ export const DataTable = <TData,>({
       columnVisibility,
       pagination,
     },
+    initialState: { //This line
+      pagination: {
+          pageSize: 20,
+      },
+    }
   })
 
   useEffect(() => {
@@ -223,6 +232,12 @@ export const DataTable = <TData,>({
       setSelection(selectedRow ? selectedRow.original as TData : null)
     }
   }, [rowSelection, enableSelection, setSelection, table])
+
+  useEffect(() => {
+    if (isPageTransition) {
+      setIsPageTransition(false)
+    }
+  }, [pagination.pageIndex])
 
   const rowVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -263,13 +278,13 @@ export const DataTable = <TData,>({
           ))}
         </TableHeader>
         <TableBody>
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row, index) => (
                 <motion.tr
                   key={row.id}
                   variants={rowVariants}
-                  initial="hidden"
+                  initial={isPageTransition ? "visible" : "hidden"}
                   animate="visible"
                   exit="hidden"
                   custom={index}

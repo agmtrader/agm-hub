@@ -2,14 +2,9 @@
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ReloadIcon } from "@radix-ui/react-icons"
 import { accessAPI } from '@/utils/api'
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
 
@@ -36,7 +31,13 @@ export default function TradeTickets() {
       if (response['status'] !== 'success') {
         throw new Error(response['content'])
       }
-      setTicket(response['content'][ticketId as string])
+      const trades = response['content'][ticketId as string]
+      trades.sort((a: any, b: any) => {
+        const dateA = new Date(a['Date/Time']).getTime()
+        const dateB = new Date(b['Date/Time']).getTime()
+        return dateB - dateA
+      })
+      setTicket(trades)
     }
 
     async function generateTradeTicket() {
@@ -54,9 +55,15 @@ export default function TradeTickets() {
     }
 
     async function sendToClient() {
+
       if (!clientMessage) return;
+
       const clientEmails = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
-      const response = await accessAPI('/email/send_client_email', 'POST', {'data': clientMessage, 'client_email': clientEmails, 'subject': 'Confirmación de Transacción'})
+      const response = await accessAPI('/email/send_client_email', 'POST', {
+        'plain_text': clientMessage, 
+        'client_email': clientEmails, 
+        'subject': 'Confirmación de Transacción'
+      })
       if (response['status'] === 'error') {
         throw new Error(response['content'])
       }
@@ -92,7 +99,7 @@ export default function TradeTickets() {
       }
     ]
 
-    console.log(ticket)
+    console.log(clientMessage)
 
   return (
     <div className="w-full h-full flex flex-col gap-y-10 justify-center items-center">
@@ -120,7 +127,7 @@ export default function TradeTickets() {
               {ticket !== null ?
                 ticket.length > 0 ? 
                   <div className='w-full h-full flex flex-col gap-y-5 justify-center items-center'>
-                    <DataTable columns={columns} enableSelection data={ticket}/> 
+                    <DataTable enablePagination columns={columns} enableSelection data={ticket}/> 
                     <Button onClick={generateTradeTicket}>
                       Generate Trade Ticket
                     </Button>
@@ -156,7 +163,7 @@ export default function TradeTickets() {
               value={clientMessage} 
               readOnly 
               placeholder="Generated report will appear here..."
-              className="h-full w-full"
+              className="h-[60vh] w-full"
             />
             <Button className='w-fit' onClick={() => setConfirmDialogOpen(true)}>
               Send to Client

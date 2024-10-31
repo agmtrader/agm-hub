@@ -48,10 +48,9 @@ interface Props {
   stepForward: () => void,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
   ticket: Ticket | null
-  step: number,
 }
 
-const GeneralInfo = ({ stepForward, setTicket, step, ticket }: Props) => {
+const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
 
   const [generating, setGenerating] = useState(false)
   const searchParams = useSearchParams()
@@ -73,6 +72,7 @@ const GeneralInfo = ({ stepForward, setTicket, step, ticket }: Props) => {
 
     setGenerating(true)
     try {
+      
       const timestamp = new Date()
       const advisor = searchParams.get('ad') || ''
       const ticketID = ticket?.TicketID || formatTimestamp(timestamp)

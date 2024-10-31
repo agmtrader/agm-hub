@@ -101,10 +101,10 @@ const page = () => {
     <div className="w-full h-full justify-start items-center flex gap-y-20 flex-col">
       {!riskProfile && (
         <div className="flex flex-col items-center gap-y-5">
-          <h1 className="text-7xl text-agm-dark-blue font-bold">Risk Profiles</h1>
+          <h1 className="text-7xl text-foreground font-bold">Risk Profiles</h1>
           
           <div className="w-full flex flex-col gap-y-5 justify-center items-center">
-            <p className="text-agm-white font-bold">Risk profile</p>
+            <p className="text-lg text-subtitle">Select a risk profile to view</p>
             
             <div className="flex w-full gap-x-5">
               <Select onValueChange={setSelectedProfileID} value={selectedProfileID || ''}>
