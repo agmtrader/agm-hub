@@ -1,4 +1,6 @@
 // Your web app's Firebase configuration
+// This comes from AGM Data Lake's agm-dashboard app
+
 const firebaseConfig = {
     apiKey: "AIzaSyADSCcUmflApv3U1BDZnskcbgdBXXLAk1A",
     authDomain: "agm-datalake.firebaseapp.com",

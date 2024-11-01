@@ -19,29 +19,39 @@ export async function accessAPI(url:string, type:string, params?:Map) {
     }
 
     async function getData(token:string) {
-        const data = await fetch(`${api_url}${url}`, {
-        headers:{
-            'Cache-Control': 'no-cache',
-            'Authorization': 'Bearer ' + token
-        },
-        }).then(response => response.json()).then(async (data) => await data)
-        return data
+        const response = await fetch(`${api_url}${url}`, {
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Authorization': 'Bearer ' + token
+            },
+        })
+        
+        const contentType = response.headers.get('content-type')
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json()
+        }
+        return await response.blob()
     }
 
     async function postData(token:string) {
-        const data = await fetch(`${api_url}${url}`, {
-        method: 'POST',
-        headers:{
-            'Cache-Control': 'no-cache',
-            'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify(params),
-        }).then(response => response.json()).then(async (data) => await data)
-        return data
+        const response = await fetch(`${api_url}${url}`, {
+            method: 'POST',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(params),
+        })
+        
+        const contentType = response.headers.get('content-type')
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json()
+        }
+        return await response.blob()
     }
 
     let data = null
-    const api_url = process.env.API_URL
+    const api_url = process.env.AGM_API_URL
     const token = await getToken()
 
     if (type === 'GET') {

@@ -8,8 +8,8 @@ import { accessAPI } from "@/utils/api"
 export const authOptions: NextAuthOptions = {
     providers: [
       GoogleProvider({
-        clientId: process.env.GOOGLE_ID!,
-        clientSecret: process.env.GOOGLE_SECRET!,
+        clientId: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
         checks: 'none',
         authorization: {
           params: {
@@ -54,12 +54,12 @@ export const authOptions: NextAuthOptions = {
           token.email = user.email
           token.name = user.name
           token.picture = user.image
-          token.laserfocused = false
 
           if (account?.provider === 'google') {
             token.accessToken = account.access_token
             token.refreshToken = account.refresh_token
           }
+          console.log(token)
         }
         
         return token
@@ -72,6 +72,7 @@ export const authOptions: NextAuthOptions = {
 
             // Authenticate Google Drive
             session.user.id = token.sub
+
 
             // Build profile
             if (token.picture) {

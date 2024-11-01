@@ -27,7 +27,7 @@ const RiskProfile = ({riskProfile, account}: Props) => {
   }
   const {labels, values} = getAssetAllocation()
 
-  const asset_data = [
+  const assetData = [
     {
       "Asset Class": "Bonds AAA - A",
       "Allocation": `${riskProfile.bonds_aaa_a.toFixed(2)}%`,
@@ -108,7 +108,7 @@ const RiskProfile = ({riskProfile, account}: Props) => {
         <div className="flex flex-col lg:flex-row gap-5 w-full h-fit justify-center items-center text-center">
           <div className="w-full lg:w-1/2 flex flex-col gap-y-5 justify-center items-center">
             <h2 className="text-2xl font-semibold">Asset Allocation</h2>
-            <DataTable data={asset_data} width={100}/>
+            <DataTable data={assetData} width={100}/>
             <p className="text-lg font-semibold">
               Average yield: {(riskProfile.average_yield * 100).toFixed(2)}%
             </p>
