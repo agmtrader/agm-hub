@@ -35,6 +35,7 @@ export const authOptions: NextAuthOptions = {
                   'username': credentials.username
                 }
               })
+              console.log(response)
               return response['content'][0]
             } catch (error) {
               console.error('Authentication error:', error);
