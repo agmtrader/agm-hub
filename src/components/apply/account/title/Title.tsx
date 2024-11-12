@@ -6,6 +6,7 @@ import { signIn, useSession } from 'next-auth/react'
 import { motion } from 'framer-motion' // Add this import
 import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import Account from '@/components/sidebar/Account'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -49,22 +50,7 @@ const Title = ({setStarted}:Props) => {
             {t('apply.account.title.description')}
           </motion.p>
           {!session?.user ? 
-            <motion.div variants={itemVariants} className='flex flex-col sm:flex-row w-full gap-5 justify-center items-center mt-4'>
-              <Button 
-                onClick={(e) => {
-                  e.preventDefault()
-                  signIn('', {callbackUrl: '/apply/account'})
-                }}
-                className="w-full sm:w-auto px-8 py-3 text-lg font-semibold"
-              >
-                {t('apply.account.title.signIn')}
-              </Button>
-              <Button className="w-full sm:w-auto px-8 py-3 text-lg font-semibold">
-                <Link href='/create-account'>
-                  {t('apply.account.title.createAccount')}
-                </Link>
-              </Button>
-            </motion.div>
+            <Account />
             :
             <motion.div variants={itemVariants}>
               <ShimmerButton

@@ -13,7 +13,7 @@ import { motion } from "framer-motion"
 import Account from "./Account"
 import { Button } from "../ui/button"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
-import LanguageSwitcher from "../misc/LanguageSwitcher"
+import { formatURL } from "@/utils/lang"
 
 const navbarContent = [
   { name: 'AGM Home', url: '/' },
@@ -30,21 +30,8 @@ interface Props {
 }
 
 const Sidebar = ({ setExpandSidebar }: Props) => {
+
   const { lang } = useTranslationProvider()
-
-  function formatURL(path: string) {
-    if (path.includes('https://')) {
-      return path
-    }
-
-    if (!path.includes('/en') && !path.includes('/es')) {
-      let paths = path.split('/')
-      paths.splice(1, 0, lang)
-      return paths.join('/')
-    }
-
-    return path
-  }
 
   return (
     <div>
@@ -57,15 +44,13 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
         className='z-50 fixed right-0 top-0 w-fit h-full bg-background shadow-lg'
       >
         <NavigationMenu className="h-full w-full flex flex-col justify-between p-5">
-          <NavigationMenuList className="w-full flex-grow flex flex-col gap-y-4">
-            <div className="flex justify-between items-center my-5">
-              <Button variant={'ghost'} onClick={() => setExpandSidebar(false)}>
+          <NavigationMenuList className="w-full p-4 flex flex-col items-end justify-end gap-4">
+            <Button variant='ghost' onClick={() => setExpandSidebar(false)}>
                 X
-              </Button>
-            </div>
+            </Button>
             {navbarContent.map((item, index) => (
               <NavigationMenuItem key={index} onClick={() => setExpandSidebar(false)} className="w-full text-end">
-                <Link href={formatURL(item.url)} legacyBehavior passHref>
+                <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
                   <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-end")}>
                     {item.name}
                   </NavigationMenuLink>
@@ -73,8 +58,7 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
-          <Account dark={false} />
-          <LanguageSwitcher />
+          <Account />
         </NavigationMenu>
       </motion.div>
     </div>

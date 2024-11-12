@@ -33,8 +33,7 @@ const Title: React.FC<TitleProps> = ({
         <Image
           src={backgroundImage}
           alt='Background'
-          layout='fill'
-          objectFit='cover'
+          fill
           priority
         />
       </motion.div>

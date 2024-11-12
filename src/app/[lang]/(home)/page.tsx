@@ -1,12 +1,13 @@
+'use client'
+
 import Title from "../../../components/home/title/Title";
 import Introduction from "../../../components/home/introduction/Introduction"
 import Services from "@/components/home/services/Services";
 import FAQ from "@/components/home/faq/FAQ";
-
 import Team from "@/components/home/team/Team";
 import Footer from "@/components/Footer";
-import { GraphUpArrow } from "react-bootstrap-icons";
-import { Building, Handshake, BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle } from "lucide-react";
+import { Building, Handshake, BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle, LineChart } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Home() {
   
@@ -22,21 +23,21 @@ export default function Home() {
   const services = [
     {
       name: 'AGM Trader',
-      icon: <GraphUpArrow className='text-white h-[12vw] w-[12vw]'/>,
+      icon: <LineChart className='text-background h-[12vw] w-[12vw]'/>,
       description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
-      url: 'https://agmtrader.com'
+      url: '/trader'
     },
     {
       name: 'AGM Advisor',
-      icon: <Handshake className='text-white h-[12vw] w-[12vw]'/>,
+      icon: <Handshake className='text-background h-[12vw] w-[12vw]'/>,
       description:'We also provide Advisory services for those clients that would like to delegate a portion of their financial assets or wealth through our advisory division.',
-      url:'https://agm-advisor.vercel.app'
+      url:'/advisor'
     },
     {
       name: 'AGM Institutional',
-      icon: <Building className='text-white h-[12vw] w-[12vw]'/>,
+      icon: <Building className='text-background h-[12vw] w-[12vw]'/>,
       description:'Our Institutional division provides world class execution services to the most sophisticated institutions like Advisory Firms, Hedge Funds, Broker/Dealers, Wealth Management firms, Insurance companies and more.',
-      url:'https://agm-institutional.vercel.app'
+      url:'/institutional'
     }
   ]
   
@@ -84,13 +85,15 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col h-full w-full gap-y-20">
+    <motion.div 
+      className="flex flex-col h-full w-full gap-y-20"
+    >
       <Title {...titleProps} />
       <Introduction {...introductionProps} />
       <Services services={services} />
       <Team />
       <FAQ />
       <Footer />
-    </div>
+    </motion.div>
   )
 }

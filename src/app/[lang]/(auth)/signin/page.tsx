@@ -7,19 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { formatURL } from '@/utils/lang';
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 
 function SignIn() {
+
+  const { lang } = useTranslationProvider()
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
-  const { data: session } = useSession();
-
-  if (session?.user) {
-    router.push('/');
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,10 +30,8 @@ function SignIn() {
         password,
         redirect: false,
       });
-      if (result?.error) {
-        setError(result.error);
-      } else if (result?.ok) {
-        router.push('/');
+      if (result?.ok) {
+        router.push(formatURL('/', lang));
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
@@ -45,7 +42,7 @@ function SignIn() {
 
   const handleGoogleSignIn = () => {
     setIsLoading(true);
-    signIn('google', { callbackUrl: '/' });
+    signIn('google');
   };
 
   return (

@@ -5,9 +5,9 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import useScrollPositions from '@/hooks/useScrollPositions'
 import { AnimatePresence } from 'framer-motion'
-import { List } from 'react-bootstrap-icons'
 import Sidebar from './sidebar/Sidebar'
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
+import { AlignJustify } from 'lucide-react'
 
 const maxScroll = 100
 
@@ -37,7 +37,7 @@ export const Header = () => {
               onClick={() => setExpandSidebar(true)}
               className="z-20 text-background"
             >
-              <List className="text-2xl" />
+              <AlignJustify className="text-2xl" />
             </Button>
           </div>
         </div>
@@ -75,7 +75,7 @@ export const FormHeader = () => {
               onClick={() => setExpandSidebar(true)}
               className="z-20"
             >
-              <List className="text-2xl text-foreground" />
+              <AlignJustify className="text-2xl text-foreground" />
             </Button>
           </div>
         </div>

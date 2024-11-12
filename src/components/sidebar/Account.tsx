@@ -7,14 +7,16 @@ import { NavigationMenuLink } from '@radix-ui/react-navigation-menu'
 import { navigationMenuTriggerStyle } from '../ui/navigation-menu'
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { motion, AnimatePresence } from 'framer-motion' // Add this import
+import { formatURL } from '@/utils/lang'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 type Props = {
-  dark?:boolean
 }
 
-const Account = ({dark}: Props) => {
+const Account = ({}: Props) => {
   
   const {data:session} = useSession()
+  const { lang } = useTranslationProvider()
 
   return (
     <div className='h-fit w-full flex flex-col'>
@@ -37,9 +39,9 @@ const Account = ({dark}: Props) => {
                     }
 
                     {session.user.name ?
-                      <p className={cn('text-sm', dark && 'text-agm-white')}>{session?.user.name}</p>
+                      <p className='text-sm'>{session?.user.name}</p>
                       :
-                      <p className={cn('text-sm', dark && 'text-agm-white')}>Anonymous</p>
+                      <p className='text-sm'>Anonymous</p>
                     }
                   </div>
                 </Button>
@@ -74,16 +76,15 @@ const Account = ({dark}: Props) => {
             transition={{ duration: 0.3 }}
             className='flex w-full gap-x-5 justify-center items-center'
           >
-            <Button onClick={(e) => {
-                e.preventDefault()
-                signIn()
-              }}
+            <Button
               className="flex w-fit h-full justify-center items-center"
             >
-              <p className="text-sm">Sign in</p>
+              <Link href={formatURL('/signin', lang)}>
+                <p className="text-sm">Sign in</p>
+              </Link>
             </Button>
             <Button>
-              <Link href='/create-account'>
+              <Link href={formatURL('/create-account', lang)}>
                 <p className="text-sm">Register</p>
               </Link>
             </Button>

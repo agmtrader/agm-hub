@@ -1,12 +1,13 @@
 'use client'
-import { Handshake } from 'lucide-react'
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import { formatURL } from '@/utils/lang'
 
 interface Service {
   name: string;
@@ -20,7 +21,9 @@ interface ServicesProps {
 }
 
 const Services = ({ services }: ServicesProps) => {
-  
+
+  const { lang } = useTranslationProvider()
+
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true,
@@ -78,31 +81,33 @@ const Services = ({ services }: ServicesProps) => {
           Explore our services and find the one that best suits your needs.
         </motion.p>
         </div>
+
         <div className={`grid ${getGridColumns(services.length)} gap-8 w-full max-w-6xl px-4`}>
           {services.map((service, index) => (
             <motion.div 
               key={index}
               variants={itemVariants}
-              className="flex flex-col w-full justify-center items-center gap-y-5"
+              className="flex flex-col w-full justify-center items-center gap-5"
             >
-              <Card className='bg-primary-dark p-2 border-0 text-agm-white transition-transform duration-300 hover:scale-110'>
+              <Card className='bg-secondary-dark p-2 border-0 text-background transition-transform duration-300 hover:scale-110'>
+                
                 <CardContent className="flex aspect-square items-center justify-center p-6">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <div className='w-full h-full flex justify-center text-foreground items-center cursor-pointer'>
+                      <div className='w-full h-full flex justify-center text-background items-center cursor-pointer'>
                         {service.icon}
                       </div>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px] bg-background flex flex-col gap-y-5 justify-center items-center">
+                    <DialogContent className="sm:max-w-[425px] bg-background text-foreground flex flex-col gap-y-5 justify-center items-center">
                       <DialogHeader>
-                        <DialogTitle className='text-foreground'>{service.name}</DialogTitle>
+                        <DialogTitle>{service.name}</DialogTitle>
                       </DialogHeader>
                       <DialogDescription>
                         {service.description}
                       </DialogDescription>
                       <DialogFooter>
                         <Button asChild>
-                          <Link href={service.url}>
+                          <Link href={formatURL(service.url, lang)}>
                             Learn More
                           </Link>
                         </Button>
