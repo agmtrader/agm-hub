@@ -1,13 +1,21 @@
 import "../globals.css"
-import { TranslationProvider } from "../../utils/providers/TranslationProvider"
 import { NextAuthProvider } from "../../utils/providers/NextAuthProvider"
+import { TranslationProvider } from "../../utils/providers/TranslationProvider"
+export default async function Layout(
+  props: Readonly<{
+    children: React.ReactNode
+    params:{lang:string}
+  }>
+) {
+  const params = await props.params;
 
-export default async function Layout({
-  children, params:{lang}
-}: Readonly<{
-  children: React.ReactNode
-  params:{lang:string}
-}>) {
+  const {
+    lang
+  } = params;
+
+  const {
+    children
+  } = props;
 
   return (
     <NextAuthProvider>

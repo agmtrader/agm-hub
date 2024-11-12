@@ -1,5 +1,5 @@
 'use client'
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getTranslations } from "../../app/[lang]/dictionaries";
 
 // Laserfocus provider
@@ -12,7 +12,7 @@ export type TranslatorType = {
 export const TranslationContext = createContext<TranslatorType | undefined>(undefined);
 
 export const TranslationProvider = async ({ children, lang }: { children: React.ReactNode, lang:string }) => {
-    
+
     const t = await getTranslations(lang)
 
     return (
