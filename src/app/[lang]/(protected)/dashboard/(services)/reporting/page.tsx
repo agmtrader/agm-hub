@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { accessAPI } from '@/utils/api'
@@ -13,9 +13,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { Input } from '@/components/ui/input'
-import { Slider } from '@/components/ui/slider'
-import { Switch } from '@/components/ui/switch'
 
 const PipelineStep = ({ name, step, currentStep, status, onClick, disabled }: { name: string, step: number, currentStep: number, status: string, onClick: () => void, disabled: boolean }) => {
   const getStepStatus = () => {

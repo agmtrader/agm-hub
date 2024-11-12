@@ -16,7 +16,10 @@ import { ColumnDefinition, DataTable } from '../components/DataTable'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { formatTimestamp } from "@/utils/dates"
-import { getDefaults, account_access_schema } from '@/lib/form'
+
+import { getDefaults } from '@/lib/form'
+import { account_access_schema } from '@/lib/schemas'
+
 import { useForm } from 'react-hook-form'
 import { Account, Ticket } from '@/lib/types'
 import { accessAPI } from '@/utils/api'

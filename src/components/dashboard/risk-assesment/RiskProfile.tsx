@@ -3,6 +3,7 @@ import { DataTable } from '../components/DataTable'
 import { Doughnut } from 'react-chartjs-2'
 import { cn } from '@/lib/utils'
 import 'chart.js/auto'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 type Props = {
     riskProfile: any,
@@ -10,6 +11,8 @@ type Props = {
 }
 
 const RiskProfile = ({riskProfile, account}: Props) => {
+
+  const {t} = useTranslationProvider()
 
   function getAssetAllocation() {
       let labels:string[] = []
@@ -107,14 +110,14 @@ const RiskProfile = ({riskProfile, account}: Props) => {
         {riskProfile.name && <h1 className="text-3xl font-bold">{riskProfile.name}</h1>}
         <div className="flex flex-col lg:flex-row gap-5 w-full h-fit justify-center items-center text-center">
           <div className="w-full lg:w-1/2 flex flex-col gap-y-5 justify-center items-center">
-            <h2 className="text-2xl font-semibold">Asset Allocation</h2>
+            <h2 className="text-2xl font-semibold">{t('dashboard.risk.profile.asset_allocation')}</h2>
             <DataTable data={assetData} width={100}/>
             <p className="text-lg font-semibold">
-              Average yield: {(riskProfile.average_yield * 100).toFixed(2)}%
+              {t('dashboard.risk.profile.average_yield')}: {(riskProfile.average_yield * 100).toFixed(2)}%
             </p>
           </div>
           <div className="w-full lg:w-1/2 flex gap-y-5 justify-center items-center flex-col">
-            <h2 className="text-2xl font-semibold">Portfolio Visualization</h2>
+            <h2 className="text-2xl font-semibold">{t('dashboard.risk.profile.title')}</h2>
             <div className="w-full max-w-md">
               <Doughnut data={data} options={options} />
             </div>

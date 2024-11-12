@@ -4,8 +4,9 @@ import { motion } from 'framer-motion'
 
 import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Map, Ticket } from '@/lib/types';
-import { about_you_primary_schema, about_you_secondary_schema, getDefaults, regulatory_schema } from '@/lib/form';
-import { accessAPI } from '@/utils/api';
+
+import { getDefaults } from '@/lib/form';
+import { about_you_primary_schema, about_you_secondary_schema, regulatory_schema } from '@/lib/schemas';
 
 interface Props {
   ticket: Ticket,
@@ -19,9 +20,9 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
   const [secondaryHolderInfo, setSecondaryHolderInfo] = useState<Map | null>(null)
   const [regulatoryInfo, setRegulatoryInfo] = useState<Map | null>(null)
 
-  const primaryDefaultValues = getDefaults(about_you_primary_schema)
-  const secondaryDefaultValues = getDefaults(about_you_secondary_schema)
-  const regulatoryDefaultValues = getDefaults(regulatory_schema)
+  const primaryDefaultValues = getDefaults(about_you_primary_schema(t => t))
+  const secondaryDefaultValues = getDefaults(about_you_secondary_schema(t => t))
+  const regulatoryDefaultValues = getDefaults(regulatory_schema(t => t))
 
   // Query
   useEffect(() => {

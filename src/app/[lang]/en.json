@@ -3,5 +3,241 @@
         "introduction": {
             "title": "Empowering Today's Traders for Tomorrows Markets"
         }
+    },
+    "apply": {
+        "account": {
+            "title": {
+                "ready": "Ready to make money?",
+                "description": "Unlock the world of financial opportunities with your AGM trading account.",
+                "signIn": "Sign In",
+                "createAccount": "Create Account",
+                "startApplication": "Start Application"
+            },
+            "general_info": {
+                "title": "General Information",
+                "email": "Email",
+                "email_placeholder": "Enter your email",
+                "country": "Country of Residence",
+                "account_type": "Account Type",
+                "account_types": {
+                    "individual": "Individual Account",
+                    "joint": "Joint Account",
+                    "trust": "Trust Account",
+                    "institutional": "Institutional Account"
+                },
+                "disclaimer": {
+                    "title": "DISCLAIMER",
+                    "content": "If you wish to open an Individual Account, we advise you that for inheritance and tax issues, it's best to open a Joint Account. An Individual Account does not allow the option to name Beneficiaries at opening or thereafter and might be subject to Inheritance taxes. Please consider the option of opening a Joint account instead of an individual account.",
+                    "contact": "If you have any questions before applying, please contact us at:"
+                }
+            },
+            "about_you": {
+                "title": "About You",
+                "primary": "Primary Holder",
+                "secondary": "Secondary Holder",
+                "basic_info": "Basic Info",
+                "residential_info": "Residential Info",
+                "personal_info": "Personal Info",
+                "id_info": "ID Info",
+                "employer_info": "Employer Info",
+                "financial_info": "Financial Info",
+                "security_questions": "Security Questions",
+                
+                "salutation": "Salutation",
+                "select_salutation": "Select a salutation",
+                "first_name": "First name",
+                "first_name_placeholder": "Enter your first name",
+                "middle_name": "Middle name",
+                "middle_name_placeholder": "Enter your middle name",
+                "last_name": "Last name",
+                "last_name_placeholder": "Enter your last name",
+                
+                "address": "Address",
+                "city": "City",
+                "state": "State/Province",
+                "zip": "Zip",
+                "phone_type": "Phone type",
+                "phone_country": "Phone country",
+                "phone_number": "Phone number",
+                
+                "date_of_birth": "Date of birth",
+                "marital_status": "Marital Status",
+                "select_marital_status": "Select a status",
+                "number_of_dependents": "Number of dependents",
+                "tax_id": "Tax ID",
+                
+                "id_country": "ID Country",
+                "id_type": "ID Type",
+                "select_id_type": "Select ID type",
+                "id_number": "ID Number",
+                "id_expiration": "ID Expiration",
+                
+                "employment_status": "Employment Status",
+                "select_employment_status": "Select a status",
+                "employer_name": "Employer name",
+                "employer_address": "Employer address",
+                "employer_city": "Employer city",
+                "employer_state": "Employer state/province",
+                "employer_country": "Employer Country",
+                "employer_zip": "Employer zip",
+                "nature_of_business": "Nature of business",
+                "occupation": "Occupation",
+                
+                "source_of_wealth": "Source of Wealth",
+                "currency": "Currency",
+                "select_currency": "Select a currency",
+                
+                "security_question_1": "Security Question 1",
+                "security_answer_1": "Security Answer 1",
+                "security_question_2": "Security Question 2",
+                "security_answer_2": "Security Answer 2",
+                "security_question_3": "Security Question 3",
+                "security_answer_3": "Security Answer 3",
+                "select_security_question": "Select a security question",
+                
+                "email": "Email",
+                "username": "Username",
+                "password": "Password",
+
+                "fill_fake_data": "Fill with Fake Data",
+
+                "login_info": "Login Info",
+                "citizenship": "Citizenship",
+                "country_of_birth": "Country of Birth",
+                "country_of_residence": "Country of Residence",
+                "phone_types": {
+                    "mobile": "Mobile",
+                    "home": "Home"
+                },
+                "marital_status_list": {
+                    "single": "Single",
+                    "married": "Married",
+                    "divorced": "Divorced",
+                    "widowed": "Widowed"
+                },
+                "id_type_list": {
+                    "passport": "Passport",
+                    "national_id": "National ID",
+                    "license": "License",
+                    "alien": "Alien"
+                },
+                "employment_status_list": {
+                    "employed": "Employed",
+                    "retired": "Retired",
+                    "self_employed": "Self Employed",
+                    "trader": "Trader",
+                    "student": "Student",
+                    "homemaker": "Homemaker",
+                    "unemployed": "Unemployed"
+                }
+            },
+            "regulatory": {
+                "title": "Regulatory Information",
+                "annual_net_income": "Annual Net Income",
+                "liquid_net_worth": "Liquid Net Worth",
+                "investment_objectives": "Investment Objectives",
+                "products_to_trade": "Products to Trade",
+                "amount_to_invest": "Amount to Invest",
+                "net_worth": "Net Worth",
+                "investment_objectives_list": {
+                    "capital": "Capital",
+                    "growth": "Growth",
+                    "hedging": "Hedging",
+                    "profits": "Profits"
+                },
+                "source_of_wealth": {
+                    "allowance": "Allowance",
+                    "disability": "Disability",
+                    "income": "Income",
+                    "inheritance": "Inheritance",
+                    "profits": "Profits",
+                    "interest": "Interest",
+                    "pension": "Pension",
+                    "other": "Other",
+                    "property": "Property"
+                },
+                "products": {
+                    "bonds": "Bonds",
+                    "stocks": "Stocks",
+                    "futures": "Futures",
+                    "options": "Options",
+                    "etfs": "ETFs"
+                }
+            },
+            "application_end": {
+                "title": "Application submitted!",
+                "description": "Thank you for choosing our services. We will review your application and get back to you soon.",
+                "apply_another": "Apply for another account",
+                "go_back_home": "Go back home"
+            }
+        },
+        "risk": {
+            "title": "Risk Assessment Questionnaire",
+            "description": "Please complete this form to help us understand your risk tolerance and investment preferences.",
+            "form": {
+                "account_number": "Account number (enter . if no account)",
+                "client_name": "Full name",
+                "type": {
+                    "title": "What type of investor do you consider yourself?",
+                    "conservative": "Conservative",
+                    "moderate": "Moderate",
+                    "aggressive": "Aggressive"
+                },
+                "loss": {
+                    "title": "If your portfolio loses 20% of its value what action would you take?",
+                    "sell_everything": "Sell everything",
+                    "sell_some": "Sell some investments",
+                    "do_nothing": "Do nothing",
+                    "invest_more": "Invest more"
+                },
+                "gain": {
+                    "title": "If your portfolio appreciates 20% of its value what action would you take?",
+                    "sell_everything": "Sell everything",
+                    "sell_some": "Sell some investments",
+                    "do_nothing": "Do nothing",
+                    "invest_more": "Invest more"
+                },
+                "period": {
+                    "title": "What do you think the average term of your investment portfolio should be?",
+                    "more_than_21_years": "More than 21 years",
+                    "11_to_20_years": "11 to 20 years",
+                    "5_to_10_years": "5 to 10 years",
+                    "0_to_5_years": "0 to 5 years"
+                },
+                "diversification": {
+                    "title": "Considering asset class diversification, which of these portfolios would you select?",        
+                    "portfolio_a": "Portfolio A: 100% bonds, 0% equity",
+                    "portfolio_b": "Portfolio B: 80% bonds, 20% equity",
+                    "portfolio_c": "Portfolio C: 60% bonds, 40% equity"
+                },
+                "goals": {
+                    "title": "Which of these portfolios best represent your goals with the most acceptable outcomes?",
+                    "portfolio_a": "Portfolio A: Average 4% return",
+                    "portfolio_b": "Portfolio B: Average 5% return",
+                    "portfolio_c": "Portfolio C: Average 7% return"
+                }
+            },
+            "result": {
+                "title": "Your Risk Profile",
+                "warning": "Please take a picture of this, as it will be very hard to see it again!"
+            }
+        }
+    },
+    "forms": {
+        "search": "Search...",
+        "no_results": "No results found.",
+        "required": "Required field",
+        "finish": "Finish",
+        "submit": "Submit",
+        "submitting": "Submitting...",
+        "previous_step": "Previous step",
+        "errors": {
+            "email": "Please enter a valid email.",
+            "username_length": "Username must be at least 4 characters long.",
+            "password_format": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one symbol.",
+            "select_required": "Please select an option.",
+            "security_answer": "Please enter an answer for the security question."
+        }
     }
+    
 }

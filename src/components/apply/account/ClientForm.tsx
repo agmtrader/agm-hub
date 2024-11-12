@@ -148,7 +148,7 @@ const ClientForm = () => {
           exit="out"
           variants={pageVariants}
           transition={pageTransition}
-          className='w-fit h-fit flex flex-col justify-center items-center pb-10'
+          className='w-[50%] h-fit flex flex-col justify-center items-center pb-10'
         >
           {renderFormStep()}
         </motion.div>

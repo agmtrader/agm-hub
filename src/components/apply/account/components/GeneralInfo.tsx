@@ -1,19 +1,28 @@
 "use client"
+import { useState } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useSearchParams } from 'next/navigation'
 
-import { cn } from "@/lib/utils"
 import { Ticket } from "@/lib/types"
 import { formatTimestamp } from "@/utils/dates"
+import { account_types, getDefaults } from "@/lib/form"
+import { general_info_schema } from "@/lib/schemas"
+import { accessAPI } from "@/utils/api"
+import CountriesFormField from "@/components/ui/CountriesFormField"
+
+import { useToast } from "@/hooks/use-toast"
+import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 
 import { Button } from "@/components/ui/button"
+
+import { PersonLinesFill } from "react-bootstrap-icons"
+import { Loader2 } from "lucide-react"
 
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -36,14 +45,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { countries, account_types, general_info_schema, getDefaults } from "@/lib/form"
-import { PersonLinesFill } from "react-bootstrap-icons"
-import { accessAPI } from "@/utils/api"
-import { useState } from "react"
-import CountriesFormField from "@/components/ui/CountriesFormField"
-import { Loader2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-
 interface Props {
   stepForward: () => void,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
@@ -58,7 +59,8 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
   let formSchema: any;
   let initialFormValues: any;
 
-  formSchema = general_info_schema
+  const {t} = useTranslationProvider()
+  formSchema = general_info_schema(t)
   initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,6 +69,7 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
   })
 
   const {toast} = useToast()
+  const translatedAccountTypes = account_types(t)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -77,7 +80,7 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
       const advisor = searchParams.get('ad') || ''
       const ticketID = ticket?.TicketID || formatTimestamp(timestamp)
 
-      const updatedTicket: Ticket = {
+      const updatedTicket:Ticket = {
         'TicketID': ticketID,
         'Status': 'Started',
         'ApplicationInfo': values,
@@ -110,35 +113,66 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
         <div className='flex'>
           <div className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
             <PersonLinesFill className='h-24 w-24 text-secondary'/>
-            <p className='text-5xl font-bold'>General Information</p>
+            <p className='text-5xl font-bold'>{t('apply.account.general_info.title')}</p>
+          </div>
+        </div>
+
+        <div className='flex flex-col bg-error/20 p-5 max-w-xl rounded-lg justify-center gap-y-5 items-center w-full h-full'>
+          <div className='flex flex-col gap-y-5 justify-center items-center w-full h-full'>
+            <div className="space-y-4 text-sm text-subtitle">
+              <p className="font-semibold">
+                {t('apply.account.general_info.disclaimer.title')}
+              </p>
+              <p>
+                {t('apply.account.general_info.disclaimer.content')}
+              </p>
+              <p>
+                {t('apply.account.general_info.disclaimer.contact')}
+                <br />
+                <span className="font-medium">Email:</span> info@agmtechnology.com
+                <br />
+                <span className="font-medium">Whatsapp:</span> +1 (786) 251-1496
+              </p>
+            </div>
           </div>
         </div>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-96 flex flex-col gap-y-5 justify-center items-center">
+          
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-y-5 justify-center items-center">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormMessage />
+                  <div className='flex gap-2 items-center'>
+                    <FormLabel>{t('apply.account.general_info.email')}</FormLabel>
+                    <FormMessage />
+                  </div>
                   <FormControl>
-                    <Input {...field} placeholder="Enter your email" />
+                    <Input {...field} placeholder=''/>
                   </FormControl>
                 </FormItem>
               )}
             />
           
-            <CountriesFormField form={form} element={{ name: "country", title: "Country of Residence" }} />
+            <CountriesFormField 
+              form={form} 
+              element={{ 
+                name: "country", 
+                title: t('apply.account.general_info.country') 
+              }} 
+            />
 
             <FormField
               control={form.control}
               name="account_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Account Type</FormLabel>
-                  <FormMessage />
+                  <div className='flex gap-2 items-center'>
+                    <FormLabel>{t('apply.account.general_info.account_type')}</FormLabel>
+                    <FormMessage />
+                  </div>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -147,10 +181,11 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
                           role="combobox"
                         >
                           {field.value
-                            ? account_types.find(
+                            ? translatedAccountTypes.find(
                                 (type) => type.value === field.value
                               )?.label
-                            : "Select an account type"}
+                            : ''
+                          }
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -158,11 +193,11 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
                       <Command>
                         <CommandList>
                           <CommandInput
-                            placeholder="Search account types..."
+                            placeholder={t('forms.search')}
                           />
-                          <CommandEmpty>No account type found.</CommandEmpty>
+                          <CommandEmpty>{t('forms.no_results')}</CommandEmpty>
                           <CommandGroup>
-                            {account_types.map((type) => (
+                            {translatedAccountTypes.map((type) => (
                               <CommandItem
                                 value={type.label}
                                 key={type.value}
@@ -186,10 +221,10 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
               {generating ? (
                 <>
                   <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                  Submitting...
+                  {t('forms.submitting')}
                 </>
               ) : (
-                'Next step'
+                t('forms.submit')
               )}
             </Button>
           </form>

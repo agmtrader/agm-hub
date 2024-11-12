@@ -17,11 +17,13 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
 
-import { getDefaults, risk_assesment_schema } from "@/lib/form"
+import { getDefaults } from "@/lib/form"
+import { risk_assesment_schema } from "@/lib/schemas"
+
 import { Input } from "@/components/ui/input"
 import { formatTimestamp } from "@/utils/dates"
 import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, m } from "framer-motion"
 
 import {
   Dialog,
@@ -32,6 +34,7 @@ import { accessAPI } from "@/utils/api"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 
 // Risk profile types
 export const risk_profile_types = [
@@ -141,10 +144,12 @@ const RiskForm = () => {
   const [riskProfile, setRiskProfile] = useState<any | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
+  const {t} = useTranslationProvider()
+
   // Form
   let formSchema:any;
   let initialFormValues:any = {};
-  formSchema = risk_assesment_schema
+  formSchema = risk_assesment_schema(t)
   initialFormValues = getDefaults(formSchema)
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -233,6 +238,124 @@ const RiskForm = () => {
     setRiskProfile(null);
   }
 
+  const types = [
+    {
+      value: '1',
+      label: t('apply.risk.form.type.conservative'),
+      id: 1
+    },
+    {
+      value: '2.5',
+      label: t('apply.risk.form.type.moderate'),
+      id: 2
+    },
+    {
+      value: '4',
+      label: t('apply.risk.form.type.aggressive'),
+      id: 3
+    }
+  ]
+
+  const losses = [
+    {
+      value: '1',
+      label: t('apply.risk.form.loss.sell_everything'),
+      id: 1
+    },
+    {
+      value: '2',
+      label: t('apply.risk.form.loss.sell_some'),
+      id: 2
+    },
+    {
+      value: '3',
+      label: t('apply.risk.form.loss.do_nothing'),
+      id: 3
+    },
+    {
+      value: '4',
+      label: t('apply.risk.form.loss.invest_more'),
+      id: 4
+    },
+  ]
+
+  const gains = [
+    {
+      value: '1',
+      label: t('apply.risk.form.gain.sell_everything'),
+      id: 1
+    },
+    {
+      value: '2',
+      label: t('apply.risk.form.gain.sell_some'),
+      id: 2
+    },
+    {
+      value: '3',
+      label: t('apply.risk.form.gain.do_nothing'),
+      id: 3
+    },
+    {
+      value: '4',
+      label: t('apply.risk.form.gain.invest_more'),
+      id: 4
+    }
+  ] 
+
+  const periods = [
+    {
+      value: '1',
+      label: t('apply.risk.form.period.more_than_21_years'),
+      id: 1
+    },
+    {
+      value: '2',
+      label: t('apply.risk.form.period.11_to_20_years'),
+      id: 2
+    },
+    {
+      value: '3',
+      label: t('apply.risk.form.period.5_to_10_years'),
+      id: 3
+    }
+  ]
+
+  const diversifications = [
+    {
+      value: '1',
+      label: t('apply.risk.form.diversification.portfolio_a'),
+      id: 1
+    },
+    {
+      value: '2',
+      label: t('apply.risk.form.diversification.portfolio_b'),
+      id: 2
+    },
+    {
+      value: '3',
+      label: t('apply.risk.form.diversification.portfolio_c'),
+      id: 3
+    }
+  ]
+
+  const goals = [
+    {
+      value: '1',
+      label: t('apply.risk.form.goals.portfolio_a'),
+      id: 1
+    },
+    {
+      value: '2',
+      label: t('apply.risk.form.goals.portfolio_b'),
+      id: 2
+    },
+    {
+      value: '3',
+      label: t('apply.risk.form.goals.portfolio_c'),
+      id: 3
+    }
+  ]
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -248,16 +371,19 @@ const RiskForm = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
+
           <FormField
                 control={form.control}
                 name="account_number"
                 render={({ field }) => (
                   <FormItem>
-                  <FormLabel>Account number (enter . if no account)</FormLabel>
+                    <div className="flex gap-2">
+                      <FormLabel>{t('apply.risk.form.account_number')}</FormLabel>
+                      <FormMessage />
+                    </div>
                   <FormControl>
-                      <Input placeholder="Enter your account number..." {...field} />
+                      <Input placeholder="" {...field} />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -267,49 +393,42 @@ const RiskForm = () => {
                 name="client_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full name</FormLabel>
+                    <div className="flex gap-y-2">
+                      <FormLabel>{t('apply.risk.form.client_name')}</FormLabel>
+                      <FormMessage />
+                    </div>
                     <FormControl>
-                      <Input placeholder="Enter your name..." {...field} />
+                      <Input placeholder="" {...field} />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
-              />
+            />
 
             <FormField
               control={form.control}
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>What type of investor do you consider yourself?</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel>{t('apply.risk.form.type.title')}</FormLabel>
+                    <FormMessage />
+                  </div>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="1" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Conservative
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="2.5" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Moderate</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="4" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Aggresive
-                        </FormLabel>
-                      </FormItem>
+
+                      {types.map((type) => (
+                        <FormItem key={type.id} className="flex flex-row gap-x-2">
+                          <FormControl>
+                            <RadioGroupItem value={type.value} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{type.label}</FormLabel>
+                        </FormItem>
+                      ))}
+
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
@@ -322,44 +441,26 @@ const RiskForm = () => {
               name="loss"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>If your portfolio loses 20% of its value what action would you take?</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel>{t('apply.risk.form.loss.title')}</FormLabel>
+                    <FormMessage />
+                  </div>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex flex-col"
                     >
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="1" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Sell everything</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="2" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Sell some investments</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="3" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Do nothing
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="4" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Invest more
-                        </FormLabel>
-                      </FormItem>
+                      {losses.map((loss) => (
+                        <FormItem key={loss.id} className="flex flex-row gap-x-2">
+                          <FormControl>
+                            <RadioGroupItem value={loss.value} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{loss.label}</FormLabel>
+                        </FormItem>
+                      ))}
                     </RadioGroup>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -369,44 +470,28 @@ const RiskForm = () => {
               name="gain"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>If your portfolio appreciates 20% of its value what action would you take?</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel>{t('apply.risk.form.gain.title')}</FormLabel>
+                    <FormMessage />
+                  </div>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="1" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Sell everything</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="2" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Sell some investments</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="3" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Do nothing
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="4" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Invest more
-                        </FormLabel>
-                      </FormItem>
+
+                      {gains.map((gain) => (
+                        <FormItem key={gain.id} className="flex flex-row gap-x-2">
+                          <FormControl>
+                            <RadioGroupItem value={gain.value} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{gain.label}</FormLabel>
+                        </FormItem>
+                      ))}
+  
                     </RadioGroup>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -416,46 +501,28 @@ const RiskForm = () => {
               name="period"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>What do you think the average term of your investment portfolio should be?</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel>{t('apply.risk.form.period.title')}</FormLabel>
+                    <FormMessage />
+                  </div>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="4" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          0-5 years
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="3" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          5-10 years
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="2" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          11-20 years
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="1" />
-                        </FormControl>
-                        <FormLabel className="font-normal">More than 21 years</FormLabel>
-                      </FormItem>
+
+                      {periods.map((period) => (
+                        <FormItem key={period.id} className="flex flex-row gap-x-2">
+                          <FormControl>
+                            <RadioGroupItem value={period.value} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{period.label}</FormLabel>
+                        </FormItem>
+                      ))}
+
                     </RadioGroup>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -465,40 +532,31 @@ const RiskForm = () => {
               name="diversification"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Considering asset class diversification, which of these portfolios would you select?</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel>{t('apply.risk.form.diversification.title')}</FormLabel>
+                    <FormMessage />
+                  </div>
+
+
+
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="1" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Portfolio A: 100% bonds, 0% equity
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="2" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Portfolio B: 80% bonds, 20% equity
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="3" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Portfolio C: 60% bonds, 40% equity
-                        </FormLabel>
-                      </FormItem>
+
+                      {diversifications.map((diversification) => (
+                        <FormItem key={diversification.id} className="flex flex-row gap-x-2">
+                          <FormControl>
+                            <RadioGroupItem value={diversification.value} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{diversification.label}</FormLabel>
+                        </FormItem>
+                      ))}
+
                     </RadioGroup>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -508,40 +566,30 @@ const RiskForm = () => {
               name="goals"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Which of these portfolios best represent your goals with the most acceptable outcomes?</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel>{t('apply.risk.form.goals.title')}</FormLabel>
+                    <FormMessage />
+                  </div>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="1" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Portfolio A: Average 4% return
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="2" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                        Portfolio A: Average 5% return
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex flex-row gap-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="3" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Portfolio C: Average 7% return
-                        </FormLabel>
-                      </FormItem>
+
+                      {
+                        goals.map((goal) => (
+                          <FormItem key={goal.id} className="flex flex-row gap-x-2">
+                            <FormControl>
+                              <RadioGroupItem value={goal.value} />
+                            </FormControl>
+                            <FormLabel className="font-normal">{goal.label}</FormLabel>
+                          </FormItem>
+                        ))
+                      }
+
                     </RadioGroup>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -552,10 +600,10 @@ const RiskForm = () => {
               {submitting ? (
                 <>
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  Submitting...
+                  {t('forms.submitting')}
                 </>
               ) : (
-                'Submit'
+                t('forms.submit')
               )}
             </Button>
         </motion.form>
@@ -584,7 +632,7 @@ const RiskForm = () => {
                     transition={{ delay: 0.2 }}
                     className="text-5xl font-bold"
                   >
-                    Your Risk Profile
+                    {t('apply.risk.result.title')}
                   </motion.p>
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
@@ -599,7 +647,7 @@ const RiskForm = () => {
                     transition={{ delay: 0.6 }}
                     className="text-sm text-red-500 font-bold"
                   >
-                    Please take a picture of this, as it will be very hard to see it again!
+                    {t('apply.risk.result.warning')}
                   </motion.p>
                 </motion.div>
               </DialogContent>

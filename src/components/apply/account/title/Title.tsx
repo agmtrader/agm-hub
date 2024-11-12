@@ -5,6 +5,7 @@ import { Header } from '@/components/Header'
 import { signIn, useSession } from 'next-auth/react'
 import { motion } from 'framer-motion' // Add this import
 import ShimmerButton from '@/components/ui/shimmer-button'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -28,6 +29,8 @@ const Title = ({setStarted}:Props) => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
   }
 
+  const {lang, t} = useTranslationProvider()
+
   return (
     <div className='w-full h-screen flex flex-col'>
       <Header/>
@@ -40,10 +43,10 @@ const Title = ({setStarted}:Props) => {
           className='z-10 flex flex-col gap-y-8 justify-center items-center text-center px-4'
         >
           <motion.h1 variants={itemVariants} className='text-6xl md:text-7xl font-bold text-background'>
-            Ready to make money?
+            {t('apply.account.title.ready')}
           </motion.h1>
           <motion.p variants={itemVariants} className='text-2xl md:text-3xl text-background max-w-2xl'>
-            Unlock the world of financial opportunities with your AGM trading account.
+            {t('apply.account.title.description')}
           </motion.p>
           {!session?.user ? 
             <motion.div variants={itemVariants} className='flex flex-col sm:flex-row w-full gap-5 justify-center items-center mt-4'>
@@ -54,11 +57,11 @@ const Title = ({setStarted}:Props) => {
                 }}
                 className="w-full sm:w-auto px-8 py-3 text-lg font-semibold"
               >
-                Sign In
+                {t('apply.account.title.signIn')}
               </Button>
               <Button className="w-full sm:w-auto px-8 py-3 text-lg font-semibold">
                 <Link href='/create-account'>
-                  Create Account
+                  {t('apply.account.title.createAccount')}
                 </Link>
               </Button>
             </motion.div>
@@ -69,7 +72,7 @@ const Title = ({setStarted}:Props) => {
                 className="px-8 py-3 text-lg font-semibold mt-4"
                 background='#22c55e'
               >
-                Start Application
+                {t('apply.account.title.startApplication')}
               </ShimmerButton>
             </motion.div>
           }

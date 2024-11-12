@@ -197,40 +197,63 @@ export const countries = [
     { label: "Yemen", value: "ye" },
     { label: "Zambia", value: "zm" },
     { label: "Zimbabwe", value: "zw" },
-] as const;
-export const account_types = [
-    { label: "Individual", value: "Individual" },
-    { label: "Joint", value: "Joint" },
-    { label: "Trust", value: "Trust" },
-    { label: "Institutional", value: "Institutional" },
 ] as const
+
+export const account_types = (t: (key: string) => string) => [
+  {
+    value: "Individual",
+    label: t('apply.account.general_info.account_types.individual')
+  },
+  {
+    value: "Joint",
+    label: t('apply.account.general_info.account_types.joint')
+  },
+  {
+    value: "Trust",
+    label: t('apply.account.general_info.account_types.trust')
+  },
+  {
+    value: "Institutional",
+    label: t('apply.account.general_info.account_types.institutional')
+  }
+]
+
 export const salutations = [
     { label: "Mr.", value: "Mr" },
     { label: "Ms.", value: "Ms" },
     { label: "Mrs.", value: "Mrs" },
     { label: "Dr.", value: "Dr" },
 ] as const
-export const marital_status = [
-    { label: "Single", value: "Single" },
-    { label: "Married", value: "Married" },
-    { label: "Divorced", value: "Divorced" },
-    { label: "Widowed", value: "Widowed" },
+
+export const marital_status = (t: (key: string) => string) => [
+    { label: t('apply.account.about_you.marital_status_list.single'), value: "Single" },
+    { label: t('apply.account.about_you.marital_status_list.married'), value: "Married" },
+    { label: t('apply.account.about_you.marital_status_list.divorced'), value: "Divorced" },
+    { label: t('apply.account.about_you.marital_status_list.widowed'), value: "Widowed" },
 ] as const
-export const id_type = [
-    { label: "Passport", value: "Passport" },
-    { label: "National ID", value: "ID" },
-    { label: "Driver's License", value: "License" },
-    { label: "Alien ID Card", value: "Alien" },
+
+export const phone_types = (t: (key: string) => string) => [
+  { label: t('apply.account.about_you.phone_types.mobile'), value: "Mobile" },
+  { label: t('apply.account.about_you.phone_types.home'), value: "Home" },
 ] as const
-export const employment_status = [
-    { label: "Employed", value: "Employed" },
-    { label: "Retired", value: "Retired" },
-    { label: "Self-employed", value: "Self-employed" },
-    { label: "At-Home Trader", value: "Trader" },
-    { label: "Student / Intern", value: "Employed" },
-    { label: "Homemaker", value: "Homemaker" },
-    { label: "Unemployed", value: "Unemployed" },
+
+export const id_type = (t: (key: string) => string) => [
+    { label: t('apply.account.about_you.id_type_list.passport'), value: "Passport" },
+    { label: t('apply.account.about_you.id_type_list.national_id'), value: "ID" },
+    { label: t('apply.account.about_you.id_type_list.license'), value: "License" },
+    { label: t('apply.account.about_you.id_type_list.alien'), value: "Alien" },
 ] as const
+
+export const employment_status = (t: (key: string) => string) => [
+    { label: t('apply.account.about_you.employment_status_list.employed'), value: "Employed" },
+    { label: t('apply.account.about_you.employment_status_list.retired'), value: "Retired" },
+    { label: t('apply.account.about_you.employment_status_list.self_employed'), value: "Self-employed" },
+    { label: t('apply.account.about_you.employment_status_list.trader'), value: "Trader" },
+    { label: t('apply.account.about_you.employment_status_list.student'), value: "Student" },
+    { label: t('apply.account.about_you.employment_status_list.homemaker'), value: "Homemaker" },
+    { label: t('apply.account.about_you.employment_status_list.unemployed'), value: "Unemployed" },
+] as const
+
 export const currencies = [
   { label: "USD", value: "USD" },
   { label: "AED", value: "AED" },
@@ -258,124 +281,41 @@ export const currencies = [
   { label: "KRW", value: "KRW" },
 ] as const
 
-// Dictionaries for Checklists
-export const source_of_wealth = [
-  {
-    id: "Allowance",
-    label: "Allowance / Spousal Income",
-  },
-  {
-    id: "Disability",
-    label: "Disability / Severance / Unemployment",
-  },
-  {
-    id: "Income",
-    label: "Income from Employment",
-  },
-  {
-    id: "Inheritance",
-    label: "Inheritance / Gift",
-  },
-  {
-    id: "Interest",
-    label: "Interest / Divident Income",
-  },
-  {
-    id: "Profits",
-    label: "Market Trading Profits",
-  },
-  {
-    id: "Pension",
-    label: "Pension / Government Retirement benefit",
-  },
-  {
-    id: "Property",
-    label: "Property",
-  },
-  {
-    id: "Other",
-    label: "Other",
-  },
-] as const
-export const investment_objectives = [
-  {
-    id: "Capital",
-    label: "Preservation of Capital and Income Generation",
-  },
-  {
-    id: "Growth",
-    label: "Growth",
-  },
-  {
-    id: "Hedging",
-    label: "Hedging",
-  },
-  {
-    id: "Profits",
-    label:"Profits from Active Trading and Speculation"
-  }
-  
-] as const
-export const products = [
-  {
-    id: "Bonds",
-    label: "Bonds",
-  },
-  {
-    id: "Stocks",
-    label: "Stocks",
-  },
-  {
-    id: "Options",
-    label: "Options",
-  },
-  {
-    id: "Futures",
-    label: "Futures",
-  },
-  {
-    id: "ETFs",
-    label: "ETFs",
-  }
-] as const
 export const worths = [
   {
-    value: "< 5,000",
-    label: "< 5,000",
+    value: "< $5,000",
+    label: "< $5,000",
   },
   {
-    value: "5,000 - 24,999",
-    label: "5,000 - 24,999",
+    value: "$5,000 - $24,999",
+    label: "$5,000 - $24,999",
   },
   {
-    value: "25,000 - 49,999",
-    label: "25,000 - 49,999",
+    value: "$25,000 - $49,999",
+    label: "$25,000 - $49,999",
   },
   {
-    value: "50,000 - 99,999",
-    label: "50,000 - 99,999",
+    value: "$50,000 - $99,999",
+    label: "$50,000 - $99,999",
   },
   {
-    value: "100,000 - 149,999",
-    label: "100,000 - 149,999",
+    value: "$100,000 - $149,999",
+    label: "$100,000 - $149,999",
   },
   {
-    value: "150,000 - 499,999",
-    label: "150,000 - 499,999",
+    value: "$150,000 - $499,999",
+    label: "$150,000 - $499,999",
   },
   {
-    value: "500,000 - 1,000,000",
-    label: "500,000 - 1,000,000",
+    value: "$500,000 - $1,000,000",
+    label: "$500,000 - $1,000,000",
   },
   {
-    value: "1,000,000+",
-    label: "1,000,000+",
+    value: "$1,000,000+",
+    label: "$1,000,000+",
   },
 ] as const
-export const phone_types = [
-  { label: "Mobile", value: "Mobile" },
-  { label: "Home", value: "Home" },
-] as const
+
 export const security_questions = [
   { label: "In what city were you married?", value: "In what city were you married?" },
   { label: "What is the name of first boyfriend/girlfriend?", value: "What is name of first boyfriend/girlfriend?" },
@@ -420,267 +360,87 @@ export const security_questions = [
   { label: "What is your spouse's middle name?", value: "What is your spouse's middle name?" },
 ] as const
 
-  
-// Schemas
-// Account Application
-export const general_info_schema = z.object({
-  
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }).min(1, {
-    message: "Email cannot be empty.",
-  }),
+// Dictionaries for Checklists
+export const source_of_wealth = (t: (key: string) => string) => [
+  {
+    id: "Allowance",
+    label: t('apply.account.regulatory.source_of_wealth.allowance')
+  },
+  {
+    id: "Disability",
+    label: t('apply.account.regulatory.source_of_wealth.disability')
+  },
+  {
+    id: "Income",
+    label: t('apply.account.regulatory.source_of_wealth.income')
+  },
+  {
+    id: "Inheritance",
+    label: t('apply.account.regulatory.source_of_wealth.inheritance')
+  },
+  {
+    id: "Interest",
+    label: t('apply.account.regulatory.source_of_wealth.interest')
+  },
+  {
+    id: "Profits",
+    label: t('apply.account.regulatory.source_of_wealth.profits')
+  },
+  {
+    id: "Pension",
+    label: t('apply.account.regulatory.source_of_wealth.pension')
+  },
+  {
+    id: "Property",
+    label: t('apply.account.regulatory.source_of_wealth.property')
+  },
+  {
+    id: "Other",
+    label: t('apply.account.regulatory.source_of_wealth.other')
+  },
+] as const
 
-  country: z.string().min(1, {
-    message: "Country cannot be empty.",
-  }),
+export const investment_objectives = (t: (key: string) => string) => [
+  {
+    id: "Capital",
+    label: t('apply.account.regulatory.investment_objectives_list.capital')
+  },
+  {
+    id: "Growth",
+    label: t('apply.account.regulatory.investment_objectives_list.growth')
+  },
+  {
+    id: "Hedging",
+    label: t('apply.account.regulatory.investment_objectives_list.hedging')
+  },
+  {
+    id: "Profits",
+    label: t('apply.account.regulatory.investment_objectives_list.profits')
+  }
+] as const
 
-  account_type: z.string().min(1, {
-    message: "You must select an account type.",
-  }),
-
-})
-const base_about_you_schema = z.object({
-  salutation: z.string().min(1, {
-    message: "You must select a salutation.",
-  }),
-  first_name: z.string().min(1, {
-    message: "You must enter a first name.",
-  }),
-  middle_name: z.string().optional(),
-  last_name: z.string().min(1, {
-    message: "You must enter a last name.",
-  }),
-  address: z.string().min(1, {
-    message: 'You must enter an address.',
-  }),
-  city: z.string().min(1, {
-    message: 'You must enter a city.',
-  }),
-  state: z.string().min(1, {
-    message: 'You must enter a state/province.',
-  }),
-  zip:  z.string().min(1, {
-    message: 'You must enter a zip code.',
-  }),
-  phone_type: z.string().min(1, {
-    message: 'You must select a phone type.',
-  }),
-  phone_country: z.string().min(1, {
-    message: 'You must select a phone country.'
-  }),
-  phone_number: z.string().min(1, {
-    message: 'You must enter a phone number.',
-  }),
-  citizenship: z.string().min(1, {
-    message: 'You must select a citizenship.'
-  }),
-  country_of_birth: z.string().min(1, {
-    message: 'You must select a country of birth.'
-  }),
-  date_of_birth: z.string().min(1, {
-    message: 'You must enter a date of birth.',
-  }),
-  marital_status: z.string().min(1, {
-    message: 'You must select a marital status'
-  }),
-  number_of_dependents: z.string().min(1, {
-    message: 'You must enter a number of dependents.',
-  }),
-  country_of_residence: z.string().min(1, {
-    message: 'You must select a Country of Residence.'
-  }),
-  tax_id: z.string().min(1, {
-    message: 'You must enter a tax ID.',
-  }),
-  id_country: z.string().min(1, {
-    message: 'You must select an ID Country.'
-  }),
-  id_type: z.string().min(1, {
-    message: 'You must select an ID type.'
-  }),
-  id_number: z.string().min(1, {
-    message: 'You must enter an ID number.',
-  }),
-  id_expiration_date: z.string().min(1, {
-    message: 'You must enter an ID expiration date.',
-  }),
-  employment_status: z.string().min(1, {
-    message: 'You must select an employment status.',
-  }),
-  employer_name: z.string().min(1, {
-    message: 'You must enter an employer name.',
-  }),
-  employer_address: z.string().min(1, {
-    message: 'You must enter an employer address.',
-  }),
-  employer_city: z.string().min(1, {
-    message: 'You must enter an employer city.',
-  }),
-  employer_state: z.string().min(1, {
-    message: 'You must enter an employer state.',
-  }),
-  employer_country: z.string().min(1, {
-    message: 'You must select an employer country.',
-  }),
-  employer_zip: z.string().min(1, {
-    message: 'You must enter an employer zip.',
-  }),
-  nature_of_business: z.string().min(1, {
-    message: 'You must enter a nature of business.',
-  }),
-  occupation: z.string().min(1, {
-    message: 'You must enter an occupation.',
-  }),
-  source_of_wealth: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: "You must select at least one source of wealth.",
-  }).default([]),
-  currency: z.string().min(1, {
-    message: 'You must select a currency.'
-  }),
-})
-export const about_you_primary_schema = base_about_you_schema.extend({
-  security_q_1: z.string().min(1, {
-    message: 'You must select a security question.'
-  }),
-  security_a_1: z.string().min(1, {
-    message: 'You must select a security answer.'
-  }),
-  security_q_2: z.string().min(1, {
-    message: 'You must select a security question.'
-  }),
-  security_a_2: z.string().min(1, {
-    message: 'You must select a security answer.'
-  }),
-  security_q_3: z.string().min(1, {
-    message: 'You must select a security question.'
-  }),
-  security_a_3: z.string().min(1, {
-    message: 'You must select a security answer.'
-  }),
-})
-export const about_you_secondary_schema = base_about_you_schema.extend({
-  email: z.string().email({
-    message: 'Please enter a valid email address.'
-  }).min(1, {
-    message: 'You must enter an email.'
-  }),
-  username: z.string().min(4, {
-    message: 'Username must be at least 4 characters long.'
-  }),
-  password: z.string()
-    .min(8, { message: 'Password must be at least 8 characters long.' })
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
-      message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
-    }),
-})
-export const regulatory_schema = z.object({
-  annual_net_income: z.string().min(1, {
-    message: "You must select a annual net income.",
-  }),
-  net_worth: z.string().min(1, {
-    message: "You must select a net worth.",
-  }),
-  liquid_net_worth: z.string().min(1, {
-    message: "You must select a liquid net worth.",
-  }),
-
-  investment_objectives: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: "You must select at least one investment objective.",
-  }).default([]),
-
-  products: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: "You must select at least one product.",
-  }).default([]),
-
-  amount_to_invest: z.string().min(1, {
-    message: "You must enter an amount to invest.",
-  }),
-})
-
-
-// Document Center
-export const poa_schema = z.object({
-  account_number: z.string(),
-  type: z.enum(["Utility bill", "Bank Statement", "Tax Return"]),
-  issued_date: z.date(),
-})
-export const poi_schema = z.object({
-  account_number: z.string(),
-  gender: z.string(),
-  country_of_issue: z.string(),
-  type: z.enum(["ID", "Passport", "License"]),
-  full_name: z.string(),
-  id_number: z.string(),
-  issued_date: z.date(),
-  date_of_birth: z.date(),
-  expiration_date: z.date(),
-  country_of_birth: z.string(),
-})
-export const sow_schema = z.object({
-  account_number: z.string(),
-})
-
-// Account accesses
-export const account_access_schema = z.object({
-  temp_email: z.string().email({
-    message: "Please enter a valid email address.",
-  }).min(1, {
-    message: 'You must enter an email.'
-  }),
-  temp_password: z.string().min(1, {
-    message: 'You must enter a password.'
-  }),
-  account_number: z.string().regex(/^[a-zA-Z]/, {
-    message: 'Account number must start with a letter.'
-  }).min(6, {
-    message: 'Account number must be at least 2 characters long.'
-  }),
-  ibkr_username: z.string().min(1, {
-    message: 'You must enter an IBKR username.'
-  }),
-  ibkr_password: z.string().min(1, {
-    message: 'You must enter an IBKR password.'
-  })
-})
-
-// Risk assessment
-export const risk_assesment_schema = z.object({
-  account_number: z.string().min(1, {
-    message: 'Account number cannot be empty.'
-  }),
-  client_name: z.string().optional(),
-  type: z.enum(["1", "2.5", "4"], {
-    errorMap: (issue, ctx) => {
-      return {message: 'You must select a type.'};
-    },
-  }),
-  loss: z.enum(["1", "2", "3", "4"], {
-    errorMap: (issue, ctx) => {
-      return {message: 'You must select your reaction to loss.'};
-    },
-  }),
-  gain: z.enum(["1", "2", "3", "4"], {
-    errorMap: (issue, ctx) => {
-      return {message: 'You must select your reaction to gain.'};
-    },
-  }),
-  period: z.enum(["1", "2", "3", "4"], {
-    errorMap: (issue, ctx) => {
-      return {message: 'You must select a period.'};
-    },
-  }),
-  diversification: z.enum(["1", "2", "3"], {
-    errorMap: (issue, ctx) => {
-      return {message: 'You must select a portfolio.'};
-    },
-  }),
-  goals: z.enum(["1", "2", "3"], {
-    errorMap: (issue, ctx) => {
-      return {message: 'You must select a term.'};
-    },
-  }),
-})
+export const products = (t: (key: string) => string) => [
+  {
+    id: "Bonds",
+    label: t('apply.account.regulatory.products.bonds')
+  },
+  {
+    id: "Stocks",
+    label: t('apply.account.regulatory.products.stocks')
+  },
+  {
+    id: "Options",
+    label: t('apply.account.regulatory.products.options')
+  },
+  {
+    id: "Futures",
+    label: t('apply.account.regulatory.products.futures')
+  },
+  {
+    id: "ETFs",
+    label: t('apply.account.regulatory.products.etfs')
+  }
+] as const
 
 // Functions
 export function getDefaults<Schema extends z.AnyZodObject>(schema: Schema) {

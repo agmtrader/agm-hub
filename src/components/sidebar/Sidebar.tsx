@@ -13,6 +13,7 @@ import { motion } from "framer-motion"
 import Account from "./Account"
 import { Button } from "../ui/button"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
+import LanguageSwitcher from "../misc/LanguageSwitcher"
 
 const navbarContent = [
   { name: 'AGM Home', url: '/' },
@@ -57,9 +58,11 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
       >
         <NavigationMenu className="h-full w-full flex flex-col justify-between p-5">
           <NavigationMenuList className="w-full flex-grow flex flex-col gap-y-4">
-            <Button variant={'ghost'} className="self-end my-5" onClick={() => setExpandSidebar(false)}>
-              X
-            </Button>
+            <div className="flex justify-between items-center my-5">
+              <Button variant={'ghost'} onClick={() => setExpandSidebar(false)}>
+                X
+              </Button>
+            </div>
             {navbarContent.map((item, index) => (
               <NavigationMenuItem key={index} onClick={() => setExpandSidebar(false)} className="w-full text-end">
                 <Link href={formatURL(item.url)} legacyBehavior passHref>
@@ -71,6 +74,7 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
             ))}
           </NavigationMenuList>
           <Account dark={false} />
+          <LanguageSwitcher />
         </NavigationMenu>
       </motion.div>
     </div>

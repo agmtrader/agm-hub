@@ -10,6 +10,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 import { cn } from '@/lib/utils'
 import { Separator } from '../ui/separator'
+import { redirect } from 'next/navigation'
 
 const navbarContent = [
   {
@@ -54,7 +55,7 @@ const tools = [
 
 const Sidebar = () => {
 
-  const {lang} = useTranslationProvider();
+  const {lang, setLang} = useTranslationProvider();
 
   return (
     <nav className="flex flex-col justify-center items-center text-foreground w-64 h-fit gap-y-10 bg-background">

@@ -11,7 +11,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { poa_schema, poi_schema, sow_schema } from "@/lib/form"
+import { poa_schema, poi_schema, sow_schema } from "@/lib/schemas"
 import { useToast } from '@/hooks/use-toast'
 import POAForm from './forms/POAForm'
 import POIForm from './forms/POIForm'
