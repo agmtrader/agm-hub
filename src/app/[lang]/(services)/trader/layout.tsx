@@ -11,23 +11,18 @@ export const metadata: Metadata = {
 export default async function Layout(
   props: Readonly<{
     children: React.ReactNode;
-    params: { lang: string };
   }>
 ) {
-  const params = await props.params;
-
   const {
     children
   } = props;
 
   return (
-    <TranslationProvider lang={params.lang}>
-      <div className="flex flex-col min-h-screen w-full">
-        <Header />
-        <main className="flex-grow">
-            {children}
-          </main>
-      </div>
-    </TranslationProvider>
+    <div className="flex flex-col min-h-screen w-full">
+    <Header />
+    <main className="flex-grow">
+        {children}
+      </main>
+  </div>
   );
 }

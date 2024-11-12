@@ -4,7 +4,7 @@ import { TranslationProvider } from "../../utils/providers/TranslationProvider"
 export default async function Layout(
   props: Readonly<{
     children: React.ReactNode
-    params:{lang:string}
+    params:Promise<{lang:string}>
   }>
 ) {
   const params = await props.params;
