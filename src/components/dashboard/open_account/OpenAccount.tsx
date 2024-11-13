@@ -17,7 +17,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { formatTimestamp } from "@/utils/dates"
 
-import { getDefaults } from '@/lib/form'
+import { getDefaults } from '@/utils/form'
 import { account_access_schema } from '@/lib/schemas'
 
 import { useForm } from 'react-hook-form'

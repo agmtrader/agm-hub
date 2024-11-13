@@ -36,7 +36,7 @@ const Title = ({setStarted}:Props) => {
     <div className='w-full h-screen flex flex-col'>
       <Header/>
       <div className='flex-1 flex flex-col gap-y-10 bg-[url(/images/bull.jpg)] w-full bg-cover bg-center z-0 justify-center items-center relative overflow-hidden'>
-        <div className='w-full h-full opacity-60 bg-primary-dark absolute z-1'></div>
+        <div className='w-full h-full opacity-60 bg-secondary-dark absolute z-1'></div>
         <motion.div 
           variants={containerVariants}
           initial="hidden"

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { getDefaults } from "@/lib/form"
+import { getDefaults } from '@/utils/form'
 import { poa_schema } from "@/lib/schemas"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,7 +34,7 @@ const POAForm: React.FC<POAFormProps> = ({ onSubmit, accountNumber, uploading })
   })
 
   const handleSubmit = (values: any) => {
-    onSubmit(values, null) // We're not passing files here, as they're managed in the parent component
+    onSubmit(values, null)
   }
 
   return (
@@ -45,11 +45,13 @@ const POAForm: React.FC<POAFormProps> = ({ onSubmit, accountNumber, uploading })
           name="account_number"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Account Number</FormLabel>
+              <div className="flex gap-2">
+                <FormLabel>Account Number</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -59,8 +61,11 @@ const POAForm: React.FC<POAFormProps> = ({ onSubmit, accountNumber, uploading })
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <div className="flex gap-2">
+                  <FormLabel>Type</FormLabel>
+                  <FormMessage />
+                </div>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
@@ -72,7 +77,6 @@ const POAForm: React.FC<POAFormProps> = ({ onSubmit, accountNumber, uploading })
                   <SelectItem value="Tax Return">Tax Return</SelectItem>
                 </SelectContent>
               </Select>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -82,9 +86,11 @@ const POAForm: React.FC<POAFormProps> = ({ onSubmit, accountNumber, uploading })
           name="issued_date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Issued Date</FormLabel>
+              <div className="flex gap-2">
+                <FormLabel>Issued Date</FormLabel>
+                <FormMessage />
+              </div>
               <DateTimePicker {...field} granularity="day" />
-              <FormMessage />
             </FormItem>
           )}
         />

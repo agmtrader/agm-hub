@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import Confetti from '@/components/ui/confetti';
 import { Check } from 'lucide-react';
 import Link from 'next/link';
+import { Dialog, DialogTitle, DialogHeader, DialogContent, DialogFooter } from '@/components/ui/dialog';
 
 const page = () => {
 
@@ -23,6 +24,8 @@ const page = () => {
   
   const [ticket, setTicket] = useState<Ticket | null>(null)
   const [account, setAccount] = useState<Account | null>(null)
+
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
 
   const { toast } = useToast()
 
@@ -56,6 +59,11 @@ const page = () => {
     }
   }
 
+  function finish() {
+    setOpenDialog(false)
+    stepForward()
+  }
+
   function stepBackwards() {
     if (step > 1) {
       setStep(step - 1)
@@ -79,9 +87,27 @@ const page = () => {
       {step < 5 && 
         <div className='h-fit w-fit flex gap-x-5'>
           {step > 1 && <Button onClick={stepBackwards} >Previous step.</Button>}
-          <Button onClick={(e) => stepForward()} variant={canContinue ? 'primary':'ghost'}>{step === 4 ? 'Finish.':'Next step.'}</Button>
+          {step === 4 ? 
+            <div>
+            <Button onClick={() => setOpenDialog(true)} variant='primary'>Finish.</Button> 
+            </div>
+            : 
+            <Button onClick={(e) => stepForward()} variant={canContinue ? 'primary':'ghost'}>Next step.</Button>
+          }
         </div>
       }
+
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure you want to finish?</DialogTitle>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+            <Button onClick={finish}>Finish</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

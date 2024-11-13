@@ -1,6 +1,7 @@
 import "../globals.css"
 import { NextAuthProvider } from "../../utils/providers/NextAuthProvider"
 import { TranslationProvider } from "../../utils/providers/TranslationProvider"
+
 export default async function Layout(
   props: Readonly<{
     children: React.ReactNode

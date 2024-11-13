@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Check } from "lucide-react"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
+import { formatURL } from "@/utils/lang"
 
 const ApplicationEnd = () => {
-    const {t} = useTranslationProvider()
+    const {t, lang} = useTranslationProvider()
 
     return (
       <div className='relative h-full w-full flex flex-col justify-center items-center gap-y-8 py-16'>
@@ -21,7 +22,7 @@ const ApplicationEnd = () => {
           <Link href='/apply'>{t('apply.account.application_end.apply_another')}</Link>
         </Button>
         <Button variant='ghost'>
-          <Link href='/'>{t('apply.account.application_end.go_back_home')}</Link>
+          <Link href={formatURL('/', lang)}>{t('apply.account.application_end.go_back_home')}</Link>
         </Button>
       </div>
     )

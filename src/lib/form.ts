@@ -1,6 +1,5 @@
 import { z } from "zod"
 
-// Dictionaries for Selects
 export const countries = [
     { label: "Afghanistan", value: "af" },
     { label: "Albania", value: "al" },
@@ -441,13 +440,3 @@ export const products = (t: (key: string) => string) => [
     label: t('apply.account.regulatory.products.etfs')
   }
 ] as const
-
-// Functions
-export function getDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
-  return Object.fromEntries(
-      Object.entries(schema.shape).map(([key, value]) => {
-          if (value instanceof z.ZodDefault) return [key, value._def.defaultValue()]
-          return [key, undefined]
-      })
-  )
-}

@@ -5,7 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useToast } from "@/hooks/use-toast"
 
-import { getDefaults, investment_objectives, products, worths } from "@/lib/form"
+import { investment_objectives, products, worths } from "@/lib/form"
+import { getDefaults } from '@/utils/form'
+
 import { regulatory_schema } from "@/lib/schemas"
 import { Ticket } from "@/lib/types"
 import { accessAPI } from "@/utils/api"
@@ -39,7 +41,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { Loader2 } from "lucide-react"
+import { FileCheck2, Loader2 } from "lucide-react"
 import { PersonLinesFill } from "react-bootstrap-icons"
 
 interface Props {
@@ -116,7 +118,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
         
       <div className='flex'>
         <div className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
-          <PersonLinesFill className='h-24 w-24 text-secondary'/>
+          <FileCheck2 className='h-24 w-24 text-secondary'/>
           <p className='text-5xl font-bold'>{t('apply.account.regulatory.title')}</p>
         </div>
       </div>

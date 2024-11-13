@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { getDefaults } from '@/lib/form'
+import { getDefaults } from '@/utils/form'
 
 import { useToast } from '@/hooks/use-toast'
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"

@@ -2,6 +2,7 @@
 const nextConfig = {
     reactStrictMode: false,
     env: {
+        DEV_MODE: process.env.DEV_MODE,
         AGM_API_URL: process.env.AGM_API_URL,
         NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
         NEXTAUTH_URL: process.env.NEXTAUTH_URL,

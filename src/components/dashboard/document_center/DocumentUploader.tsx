@@ -11,16 +11,17 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { poa_schema, poi_schema, sow_schema } from "@/lib/schemas"
 import { useToast } from '@/hooks/use-toast'
+
+import { poa_schema, poi_schema, sow_schema } from "@/lib/schemas"
 import POAForm from './forms/POAForm'
 import POIForm from './forms/POIForm'
 import SOWForm from './forms/SOWForm'
+
 import { accessAPI } from '@/utils/api'
-import { Document } from '@/lib/types'
 import { useSession } from 'next-auth/react'
 import { formatTimestamp } from '@/utils/dates'
-import { FolderDictionary } from './DocumentCenter'
+import { FolderDictionary, Document } from '@/lib/drive'
 import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from '@/components/ui/file-upload'
 
 interface DocumentUploaderProps {
@@ -35,7 +36,6 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
     const { toast } = useToast()
 
     const [uploading, setUploading] = useState<boolean>(false)
-
     const [files, setFiles] = useState<File[] | null>(null)
 
     const typeFields = folderDictionary.map(folder => ({

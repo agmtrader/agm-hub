@@ -7,33 +7,19 @@ import { ColumnDefinition, DataTable } from '../components/DataTable'
 import { accessAPI } from '@/utils/api'
 import DocumentUploader from './DocumentUploader'
 import { toast } from "@/hooks/use-toast"
-import { Drive, Document as CustomDocument, Map } from '@/lib/types'
-import LoadingComponent from '@/components/misc/LoadingComponent'
+import { Map } from '@/lib/types'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-
-export type FolderDictionary = {
-  drive_id: string
-  id: string
-  name: string
-  label: string
-}
-
-// Static folder dictionary
-export const folderDictionary = [
-  { drive_id: '1tuS0EOHoFm9TiJlv3uyXpbMrSgIKC2QL', id: 'poa', name: 'POA', label: 'Proof of Address' },
-  { drive_id: '1VY0hfcj3EKcDMD6O_d2_gmiKL6rSt_M3', id: 'identity', name: 'Identity', label: 'Proof of Identity' },
-  { drive_id: '1WNJkWYWPX6LqWGOTsdq6r1ihAkPJPMHb', id: 'sow', name: 'SOW', label: 'Source of Wealth' },
-]
+import { FolderDictionary, folderDictionary } from '@/lib/drive'
+import { Drive, Document as CustomDocument } from '@/lib/drive'
 
 interface DocumentCenterProps {
-  folderDictionary?: typeof folderDictionary;
+  folderDictionary?: FolderDictionary[];
   query?: Map;
 }
 
 export default function DocumentCenter({ folderDictionary: propsFolderDictionary, query }: DocumentCenterProps) {
 
-  const [view, setView] = useState<'list' | 'columns'>('list')
   const [files, setFiles] = useState<Drive>({})
   const [loading, setLoading] = useState<boolean>(true)
   const [currentFolderID, setCurrentFolderID] = useState<string | null>(null)
@@ -55,16 +41,26 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
 
   useEffect(() => {
     async function fetchData() {
+      
       setLoading(true)
       let files:Drive = {}
 
-      // Use the activeFolderDictionary instead of the hardcoded folderDictionary
+      if (!query) {
+        toast({
+          title: "No query provided.",
+          description: "Please provide a query.",
+          variant: "destructive",
+        })
+        query = {}
+      }
+
       for (let folder of activeFolderDictionary) {
+        console.log(folder)
         const response = await accessAPI('/database/read', 'POST', {
           'path': `db/document_center/${folder.id}`,
           'query': query
         })
-        if (response['content'] && response['content'].length > 0) {
+        if (response['content']) {
           files[folder.id] = response['content']
         }
       }
@@ -77,6 +73,8 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
         })
         setLoading(false)
       }
+
+      console.log(files)
 
       setFiles(files)
       setCurrentFolderID(Object.keys(files)[0] || null)
@@ -94,7 +92,6 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   }
 
   const handleDelete = (row: any) => {
-    // Implement delete logic here
     toast({
       title: "Deleting",
       description: `Deleting ${row.name}...`,

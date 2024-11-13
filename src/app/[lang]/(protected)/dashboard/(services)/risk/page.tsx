@@ -112,29 +112,31 @@ const page = () => {
                   <SelectValue placeholder="Select a risk profile" />
                 </SelectTrigger>
                 <SelectContent>
+
                   {riskProfiles?.map((profile) => (
-                    profile.RiskProfileID && (
+                    profile.RiskProfileID &&
                       <SelectItem key={profile.RiskProfileID} value={profile.RiskProfileID}>
                         {profile.AccountNumber + ' ' + profile.ClientName}
                       </SelectItem>
-                    )
+                    
                   ))}
+
                 </SelectContent>
               </Select>
               
               {
-                loading ? (
+                loading ?
                   <Button disabled className="flex gap-x-2">
                     <ReloadIcon className="w-4 h-4 animate-spin" />
                     Searching...
                   </Button>
-                ) : (
+                  :
                   <Button onClick={onSubmit} disabled={!selectedProfileID} className="flex gap-x-2">
                     <SearchIcon className="w-4 h-4" />
                     Search
                   </Button>
-                )
               }
+
             </div>
           </div>
         </div>

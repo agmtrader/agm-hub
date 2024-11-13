@@ -7,7 +7,8 @@ import { useSearchParams } from 'next/navigation'
 
 import { Ticket } from "@/lib/types"
 import { formatTimestamp } from "@/utils/dates"
-import { account_types, getDefaults } from "@/lib/form"
+import { account_types } from "@/lib/form"
+import { getDefaults } from '@/utils/form'
 import { general_info_schema } from "@/lib/schemas"
 import { accessAPI } from "@/utils/api"
 import CountriesFormField from "@/components/ui/CountriesFormField"
@@ -18,7 +19,7 @@ import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Button } from "@/components/ui/button"
 
 import { PersonLinesFill } from "react-bootstrap-icons"
-import { Loader2 } from "lucide-react"
+import { Loader2, UserRound } from "lucide-react"
 
 import {
   Form,
@@ -112,7 +113,7 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
         
         <div className='flex'>
           <div className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
-            <PersonLinesFill className='h-24 w-24 text-secondary'/>
+            <UserRound className='h-24 w-24 text-secondary'/>
             <p className='text-5xl font-bold'>{t('apply.account.general_info.title')}</p>
           </div>
         </div>

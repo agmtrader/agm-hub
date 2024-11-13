@@ -22,7 +22,7 @@ interface ServicesProps {
 
 const Services = ({ services }: ServicesProps) => {
 
-  const { lang } = useTranslationProvider()
+  const { t, lang } = useTranslationProvider()
 
   const [ref, inView] = useInView({
     threshold: 0.1,
@@ -72,13 +72,13 @@ const Services = ({ services }: ServicesProps) => {
           variants={itemVariants}
           className='font-bold text-5xl text-background'
         >
-          Our Services
+          {t('shared.services.title')}
         </motion.p>
         <motion.p 
           variants={itemVariants}
           className='text-center text-lg text-background'
         >
-          Explore our services and find the one that best suits your needs.
+          {t('shared.services.description')}
         </motion.p>
         </div>
 
@@ -108,7 +108,7 @@ const Services = ({ services }: ServicesProps) => {
                       <DialogFooter>
                         <Button asChild>
                           <Link href={formatURL(service.url, lang)}>
-                            Learn More
+                            {t('shared.services.learn_more')}
                           </Link>
                         </Button>
                       </DialogFooter>

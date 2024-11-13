@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Map, Ticket } from '@/lib/types';
 
-import { getDefaults } from '@/lib/form';
+import { getDefaults } from '@/utils/form';
 import { about_you_primary_schema, about_you_secondary_schema, regulatory_schema } from '@/lib/schemas';
 
 interface Props {
@@ -84,7 +84,7 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
 
   return (
     <motion.div 
-      className='w-full max-w-7xl h-fit gap-5 flex flex-col justify-center items-center'
+      className='w-full max-w-7xl h-fit gap-5 text-foreground flex flex-col justify-center items-center'
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -93,25 +93,25 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
         className='text-7xl text-foreground font-bold'
         variants={itemVariants}
       >
-        Open account.
+        Open Account.
       </motion.h1>
-      
+
       {primaryHolderInfo && Object.keys(primaryHolderInfo).length > 0 && 
-        <motion.div className='w-full' variants={itemVariants}>
+        <motion.div className='w-full flex flex-col gap-5' variants={itemVariants}>
           <p className='text-lg font-semibold'>Primary Holder Information</p>
           <DataTable data={[primaryHolderInfo]} width={100}/>
         </motion.div>
       }
 
       {secondaryHolderInfo && Object.keys(secondaryHolderInfo).length > 0 &&
-        <motion.div className='w-full' variants={itemVariants}>
+        <motion.div className='w-full flex flex-col gap-5' variants={itemVariants}>
           <p className='text-lg font-semibold'>Secondary Holder Information</p>
           <DataTable data={[secondaryHolderInfo]} width={100}/>
         </motion.div>
       }
       
       {regulatoryInfo && Object.keys(regulatoryInfo).length > 0 &&
-        <motion.div className='w-full' variants={itemVariants}>
+        <motion.div className='w-full flex flex-col gap-5' variants={itemVariants}>
           <p className='text-lg font-semibold'>Regulatory Information</p>
           <DataTable data={[regulatoryInfo]} width={100}/>
         </motion.div>

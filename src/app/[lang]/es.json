@@ -1,7 +1,93 @@
 {
-    "home": {
+    "agm-technology": {
+        "title": {
+            "title": "Invierte. En cualquier lugar. En cualquier momento.",
+            "subtitle": "Desbloquea un mundo de oportunidades con nuestra plataforma de inversión global.",
+            "action_text": "Solicitar una cuenta",
+            "scroll_text": "Desplázate para explorar"
+        },
         "introduction": {
-            "title": "Empoderando a los Traders de Hoy para los Mercados del Mañana"
+            "title": "Empoderando a los Traders de Hoy para los Mercados del Mañana",
+            "description": "Desde 1995, AGM como Broker/Dealer Internacional de Valores ha facilitado el acceso directo a más de 150 mercados financieros (Bolsas de Valores) en EE.UU., Europa, Asia y América Latina, de otro modo inaccesibles para ciertos inversores.",
+            "description_2": "AGM Technology ofrece servicios profesionales para maximizar sus rendimientos:",
+            "action_text": "¿Interesado?",
+            "action_subtext": "Vea los pasos para comenzar su viaje de trading.",
+            "cards": [
+                {
+                    "title": "Opera en cualquier momento y lugar",
+                    "description": "Opera acciones, ETFs, bonos, criptomonedas y más desde cualquier ubicación y en cualquier momento con nuestra plataforma y servicios de trading avanzados."
+                },
+                {
+                    "title": "Herramientas profesionales",
+                    "description": "Nuestra plataforma de trading, panel de control y herramientas están diseñados para proporcionarte las herramientas necesarias para tener éxito en los mercados financieros."
+                },
+                {
+                    "title": "Soporte al cliente activo",
+                    "description": "Nuestro equipo de soporte al cliente está siempre listo y feliz de ayudarte con cualquier pregunta o inquietud que puedas tener."
+                }
+            ]
+        }
+    },
+    "shared":{
+        "title": {
+            "scroll_text": "Desplázate para explorar"
+        },
+        "services": {
+            "title": "Nuestros Servicios",
+            "description": "Explora nuestros servicios y encuentra el que mejor se adapte a tus necesidades.",
+            "learn_more": "Saber Más",
+            "agm_trader": {
+                "title": "AGM Trader",
+                "description": "Proporcionamos acceso fácil para trading e inversión a través de nuestras aplicaciones móviles, de escritorio y web conectadas a más de 150 mercados financieros en todo el mundo.",
+                "action_text": "Saber Más"
+            },
+            "agm_advisor": {
+                "title": "AGM Advisor",
+                "description": "También proporcionamos servicios de Asesoría para aquellos clientes que deseen delegar una parte de sus activos financieros o patrimonio a través de nuestra división de asesoría.",
+                "action_text": "Saber Más"
+            },
+            "agm_institutional": {
+                "title": "AGM Institutional",
+                "description": "Nuestra división Institucional proporciona servicios de ejecución de clase mundial a las instituciones más sofisticadas como Firmas de Asesoría, Fondos de Cobertura, Brokers/Dealers, firmas de Gestión de Patrimonio, compañías de Seguros y más.",
+                "action_text": "Saber Más"
+            }
+        },
+        "team": {
+            "title": "Nuestro Equipo",
+            "description": "Conoce a nuestro equipo de profesionales dedicados a brindar un servicio excepcional.",
+            "contact_us": "Contactanos",
+            "team_carousel": {
+                "hernan_title": "Director de Operaciones",
+                "hernan_description": "El Sr. Castro también tiene más de 30 años de experiencia en los mercados de valores y es un socio fundador de AGM, y como tal ha ayudado a la firma a convertirse en un Broker/Dealer y Asesor Internacional. El Sr. Castro no solo es nuestro Director de Operaciones, sino que supervisa nuestra División de Asesoría de Inversiones. El Sr. Castro ha estado registrado en FINRA en EE. UU. como Series 7 y Serie 66 bajo el CRD # 4575350.",
+                "ramon_title": "Director de Operaciones",
+                "ramon_description": "El Sr. Castro también tiene más de 30 años de experiencia en los mercados de valores y es un socio fundador de AGM, y como tal ha ayudado a la firma a convertirse en un Broker/Dealer y Asesor Internacional. El Sr. Castro no solo es nuestro Director de Operaciones, sino que supervisa nuestra División de Asesoría de Inversiones. El Sr. Castro ha estado registrado en FINRA en EE. UU. como Series 7 y Serie 66 bajo el CRD # 4575350.",
+                "cristian_title": "Director Financiero",
+                "cristian_description": "Cristian ha estado con AGM durante más de 8 años, tiene experiencia en negocios y análisis de datos, además de ser nuestro CFO, es un trader experimentado en Opciones y ha sido parte de un par de Broker/Dealers y una empresa de Gestión de Fondos en el pasado. El Sr. Ramirez tiene una sólida experiencia en análisis Estadístico y Financiero, así como en contabilidad.",
+                "javier_title": "Especialista en Soporte de Comercio",
+                "javier_description": "Javier comenzó en AGM como pasante de la Universidad Texas Tech, donde está en su último año para obtener su licenciatura en Negocios. Ha estado con nosotros durante 2 años y ha destacado en las diferentes áreas en las que ha estado. Está a cargo del Departamento de Servicio al Cliente y se asegura de que cada cliente tenga una introducción personalizada a su relación con AGM.",
+                "maria_jose_description": "Maria Jose es nuestra incorporación más reciente al equipo de AGM, también está en su último año para obtener su licenciatura en Negocios de la Universidad Texas Tech. Ella es parte de nuestro Departamento de Servicio al Cliente y se asegura de que cada cliente tenga una gran experiencia de servicio y apoyo con AGM. También está a cargo de nuestro departamento de marketing y redes sociales.",
+                "andres_description": "Andres ha estado con AGM desde principios de 2024, está trabajando para obtener su licenciatura en Ciencias de la Computación de la Universidad Texas Tech. Andres está a cargo de nuestro departamento de TI y ha demostrado grandes habilidades para desarrollar nuestros sistemas de front end para poder proporcionar una mejor experiencia a nuestros clientes. También es responsable de la mayoría de nuestros procesos de back end para que todo funcione como se espera."
+            }
+        },
+        "faq": {
+            "title": "Preguntas Frecuentes",
+            "question_1": "¿Cómo crear una cuenta de ahorros/inversión?",
+            "answer_1": "Para aplicar en línea, por favor",
+            "answer_1_link": "haga clic aquí",
+            "question_2": "¿Qué medidas de seguridad ofrecen?",
+            "answer_2": "Las cuentas están aseguradas bajo la SIPC (Corporación de Protección al Inversor en Valores) y por Lloyd's en Londres. Las cuentas están bajo la regulación de la SEC (Comisión de Valores y Bolsa) y FINRA (Autoridad Reguladora de la Industria Financiera) en los Estados Unidos.",
+            "question_3": "¿Qué tipos de cuentas están disponibles en AGM?",
+            "answer_3": "Cuentas individuales, conjuntas y corporativas. Atendemos tanto a clientes institucionales como individuales a nivel internacional.",
+            "question_4": "¿A dónde va mi dinero?",
+            "answer_4": "Después de abrir su cuenta y hacer un depósito inicial de ahorros/inversión, el dinero va directamente al custodio en los EE. UU. que mantiene su cuenta AGM a su nombre, tendrá acceso para ver y monitorear su cuenta 24/7.",
+            "question_5": "¿Hay impuestos a considerar?",
+            "answer_5": "No hay impuestos sobre intereses o ganancias de capital en la cuenta. Los impuestos solo se cobran sobre los dividendos recibidos.",
+            "question_6": "¿Quién puede mover el dinero en cada cuenta?",
+            "answer_6": "Solo el propietario de la cuenta, la primera persona designada, puede mover el dinero dentro y fuera de la cuenta a una cuenta bancaria a nombre del propietario de la cuenta. El custodio no permite transferencias de terceros para la protección del cliente."
+        },
+        "footer": {
+            "title": "Contacto",
+            "description": "¿Tienes alguna pregunta? ¡Estamos aquí para ayudarte!"
         }
     },
     "apply": {
@@ -164,6 +250,57 @@
                 "description": "Gracias por elegir nuestros servicios. Revisaremos su solicitud y le responderemos pronto.",
                 "apply_another": "Aplicar para otra cuenta",
                 "go_back_home": "Volver a la página principal"
+            }
+        },
+        "risk": {
+            "title": "Cuestionario de Evaluación de Riesgo",
+            "description": "Por favor complete este formulario para ayudarnos a entender su tolerancia al riesgo y sus preferencias de inversión.",
+            "form": {
+                "account_number": "Número de cuenta (ingrese . si no tiene cuenta)",
+                "client_name": "Nombre completo",
+                "type": {
+                    "title": "¿Qué tipo de inversor se considera?",
+                    "conservative": "Conservador",
+                    "moderate": "Moderado",
+                    "aggressive": "Agresivo"
+                },
+                "loss": {
+                    "title": "Si su cartera pierde el 20% de su valor, ¿qué acción tomaría?",
+                    "sell_everything": "Vender todo",
+                    "sell_some": "Vender algunas inversiones",
+                    "do_nothing": "No hacer nada",
+                    "invest_more": "Invertir más"
+                },
+                "gain": {
+                    "title": "Si su cartera aprecia el 20% de su valor, ¿qué acción tomaría?",
+                    "sell_everything": "Vender todo",
+                    "sell_some": "Vender algunas inversiones",
+                    "do_nothing": "No hacer nada",
+                    "invest_more": "Invertir más"
+                },
+                "period": {
+                    "title": "¿Cuál cree que debería ser el plazo promedio de su cartera de inversión?",
+                    "more_than_21_years": "Más de 21 años",
+                    "11_to_20_years": "11 a 20 años",
+                    "5_to_10_years": "5 a 10 años",
+                    "0_to_5_years": "0 a 5 años"
+                },
+                "diversification": {
+                    "title": "Considerando la diversificación de clases de activos, ¿cuál de estas carteras seleccionaría?",        
+                    "portfolio_a": "Cartera A: 100% bonos, 0% acciones",
+                    "portfolio_b": "Cartera B: 80% bonos, 20% acciones",
+                    "portfolio_c": "Cartera C: 60% bonos, 40% acciones"
+                },
+                "goals": {
+                    "title": "¿Cuál de estas carteras representa mejor sus objetivos con los resultados más aceptables?",
+                    "portfolio_a": "Cartera A: Retorno promedio del 4%",
+                    "portfolio_b": "Cartera B: Retorno promedio del 5%",
+                    "portfolio_c": "Cartera C: Retorno promedio del 7%"
+                }
+            },
+            "result": {
+                "title": "Su Perfil de Riesgo",
+                "warning": "¡Por favor tome una foto de esto, ya que será muy difícil verlo de nuevo!"
             }
         }
     },

@@ -27,16 +27,7 @@ export interface Account {
 export type Selection = Document | Ticket
 
 // Document Center
-export type Document = {
-  'DocumentID': string
-  'DocumentInfo':Map
-  'FileInfo':Map
-  'Uploader':string
-  'Category':string
-}
-export type Drive = {
-  [key: string]: Document[]
-}
+
 
 // Download types
 export enum DeviceTypes{

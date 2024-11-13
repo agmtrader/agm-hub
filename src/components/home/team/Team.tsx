@@ -3,12 +3,13 @@ import React, { useRef } from 'react'
 import { TeamCarousel } from './Carousel'
 import { Button } from '@/components/ui/button'
 import { motion, useInView } from 'framer-motion'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
-type Props = {}
+const Team = () => {
 
-const Team = (props: Props) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
+  const { t } = useTranslationProvider()
 
   return (
     <motion.div 
@@ -24,7 +25,7 @@ const Team = (props: Props) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.6 }}
       >
-        Meet Our Team
+        {t('shared.team.title')}
       </motion.p>
       <motion.p 
         className='text-center text-lg'
@@ -32,7 +33,7 @@ const Team = (props: Props) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        Our team is dedicated to providing you with the best service possible.
+        {t('shared.team.description')}
       </motion.p>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
@@ -47,7 +48,7 @@ const Team = (props: Props) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.6 }}
       >
-        <Button>Contact us.</Button>
+        <Button>{t('shared.team.contact_us')}</Button>
       </motion.div>
     </motion.div>
   )

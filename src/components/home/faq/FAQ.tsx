@@ -9,6 +9,7 @@ import {
     AccordionItem,
     AccordionTrigger,
   } from "@/components/ui/accordion"
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 type Props = {}
 
@@ -33,6 +34,8 @@ function FAQ({}: Props) {
     visible: { opacity: 1, y: 0 },
   }
 
+  const { t } = useTranslationProvider()
+
   return (
     <motion.div
       ref={ref}
@@ -41,16 +44,17 @@ function FAQ({}: Props) {
       variants={containerVariants}
       className='w-full h-fit flex flex-col justify-center text-agm-dark-blue gap-y-16 items-center'
     >
-      <motion.p variants={itemVariants} className='text-5xl text-center font-bold'>Frequently Asked Questions</motion.p>
+      <motion.p variants={itemVariants} className='text-5xl text-center font-bold'>{t('shared.faq.title')}</motion.p>
       <Accordion type="single" collapsible className="w-[80%] text-start">
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-1" >
             <AccordionTrigger>
-              <p className='text-sm font-bold'>How to create a savings/investment account?</p>
+              <p className='text-sm font-bold'>{t('shared.faq.question_1')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-              Please <a className='font-bold' href='https://agmtechnology.com/apply' rel="noopener noreferrer" target="_blank">click here</a> to apply online.
+              {t('shared.faq.answer_1')}
+              <a className='font-bold' href='https://agmtechnology.com/apply' rel="noopener noreferrer" target="_blank"> {t('shared.faq.answer_1_link')}</a>
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -58,13 +62,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-2">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>What security measures do you offer?</p>
+              <p className='text-sm font-bold'>{t('shared.faq.question_2')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-              Accounts are insured under the SIPC (Securities Investor Protection Corporation) 
-              and by Lloyd's in London. The accounts are under regulation of the SEC (Securities and Exchange Commission) 
-              and FINRA (Financial Industry Regulatory Authority) in the United States.
+              {t('shared.faq.answer_2')}
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -72,12 +74,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-3">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>What types of accounts are available at AGM?</p>
+              <p className='text-sm font-bold'>{t('shared.faq.question_3')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-                Individual, joint, and corporate accounts. We serve both 
-                institutional and individual clients internationally.
+                {t('shared.faq.answer_3')}
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -85,13 +86,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-4">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>Where does my money go?</p>
+              <p className='text-sm font-bold'>{t('shared.faq.question_4')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-              After opening your account and making an initial savings/investment deposit, 
-              the money goes directly to the custodian in the USA that holds your AGM account in your name, 
-              you will have access to see and monitor your account 24/7.
+              {t('shared.faq.answer_4')}
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -99,12 +98,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-5">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>Are there any taxes to consider?</p>
+              <p className='text-sm font-bold'>{t('shared.faq.question_5')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-                There are no interest or capital gains taxes on the account. 
-                Taxes are only charged on dividends received.
+              {t('shared.faq.answer_5')}
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -112,13 +110,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-6">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>Who can move the money in each account?</p>
+              <p className='text-sm font-bold'>{t('shared.faq.question_6')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-              Only the account owner, the first designated person, can move the money 
-              in and out of the account to a bank account in the same name of the account owner. 
-              The custodian does not allow third party wires for the protection of the client.
+              {t('shared.faq.answer_6')}
               </p>
             </AccordionContent>
           </AccordionItem>

@@ -8,49 +8,32 @@ import Team from "@/components/home/team/Team";
 import Footer from "@/components/Footer";
 import { Building, Handshake, BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle, LineChart } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 
 export default function Home() {
+
+  const { t } = useTranslationProvider()
   
   const titleProps = {
     backgroundImage: '/images/wall_street.jpg',
     logoSrc: '/images/brand/agm-logo-white.png',
-    title: 'Investing. Anywhere. Anytime.',
-    subtitle: 'Unlock a world of opportunities with our global investment platform.',
-    ctaText: 'Apply for an account',
+    title: t('agm-technology.title.title'),
+    subtitle: t('agm-technology.title.subtitle'),
+    ctaText: t('agm-technology.title.action_text'),
     ctaLink: '/apply'
   };
 
-  const services = [
-    {
-      name: 'AGM Trader',
-      icon: <LineChart className='text-background h-[12vw] w-[12vw]'/>,
-      description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
-      url: '/trader'
-    },
-    {
-      name: 'AGM Advisor',
-      icon: <Handshake className='text-background h-[12vw] w-[12vw]'/>,
-      description:'We also provide Advisory services for those clients that would like to delegate a portion of their financial assets or wealth through our advisory division.',
-      url:'/advisor'
-    },
-    {
-      name: 'AGM Institutional',
-      icon: <Building className='text-background h-[12vw] w-[12vw]'/>,
-      description:'Our Institutional division provides world class execution services to the most sophisticated institutions like Advisory Firms, Hedge Funds, Broker/Dealers, Wealth Management firms, Insurance companies and more.',
-      url:'/institutional'
-    }
-  ]
-  
+    
   const introductionProps = {
-    title: "Who is AGM?",
+    title: t('agm-technology.introduction.title'),
     description: [
-      "Since 1995, AGM as an International Securities Broker/Dealer has facilitated direct access to more than 150 financial markets (Securities Exchanges) in the US, Europe, Asia and Latin America, otherwise unavailable to certain investors.",
-      "AGM Technology offers professional services to maximize your returns:"
+      t('agm-technology.introduction.description'),
+      t('agm-technology.introduction.description_2')
     ],
     cards: [
       {
-        title: "Trade any time, anywhere",
-        description: "Trade stocks, ETFs, bonds, crypto and more from any location at any time with our advanced trading platform and services.",
+        title: t('agm-technology.introduction.cards.0.title'),
+        description: t('agm-technology.introduction.cards.0.description'),
         items: [
           { icon: <BarChart2 />, label: 'Stocks' },
           { icon: <Briefcase />, label: 'ETFs' },
@@ -61,8 +44,8 @@ export default function Home() {
         ]
       },
       {
-        title: "Professional tools",
-        description: "Our trading platform, dashboard and tools is designed to provide you with the tools you need to succeed in the financial markets.",
+        title: t('agm-technology.introduction.cards.1.title'),
+        description: t('agm-technology.introduction.cards.1.description'),
         items: [
           { icon: <Clock />, label: '24/7 customer support' },
           { icon: <Database />, label: 'Real-time market data' },
@@ -71,8 +54,8 @@ export default function Home() {
         ]
       },
       {
-        title: "Active customer support",
-        description: "Our customer support team is always ready and happy to assist you with any questions or concerns you may have.",
+        title: t('agm-technology.introduction.cards.2.title'),
+        description: t('agm-technology.introduction.cards.2.description'),
         items: [
           { icon: <Mail />, label: 'Email' },
           { icon: <Phone />, label: 'Phone' },
@@ -80,9 +63,31 @@ export default function Home() {
         ]
       }
     ],
-    ctaText: "Interested?",
-    ctaSubtext: "See steps on how to get your trading journey started."
+    ctaText: t('agm-technology.introduction.action_text'),
+    ctaSubtext: t('agm-technology.introduction.action_subtext')
   };
+
+  const services = [
+    {
+      name: t('shared.services.agm_trader.title'),
+      icon: <LineChart className='text-background h-[12vw] w-[12vw]'/>,
+      description: t('shared.services.agm_trader.description'),
+      url: '/trader'
+    },
+    {
+      name: t('shared.services.agm_advisor.title'),
+      icon: <Handshake className='text-background h-[12vw] w-[12vw]'/>,
+      description: t('shared.services.agm_advisor.description'),
+      url: '/advisor'
+    },
+    {
+      name: t('shared.services.agm_institutional.title'),
+      icon: <Building className='text-background h-[12vw] w-[12vw]'/>,
+      description: t('shared.services.agm_institutional.description'),
+      url: '/institutional'
+    }
+  ]
+
 
   return (
     <motion.div 

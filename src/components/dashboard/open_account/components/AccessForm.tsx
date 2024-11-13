@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-import { getDefaults } from "@/lib/form"
+import { getDefaults } from '@/utils/form'
 import { account_access_schema } from "@/lib/schemas"
 
 interface Props {

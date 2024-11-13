@@ -27,7 +27,8 @@ const navbarContent = [
     name: 'Client Fees',
     url: '/dashboard/client-fees',
     icon: Users,
-  }
+  },
+  
 ]
 
 const tools = [

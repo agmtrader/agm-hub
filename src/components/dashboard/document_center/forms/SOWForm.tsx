@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { getDefaults } from "@/lib/form"
+import { getDefaults } from '@/utils/form'
 import { sow_schema } from "@/lib/schemas"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -45,11 +45,13 @@ const SOWForm: React.FC<SOWFormProps> = ({ onSubmit, accountNumber, uploading })
           name="account_number"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Account Number</FormLabel>
+              <div className="flex gap-2">
+                <FormLabel>Account Number</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -59,7 +61,10 @@ const SOWForm: React.FC<SOWFormProps> = ({ onSubmit, accountNumber, uploading })
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Type</FormLabel>
+              <div className="flex gap-2">
+                <FormLabel>Type</FormLabel>
+                <FormMessage />
+              </div>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -71,7 +76,6 @@ const SOWForm: React.FC<SOWFormProps> = ({ onSubmit, accountNumber, uploading })
                   {/* Add more SOW types here when they are defined */}
                 </SelectContent>
               </Select>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -81,9 +85,11 @@ const SOWForm: React.FC<SOWFormProps> = ({ onSubmit, accountNumber, uploading })
           name="document_date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Document Date</FormLabel>
+              <div className="flex gap-2">
+                <FormLabel>Document Date</FormLabel>
+                <FormMessage />
+              </div>
               <DateTimePicker {...field} granularity="day" />
-              <FormMessage />
             </FormItem>
           )}
         />

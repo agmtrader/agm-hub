@@ -17,7 +17,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
 
-import { getDefaults } from "@/lib/form"
+import { getDefaults } from '@/utils/form'
 import { risk_assesment_schema } from "@/lib/schemas"
 
 import { Input } from "@/components/ui/input"
@@ -361,12 +361,12 @@ const RiskForm = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="w-full px-10 pb-10 h-fit flex justify-center items-center"
+      className="w-full justify-center items-center"
     >
       <Form {...form}>
         <motion.form 
           onSubmit={form.handleSubmit(onSubmit)} 
-          className="flex flex-col gap-y-10 w-full justify-center items-center"
+          className="w-full flex flex-col gap-10"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -393,7 +393,7 @@ const RiskForm = () => {
                 name="client_name"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex gap-y-2">
+                    <div className="flex gap-2">
                       <FormLabel>{t('apply.risk.form.client_name')}</FormLabel>
                       <FormMessage />
                     </div>
@@ -417,7 +417,7 @@ const RiskForm = () => {
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex flex-col"
                     >
 
                       {types.map((type) => (
@@ -478,7 +478,7 @@ const RiskForm = () => {
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex flex-col"
                     >
 
                       {gains.map((gain) => (
@@ -509,7 +509,7 @@ const RiskForm = () => {
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex flex-col"
                     >
 
                       {periods.map((period) => (
@@ -543,7 +543,7 @@ const RiskForm = () => {
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex flex-col"
                     >
 
                       {diversifications.map((diversification) => (
@@ -574,7 +574,7 @@ const RiskForm = () => {
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex flex-col"
                     >
 
                       {
@@ -596,7 +596,7 @@ const RiskForm = () => {
 
             {/*TODO AGREGAR FOTOS DE LOUIS */}
             
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" className="" disabled={submitting}>
               {submitting ? (
                 <>
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
@@ -606,11 +606,12 @@ const RiskForm = () => {
                 t('forms.submit')
               )}
             </Button>
+
+
         </motion.form>
       </Form>
 
-      <div className="w-full">
-        <AnimatePresence>
+      <AnimatePresence>
           {riskProfile && (
             <Dialog open={!!riskProfile} onOpenChange={handleDialogClose}>
               <DialogContent className="max-w-fit w-full">
@@ -654,7 +655,6 @@ const RiskForm = () => {
             </Dialog>
           )}
         </AnimatePresence>
-      </div>
 
     </motion.div>
   )

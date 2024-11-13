@@ -1,8 +1,9 @@
+import { Map } from '@/lib/types';
 import { _t, Dict, Lang} from '@/utils/i18n'
 
 interface D {
-  en : () => Promise<Dict>,
-  es : () => Promise<Dict>,
+  en : () => Promise<Map>,
+  es : () => Promise<Map>,
 }
 
 const dictionaries:D = {
@@ -15,6 +16,6 @@ export const getDictionary = async (lang: string) => dictionaries[lang as keyof 
 export type Translator = (key:string) => string
 
 export const getTranslations = async (lang: string): Promise<Translator> => {
-    const dict = await getDictionary(lang)
-    return (key: string) => _t(key, dict)
+  const dict = await getDictionary(lang)
+  return (key: string) => _t(key, dict)
 }

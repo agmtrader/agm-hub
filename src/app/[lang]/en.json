@@ -1,7 +1,93 @@
 {
-    "home": {
+    "agm-technology": {
+        "title": {
+            "title": "Invest. Anywhere. Anytime.",
+            "subtitle": "Unlock a world of opportunities with our global investment platform.",
+            "action_text": "Request an account",
+            "scroll_text": "Scroll to explore"
+        },
         "introduction": {
-            "title": "Empowering Today's Traders for Tomorrows Markets"
+            "title": "Empowering Today's Traders for Tomorrow's Markets",
+            "description": "Since 1995, AGM as an International Securities Broker/Dealer has facilitated direct access to more than 150 financial markets (Stock Exchanges) in the USA, Europe, Asia, and Latin America, otherwise inaccessible to certain investors.",
+            "description_2": "AGM Technology offers professional services to maximize your returns:",
+            "action_text": "Interested?",
+            "action_subtext": "See the steps to begin your trading journey.",
+            "cards": [
+                {
+                    "title": "Trade anytime, anywhere",
+                    "description": "Trade stocks, ETFs, bonds, cryptocurrencies, and more from any location and at any time with our advanced trading platform and services."
+                },
+                {
+                    "title": "Professional tools",
+                    "description": "Our trading platform, dashboard, and tools are designed to provide you with the necessary tools to succeed in the financial markets."
+                },
+                {
+                    "title": "Active customer support",
+                    "description": "Our customer support team is always ready and happy to help you with any questions or concerns you may have."
+                }
+            ]
+        }
+    },
+    "shared": {
+        "title": {
+            "scroll_text": "Scroll to explore"
+        },
+        "services": {
+            "title": "Our Services",
+            "description": "Explore our services and find the one that best suits your needs.",
+            "learn_more": "Learn More",
+            "agm_trader": {
+                "title": "AGM Trader",
+                "description": "We provide easy access for trading and investment through our mobile, desktop, and web applications connected to more than 150 financial markets worldwide.",
+                "action_text": "Learn More"
+            },
+            "agm_advisor": {
+                "title": "AGM Advisor",
+                "description": "We also provide Advisory services for those clients who wish to delegate a portion of their financial assets or wealth through our advisory division.",
+                "action_text": "Learn More"
+            },
+            "agm_institutional": {
+                "title": "AGM Institutional",
+                "description": "Our Institutional division provides world-class execution services to the most sophisticated institutions such as Advisory Firms, Hedge Funds, Brokers/Dealers, Wealth Management firms, Insurance companies, and more.",
+                "action_text": "Learn More"
+            }
+        },
+        "team": {
+            "title": "Our Team",
+            "description": "Meet our team of professionals dedicated to providing exceptional service.",
+            "contact_us": "Contact Us",
+            "team_carousel": {
+                "hernan_title": "Chief Operating Officer",
+                "hernan_description": "Mr. Castro has also more than 30 years of experience in the securities markets and is also a founding partner of AGM and as such has helped the firm become an International Broker/Dealer and Advisor. Mr. Castro is not only our Chief Operating Officer, but he oversees our Investment Advisory Division. Mr. Castro has been registered with FINRA in the USA as a Series 7 and Serie 66 under CRD # 4575350.",
+                "ramon_title": "Chief Operating Officer",
+                "ramon_description": "Mr. Castro has also more than 30 years of experience in the securities markets and is also a founding partner of AGM and as such has helped the firm become an International Broker/Dealer and Advisor. Mr. Castro is not only our Chief Operating Officer, but he oversees our Investment Advisory Division. Mr. Castro has been registered with FINRA in the USA as a Series 7 and Serie 66 under CRD # 4575350.",
+                "cristian_title": "Chief Financial Officer",
+                "cristian_description": "Cristian has been with AGM for over 8 years, he has a background in business and data analytics, besides being our CFO, he is an experienced Options trader and has been part of a couple of Broker/Dealers and a Fund Management company in the past. Mr. Ramirez has a very strong background in Statistical and Financial analysis, as well as in accounting.",
+                "javier_title": "Trade Support Specialist",
+                "javier_description": "Javier started with AGM as an Intern from Texas Tech University, where he is in his final year to obtain his BA in Business. He has been with us for 2 years and has excelled in the different areas that he has been part of. He is in charge of the Customer Service Department and makes sure that every client has a tailored introduction to their relationship with AGM.",
+                "maria_jose_description": "Maria Jose is our newest addition to the AGM team, she is also in her final year to obtain her BA in Business from Texas Tech University. She is part of our Customer Service Department and makes sure that every client has great service and support experience with AGM. She is also in charge of our marketing department and social media.",
+                "andres_description": "Andres has been with AGM since the beginning of 2024, he is working on obtaining his BS in Computer Science from Texas Tech University. Andres is in charge of our IT department and has shown great skills to develop our front end systems to be able to provide a better experience to our customers. He is also responsible for most of our back end processes so everything works as expected."
+            }
+        },
+        "faq": {
+            "title": "Frequently Asked Questions",
+            "question_1": "How to create a savings/investment account?",
+            "answer_1": "To apply online, please",
+            "answer_1_link": "click here",
+            "question_2": "What security measures do you offer?",
+            "answer_2": "Accounts are insured under the SIPC (Securities Investor Protection Corporation) and by Lloyd's in London. The accounts are under regulation of the SEC (Securities and Exchange Commission) and FINRA (Financial Industry Regulatory Authority) in the United States.",
+            "question_3": "What types of accounts are available at AGM?",
+            "answer_3": "Individual, joint, and corporate accounts. We serve both institutional and individual clients internationally.",
+            "question_4": "Where does my money go?",
+            "answer_4": "After opening your account and making an initial savings/investment deposit, the money goes directly to the custodian in the USA that holds your AGM account in your name, you will have access to see and monitor your account 24/7.",
+            "question_5": "Are there any taxes to consider?",
+            "answer_5": "There are no interest or capital gains taxes on the account. Taxes are only charged on dividends received.",
+            "question_6": "Who can move the money in each account?",
+            "answer_6": "Only the account owner, the first designated person, can move the money in and out of the account to a bank account in the same name of the account owner. The custodian does not allow third party wires for the protection of the client."
+        },
+        "footer": {
+            "title": "Contact",
+            "description": "Have any questions? We're here to help!"
         }
     },
     "apply": {
@@ -27,60 +113,85 @@
                 },
                 "disclaimer": {
                     "title": "DISCLAIMER",
-                    "content": "If you wish to open an Individual Account, we advise you that for inheritance and tax issues, it's best to open a Joint Account. An Individual Account does not allow the option to name Beneficiaries at opening or thereafter and might be subject to Inheritance taxes. Please consider the option of opening a Joint account instead of an individual account.",
-                    "contact": "If you have any questions before applying, please contact us at:"
+                    "content": "If you wish to open an Individual Account, we advise that for inheritance and tax purposes, it is better to open a Joint Account. An Individual Account does not allow the option to name Beneficiaries at the time of opening or subsequently and may be subject to Estate taxes. Please consider the option of opening a joint account instead of an individual account.",
+                    "contact": "If you have any questions before applying, contact us at:"
                 }
             },
             "about_you": {
                 "title": "About You",
                 "primary": "Primary Holder",
                 "secondary": "Secondary Holder",
-                "basic_info": "Basic Info",
-                "residential_info": "Residential Info",
-                "personal_info": "Personal Info",
-                "id_info": "ID Info",
-                "employer_info": "Employer Info",
-                "financial_info": "Financial Info",
+                "basic_info": "Basic Information",
+                "login_info": "Login Information",
+                "residential_info": "Residential Information",
+                "personal_info": "Personal Information",
+                "id_info": "Identification Information",
+                "employer_info": "Employer Information",
+                "financial_info": "Financial Information",
                 "security_questions": "Security Questions",
                 
                 "salutation": "Salutation",
-                "select_salutation": "Select a salutation",
-                "first_name": "First name",
-                "first_name_placeholder": "Enter your first name",
-                "middle_name": "Middle name",
-                "middle_name_placeholder": "Enter your middle name",
-                "last_name": "Last name",
-                "last_name_placeholder": "Enter your last name",
-                
+                "first_name": "First Name",
+                "middle_name": "Middle Name",
+                "last_name": "Last Name",
+
                 "address": "Address",
                 "city": "City",
                 "state": "State/Province",
-                "zip": "Zip",
-                "phone_type": "Phone type",
-                "phone_country": "Phone country",
-                "phone_number": "Phone number",
+                "zip": "Zip Code",
+                "phone_type": "Phone Type",
+                "phone_types": {
+                    "mobile": "Mobile",
+                    "home": "Home"
+                },
+                "phone_country": "Phone Country",
+                "phone_number": "Phone Number",
+                "citizenship": "Citizenship",
+                "country_of_birth": "Country of Birth",
                 
-                "date_of_birth": "Date of birth",
+                "date_of_birth": "Date of Birth",
                 "marital_status": "Marital Status",
+                "marital_status_list": {
+                    "single": "Single",
+                    "married": "Married",
+                    "divorced": "Divorced",
+                    "widowed": "Widowed"
+                },
                 "select_marital_status": "Select a status",
-                "number_of_dependents": "Number of dependents",
+                "number_of_dependents": "Number of Dependents",
+                "country_of_residence": "Country of Residence",
                 "tax_id": "Tax ID",
                 
                 "id_country": "ID Country",
                 "id_type": "ID Type",
+                "id_type_list": {
+                    "passport": "Passport",
+                    "national_id": "National ID",
+                    "license": "License",
+                    "alien": "Alien Registration"
+                },
                 "select_id_type": "Select ID type",
                 "id_number": "ID Number",
                 "id_expiration": "ID Expiration",
                 
                 "employment_status": "Employment Status",
+                "employment_status_list": {
+                    "employed": "Employed",
+                    "retired": "Retired",
+                    "self_employed": "Self-Employed",
+                    "trader": "Trader",
+                    "student": "Student",
+                    "homemaker": "Homemaker",
+                    "unemployed": "Unemployed"
+                },
                 "select_employment_status": "Select a status",
-                "employer_name": "Employer name",
-                "employer_address": "Employer address",
-                "employer_city": "Employer city",
-                "employer_state": "Employer state/province",
+                "employer_name": "Employer Name",
+                "employer_address": "Employer Address",
+                "employer_city": "Employer City",
+                "employer_state": "Employer State/Province",
                 "employer_country": "Employer Country",
-                "employer_zip": "Employer zip",
-                "nature_of_business": "Nature of business",
+                "employer_zip": "Employer Zip Code",
+                "nature_of_business": "Nature of Business",
                 "occupation": "Occupation",
                 
                 "source_of_wealth": "Source of Wealth",
@@ -99,52 +210,22 @@
                 "username": "Username",
                 "password": "Password",
 
-                "fill_fake_data": "Fill with Fake Data",
-
-                "login_info": "Login Info",
-                "citizenship": "Citizenship",
-                "country_of_birth": "Country of Birth",
-                "country_of_residence": "Country of Residence",
-                "phone_types": {
-                    "mobile": "Mobile",
-                    "home": "Home"
-                },
-                "marital_status_list": {
-                    "single": "Single",
-                    "married": "Married",
-                    "divorced": "Divorced",
-                    "widowed": "Widowed"
-                },
-                "id_type_list": {
-                    "passport": "Passport",
-                    "national_id": "National ID",
-                    "license": "License",
-                    "alien": "Alien"
-                },
-                "employment_status_list": {
-                    "employed": "Employed",
-                    "retired": "Retired",
-                    "self_employed": "Self Employed",
-                    "trader": "Trader",
-                    "student": "Student",
-                    "homemaker": "Homemaker",
-                    "unemployed": "Unemployed"
-                }
+                "fill_fake_data": "Fill with fake data"
             },
             "regulatory": {
                 "title": "Regulatory Information",
                 "annual_net_income": "Annual Net Income",
                 "liquid_net_worth": "Liquid Net Worth",
-                "investment_objectives": "Investment Objectives",
-                "products_to_trade": "Products to Trade",
-                "amount_to_invest": "Amount to Invest",
                 "net_worth": "Net Worth",
+                "investment_objectives": "Investment Objectives",
                 "investment_objectives_list": {
                     "capital": "Capital",
                     "growth": "Growth",
                     "hedging": "Hedging",
                     "profits": "Profits"
                 },
+                "products_to_trade": "Products to Trade",
+                "amount_to_invest": "Amount to Invest",
                 "source_of_wealth": {
                     "allowance": "Allowance",
                     "disability": "Disability",
@@ -165,17 +246,17 @@
                 }
             },
             "application_end": {
-                "title": "Application submitted!",
+                "title": "Application Successfully Submitted!",
                 "description": "Thank you for choosing our services. We will review your application and get back to you soon.",
                 "apply_another": "Apply for another account",
-                "go_back_home": "Go back home"
+                "go_back_home": "Go back to homepage"
             }
         },
         "risk": {
             "title": "Risk Assessment Questionnaire",
             "description": "Please complete this form to help us understand your risk tolerance and investment preferences.",
             "form": {
-                "account_number": "Account number (enter . if no account)",
+                "account_number": "Account number (enter . if you don't have an account)",
                 "client_name": "Full name",
                 "type": {
                     "title": "What type of investor do you consider yourself?",
@@ -184,42 +265,42 @@
                     "aggressive": "Aggressive"
                 },
                 "loss": {
-                    "title": "If your portfolio loses 20% of its value what action would you take?",
+                    "title": "If your portfolio loses 20% of its value, what action would you take?",
                     "sell_everything": "Sell everything",
                     "sell_some": "Sell some investments",
                     "do_nothing": "Do nothing",
                     "invest_more": "Invest more"
                 },
                 "gain": {
-                    "title": "If your portfolio appreciates 20% of its value what action would you take?",
+                    "title": "If your portfolio appreciates 20% of its value, what action would you take?",
                     "sell_everything": "Sell everything",
                     "sell_some": "Sell some investments",
                     "do_nothing": "Do nothing",
                     "invest_more": "Invest more"
                 },
                 "period": {
-                    "title": "What do you think the average term of your investment portfolio should be?",
+                    "title": "What do you think should be the average term of your investment portfolio?",
                     "more_than_21_years": "More than 21 years",
                     "11_to_20_years": "11 to 20 years",
                     "5_to_10_years": "5 to 10 years",
                     "0_to_5_years": "0 to 5 years"
                 },
                 "diversification": {
-                    "title": "Considering asset class diversification, which of these portfolios would you select?",        
-                    "portfolio_a": "Portfolio A: 100% bonds, 0% equity",
-                    "portfolio_b": "Portfolio B: 80% bonds, 20% equity",
-                    "portfolio_c": "Portfolio C: 60% bonds, 40% equity"
+                    "title": "Considering asset class diversification, which of these portfolios would you select?",
+                    "portfolio_a": "Portfolio A: 100% bonds, 0% stocks",
+                    "portfolio_b": "Portfolio B: 80% bonds, 20% stocks",
+                    "portfolio_c": "Portfolio C: 60% bonds, 40% stocks"
                 },
                 "goals": {
-                    "title": "Which of these portfolios best represent your goals with the most acceptable outcomes?",
-                    "portfolio_a": "Portfolio A: Average 4% return",
-                    "portfolio_b": "Portfolio B: Average 5% return",
-                    "portfolio_c": "Portfolio C: Average 7% return"
+                    "title": "Which of these portfolios best represents your objectives with the most acceptable results?",
+                    "portfolio_a": "Portfolio A: 4% average return",
+                    "portfolio_b": "Portfolio B: 5% average return",
+                    "portfolio_c": "Portfolio C: 7% average return"
                 }
             },
             "result": {
                 "title": "Your Risk Profile",
-                "warning": "Please take a picture of this, as it will be very hard to see it again!"
+                "warning": "Please take a picture of this, as it will be very difficult to see it again!"
             }
         }
     },
@@ -227,10 +308,10 @@
         "search": "Search...",
         "no_results": "No results found.",
         "required": "Required field",
-        "finish": "Finish",
         "submit": "Submit",
         "submitting": "Submitting...",
         "previous_step": "Previous step",
+        "finish": "Finish",
         "errors": {
             "email": "Please enter a valid email.",
             "username_length": "Username must be at least 4 characters long.",
@@ -239,5 +320,4 @@
             "security_answer": "Please enter an answer for the security question."
         }
     }
-    
 }

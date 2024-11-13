@@ -4,7 +4,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { faker } from '@faker-js/faker';
-import { ChevronDown, Loader2 } from "lucide-react"
+import { ChevronDown, Fingerprint, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
@@ -33,7 +33,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, getDefaults, phone_types, security_questions } from "@/lib/form"
+import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, phone_types, security_questions } from "@/lib/form"
+import { getDefaults } from '@/utils/form'
+
 import { about_you_primary_schema, about_you_secondary_schema } from "@/lib/schemas"
 
 import { Checkbox } from "@/components/ui/checkbox"
@@ -55,7 +57,7 @@ interface Props {
 
 const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props) => {
 
-  const backdoor = true
+  const backdoor = process.env.DEV_MODE === 'true'
 
   let formSchema:any;
 
@@ -82,6 +84,7 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+
     setGenerating(true)
 
     try {
@@ -185,7 +188,7 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
     <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
 
       <div className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
-        <PersonLinesFill className='h-24 w-24 text-secondary'/>
+        <Fingerprint className='h-24 w-24 text-secondary'/>
         <p className='text-5xl font-bold'>{t('apply.account.about_you.title')}</p>
         <p>{primary ? t('apply.account.about_you.primary') : t('apply.account.about_you.secondary')}</p>
       </div>
