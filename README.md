@@ -1,6 +1,6 @@
 # AGM Technology Hub
 
-## Portal for anything related to AGM, the Stock Broking and Advising Firm in Costa Rica
+## AGM Technology, Broking and Advising Digital Hub
 
 ### Description 
 
