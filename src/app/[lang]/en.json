@@ -3,8 +3,7 @@
         "title": {
             "title": "Invest. Anywhere. Anytime.",
             "subtitle": "Unlock a world of opportunities with our global investment platform.",
-            "action_text": "Request an account",
-            "scroll_text": "Scroll to explore"
+            "action_text": "Apply for an account"
         },
         "introduction": {
             "title": "Empowering Today's Traders for Tomorrow's Markets",
@@ -26,6 +25,39 @@
                     "description": "Our customer support team is always ready and happy to help you with any questions or concerns you may have."
                 }
             ]
+        }
+    },
+    "agm-trader": {
+        "title": {
+            "title": "AGM Trader",
+            "subtitle": "Trade assets any time, anywhere using our advanced trading platform and apps.",
+            "action_text": "Apply for an account"
+        },
+        "introduction": {
+            "title": "Innovating on a Global Scale",
+            "description": "AGM Trader lets you trade and invest 24/7 in a wide range of financial instruments across more than 150 markets and 20 different currencies from a single account.",
+            "cta_text": "Ready to start trading anywhere?",
+            "cta_subtext": "Download our app now.",
+            "cards": [
+                {
+                    "title": "Trade Any Time, Anywhere",
+                    "description": "Access global markets and diverse financial instruments through our advanced trading platforms."
+                },
+                {
+                    "title": "Choose Your Trading Experience",
+                    "description": "Select the platform that best suits your trading style and needs."
+                },
+                {
+                    "title": "Trade with Confidence",
+                    "description": "Our trading platforms are designed to provide you with the tools you need to succeed in the financial markets."
+                }
+            ]
+        },
+        "download": {
+            "title": "Download Our Apps",
+            "device": "First of all, what device are you using?",
+            "operating_system": "What operating system are you using?",
+            "download_now": "Download now."
         }
     },
     "shared": {

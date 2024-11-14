@@ -12,6 +12,7 @@ import { AlignJustify } from 'lucide-react'
 const maxScroll = 100
 
 export const Header = () => {
+
   const scroll = useScrollPositions()
   const [expandSidebar, setExpandSidebar] = useState(false)
   const { lang } = useTranslationProvider()
@@ -27,10 +28,14 @@ export const Header = () => {
           />
 
           {/* Header content */}
-          <div className="flex items-center justify-between px-5 py-10 relative z-10">
+          <div className="flex items-center justify-between px-5 py-5 relative z-10">
             <Link className="flex items-center" href={`/${lang}`}>
-              <Button className="bg-transparent" variant="ghost">
-                {scroll > maxScroll && <Image src="/images/brand/agm-logo.png" priority alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />}
+              <Button className="bg-transparent hover:bg-transparent h-fit">
+                {scroll > maxScroll ? 
+                  <Image src="/images/brand/agm-logo.png" priority alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} /> 
+                  : 
+                  <Image src="/images/brand/agm-logo-white.png" priority alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
+                }
               </Button>
             </Link>
             <Button
@@ -64,9 +69,9 @@ export const FormHeader = () => {
           />
 
           {/* Header content */}
-          <div className="flex items-center justify-between px-5 py-10 relative z-10">
+          <div className="flex items-center justify-between px-5 py-5 relative z-10">
             <Link className="flex items-center" href={`/${lang}`}>
-              <Button className="bg-transparent" variant="ghost">
+              <Button className="bg-transparent h-fit" variant="ghost">
                 <Image src="/images/brand/agm-logo.png" priority alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
               </Button>
             </Link>

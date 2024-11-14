@@ -1,3 +1,5 @@
+'use client'
+
 import Title from "../../../../components/home/title/Title";
 import Introduction from "../../../../components/home/introduction/Introduction"
 import Services from "../../../../components/home/services/Services";
@@ -7,42 +9,45 @@ import Footer from "../../../../components/Footer";
 import { Building, Clock, Database, TrendingUp, Monitor, DollarSign, Smartphone, Globe, Headphones, Shield, BarChart, BookOpen } from "lucide-react";
 import { Handshake } from "lucide-react";
 import Download from "@/components/home/download/Download";
+import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 
 export default function Home() {
+
+  const {t} = useTranslationProvider()
 
   const titleProps = {
     backgroundImage: '/images/nyse_floor.jpg',
     logoSrc: '/images/brand/agm-logo-white.png',
-    title: 'AGM Trader',
-    subtitle: 'Trade assets any time, anywhere using our advanced trading platform and apps.',
-    ctaText: 'Apply for an account',
+    title: t('agm-trader.title.title'),
+    subtitle: t('agm-trader.title.subtitle'),
+    ctaText: t('agm-trader.title.action_text'),
     ctaLink: '/apply'
   };
   
   const services = [
     {
-      name: 'AGM Advisor',
+      name: t('shared.services.agm_advisor.title'),
       icon: <Handshake className='text-white h-[12vw] w-[12vw]'/>,
-      description:'We also provide Advisory services for those clients that would like to delegate a portion of their financial assets or wealth through our advisory division.',
+      description:t('shared.services.agm_advisor.description'),
       url:'https://agm-advisor.vercel.app'
     },
     {
-      name: 'AGM Institutional',
+      name: t('shared.services.agm_institutional.title'),
       icon: <Building className='text-white h-[12vw] w-[12vw]'/>,
-      description:'Our Institutional division provides world class execution services to the most sophisticated institutions like Advisory Firms, Hedge Funds, Broker/Dealers, Wealth Management firms, Insurance companies and more.',
+      description:t('shared.services.agm_institutional.description'),
       url:'https://agm-institutional.vercel.app'
     }
   ]
   
   const introductionProps = {
-    title: "Innovating on a Global Scale",
+    title: t('agm-trader.introduction.title'),
     description: [
-      "AGM Trader lets you trade and invest 24/7 in a wide range of financial instruments across more than 150 markets and 20 different currencies from a single account.",
+      t('agm-trader.introduction.description'),
     ],
     cards: [
       {
-        title: "Trade Any Time, Anywhere",
-        description: "Access global markets and diverse financial instruments through our advanced trading platforms.",
+        title: t('agm-trader.introduction.cards.0.title'),
+        description: t('agm-trader.introduction.cards.0.description'),
         items: [
           { icon: <TrendingUp />, label: 'Stocks, bonds, ETFs, options & more' },
           { icon: <Clock />, label: '24/7 trading' },
@@ -51,8 +56,8 @@ export default function Home() {
         ]
       },
       {
-        title: "Choose Your Trading Experience",
-        description: "Select the platform that best suits your trading style and needs.",
+        title: t('agm-trader.introduction.cards.1.title'),
+        description: t('agm-trader.introduction.cards.1.description'),
         items: [
           { icon: <Smartphone />, label: 'AGM Trader (mobile app)' },
           { icon: <Monitor />, label: 'AGM Trader Pro (desktop)' },
@@ -60,8 +65,8 @@ export default function Home() {
         ]
       },
       {
-        title: "Trade with Confidence",
-        description: "Our trading platforms are designed to provide you with the tools you need to succeed in the financial markets.",
+        title: t('agm-trader.introduction.cards.2.title'),
+        description: t('agm-trader.introduction.cards.2.description'),
         items: [
           { icon: <Shield />, label: 'Secure trading' },
           { icon: <BarChart />, label: 'Real-time analytics' },
@@ -70,8 +75,8 @@ export default function Home() {
         ]
       }
     ],
-    ctaText: "Ready to start trading anywhere?",
-    ctaSubtext: "Download our app now."
+    ctaText: t('agm-trader.introduction.cta_text'),
+    ctaSubtext: t('agm-trader.introduction.cta_subtext')
   }
   
   return (

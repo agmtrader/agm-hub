@@ -28,6 +28,39 @@
             ]
         }
     },
+    "agm-trader": {
+        "title": {
+            "title": "AGM Trader",
+            "subtitle": "Opera activos en cualquier momento y lugar utilizando nuestra plataforma de trading y aplicaciones avanzadas.",
+            "action_text": "Solicitar una cuenta"
+        },
+        "introduction": {
+            "title": "Innovando a Escala Global",
+            "description": "AGM Trader te permite operar e invertir 24/7 en una amplia gama de instrumentos financieros en más de 150 mercados y 20 diferentes monedas desde una sola cuenta.",
+            "cta_text": "¿Listo para comenzar a operar desde cualquier lugar?",
+            "cta_subtext": "Descarga nuestra aplicación ahora.",
+            "cards": [
+                {
+                    "title": "Opera en Cualquier Momento y Lugar",
+                    "description": "Accede a mercados globales e instrumentos financieros diversos a través de nuestras plataformas de trading avanzadas."
+                },
+                {
+                    "title": "Elige tu Experiencia de Trading",
+                    "description": "Selecciona la plataforma que mejor se adapte a tu estilo de trading y necesidades."
+                },
+                {
+                    "title": "Opera con Confianza",
+                    "description": "Nuestras plataformas de trading están diseñadas para proporcionarte las herramientas necesarias para tener éxito en los mercados financieros."
+                }
+            ]
+        },
+        "download": {
+            "title": "Descarga Nuestras Aplicaciones",
+            "device": "Primero, ¿qué dispositivo estás usando?",
+            "operating_system": "¿Qué sistema operativo estás usando?",
+            "download_now": "Descargar ahora."
+        }
+    },
     "shared":{
         "title": {
             "scroll_text": "Desplázate para explorar"

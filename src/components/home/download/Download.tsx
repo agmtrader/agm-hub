@@ -10,6 +10,7 @@ import { DeviceTypes, osTypes } from '@/lib/types'
 
 import { Button } from "../../ui/button"
 import Link from 'next/link';
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 
 type Props = {}
 
@@ -64,6 +65,8 @@ function Download({}: Props) {
     }
   };
 
+  const { t } = useTranslationProvider()  
+
   return (
     <motion.div 
       className='flex flex-col text-foreground py-20 justify-center text-center items-center h-full gap-y-10 w-full'
@@ -72,9 +75,9 @@ function Download({}: Props) {
       animate="visible"
     >
       
-      <motion.h2 className='text-5xl font-bold' variants={itemVariants}>Use Our Apps</motion.h2>
+      <motion.h2 className='text-5xl font-bold' variants={itemVariants}>{t('agm-trader.download.title')}</motion.h2>
       <motion.div className='flex flex-col justify-start items-center gap-y-10 h-fit' variants={itemVariants}>
-        <p className='text-xl font-light'>First of all, what device are you using?</p>
+        <p className='text-xl font-light'>{t('agm-trader.download.device')}</p>
         <div className='flex flex-row h-full gap-x-10'>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button className='h-32' id='0' variant={device === DeviceTypes.PC ? 'primary':'secondary'} onClick={(event) => handleDevice(event)}>
@@ -104,7 +107,7 @@ function Download({}: Props) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <p className='text-xl font-light'>Confirm your operating system</p>
+            <p className='text-xl font-light'>{t('agm-trader.download.operating_system')}</p>
             <div className='flex flex-row h-full gap-x-10'>
               <Button className='h-32' id='0' variant={os === osTypes.WINDOWS ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
                 <Windows size={'90%'}/>
@@ -128,7 +131,7 @@ function Download({}: Props) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <p className='text-xl font-light'>Confirm your operating system</p>
+            <p className='text-xl font-light'>{t('agm-trader.download.operating_system')}</p>
             <div className='flex flex-row h-full gap-x-10'>
               <Button className='h-32' id='3' variant={os === osTypes.ANDROID ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
                 <Android2 size={'90%'}/>
@@ -148,7 +151,7 @@ function Download({}: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <Button>Download now.</Button>
+            <Button>{t('agm-trader.download.download_now')}</Button>
           </motion.div>
         )}
       </AnimatePresence>

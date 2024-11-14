@@ -1,8 +1,6 @@
 import React from 'react'
-import { Button } from "@/components/ui/button"
-import Link from 'next/link'
 import { Header } from '@/components/Header'
-import { signIn, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion' // Add this import
 import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
@@ -30,7 +28,7 @@ const Title = ({setStarted}:Props) => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
   }
 
-  const {lang, t} = useTranslationProvider()
+  const {t} = useTranslationProvider()
 
   return (
     <div className='w-full h-screen flex flex-col'>
