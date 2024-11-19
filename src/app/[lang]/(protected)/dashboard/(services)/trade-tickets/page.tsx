@@ -44,7 +44,7 @@ export default function TradeTickets() {
       if (!ticket) return;
       let response = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {
         'flex_query_dict': ticket,
-        'indices': "1"
+        'indices': "0"
       });
       response = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': response['content']});
       if (response['status'] === 'error') {
@@ -100,6 +100,9 @@ export default function TradeTickets() {
     ]
 
     console.log(clientMessage)
+
+    const [indices, setIndices] = useState<number[]>([])
+    console.log(indices)
 
   return (
     <div className="w-full h-full flex flex-col gap-y-10 justify-center items-center">

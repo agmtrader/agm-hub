@@ -60,11 +60,6 @@ const Sidebar = () => {
 
   return (
     <nav className="flex flex-col justify-center items-center text-foreground w-64 h-fit gap-y-10 bg-background">
-      <Button asChild className='w-full justify-start'>
-          <Link href={formatURL('/', lang)} legacyBehavior passHref>
-              <Image src={'/images/brand/agm-logo.png'} alt='logo' width={150} height={100}/>
-          </Link>
-      </Button>
       <NavigationMenu className="px-3 py-2 h-fit">
         <NavigationMenuList className="w-full gap-y-2 flex flex-col h-full justify-between">
           {navbarContent.map((item, index) => (

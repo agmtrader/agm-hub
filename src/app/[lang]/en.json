@@ -1,8 +1,8 @@
 {
     "agm-technology": {
         "title": {
-            "title": "Invest. Anywhere. Anytime.",
-            "subtitle": "Unlock a world of opportunities with our global investment platform.",
+            "title": "Invest anytime & anywhere",
+            "subtitle": "Unlock a world of opportunities with our global investment trading platform.",
             "action_text": "Apply for an account"
         },
         "introduction": {
@@ -14,7 +14,7 @@
             "cards": [
                 {
                     "title": "Trade anytime, anywhere",
-                    "description": "Trade stocks, ETFs, bonds, cryptocurrencies, and more from any location and at any time with our advanced trading platform and services."
+                    "description": "Trade stocks, ETFs, options, futures, bonds, cryptocurrencies, and more from any location and at any time with our advanced trading platform and services."
                 },
                 {
                     "title": "Professional tools",
@@ -29,13 +29,13 @@
     },
     "agm-trader": {
         "title": {
-            "title": "AGM Trader",
-            "subtitle": "Trade assets any time, anywhere using our advanced trading platform and apps.",
+            "title": "Trader",
+            "subtitle": "Trade: stocks, ETFs, options, futures, bonds, cryptocurrencies, and more any time, anywhere using our advanced trading platform and apps.",
             "action_text": "Apply for an account"
         },
         "introduction": {
-            "title": "Innovating on a Global Scale",
-            "description": "AGM Trader lets you trade and invest 24/7 in a wide range of financial instruments across more than 150 markets and 20 different currencies from a single account.",
+            "title": "Execute your trading strategy at the speed of your fingertips",
+            "description": "AGM Trader lets you trade and invest 24/7 in a wide range of financial instruments across 150+ markets and 20+ different currencies from a single account.",
             "cta_text": "Ready to start trading anywhere?",
             "cta_subtext": "Download our app now.",
             "cards": [
@@ -70,7 +70,7 @@
             "learn_more": "Learn More",
             "agm_trader": {
                 "title": "AGM Trader",
-                "description": "We provide easy access for trading and investment through our mobile, desktop, and web applications connected to more than 150 financial markets worldwide.",
+                "description": "We provide easy access for trading and investing through our mobile, desktop, and web applications connected to more than 150 financial markets worldwide.",
                 "action_text": "Learn More"
             },
             "agm_advisor": {
@@ -89,7 +89,7 @@
             "description": "Meet our team of professionals dedicated to providing exceptional service.",
             "contact_us": "Contact Us",
             "team_carousel": {
-                "hernan_title": "Chief Operating Officer",
+                "hernan_title": "Chief Executive Officer",
                 "hernan_description": "Mr. Castro has also more than 30 years of experience in the securities markets and is also a founding partner of AGM and as such has helped the firm become an International Broker/Dealer and Advisor. Mr. Castro is not only our Chief Operating Officer, but he oversees our Investment Advisory Division. Mr. Castro has been registered with FINRA in the USA as a Series 7 and Serie 66 under CRD # 4575350.",
                 "ramon_title": "Chief Operating Officer",
                 "ramon_description": "Mr. Castro has also more than 30 years of experience in the securities markets and is also a founding partner of AGM and as such has helped the firm become an International Broker/Dealer and Advisor. Mr. Castro is not only our Chief Operating Officer, but he oversees our Investment Advisory Division. Mr. Castro has been registered with FINRA in the USA as a Series 7 and Serie 66 under CRD # 4575350.",
@@ -98,7 +98,9 @@
                 "javier_title": "Trade Support Specialist",
                 "javier_description": "Javier started with AGM as an Intern from Texas Tech University, where he is in his final year to obtain his BA in Business. He has been with us for 2 years and has excelled in the different areas that he has been part of. He is in charge of the Customer Service Department and makes sure that every client has a tailored introduction to their relationship with AGM.",
                 "maria_jose_description": "Maria Jose is our newest addition to the AGM team, she is also in her final year to obtain her BA in Business from Texas Tech University. She is part of our Customer Service Department and makes sure that every client has great service and support experience with AGM. She is also in charge of our marketing department and social media.",
-                "andres_description": "Andres has been with AGM since the beginning of 2024, he is working on obtaining his BS in Computer Science from Texas Tech University. Andres is in charge of our IT department and has shown great skills to develop our front end systems to be able to provide a better experience to our customers. He is also responsible for most of our back end processes so everything works as expected."
+                "maria_jose_title": "Trade Support Specialist",
+                "andres_description": "Andres has been with AGM since the beginning of 2024, he is working on obtaining his BS in Computer Science from Texas Tech University. Andres is in charge of our IT department and has shown great skills to develop our front end systems to be able to provide a better experience to our customers. He is also responsible for most of our back end processes so everything works as expected.",
+                "andres_title": "IT Specialist"
             }
         },
         "faq": {

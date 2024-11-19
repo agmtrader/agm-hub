@@ -1,10 +1,14 @@
 export function formatURL(path:string, lang:string) {
 
-    if (!path.includes('/en') && !path.includes('/es')) {
-      return changeLang(lang, path)
-    }
-
+  if (path.includes('www.clientam.com/sso/Login?partnerID=agmbvi2022')) {
     return path
+  }
+
+  if (!path.includes('/en') && !path.includes('/es')) {
+    return changeLang(lang, path)
+  }
+
+  return path
 
 }
 

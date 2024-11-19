@@ -83,7 +83,7 @@ const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, 
       variants={containerVariants}
     >
       <div className="flex flex-col h-full text-foreground w-full max-w-6xl text-center gap-y-10 justify-center items-center">
-        <motion.h1 variants={itemVariants} className='text-5xl font-bold'>{title}</motion.h1>
+        <motion.h1 variants={itemVariants} className='text-5xl max-w-3xl font-semibold'>{title}</motion.h1>
         {description.map((paragraph, index) => (
           <motion.p key={index} variants={itemVariants} className='text-xl font-light'>
             {paragraph}

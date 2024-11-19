@@ -8,7 +8,7 @@ type Props = {}
 
 const CSVReader = (props: Props) => {
     const [data, setData] = useState<Record<string, string>[] | null>(null)
-    const fileId = '135OpxqyH54uEGj8fRJyAjL34JZ1GoGD1'
+    const fileId = '1VXDsm3fRhBCma8NZ0FqbNmRJmgtbEmzt'
   
     const [columns, setColumns] = useState<ColumnDefinition<any>[]>([])
   
@@ -17,6 +17,7 @@ const CSVReader = (props: Props) => {
     useEffect(() => {
       async function fetchData() {
         try {
+          
           const response = await accessAPI('/drive/download_file', 'POST', {
             'file_id': fileId,
             'mime_type': 'text/csv'

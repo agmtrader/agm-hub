@@ -50,6 +50,7 @@ const BackupDocuments = ({ticket, setCanContinue, account}:Props) => {
     setCanContinue(newStatus)
 
     try {
+      
       const response = await accessAPI('/database/update', 'POST', {
         'path': `db/clients/tickets`,
         'query': {'TicketID': ticketID},

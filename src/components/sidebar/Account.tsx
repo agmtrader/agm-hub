@@ -19,7 +19,7 @@ const Account = ({}: Props) => {
   const { lang } = useTranslationProvider()
 
   return (
-    <div className='h-fit w-full flex flex-col'>
+    <div className='h-fit w-full flex flex-col justify-center items-center'>
       <AnimatePresence>
         {session?.user ? (
           <motion.div

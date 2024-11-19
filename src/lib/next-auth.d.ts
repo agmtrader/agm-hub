@@ -1,15 +1,10 @@
-import NextAuth, { DefaultSession } from "next-auth"
+import NextAuth, { DefaultUser, DefaultSession } from "next-auth"
 import { JWT } from "next-auth/jwt"
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     firebaseToken: string;
-    user: {
-      accessToken: string;
-      refreshToken: string;
-      id: string
-      admin: boolean
-    } & DefaultSession["user"]
+    user: User & DefaultSession["user"]
   }
 }
 
@@ -18,5 +13,17 @@ declare module "next-auth/jwt" {
     accessToken?:string
     refreshToken?: string
     uid?: string
+  }
+}
+
+declare module "next-auth" {
+  interface User extends DefaultUser {
+    accessToken: string;
+    refreshToken: string;
+    emailVerified: boolean
+    admin: boolean
+    username: string | undefined
+    password: string | undefined
+    country: string | undefined
   }
 }

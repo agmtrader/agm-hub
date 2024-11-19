@@ -1,8 +1,6 @@
 import React from 'react';
 
-type Props = {};
-
-const Page = (props: Props) => {
+const Page = () => {
   return (
     <div className='container flex flex-col gap-y-10 w-3/4 m-10 p-6'>
       <h1 className='text-5xl font-bold mb-4'>Terms of Use Agreement and Disclosures</h1>

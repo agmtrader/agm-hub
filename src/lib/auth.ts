@@ -32,10 +32,10 @@ export const authOptions: NextAuthOptions = {
               const response = await accessAPI('/database/read', 'POST', {
                 path: 'users',
                 query: {
-                  'username': credentials.username
+                  'username': credentials.username,
+                  'password': credentials.password
                 }
               })
-              console.log(response)
               return response['content'][0]
             } catch (error) {
               console.error('Authentication error:', error);
@@ -50,17 +50,20 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
 
       jwt: async ({ token, user, account }) => {
+        
         if (user) {
           token.sub = user.id
           token.email = user.email
           token.name = user.name
           token.picture = user.image
+          token.country = user.country
+          token.username = user.username
+          token.password = user.password
 
           if (account?.provider === 'google') {
             token.accessToken = account.access_token
             token.refreshToken = account.refresh_token
           }
-          console.log(token)
         }
         
         return token
@@ -71,11 +74,12 @@ export const authOptions: NextAuthOptions = {
           
           if (token.sub) {
 
-            // Authenticate Google Drive
-            session.user.id = token.sub
-
+            console.log('token', token)
 
             // Build profile
+            session.user.id = token.sub
+            session.user.admin = false
+
             if (token.picture) {
               session.user.image = token.picture
             }
@@ -97,10 +101,15 @@ export const authOptions: NextAuthOptions = {
               admin: false,
             }
         
+            // Check if user is admin
             if (session.user.email?.split('@')[1] == 'agmtechnology.com') {
               options.admin = true
               session.user.admin = true
             }
+
+            // Create Firebase token for all users
+            // This is used to authenticate all users for forms
+            // Options grant admin access to the dashboard and other admin features
 
             const firebaseToken = await adminAuth.createCustomToken(token.sub, options)
             session.firebaseToken = firebaseToken
@@ -110,6 +119,16 @@ export const authOptions: NextAuthOptions = {
         }
         return session
       },
+      async signIn({ user, account, profile, email, credentials }) {
+
+        // TODO: Redirect to callbackUrl
+        if (account?.provider === 'google') {
+          return true
+        }
+
+        return true
+        
+      }
 
     },
     pages: {

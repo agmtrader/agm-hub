@@ -1,21 +1,20 @@
 {
     "agm-technology": {
         "title": {
-            "title": "Invierte. En cualquier lugar. En cualquier momento.",
-            "subtitle": "Desbloquea un mundo de oportunidades con nuestra plataforma de inversión global.",
-            "action_text": "Solicitar una cuenta",
-            "scroll_text": "Desplázate para explorar"
+            "title": "Invierta desde cualquier lugar & en cualquier momento",
+            "subtitle": "Explore un mundo de oportunidades con nuestra plataforma de inversión global.",
+            "action_text": "Abra una cuenta"
         },
         "introduction": {
-            "title": "Empoderando a los Traders de Hoy para los Mercados del Mañana",
-            "description": "Desde 1995, AGM como Broker/Dealer Internacional de Valores ha facilitado el acceso directo a más de 150 mercados financieros (Bolsas de Valores) en EE.UU., Europa, Asia y América Latina, de otro modo inaccesibles para ciertos inversores.",
+            "title": "Apoyando a los Inversionistas de Hoy para los Mercados del Mañana",
+            "description": "Desde 1995, AGM como Puesto de Bolsa Internacional ha facilitado el acceso directo a más de 150 mercados financieros (Bolsas de Valores) en EE.UU., Europa, Asia y América Latina que normalmente son inaccesibles para ciertos inversionistas.",
             "description_2": "AGM Technology ofrece servicios profesionales para maximizar sus rendimientos:",
             "action_text": "¿Interesado?",
             "action_subtext": "Vea los pasos para comenzar su viaje de trading.",
             "cards": [
                 {
-                    "title": "Opera en cualquier momento y lugar",
-                    "description": "Opera acciones, ETFs, bonos, criptomonedas y más desde cualquier ubicación y en cualquier momento con nuestra plataforma y servicios de trading avanzados."
+                    "title": "Invierta en cualquier momento y lugar",
+                    "description": "Invierta en acciones, ETFs, opciones, futuros, bonos, criptomonedas y más desde cualquier ubicación y en cualquier momento con nuestra plataforma y servicios de trading avanzados."
                 },
                 {
                     "title": "Herramientas profesionales",
@@ -63,15 +62,15 @@
     },
     "shared":{
         "title": {
-            "scroll_text": "Desplázate para explorar"
+            "scroll_text": "Siga bajando para saber más"
         },
         "services": {
             "title": "Nuestros Servicios",
-            "description": "Explora nuestros servicios y encuentra el que mejor se adapte a tus necesidades.",
+            "description": "Explore nuestros servicios y encuentra el que mejor se adapte a tus necesidades.",
             "learn_more": "Saber Más",
             "agm_trader": {
                 "title": "AGM Trader",
-                "description": "Proporcionamos acceso fácil para trading e inversión a través de nuestras aplicaciones móviles, de escritorio y web conectadas a más de 150 mercados financieros en todo el mundo.",
+                "description": "Proporcionamos acceso fácil para invertir a través de nuestras aplicaciones móviles, de escritorio y web conectadas a más de 150 mercados financieros en todo el mundo.",
                 "action_text": "Saber Más"
             },
             "agm_advisor": {

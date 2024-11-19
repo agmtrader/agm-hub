@@ -16,15 +16,16 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { getDefaults } from '@/utils/form'
-
-import { useToast } from '@/hooks/use-toast'
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { cn } from "@/lib/utils"
-import { countries } from '@/lib/form'
+import { toast, useToast } from '@/hooks/use-toast'
 import { accessAPI } from '@/utils/api'
 import CountriesFormField from '@/components/ui/CountriesFormField'
+import { Niconne } from 'next/font/google'
+import { formatTimestamp } from '@/utils/dates'
+import { signIn } from 'next-auth/react'
+import { formatURL } from '@/utils/lang'
+import { useRouter } from 'next/navigation'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import { User } from 'next-auth'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -40,7 +41,11 @@ const formSchema = z.object({
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),
+  confirmPassword: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
+  }),
 })
+
 
 const CreateAccount = () => {
 
@@ -52,55 +57,124 @@ const CreateAccount = () => {
     defaultValues: initialValues,
   })
 
+  const router = useRouter()
+
+  const { lang } = useTranslationProvider()
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
 
-      let data = await accessAPI('/database/read', 'POST', {
+      let response = await accessAPI('/database/read', 'POST', {
           path: 'users',
-          key: 'email',
-          value: values.email
+          query: {
+            email: values.email
+          }
       })
 
-      console.log(data)
-      if (data['status'] === 'error') {
-        console.error('Failed to create user:', data['message']);
+      if (response['status'] === 'error') {
         toast({
           title: 'Error',
-          description: data['message'],
+          description: response['message'],
           variant: 'destructive'
         })
-      }
-      else if (data['content'].length === 1) {
-        console.error('User already exists:', data['content'][0]['username']);
+        throw new Error('Tragic failure')
+      } else if (response['content'].length === 1) {
         toast({
           title: 'Error',
-          description: 'User already exists',
+          description: 'User with that email already exists',
           variant: 'destructive'
         })
-      }
-      else {
-        const response = await accessAPI('/database/create', 'POST', {
-            path: 'users',
-            data: values,
+        throw new Error('User with that email already exists')
+      } else if (response['content'].length > 1) {
+        toast({
+          title: 'Error',
+          description: 'Multiple users with that email',
+          variant: 'destructive'
         })
-        if (response['status'] !== 'success') {
-          console.error('Failed to create user:', response.message);
-          toast({
-            title: 'Error',
-            description: response.message,
-            variant: 'destructive'
-          })
+        throw new Error('Multiple users with that email')
+      }
+
+      response = await accessAPI('/database/read', 'POST', {
+        path: 'users',
+        query: {
+          username: values.username
         }
-      }
-      
-    } catch (error) {
-      console.error('Error creating user:', error);
-      toast({
-        title: 'Error',
-        description: 'An error occurred while creating your account',
-        variant: 'destructive'
       })
-    }
+
+      if (response['status'] === 'error') {
+        toast({
+          title: 'Error',
+          description: response['message'],
+          variant: 'destructive'
+        })
+        throw new Error('Tragic failure')
+      } else if (response['content'].length === 1) {
+        toast({
+          title: 'Error',
+          description: 'Username already taken',
+          variant: 'destructive'
+        })
+        throw new Error('Username already taken')
+      } else if (response['content'].length > 1) {
+        toast({
+          title: 'Error',
+          description: 'Multiple users with that username',
+          variant: 'destructive'
+        })
+        throw new Error('Multiple users with that username')
+      }
+
+      if (values.password !== values.confirmPassword) {
+        toast({
+          title: 'Error',
+          description: 'Passwords do not match',
+          variant: 'destructive'
+        })
+        throw new Error('Passwords do not match')
+      }
+
+      const timestamp = formatTimestamp(new Date())
+
+      const user = {
+        'id': timestamp,
+        'name': values.name,
+        'email': values.email,
+        'password': values.password,
+        'username': values.username,
+        'emailVerified': false,
+        'country': values.country,
+        'image': '',
+      }
+
+      response = await accessAPI('/database/create', 'POST', {
+          path: 'users',
+          data: user,
+          id: timestamp
+      })
+
+      if (response['status'] !== 'success') {
+        console.error('Failed to create user:', response.message);
+        toast({
+          title: 'Error',
+          description: response.message,
+          variant: 'destructive'
+        })
+      }
+
+      toast({
+        title: 'Success',
+        description: 'Account created successfully',
+        variant: 'default'
+      })
+
+      const result = await signIn('credentials', {
+        username: values.username,
+        password: values.password,
+        redirect: false,
+      });
+      if (result?.ok) {
+        router.push(formatURL('/', lang));
+      }
+
   }
 
   return (
@@ -163,6 +237,20 @@ const CreateAccount = () => {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input type="password" placeholder="Confirm your password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button type="submit" className="mt-4">
             Create Account
           </Button>

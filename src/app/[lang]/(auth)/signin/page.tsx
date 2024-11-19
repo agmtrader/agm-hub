@@ -9,6 +9,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { formatURL } from '@/utils/lang';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
+import { useToast } from '@/hooks/use-toast';
 
 function SignIn() {
 
@@ -20,42 +21,38 @@ function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  const {toast} = useToast()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setIsLoading(true);
-    try {
-      const result = await signIn('credentials', {
-        username,
-        password,
-        redirect: false,
-      });
-      if (result?.ok) {
-        router.push(formatURL('/', lang));
-      }
-    } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
+    const result = await signIn('credentials', {
+      username,
+      password,
+      redirect: false,
+    });
+    if (result?.ok) {
+      router.push(formatURL('/', lang));
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Invalid username or password',
+        variant: 'destructive'
+      })
     }
-  };
+  }
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setIsLoading(true);
-    signIn('google');
+    await signIn('google', {
+      callbackUrl: formatURL('/onboarding', lang),
+    });
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
-        {error && (
-          <Alert className="mb-4 bg-primary text-background">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-            <p className="text-xs">Try again.</p>
-          </Alert>
-        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             type="text"

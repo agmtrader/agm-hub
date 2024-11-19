@@ -61,7 +61,7 @@ const Footer = () => {
             <motion.div variants={itemVariants}>
               <h4 className='font-semibold mb-4'>Product</h4>
               <ul className='space-y-2'>
-                {['Updates', 'Pricing', 'Download'].map((item, index) => (
+                {['Download'].map((item, index) => (
                   <motion.li key={index} variants={itemVariants}>
                     <a href='#' className='text-sm text-gray-600 hover:text-gray-900'>{item}</a>
                   </motion.li>
@@ -71,9 +71,9 @@ const Footer = () => {
             
             {/* Help links */}
             <motion.div variants={itemVariants}>
-              <h4 className='font-semibold mb-4'>Help</h4>
+              <h4 className='font-semibold mb-4'>Help Center</h4>
               <ul className='space-y-2'>
-                {['More FAQs', 'Email Support', 'Chat Support'].map((item, index) => (
+                {['More FAQs', 'Email Support'].map((item, index) => (
                   <motion.li key={index} variants={itemVariants}>
                     <a href='#' className='text-sm text-gray-600 hover:text-gray-900'>{item}</a>
                   </motion.li>
@@ -83,9 +83,8 @@ const Footer = () => {
             
             {/* Social links */}
             <motion.div variants={itemVariants}>
-              <h4 className='font-semibold mb-4'>Socials</h4>
-              <div className='flex space-x-4'>
-                {[Facebook, Instagram, Linkedin].map((Icon, index) => (
+              <div className='flex flex-col space-y-2'>
+                {[Linkedin, Instagram, Facebook].map((Icon, index) => (
                   <motion.a
                     key={index}
                     href='#'
@@ -108,49 +107,9 @@ const Footer = () => {
           >
             <div className='flex flex-wrap justify-between w-full items-center'>
               <div className='space-x-4'>
-                <a href='#' className='text-sm text-gray-600 hover:text-gray-900'>Terms of Service</a>
-                <a href='#' className='text-sm text-gray-600 hover:text-gray-900'>Privacy Policy</a>
+                <a href='/disclosures' className='text-sm text-gray-600 hover:text-gray-900'>Terms of Use Agreement and Disclosures</a>
               </div>
             </div>
-          <motion.div
-            className="mt-4 max-w-3/4 overflow-hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.div
-              className="flex space-x-4"
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{
-                x: {
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  duration: 20,
-                  ease: "linear",
-                },
-              }}
-            >
-              {[
-                "AAPL $150.25",
-                "GOOGL $2750.80",
-                "MSFT $305.15",
-                "AMZN $3380.50",
-                "FB $325.75",
-                "TSLA $750.30",
-                "NVDA $220.60",
-                "JPM $165.40",
-                "V $230.20",
-                "JNJ $170.55",
-              ].flatMap((stock, index) => [
-                <div key={`a-${index}`} className="text-sm text-gray-600 whitespace-nowrap">
-                  {stock}
-                </div>,
-                <div key={`b-${index}`} className="text-sm text-gray-600 whitespace-nowrap">
-                  {stock}
-                </div>
-              ])}
-            </motion.div>
-          </motion.div>
           </motion.div>
         </motion.div>
       </div>

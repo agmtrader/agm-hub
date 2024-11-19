@@ -45,6 +45,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useSession } from "next-auth/react"
 
 interface Props {
   stepForward: () => void,
@@ -72,6 +73,12 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
   const {toast} = useToast()
   const translatedAccountTypes = account_types(t)
 
+  const {data:session} = useSession()
+  const userID = session?.user.id
+  if (!userID) {
+    throw new Error('Critical Error: User ID not found')
+  }
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
     setGenerating(true)
@@ -81,11 +88,16 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
       const advisor = searchParams.get('ad') || ''
       const ticketID = ticket?.TicketID || formatTimestamp(timestamp)
 
+      if (!userID) {
+        throw new Error('Critical Error: User ID not found')
+      }
+
       const updatedTicket:Ticket = {
         'TicketID': ticketID,
         'Status': 'Started',
         'ApplicationInfo': values,
         'Advisor': advisor,
+        'UserID': userID
       }
       setTicket(updatedTicket)
 

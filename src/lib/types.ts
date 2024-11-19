@@ -9,6 +9,7 @@ export interface Ticket {
   'Status': string
   'ApplicationInfo':Map
   'Advisor':string | null
+  'UserID':string
 }
 
 // Account Access

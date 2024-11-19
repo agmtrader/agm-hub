@@ -20,9 +20,11 @@ const navbarContent = [
   { name: 'AGM Trader', url: '/trader' },
   { name: 'AGM Advisor', url: '/advisor' },
   { name: 'AGM Institutional', url: '/institutional'},
-  { name: 'AGM Portal', url: 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022' },
   { name: 'AGM Dashboard', url: '/dashboard' },
+  { name: 'AGM Account Management', url: 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022' },
   { name: 'Apply for an account', url: '/apply' },
+  { name: 'Resource Center', url: '/resources' },
+  { name: 'Help Center', url: '/help' },
 ]
 
 interface Props {

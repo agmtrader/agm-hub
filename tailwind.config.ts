@@ -22,7 +22,7 @@ module.exports = {
   		},
   		colors: {
   			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
+  			foreground: '#062D47',
   			primary: {
   				light: '#fac49e',
   				DEFAULT: '#f26c0d',
