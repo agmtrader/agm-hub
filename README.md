@@ -1,6 +1,6 @@
 # AGM Technology Hub
 
-## AGM Technology, Broking and Advising Digital Hub
+## AGM Technology, Broking and Advising Digital Hub.
 
 ### Description 
 
