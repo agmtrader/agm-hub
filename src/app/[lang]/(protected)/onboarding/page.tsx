@@ -34,6 +34,8 @@ const Onboarding = () => {
 
         const user = session.user as User;
 
+        if (!user) return { formSchema: null, undefinedFields: {} };
+
         const undefinedFields: Record<string, boolean> = {};
         const schemaFields: Record<string, z.ZodTypeAny> = {};
 
@@ -55,9 +57,6 @@ const Onboarding = () => {
                     case 'email':
                         schemaFields[key] = z.string().email();
                         break;
-                    case 'name':
-                        schemaFields[key] = z.string().min(2);
-                        break;
                     case 'country':
                         schemaFields[key] = z.string().min(2);
                         break;
@@ -67,7 +66,11 @@ const Onboarding = () => {
                     case 'image':
                         schemaFields[key] = z.string();
                         break;
+                    case 'password':
+                        schemaFields[key] = z.string().min(8);
+                        break;
                     default:
+                        console.log(key)
                         toast({
                             title: 'Error',
                             description: 'Developer Error: Unknown user property',
