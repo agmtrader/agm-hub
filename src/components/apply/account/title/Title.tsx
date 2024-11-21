@@ -1,17 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Header } from '@/components/Header'
-import { useSession } from 'next-auth/react'
-import { motion } from 'framer-motion' // Add this import
+import { motion } from 'framer-motion'
 import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import Account from '@/components/sidebar/Account'
+import { redirect } from 'next/navigation'
+import { formatURL } from '@/utils/lang'
+import { useSession } from 'next-auth/react'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const Title = ({setStarted}:Props) => {
-  const {data:session} = useSession()
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -28,7 +28,17 @@ const Title = ({setStarted}:Props) => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
   }
 
-  const {t} = useTranslationProvider()
+  const {data:session} = useSession()
+
+  const {t, lang} = useTranslationProvider()
+
+  function handleStartApplication() {
+    setStarted(true)
+  }
+
+  function handleSignIn() {
+    redirect(formatURL(`/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`, lang))
+  }
 
   return (
     <div className='w-full h-screen flex flex-col'>
@@ -47,19 +57,23 @@ const Title = ({setStarted}:Props) => {
           <motion.p variants={itemVariants} className='text-2xl md:text-3xl text-background max-w-2xl'>
             {t('apply.account.title.description')}
           </motion.p>
-          {!session?.user ? 
-            <Account />
-            :
-            <motion.div variants={itemVariants}>
-              <ShimmerButton
-                onClick={() => setStarted(true)}
-                className="px-8 py-3 text-lg font-semibold mt-4"
-                background='#22c55e'
-              >
-                {t('apply.account.title.startApplication')}
-              </ShimmerButton>
-            </motion.div>
-          }
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+            className='flex w-full gap-x-5 justify-center items-center'
+          >
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <ShimmerButton
+              onClick={session?.user ? handleStartApplication : handleSignIn}
+              className="px-8 py-3 text-lg font-semibold mt-4"
+              background='#22c55e'
+            >
+                <p className="text-sm">{t('apply.account.title.startApplication')}</p>
+            </ShimmerButton>
+          </motion.div>
         </motion.div>
       </div>
     </div>

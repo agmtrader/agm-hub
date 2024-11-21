@@ -1,15 +1,15 @@
 "use client";
-
 import { useState } from 'react';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { formatURL } from '@/utils/lang';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
+import { Card, CardContent, CardTitle, CardHeader } from '@/components/ui/card';
 
 function SignIn() {
 
@@ -17,9 +17,11 @@ function SignIn() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl');
 
   const {toast} = useToast()
 
@@ -30,9 +32,10 @@ function SignIn() {
       username,
       password,
       redirect: false,
+      callbackUrl: callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang),
     });
     if (result?.ok) {
-      router.push(formatURL('/', lang));
+      router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
     } else {
       toast({
         title: 'Error',
@@ -40,20 +43,38 @@ function SignIn() {
         variant: 'destructive'
       })
     }
+    setIsLoading(false);
   }
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     await signIn('google', {
-      callbackUrl: formatURL('/onboarding', lang),
+      callbackUrl: callbackUrl ? formatURL(`/onboarding?callbackUrl=${encodeURIComponent(callbackUrl)}`, lang) : formatURL('/onboarding', lang),
     });
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className='flex items-center justify-center min-h-screen'>
+      <Card className='w-96 h-fit gap-5 flex flex-col justify-center items-center'>
+        <CardHeader className='flex flex-col gap-2'>
+        <CardTitle className='text-center text-3xl' >Sign In</CardTitle>
+        <div className='flex flex-col gap-2 bg-error/20 p-2 rounded-md items-center justify-center'>
+            <p className='text-sm text-subtitle text-center'>You must create an AGM Hub account to apply for an account, see your personal dashboard and more services.</p>
+            <Link 
+              href={
+                callbackUrl ? 
+                formatURL(`/create-account?callbackUrl=${encodeURIComponent(callbackUrl)}`, lang) 
+                : 
+                formatURL('/create-account', lang)
+              } 
+              className='underline text-subtitle font-bold'
+            >
+              Create an account
+            </Link> 
+        </div>
+      </CardHeader>
+      <CardContent className='w-full'>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
           <Input
             type="text"
             placeholder="Username"
@@ -85,7 +106,7 @@ function SignIn() {
           Or continue with
         </div>
         <Button
-          variant="outline"
+          variant='ghost'
           onClick={handleGoogleSignIn}
           className="w-full mt-4"
           disabled={isLoading}
@@ -99,7 +120,8 @@ function SignIn() {
             'Sign in with Google'
           )}
         </Button>
-      </div>
+      </CardContent>
+    </Card>
     </div>
   );
 }

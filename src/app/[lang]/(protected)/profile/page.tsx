@@ -57,7 +57,7 @@ const page = () => {
       </div>
       
       <p className='text-xl font-semibold'>{session?.user.email ? session?.user.email : 'No email'}</p>
-      <p className='text-xl'>{session?.user.admin ? 'Admin' : 'User'}</p>
+      <p className='text-xl'>{session?.user.role === 'admin' ? 'Admin' : 'User'}</p>
 
       <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
         <DialogTrigger asChild>

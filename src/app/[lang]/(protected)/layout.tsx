@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
-import Account from '@/components/sidebar/Account';
+import Account from '@/components/misc/Account';
 import Sidebar from '@/components/dashboard/Sidebar';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import FirebaseAuthProvider from '@/utils/providers/FirebaseAuthProvider';

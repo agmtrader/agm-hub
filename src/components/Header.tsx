@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import useScrollPositions from '@/hooks/useScrollPositions'
 import { AnimatePresence } from 'framer-motion'
-import Sidebar from './sidebar/Sidebar'
+import Sidebar from './misc/Sidebar'
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { AlignJustify } from 'lucide-react'
 

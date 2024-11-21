@@ -1,160 +1,163 @@
 'use client'
-
 import { formatURL } from '@/utils/lang';
-import { useToast } from '@/hooks/use-toast';
+import { toast, useToast } from '@/hooks/use-toast';
 import { accessAPI } from '@/utils/api';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation';
+import React, { useState, useMemo } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-
-
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import CountriesFormField from '@/components/ui/CountriesFormField';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Form } from "@/components/ui/form"
-import { Loader2 } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-
-import { getDefaults } from '@/utils/form';
 import { User } from 'next-auth';
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { getDefaults } from '@/utils/form';
+import Link from 'next/link';
 
 const Onboarding = () => {
 
     const { data: session } = useSession();
 
-    const { toast } = useToast();
-
     const router = useRouter();
     const { lang } = useTranslationProvider();
 
-    const [user, setUser] = useState<User | null>(null);
-    const [requiresOnboarding, setRequiresOnboarding] = useState(false);
-
     const [saving, setSaving] = useState(false);
-    const [showWarningDialog, setShowWarningDialog] = useState(false);
 
-    // Replace saveProfile function
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl');
 
-        if (!user) return;
+    const { formSchema, undefinedFields } = useMemo(() => {
+
+        if (!session?.user) return { formSchema: null, undefinedFields: {} };
+
+        const user = session.user as User;
+
+        const undefinedFields: Record<string, boolean> = {};
+        const schemaFields: Record<string, z.ZodTypeAny> = {};
+
+        Object.keys(user).forEach((key) => {
+
+            if (user[key as keyof User] === undefined || user[key as keyof User] === null) {
+
+                undefinedFields[key] = true;
+                
+                switch(key) {
+                    case 'name':
+                        schemaFields[key] = z.string().min(2);
+                        break;
+                    case 'emailVerified':
+                        undefinedFields['emailVerified'] = false;
+                        delete undefinedFields['emailVerified'];
+                        updateVerifiedEmail();
+                        break;
+                    case 'email':
+                        schemaFields[key] = z.string().email();
+                        break;
+                    case 'name':
+                        schemaFields[key] = z.string().min(2);
+                        break;
+                    case 'country':
+                        schemaFields[key] = z.string().min(2);
+                        break;
+                    case 'username':
+                        schemaFields[key] = z.string();
+                        break;
+                    case 'image':
+                        schemaFields[key] = z.string();
+                        break;
+                    default:
+                        toast({
+                            title: 'Error',
+                            description: 'Developer Error: Unknown user property',
+                            variant: 'destructive'
+                        });
+                        throw new Error('Unknown user property');
+                }
+            }
+        });
+
+        return {
+            formSchema: Object.keys(schemaFields).length > 0 ? z.object(schemaFields) : null,
+            undefinedFields
+        };
+
+    }, [session]);
+
+    if (!formSchema) return router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
+
+    const form = useForm<z.infer<NonNullable<typeof formSchema>>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: getDefaults(formSchema),
+    });
+
+    async function updateVerifiedEmail() {
+        const response = await accessAPI('/database/update', 'POST', {
+            path: 'users',
+            data: {
+                emailVerified: false
+            },
+            query: {
+                email: session?.user?.email
+            }
+        });
+        if (response['status'] !== 'success') {
+            toast({
+                title: 'Error',
+                description: 'Error updating email verification status',
+                variant: 'destructive'
+            });
+            throw new Error('Error updating email verification status');
+        }
+    }
+
+    async function onSubmit(values: z.infer<NonNullable<typeof formSchema>>) {
+
+        if (!session || !session.user) return;
+
         setSaving(true);
+
+        Object.keys(session.user).forEach((key) => {
+
+            try {
+                if (values[key as keyof typeof values] !== undefined && values[key as keyof typeof values] !== null) {
+                    (session.user as any)[key] = values[key as keyof typeof values];
+                }
+            } catch (error) {
+                toast({
+                    title: 'Error',
+                    description: 'Error updating user property',
+                    variant: 'destructive'
+                });
+                throw new Error('Error updating user property');
+            }
+        });
+
+        const user = session.user as User;
+        delete user.accessToken;
+        delete user.refreshToken;
 
         const response = await accessAPI('/database/update', 'POST', {
             path: 'users',
+            data: session.user,
             query: {
-                'email': user.email
-            },
-            data: values
-        })
+                email: session.user.email
+            }
+        });
 
         if (response['status'] !== 'success') {
             toast({
                 title: 'Error',
-                description: response['message'],
+                description: 'Error updating user profile',
                 variant: 'destructive'
-            })
-            return;
+            });
+            throw new Error('Error updating user profile');
         }
 
         setSaving(false);
-
-        router.push(formatURL('/', lang));
+        router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
     }
-
-    useEffect(() => {
-
-        async function fetchUser() {
-            
-            if (!session) return;
-            if (!session.user) return;
-            if (!session.user.email) return;
-
-            const response = await accessAPI('/database/read', 'POST', {
-                path: 'users',
-                query: {
-                    'email': session.user.email
-                }
-            })
-
-            const tempUser = response['content'][0];
-
-            if (response['status'] !== 'success') {
-                toast({
-                    title: 'Error',
-                    description: response['message'],
-                    variant: 'destructive'
-                })
-                return
-            }
-
-            if (tempUser['email'] !== session.user.email) {
-                toast({
-                    title: 'Error',
-                    description: 'User email mismatch',
-                    variant: 'destructive'
-                })
-                return;
-            }
-
-            let user:User = {
-                'id': session.user.id,
-                'accessToken': session.user.accessToken,
-                'refreshToken': session.user.refreshToken,
-                'admin': session.user.admin,
-                'email': tempUser['email'],
-                'name': tempUser['name'],
-                'username': tempUser['username'],
-                'password': tempUser['password'],
-                'country': tempUser['country'],
-                'image': tempUser['image'],
-                'emailVerified': tempUser['emailVerified']
-            };
-
-            setUser(user);
-
-            if (!user.username || !user.password || !user.name) {
-                setRequiresOnboarding(true);
-            } else {
-                router.push(formatURL('/', lang));
-            }
-        }
-
-        fetchUser();
-    }, [session])
-
-    const emptyFields = user ? Object.keys(user).filter(key => user[key as keyof User] === undefined) : [];
-
-    // Build dynamic schema based on empty fields
-    const formSchema = z.object(
-        emptyFields.reduce((acc, field) => ({
-            ...acc,
-            [field]: field === 'password' 
-                ? z.string().min(6, "Password must be at least 6 characters")
-                    : field === 'country'
-                    ? z.string().min(1, "Please select a country")
-                        : z.string().min(2, `${field} must be at least 2 characters`)
-        }), {})
-    );
-
-    // Move useForm after schema creation
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: getDefaults(formSchema)
-    })
-
-    if (!requiresOnboarding) return null;
 
     return (
         <div className="container mx-auto p-8 min-h-screen flex flex-col items-center justify-center">
@@ -163,80 +166,38 @@ const Onboarding = () => {
                 <p className="text-center text-sm text-muted-foreground mb-6">
                     Please fill in the following fields to complete your profile.
                 </p>
+                
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        {emptyFields.map((field) => (
-                            <div key={field} className="flex flex-col gap-2">
-                                {field === 'country' ? (
-                                    <CountriesFormField 
-                                        form={form} 
-                                        element={{ 
-                                            name: "country", 
-                                            title: 'Country'
-                                        }} 
-                                    />
-                                ) : (
-                                    <FormField
-                                        control={form.control}
-                                        name={field as keyof z.infer<typeof formSchema>}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <div className='flex gap-2 items-center'>
-                                                    <FormLabel className="capitalize">{field.name}</FormLabel>
-                                                    <FormMessage />
-                                                </div>
-                                                <FormControl>
-                                                    <Input
-                                                        type={field.name === 'password' ? 'password' : 'text'}
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        {Object.keys(undefinedFields).map((fieldName) => (
+                            <FormField
+                                key={fieldName}
+                                control={form.control}
+                                name={fieldName}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="capitalize">{fieldName}</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
                                 )}
-                            </div>
+                            />
                         ))}
-                        {emptyFields.length > 0 && (
-                            <div className='flex gap-2 justify-center'>
-                                <Button type="submit">
-                                    {saving ? 
-                                    <>
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        <p>Saving...</p>
-                                    </>
-                                    :
-                                    <>
-                                        <p>Save</p>
-                                    </>
-                                }
-                                </Button>
-                                <Dialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
-                                    <DialogTrigger asChild>
-                                        <Button variant="ghost">
-                                            <p>Skip step</p>
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                            <DialogTitle>Warning</DialogTitle>
-                                            <DialogDescription>
-                                                If you skip this step, you won't be able to log in using email and password. 
-                                                You will only be able to access your account through third-party authentication.
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" onClick={() => setShowWarningDialog(false)}>
-                                                Cancel
-                                            </Button>
-                                            <Button onClick={() => router.push(formatURL('/', lang))}>
-                                                Continue anyway
-                                            </Button>
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
-                        )}
+                        
+                        <Button 
+                            type="submit" 
+                            className="w-full"
+                            disabled={saving}
+                        >
+                            {saving ? "Saving..." : "Save Profile"}
+                        </Button>
+                        <Button variant="ghost" asChild>
+                            <Link href={callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang)}>
+                                Skip
+                            </Link>
+                        </Button>
                     </form>
                 </Form>
             </div>

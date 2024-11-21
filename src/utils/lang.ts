@@ -12,6 +12,14 @@ export function formatURL(path:string, lang:string) {
 
 }
 
+export function getCallbackUrl(path: string) {
+  const segments = path.split('/');
+  if (segments.length <= 2) {
+    return null;
+  }
+  return '/' + segments.slice(2).join('/');
+}
+
 export function changeLang(lang: string, path: string) {
 
   let paths = path.split('/')

@@ -2,7 +2,6 @@
 import React from 'react'
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
-import { HardHat } from 'lucide-react'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -16,14 +15,13 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { getDefaults } from '@/utils/form'
-import { toast, useToast } from '@/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { accessAPI } from '@/utils/api'
 import CountriesFormField from '@/components/ui/CountriesFormField'
-import { Niconne } from 'next/font/google'
 import { formatTimestamp } from '@/utils/dates'
 import { signIn } from 'next-auth/react'
 import { formatURL } from '@/utils/lang'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { User } from 'next-auth'
 
@@ -46,7 +44,6 @@ const formSchema = z.object({
   }),
 })
 
-
 const CreateAccount = () => {
 
   const { toast } = useToast()
@@ -56,10 +53,11 @@ const CreateAccount = () => {
     resolver: zodResolver(formSchema),
     defaultValues: initialValues,
   })
+  const { lang } = useTranslationProvider()
 
   const router = useRouter()
-
-  const { lang } = useTranslationProvider()
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl');
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -107,20 +105,13 @@ const CreateAccount = () => {
           variant: 'destructive'
         })
         throw new Error('Tragic failure')
-      } else if (response['content'].length === 1) {
+      } else if (response['content'].length !== 0) {
         toast({
           title: 'Error',
-          description: 'Username already taken',
+          description: 'Username already taken.',
           variant: 'destructive'
         })
         throw new Error('Username already taken')
-      } else if (response['content'].length > 1) {
-        toast({
-          title: 'Error',
-          description: 'Multiple users with that username',
-          variant: 'destructive'
-        })
-        throw new Error('Multiple users with that username')
       }
 
       if (values.password !== values.confirmPassword) {
@@ -134,15 +125,16 @@ const CreateAccount = () => {
 
       const timestamp = formatTimestamp(new Date())
 
-      const user = {
+      const user:User = {
         'id': timestamp,
         'name': values.name,
         'email': values.email,
-        'password': values.password,
-        'username': values.username,
         'emailVerified': false,
-        'country': values.country,
         'image': '',
+        'username': values.username,
+        'password': values.password,
+        'country': values.country,
+        'role': 'user'
       }
 
       response = await accessAPI('/database/create', 'POST', {
@@ -170,9 +162,11 @@ const CreateAccount = () => {
         username: values.username,
         password: values.password,
         redirect: false,
+        callbackUrl: callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang)
       });
+
       if (result?.ok) {
-        router.push(formatURL('/', lang));
+        router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
       }
 
   }

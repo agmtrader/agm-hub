@@ -1,11 +1,12 @@
 import { adminAuth, firestoreAdmin } from "@/utils/firebase-admin"
 import { FirestoreAdapter } from "@next-auth/firebase-adapter"
-import { NextAuthOptions } from "next-auth"
+import { NextAuthOptions, User } from "next-auth"
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from "next-auth/providers/credentials"
 import { accessAPI } from "@/utils/api"
 
 export const authOptions: NextAuthOptions = {
+
     providers: [
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -27,8 +28,11 @@ export const authOptions: NextAuthOptions = {
           password: { label: "Password", type: "password" }
         },
         async authorize(credentials) {
+
           if (credentials?.username && credentials?.password) {
             try {
+
+              // Fetch user profile from same database where Google Auth is stored
               const response = await accessAPI('/database/read', 'POST', {
                 path: 'users',
                 query: {
@@ -36,8 +40,12 @@ export const authOptions: NextAuthOptions = {
                   'password': credentials.password
                 }
               })
-              return response['content'][0]
+
+              const user:User = response['content'][0]
+              return user
+
             } catch (error) {
+
               console.error('Authentication error:', error);
               return null;
             }
@@ -49,21 +57,30 @@ export const authOptions: NextAuthOptions = {
     adapter: FirestoreAdapter(firestoreAdmin),
     callbacks: {
 
-      jwt: async ({ token, user, account }) => {
+      async jwt({ token, user, account }) {
+
+        // Build token from user profile
+        // This can be Google Response or Credentials Response
+        // Both use the same database
         
         if (user) {
+
           token.sub = user.id
-          token.email = user.email
-          token.name = user.name
-          token.picture = user.image
-          token.country = user.country
-          token.username = user.username
-          token.password = user.password
+          token.email = user.email || null
+          token.name = user.name || null
+          token.image = user.image || null
+
+          token.role = user.role || 'user'
+          token.emailVerified = user.emailVerified || false
+          token.country = user.country || null
+          token.username = user.username || null
+          token.password = user.password || null
 
           if (account?.provider === 'google') {
-            token.accessToken = account.access_token
-            token.refreshToken = account.refresh_token
+            token.accessToken = account.access_token || null
+            token.refreshToken = account.refresh_token || null
           }
+
         }
         
         return token
@@ -74,44 +91,60 @@ export const authOptions: NextAuthOptions = {
           
           if (token.sub) {
 
-            console.log('token', token)
-
-            // Build profile
+            // Build NextAuth user profile from token
             session.user.id = token.sub
-            session.user.admin = false
+            session.user.name = token.name || null
+            session.user.email = token.email || null
+            session.user.image = token.image || null
 
-            if (token.picture) {
-              session.user.image = token.picture
-            }
-            if (token.name) {
-              session.user.name = token.name
-            }
-            if (token.email) {
-              session.user.email = token.email
-            }
+            session.user.emailVerified = token.emailVerified || false
+            session.user.username = token.username || null
+            session.user.password = token.password || null
+            session.user.country = token.country || null
+            session.user.role = token.role || 'user'
+
             if (token.accessToken) {
               session.user.accessToken = token.accessToken
             }
             if (token.refreshToken) {
               session.user.refreshToken = token.refreshToken
             }
-
-            // Authenticate Firebase
-            const options = {
-              admin: false,
-            }
         
-            // Check if user is admin
             if (session.user.email?.split('@')[1] == 'agmtechnology.com') {
-              options.admin = true
-              session.user.admin = true
+              session.user.role = 'admin'
             }
 
-            // Create Firebase token for all users
+            // Sync Firebase Authentication profile with login information
+            let currentUser = null
+            try {
+              currentUser = await adminAuth.getUser(token.sub)
+            } catch (error) {
+              currentUser = await adminAuth.createUser({
+                uid: token.sub,
+              })
+            }
+
+            if (!currentUser) {
+              throw new Error('Failed to create or fetch user in Firebase Authentication')
+            }
+
+            if (!currentUser.email && session.user.email) {
+              await adminAuth.updateUser(token.sub, { email: session.user.email })
+            }
+
+            if (!currentUser.displayName && session.user.name) {
+              await adminAuth.updateUser(token.sub, { displayName: session.user.name })
+            }
+
+            if (!currentUser.photoURL && session.user.image) {
+              await adminAuth.updateUser(token.sub, { photoURL: session.user.image })
+            }
+          
+            // Create Firebase Authentication token for all users
             // This is used to authenticate all users for forms
             // Options grant admin access to the dashboard and other admin features
 
-            const firebaseToken = await adminAuth.createCustomToken(token.sub, options)
+            const firebaseToken = await adminAuth.createCustomToken(token.sub, { role: session.user.role })
             session.firebaseToken = firebaseToken
 
           }
@@ -119,9 +152,8 @@ export const authOptions: NextAuthOptions = {
         }
         return session
       },
-      async signIn({ user, account, profile, email, credentials }) {
+      async signIn({ account }) {
 
-        // TODO: Redirect to callbackUrl
         if (account?.provider === 'google') {
           return true
         }

@@ -1,6 +1,7 @@
 'use client'
-import { auth } from '@/utils/firestore';
+import { auth } from '@/utils/firebase';
 import { signInWithCustomToken } from 'firebase/auth';
+
 import { Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react'
@@ -16,7 +17,10 @@ function FirebaseAuthProvider ({
     async function syncFirebaseAuth(session: Session) {
         if (session && session.firebaseToken) {
             try {
-                await signInWithCustomToken(auth, session.firebaseToken)
+
+                const response = await signInWithCustomToken(auth, session.firebaseToken)
+                console.log('Firebase Auth User:', response.user)
+                
             } catch (error) {
                 console.error('Missing necessary credentials. Limiting user experience to client mode.')
             }
@@ -26,8 +30,8 @@ function FirebaseAuthProvider ({
     }
 
     useEffect(() => {
+      
         if (!session) return;
-
         syncFirebaseAuth(session)
     })
 

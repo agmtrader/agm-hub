@@ -7,7 +7,7 @@ import { NavigationMenuLink } from '@radix-ui/react-navigation-menu'
 import { navigationMenuTriggerStyle } from '../ui/navigation-menu'
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { motion, AnimatePresence } from 'framer-motion' // Add this import
-import { formatURL } from '@/utils/lang'
+import { formatURL, getCallbackUrl } from '@/utils/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 type Props = {
@@ -17,6 +17,8 @@ const Account = ({}: Props) => {
   
   const {data:session} = useSession()
   const { lang } = useTranslationProvider()
+  
+  let callbackUrl = getCallbackUrl(window.location.pathname);
 
   return (
     <div className='h-fit w-full flex flex-col justify-center items-center'>
@@ -54,7 +56,7 @@ const Account = ({}: Props) => {
                   transition={{ duration: 0.2 }}
                   className='w-fit h-full flex text-agm-dark-blue justify-center items-center'
                 >
-                  <Button onClick={() => signOut()} className="flex">
+                  <Button onClick={() => signOut({callbackUrl: callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang)})} className="flex">
                       <p className="text-sm">Sign out</p>
                   </Button>
                   <Link href="/profile" legacyBehavior passHref>
@@ -79,13 +81,15 @@ const Account = ({}: Props) => {
             <Button
               className="flex w-fit h-full justify-center items-center"
             >
-              <Link href={formatURL('/signin', lang)}>
+              <Link 
+                href={
+                  callbackUrl ? 
+                    formatURL(`/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`, lang) 
+                    : 
+                    formatURL('/signin', lang)
+                }
+              >
                 <p className="text-sm">Sign in</p>
-              </Link>
-            </Button>
-            <Button>
-              <Link href={formatURL('/create-account', lang)}>
-                <p className="text-sm">Register</p>
               </Link>
             </Button>
           </motion.div>

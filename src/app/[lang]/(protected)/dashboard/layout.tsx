@@ -13,7 +13,7 @@ export default function Layout({
 
   const { data: session } = useSession()
 
-  if (!session?.user.admin) {
+  if (session?.user.role !== 'admin') {
     return (
       <DevelopmentPage/>
     )
