@@ -130,60 +130,6 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
     }
   }
 
-  const fillWithFakeData = () => {
-
-    const fakeData:z.infer<typeof formSchema> = {
-      salutation: faker.helpers.arrayElement(salutations).value,
-      first_name: faker.person.firstName(),
-      middle_name: faker.person.middleName(),
-      last_name: faker.person.lastName(),
-      address: faker.location.streetAddress(),
-      city: faker.location.city(),
-      state: faker.location.state(),
-      zip: faker.location.zipCode(),
-      phone_type: faker.helpers.arrayElement(translatedPhoneTypes).value,
-      phone_country: faker.helpers.arrayElement(countries).value,
-      phone_number: faker.phone.number(),
-      citizenship: faker.helpers.arrayElement(countries).value,
-      country_of_birth: faker.helpers.arrayElement(countries).value,
-      date_of_birth: faker.date.past({ years: 50 }).toISOString(),
-      marital_status: faker.helpers.arrayElement(translatedMaritalStatus).value,
-      number_of_dependents: faker.number.int({ min: 0, max: 5 }).toString(),
-      country_of_residence: faker.helpers.arrayElement(countries).value,
-      tax_id: faker.finance.accountNumber(),
-      id_country: faker.helpers.arrayElement(countries).value,
-      id_type: faker.helpers.arrayElement(translatedIdType).value,
-      id_number: faker.string.alphanumeric(10),
-      id_expiration_date: faker.date.future().toISOString(),
-      employment_status: faker.helpers.arrayElement(translatedEmploymentStatus).value,
-      employer_name: faker.company.name(),
-      employer_address: faker.location.streetAddress(),
-      employer_city: faker.location.city(),
-      employer_state: faker.location.state(),
-      employer_country: faker.helpers.arrayElement(countries).value,
-      employer_zip: faker.location.zipCode(),
-      nature_of_business: faker.company.buzzPhrase(),
-      occupation: faker.person.jobTitle(),
-      source_of_wealth: faker.helpers.arrayElements(translatedSourceOfWealth, { min: 1, max: 3 }).map(item => item.id),
-      currency: faker.helpers.arrayElement(currencies).value,
-    };
-
-    if (primary) {
-      fakeData.security_q_1 = faker.helpers.arrayElement(security_questions).value;
-      fakeData.security_a_1 = faker.lorem.sentence();
-      fakeData.security_q_2 = faker.helpers.arrayElement(security_questions).value;
-      fakeData.security_a_2 = faker.lorem.sentence();
-      fakeData.security_q_3 = faker.helpers.arrayElement(security_questions).value;
-      fakeData.security_a_3 = faker.lorem.sentence();
-    } else {
-      fakeData.email = faker.internet.email();
-      fakeData.username = faker.internet.userName();
-      fakeData.password = faker.internet.password();
-    }
-
-    form.reset(fakeData);
-  };
-
   return (
     <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
 
@@ -196,18 +142,6 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
       <Form {...form}>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col gap-y-5 justify-center items-center">
-
-          {backdoor && 
-            <Button
-              type="button"
-              variant="primary"
-              onClick={fillWithFakeData}
-              className="mb-4"
-            >
-              Fill with Fake Data
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          }
 
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">
             <p className="text-3xl font-bold">{t('apply.account.about_you.basic_info')}</p>

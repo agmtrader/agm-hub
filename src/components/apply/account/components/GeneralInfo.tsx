@@ -99,15 +99,17 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
         'Advisor': advisor,
         'UserID': userID
       }
-      setTicket(updatedTicket)
 
       const response = await accessAPI('/database/create', 'POST', { 'data': updatedTicket, 'path': 'db/clients/tickets', 'id': ticketID })
 
       if (response['status'] !== 'success') {
         throw new Error('Failed to create ticket')
       }
-
+      
+      setTicket(updatedTicket)
+      setGenerating(false)
       stepForward()
+
     } catch {
       toast({
         title: 'Error',
@@ -115,8 +117,6 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
         variant: 'destructive',
       })
       throw new Error('An unexpected error occurred')
-    } finally {
-      setGenerating(false)
     }
   }
 

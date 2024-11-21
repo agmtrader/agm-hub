@@ -99,6 +99,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
       };
 
       setTicket(updatedTicket);
+      setGenerating(false);
       stepForward();
 
     } catch (error) {
@@ -108,8 +109,6 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
         description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
-    } finally {
-      setGenerating(false);
     }
   }
 

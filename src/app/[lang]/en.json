@@ -1,7 +1,7 @@
 {
     "agm-technology": {
         "title": {
-            "title": "Invest anytime & anywhere",
+            "title": "Invest anytime / anywhere",
             "subtitle": "Unlock a world of opportunities with our global investment trading platform.",
             "action_text": "Apply for an account"
         },
@@ -126,6 +126,7 @@
     },
     "apply": {
         "account": {
+
             "title": {
                 "ready": "Ready to make money?",
                 "description": "Unlock the world of financial opportunities with your AGM trading account.",
@@ -133,33 +134,16 @@
                 "createAccount": "Create Account",
                 "startApplication": "Start Application"
             },
-            "general_info": {
-                "title": "General Information",
-                "email": "Email",
-                "email_placeholder": "Enter your email",
-                "country": "Country of Residence",
-                "account_type": "Account Type",
-                "account_types": {
-                    "individual": "Individual Account",
-                    "joint": "Joint Account",
-                    "trust": "Trust Account",
-                    "institutional": "Institutional Account"
-                },
-                "disclaimer": {
-                    "title": "DISCLAIMER",
-                    "content": "If you wish to open an Individual Account, we advise that for inheritance and tax purposes, it is better to open a Joint Account. An Individual Account does not allow the option to name Beneficiaries at the time of opening or subsequently and may be subject to Estate taxes. Please consider the option of opening a joint account instead of an individual account.",
-                    "contact": "If you have any questions before applying, contact us at:"
-                }
-            },
             "about_you": {
                 "title": "About You",
                 "primary": "Primary Holder",
                 "secondary": "Secondary Holder",
+
                 "basic_info": "Basic Information",
                 "login_info": "Login Information",
                 "residential_info": "Residential Information",
                 "personal_info": "Personal Information",
-                "id_info": "Identification Information",
+                "id_info": "ID Information",
                 "employer_info": "Employer Information",
                 "financial_info": "Financial Information",
                 "security_questions": "Security Questions",
@@ -284,7 +268,115 @@
                 "description": "Thank you for choosing our services. We will review your application and get back to you soon.",
                 "apply_another": "Apply for another account",
                 "go_back_home": "Go back to homepage"
+            },
+            "general_info": {
+                "title": "General Information",
+                "email": "Email",
+                "email_placeholder": "Enter your email",
+                "country": "Country of Residence",
+                "account_type": "Account Type",
+                "account_types": {
+                    "individual": "Individual Account",
+                    "joint": "Joint Account",
+                    "trust": "Trust Account",
+                    "institutional": "Institutional Account"
+                },
+                "disclaimer": {
+                    "title": "DISCLAIMER",
+                    "content": "If you wish to open an Individual Account, we advise that for inheritance and tax purposes, it is better to open a Joint Account. An Individual Account does not allow the option to name Beneficiaries at the time of opening or subsequently and may be subject to Estate taxes. Please consider the option of opening a joint account instead of an individual account.",
+                    "contact": "If you have any questions before applying, contact us at:"
+                }
+            },
+
+            "organization": {
+                "title": "Organization Information",
+                "basic_info": "Basic Information",
+                "purpose_info": "Purpose of Entity",
+                "residential_info": "Residential Information",
+                "contact_info": "Contact Information",
+                "tax_info": "Tax Information",
+
+                "name": "Organization Name",
+                "type": "Organization Type",
+                "description": "Description",
+                "website": "Website",
+                "legal_entity_id": "Legal Entity ID",
+
+                "purpose_list": {
+                    "title": "Purpose",
+                    "operating_business": "An operating business formed to offer goods or services to customers that was not formed for the purpose of trading or holding financial assets. Please select this option only for actual businesses, such as manufacturers, restaurants, oil companies, etc.",
+                    "family_investment": "A personal or family investment vehicle beneficially owned by a single person or by a group of close family members who created the organization for the purpose of making financial investments for the owner and/or the owners close family.",
+                    "proprietary_trading": "A closely-held proprietary trading company (or corporation or similar vehicle) created for the purpose of trading the company’s proprietary capital. This includes any corporation or LLC where the members contribute their own capital to the LLC and the profits belong to the company.",
+                    "financial_institution": "A financial institution (bank, broker-dealer, etc.) that will be trading for its own account."
+                },
+                "proprietary_assets": {
+                    "title": "Proprietary Assets",
+                    "error": "Proprietary assets verification is required."
+                },
+                "third_party": "Third Party Administrator",
+
+                "phone_type": "Phone Type",
+                "phone_country": "Phone Country",
+                "phone_number": "Phone Number",
+
+                "address": "Address",
+                "city": "City",
+                "state": "State/Province",
+                "zip": "Zip Code",
+
+                "tax_country": "Tax Country",
+                "tax_id": "Tax ID",
+
+                "source_of_wealth": "Source of Wealth",
+                "currency": "Currency"
+            },
+            "authorized_person": {
+                "title": "Authorized Person",
+                "basic_info": "Basic Information",
+                "contact_info": "Contact Information",
+                "personal_info": "Personal Information",
+                "id_info": "Identification Information",
+                "employer_info": "Employer Information",
+                "security_questions": "Security Questions",
+                
+                "salutation": "Salutation",
+                "first_name": "First Name",
+                "middle_name": "Middle Name",
+                "last_name": "Last Name",
+                "suffix": "Suffix",
+                "date_of_birth": "Date of Birth",
+                "position": "Position",
+                "third_party": "Does the personal or family investment vehicle have a professional third party administrator or corporate services provider?",
+                
+                "email": "Email",
+                "phone_type": "Phone Type",
+                "phone_country": "Phone Country",
+                "phone_number": "Phone Number",
+                "address": "Address",
+                "city": "City",
+                "state": "State/Province",
+                "zip": "Zip Code",
+                
+                "tax_country": "Tax Country",
+                "tax_id": "Tax ID",
+                
+                "id_country": "ID Country",
+                "id_type": "ID Type",
+                "id_number": "ID Number",
+                "id_expiration": "ID Expiration",
+                
+                "employment_status": "Employment Status",
+                "employer_name": "Employer Name",
+                "employer_address": "Employer Address",
+                "employer_city": "Employer City",
+                "employer_state": "Employer State/Province",
+                "employer_country": "Employer Country",
+                "employer_zip": "Employer Zip Code",
+                
+                "security_question": "Security Question",
+                "security_answer": "Security Answer"
             }
+
         },
         "risk": {
             "title": "Risk Assessment Questionnaire",
@@ -342,6 +434,7 @@
         "search": "Search...",
         "no_results": "No results found.",
         "required": "Required field",
+        "not_required": "Leave blank if not applicable.",
         "submit": "Submit",
         "submitting": "Submitting...",
         "previous_step": "Previous step",
@@ -351,7 +444,9 @@
             "username_length": "Username must be at least 4 characters long.",
             "password_format": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one symbol.",
             "select_required": "Please select an option.",
-            "security_answer": "Please enter an answer for the security question."
+            "input_required": "Please enter a value.",
+            "security_answer": "Please enter an answer for the security question.",
+            "true_required": "Checkbox must be checked."
         }
     }
 }

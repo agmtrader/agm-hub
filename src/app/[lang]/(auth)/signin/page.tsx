@@ -10,6 +10,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Card, CardContent, CardTitle, CardHeader } from '@/components/ui/card';
+import Image from 'next/image';
 
 function SignIn() {
 
@@ -56,10 +57,11 @@ function SignIn() {
   return (
     <div className='flex items-center justify-center min-h-screen'>
       <Card className='w-96 h-fit gap-5 flex flex-col justify-center items-center'>
-        <CardHeader className='flex flex-col gap-2'>
+        <CardHeader className='flex flex-col justify-center items-center gap-2'>
+        <Image src='/images/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
         <CardTitle className='text-center text-3xl' >Sign In</CardTitle>
         <div className='flex flex-col gap-2 bg-error/20 p-2 rounded-md items-center justify-center'>
-            <p className='text-sm text-subtitle text-center'>You must create an AGM Hub account to apply for an account, see your personal dashboard and more services.</p>
+            <p className='text-sm text-subtitle text-center'>You must register with AGM before applying for an account.</p>
             <Link 
               href={
                 callbackUrl ? 
@@ -67,9 +69,9 @@ function SignIn() {
                 : 
                 formatURL('/create-account', lang)
               } 
-              className='underline text-subtitle font-bold'
+              className='underline text-subtitle text-sm font-bold'
             >
-              Create an account
+              Register
             </Link> 
         </div>
       </CardHeader>

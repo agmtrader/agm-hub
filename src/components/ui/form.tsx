@@ -9,6 +9,7 @@ import {
   FormProvider,
   useFormContext,
 } from "react-hook-form"
+import { useToast } from "@/hooks/use-toast"
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
@@ -46,9 +47,21 @@ const useFormField = () => {
 
   const fieldState = getFieldState(fieldContext.name, formState)
 
+  const { toast } = useToast()
+
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>")
   }
+
+  React.useEffect(() => {
+    if (formState.errors && Object.keys(formState.errors).length > 0) {
+      toast({
+        title: "Form validation failed",
+        description: "Please check the form for errors and try again.",
+        variant: "destructive",
+      })
+    }
+  }, [formState.errors])
 
   const { id } = itemContext
 

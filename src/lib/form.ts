@@ -359,6 +359,13 @@ export const security_questions = [
   { label: "What is your spouse's middle name?", value: "What is your spouse's middle name?" },
 ] as const
 
+export const purposes = (t: (key: string) => string) => [
+  { label: t('apply.account.organization.purpose_list.operating_business'), id: "Operating business" },
+  { label: t('apply.account.organization.purpose_list.family_investment'), id: "Family investment" },
+  { label: t('apply.account.organization.purpose_list.proprietary_trading'), id: "Proprietary trading" },
+  { label: t('apply.account.organization.purpose_list.financial_institution'), id: "Financial institution" },
+] as const
+
 // Dictionaries for Checklists
 export const source_of_wealth = (t: (key: string) => string) => [
   {

@@ -21,9 +21,8 @@ export default function Home() {
     subtitle: t('agm-technology.title.subtitle'),
     ctaText: t('agm-technology.title.action_text'),
     ctaLink: '/apply'
-  };
+  }
 
-    
   const introductionProps = {
     title: t('agm-technology.introduction.title'),
     description: [

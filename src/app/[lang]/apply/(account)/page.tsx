@@ -10,9 +10,6 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 const page = () => {
 
   const [started, setStarted] = useState(false)
-  const {data: session} = useSession()
-
-  const {lang} = useTranslationProvider()
 
   if (started) {
     return <ClientForm />

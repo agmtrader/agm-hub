@@ -13,7 +13,7 @@ export default function Home() {
   const titleProps = {
     backgroundImage: '/images/advisor.webp',
     logoSrc: '/images/brand/agm-logo-white.png',
-    title: 'AGM Advisor.',
+    title: 'Advisor',
     subtitle: 'Help reach your financial goals with industry leading tools and experts.',
     ctaText: 'Apply for an account',
     ctaLink: '/apply'

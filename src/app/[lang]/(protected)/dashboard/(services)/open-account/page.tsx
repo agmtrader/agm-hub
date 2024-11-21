@@ -34,7 +34,11 @@ const page = () => {
       setCanContinue(false)
       setStep(step + 1)
       if (step === 4) {
-        await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets`, 'query': {'TicketID': ticket['TicketID']}, 'data': {'Status': 'Opened'}})
+        await accessAPI('/database/update', 'POST', {
+          'path': `db/clients/tickets`, 
+          'query': {'TicketID': ticket['TicketID']}, 
+          'data': {'Status': 'Opened'}}
+        )
       }
     } else {
       let errorMessage = '';

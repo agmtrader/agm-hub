@@ -8,6 +8,9 @@ import { Ticket } from '@/lib/types';
 import AboutYou from './components/AboutYou';
 import { FormHeader } from '@/components/Header';
 import ApplicationEnd from './components/ApplicationEnd';
+import DevelopmentPage from '@/components/misc/DevelopmentPage';
+import AuthorizedPerson from './components/AuthorizedPerson';
+import AboutOrganization from './components/AboutOrganization';
 
 const ClientForm = () => {
 
@@ -45,93 +48,127 @@ const ClientForm = () => {
   }
 
   const renderFormStep = () => {
+
     if (!ticket) {
-      return step === 1 && (
-        <GeneralInfo 
-          ticket={ticket}
-          stepForward={stepForward} 
-          setTicket={setTicket}
-        />
-      );
-    }
-
-    if (ticket.ApplicationInfo.account_type === 'Individual') {
-      if (step === 1) {
-        return (
-          <GeneralInfo 
-            ticket={ticket} 
+        if (step === 1) {
+          return (
+            <GeneralInfo 
+            ticket={ticket}
             stepForward={stepForward} 
             setTicket={setTicket}
           />
-        );
-      } else if (step === 2) {
-        return (
-          <AboutYou 
-            primary 
-            ticket={ticket} 
-            setTicket={setTicket} 
-            stepForward={stepForward} 
-            stepBackward={stepBackward}
-          />
-        );
-      } else if (step === 3) {
-        return (
-          <Regulatory 
-            ticket={ticket} 
-            setTicket={setTicket} 
-            stepForward={stepForward} 
-            stepBackwards={stepBackward}
-          />
-        );
-      } else if (step === 4) {
-        return <ApplicationEnd />;
+        )
+      }
+      else {
+        return null
       }
     }
 
-    if (ticket.ApplicationInfo.account_type === 'Joint') {
-      if (step === 1) {
-        return (
-          <GeneralInfo 
-            ticket={ticket} 
-            stepForward={stepForward} 
-            setTicket={setTicket}
-          />
-        );
-      } else if (step === 2) {
-        return (
-          <AboutYou 
-            primary 
-            ticket={ticket} 
-            setTicket={setTicket} 
-            stepForward={stepForward} 
-            stepBackward={stepBackward}
-          />
-        );
-      } else if (step === 3) {
-        return (
-          <AboutYou 
-            primary={false} 
-            ticket={ticket} 
-            setTicket={setTicket} 
-            stepForward={stepForward} 
-            stepBackward={stepBackward}
-          />
-        );
-      } else if (step === 4) {
-        return (
-          <Regulatory 
-            ticket={ticket} 
-            setTicket={setTicket} 
-            stepForward={stepForward} 
-            stepBackwards={stepBackward}
-          />
-        );
-      } else if (step === 5) {
-        return <ApplicationEnd />;
+    if (ticket) {
+
+      if (ticket.ApplicationInfo.account_type === 'Individual') {
+        if (step === 2) {
+          return (
+            <AboutYou 
+              primary 
+              ticket={ticket} 
+              setTicket={setTicket} 
+              stepForward={stepForward} 
+              stepBackward={stepBackward}
+            />
+          );
+        } else if (step === 3) {
+          return (
+            <Regulatory 
+              ticket={ticket} 
+              setTicket={setTicket} 
+              stepForward={stepForward} 
+              stepBackwards={stepBackward}
+            />
+          );
+        } else if (step === 4) {
+          return <ApplicationEnd />;
+        }
+      }
+
+      if (ticket.ApplicationInfo.account_type === 'Joint') {
+        if (step === 2) {
+          return (
+            <AboutYou 
+              primary 
+              ticket={ticket} 
+              setTicket={setTicket} 
+              stepForward={stepForward} 
+              stepBackward={stepBackward}
+            />
+          );
+        } else if (step === 3) {
+          return (
+            <AboutYou 
+              primary={false} 
+              ticket={ticket} 
+              setTicket={setTicket} 
+              stepForward={stepForward} 
+              stepBackward={stepBackward}
+            />
+          );
+        } else if (step === 4) {
+          return (
+            <Regulatory 
+              ticket={ticket} 
+              setTicket={setTicket} 
+              stepForward={stepForward} 
+              stepBackwards={stepBackward}
+            />
+          );
+        } else if (step === 5) {
+          return <ApplicationEnd />;
+        }
+      }
+
+      if (ticket.ApplicationInfo.account_type === 'Institutional') {
+        
+        if (step === 2) {
+          return (
+            <AboutOrganization
+              stepBackward={stepBackward}
+              ticket={ticket}
+              setTicket={setTicket}
+              stepForward={stepForward}
+            />
+          )
+        }
+        if (step === 3) {
+          return (
+            <AuthorizedPerson
+              stepBackward={stepBackward}
+              ticket={ticket}
+              setTicket={setTicket}
+              stepForward={stepForward}
+            />
+          )
+        }
+        if (step === 4) {
+          return (
+            <Regulatory
+              ticket={ticket}
+              setTicket={setTicket}
+              stepForward={stepForward}
+              stepBackwards={stepBackward}
+            />
+          )
+        }
+        if (step === 5) {
+          return <ApplicationEnd />
+        }
+      }
+
+      if (ticket.ApplicationInfo.account_type === 'Trust') {
+        if (step === 2) {
+          return <DevelopmentPage />
+        }
       }
     }
-
-    return null;
     
   };
 

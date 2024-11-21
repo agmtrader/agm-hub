@@ -13,7 +13,7 @@ export default function Home() {
   const titleProps = {
     backgroundImage: '/images/nasdaq.jpg',
     logoSrc: '/images/brand/agm-logo-white.png',
-    title: 'AGM Institutional',
+    title: 'Institutional',
     subtitle: 'Unlock a world of opportunities with our global investment platform.',
     ctaText: 'Apply for an account',
     ctaLink: '/apply'
