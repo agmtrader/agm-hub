@@ -61,6 +61,10 @@
         }
     },
     "shared": {
+        "account": {
+            "sign_out": "Sign out",
+            "settings": "Settings"
+        },
         "title": {
             "scroll_text": "Scroll to explore"
         },

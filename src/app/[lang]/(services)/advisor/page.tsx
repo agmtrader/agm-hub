@@ -81,7 +81,6 @@ export default function Home() {
       <Services services={services} />
       <Team />
       <FAQ />
-      <Footer />
     </div>
   )
 }

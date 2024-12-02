@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../../../globals.css";
 import { Header } from "@/components/Header";
-import { TranslationProvider } from "@/utils/providers/TranslationProvider";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "AGM Institutional",
@@ -21,9 +21,8 @@ export default async function Layout(
   return (
     <div className="flex flex-col min-h-screen w-full">
       <Header />
-      <main className="flex-grow">
-          {children}
-        </main>
+      {children}
+      <Footer />
     </div>
   );
 }

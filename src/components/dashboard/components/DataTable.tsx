@@ -259,7 +259,7 @@ export const DataTable = <TData,>({
   }
 
   return (
-    <div className={cn('w-full rounded-md text-foreground relative border', width && `w-[${width}%]`)}>
+    <div className={cn('w-full rounded-md text-foreground relative border p-5', width && `w-[${width}%]`)}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -315,7 +315,7 @@ export const DataTable = <TData,>({
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>
-          <div className="space-x-2">
+          <div className="flex gap-2">
             <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
               <Button
                 variant="outline"

@@ -61,6 +61,10 @@
         }
     },
     "shared":{
+        "account": {
+            "sign_out": "Cerrar sesión",
+            "settings": "Configuración"
+        },
         "title": {
             "scroll_text": "Siga bajando para saber más"
         },

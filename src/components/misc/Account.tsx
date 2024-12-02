@@ -16,7 +16,7 @@ type Props = {
 const Account = ({}: Props) => {
   
   const {data:session} = useSession()
-  const { lang } = useTranslationProvider()
+  const { lang, t } = useTranslationProvider()
   
   let callbackUrl = getCallbackUrl(window.location.pathname);
 
@@ -57,12 +57,12 @@ const Account = ({}: Props) => {
                   className='w-fit h-full flex text-agm-dark-blue justify-center items-center'
                 >
                   <Button onClick={() => signOut({callbackUrl: callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang)})} className="flex">
-                      <p className="text-sm">Sign out</p>
+                      <p className="text-sm">{t('shared.account.sign_out')}</p>
                   </Button>
                   <Link href="/profile" legacyBehavior passHref>
                   <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), '')}>
                       <div className="flex">
-                          <p className="text-sm">Settings</p>
+                          <p className="text-sm">{t('shared.account.settings')}</p>
                       </div>
                   </NavigationMenuLink>
                 </Link>

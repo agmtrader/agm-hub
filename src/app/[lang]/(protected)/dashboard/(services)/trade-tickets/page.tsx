@@ -44,7 +44,7 @@ export default function TradeTickets() {
       if (!ticket) return;
       let response = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {
         'flex_query_dict': ticket,
-        'indices': "0"
+        'indices': "4"
       });
       response = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': response['content']});
       if (response['status'] === 'error') {
@@ -72,6 +72,7 @@ export default function TradeTickets() {
     const ticketIds = [
       {
         name: 'ACOBO',
+        user_id: 'U1213465',
         id: '986431'
       }
     ]
@@ -105,27 +106,27 @@ export default function TradeTickets() {
     console.log(indices)
 
   return (
-    <div className="w-full h-full flex flex-col gap-y-10 justify-center items-center">
-      
+    <div className="w-full h-full flex flex-col gap-y-10 justify-start items-center">
+
       <h1 className="text-7xl text-foreground font-bold">Generate Trade Tickets</h1>
+      <p className='text-subtitle'>Please select one or more tickets to generate trade tickets for. All tickets must be of the same symbol.</p>
 
       <div className="flex gap-10 justify-center items-center">
 
         <div className='w-full flex flex-col gap-5 justify-center items-center'>
           
           <Select onValueChange={(value) => setTicketId(value)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select a ticket" />
+            <SelectTrigger className="w-fit gap-2">
+              <SelectValue placeholder="Select Account" />
             </SelectTrigger>
             <SelectContent>
               {ticketIds.map((ticket) => (
-                <SelectItem key={ticket.id} value={ticket.id}>{ticket.name}</SelectItem>
+                <SelectItem className='p-2' key={ticket.id} value={ticket.id}>{ticket.name} - {ticket.user_id}</SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <div className='w-full h-fit flex flex-col gap-y-5 justify-center items-center'>
-            <p className='text-subtitle'>Please select one or more tickets to generate trade tickets for. All tickets must be of the same symbol.</p>
             <ScrollArea className='w-full h-full flex justify-center items-center'>
               {ticket !== null ?
                 ticket.length > 0 ? 

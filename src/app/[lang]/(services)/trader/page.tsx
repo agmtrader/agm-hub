@@ -86,7 +86,6 @@ export default function Home() {
       <Services services={services} />
       <Download />
       <FAQ />
-      <Footer />
     </div>
   )
 }

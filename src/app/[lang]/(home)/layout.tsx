@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../../globals.css";
 import { Header } from "@/components/Header";
 import FirebaseAuthProvider from "../../../utils/providers/FirebaseAuthProvider";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "AGM Technology",
@@ -23,6 +24,7 @@ export default async function Layout(
       <div className="flex flex-col min-h-screen w-full">
         <Header />
         {children}
+        <Footer />
       </div>
     </FirebaseAuthProvider>
   );
