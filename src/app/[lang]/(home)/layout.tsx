@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "../../globals.css";
-import { Header } from "@/components/Header";
+import { FormHeader, Header } from "@/components/Header";
 import FirebaseAuthProvider from "../../../utils/providers/FirebaseAuthProvider";
 import Footer from "@/components/Footer";
 
@@ -20,7 +20,7 @@ export default async function Layout(
   } = props;
 
   return (
-    <FirebaseAuthProvider>
+    <FirebaseAuthProvider> 
       <div className="flex flex-col min-h-screen w-full">
         <Header />
         {children}

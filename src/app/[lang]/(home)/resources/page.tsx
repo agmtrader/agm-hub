@@ -1,19 +1,41 @@
 'use client'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import React from 'react'
 import { CaretRight } from 'react-bootstrap-icons'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const ResourceCenterPage = () => {
 
   const videos = [
       {
           title: 'Introducción al Balance General',
-          url: "https://www.youtube.com/embed/Af25tdzojb8" 
+          id: 'Af25tdzojb8'
       },
       {
         title: 'Métodos Fundamentales de Negociación',
-        url: "https://www.youtube.com/embed/x_RZmQzWIng" 
+        id: 'x_RZmQzWIng'
+      },
+      {
+        title: 'Soporte y resistencia',
+        id: 'K7sZUdAdYi8'
+      },
+      {
+        title: 'Mercados de Valores Internacionales',
+        id: 'o2Rec5G0aVo'
+      },
+      {
+        title: 'Tendencia versus anti tendencia',
+        id: '7BzQoARiUHU'
+      },
+      {
+        title: 'Introducción a conceptos básicos de los Mercados Internacionales',
+        id: 'nxrwD3qRmbM'
+      },
+      {
+        title: 'Comercio y Análisis Análisis Fundamental',
+        id: 'LDxZ8MdPDZo'
       }
   ]
 
@@ -21,47 +43,96 @@ const ResourceCenterPage = () => {
   const [selected, setSelected] = useState<any | null>(videos[0])
   
   return (
-    <div className='h-full my-32 justify-center items-center gap-10 flex flex-col w-full'>
-
-      <h1 className='text-7xl font-bold'>Resource Center</h1>
-      <p className='text-lg'>En esta sección encontrarás una variedad de recursos para aprender sobre negociación y gestión de negocios.</p>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className='h-full my-32 justify-start items-center gap-10 flex flex-col w-full'
+    >
+      <motion.h1 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className='text-7xl font-bold'
+      >
+        Resource Center
+      </motion.h1>
+      <motion.p 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className='text-lg'
+      >
+        In this section you will find a variety of resources to learn about international markets and trading.
+      </motion.p>
 
       {selected && (
-        <div className='w-full h-full flex items-start justify-center p-4'>
-          <div className='flex flex-col gap-2 p-4'>
-            {showList && (
-              <div className='flex flex-col gap-5'>
-                {videos.map((video) => (
-                  <Button
-                    key={video.url}
-                    onClick={() => setSelected(video)}
-                    className='text-sm p-2'
-                    variant='ghost'
-                  >
-                    {video.title}
-                  </Button>
-                ))}
-              </div>
-            )}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className='w-full h-full gap-8 flex items-start justify-center'
+        >
+          <motion.div 
+            layout
+            className='flex flex-col gap-2 w-[300px] p-6 bg-muted rounded-lg shadow-sm'
+          >
+            <h3 className='font-semibold mb-2 text-lg'>Available Videos</h3>
+            <AnimatePresence mode="wait">
+              {showList && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className='flex flex-col gap-3'
+                >
+                  {videos.map((video, index) => (
+                    <motion.div
+                      key={video.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Button
+                        onClick={() => setSelected(video)}
+                        className={cn(
+                          'text-sm px-4 py-3 w-fit justify-start text-left bg-transparent text-foreground hover:bg-primary/10',
+                          selected.id === video.id && 'bg-primary text-background hover:bg-primary hover:text-background'
+                        )}
+                      >
+                        {video.title}
+                      </Button>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
             <Button
               onClick={() => setShowList(!showList)}
-              className='text-sm p-2'
-              variant='ghost'
+              className='text-sm mt-2 p-2 w-fit bg-transparent hover:bg-transparent text-foreground hover:text-foreground'
             >
-              <CaretRight className='w-6 h-6'/>
+              {showList ? 'Hide' : 'Show'}
             </Button>
-          </div>
-          <iframe 
-            width="100%" 
-            height="100%" 
-            src={selected.url} 
-            title={selected.title}
-            style={{ aspectRatio: '16/9' }}
-          />
-        </div>
-      )}
+          </motion.div>
 
-    </div>
+          <motion.div
+            key={selected.id}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 100 }}
+            className='w-fit h-full flex items-center justify-center'
+          >
+            <iframe 
+              width="100%" 
+              height="600px" 
+              src={`https://www.youtube.com/embed/${selected.id}`} 
+              title={selected.title}
+              className="rounded-lg shadow-sm"
+              style={{ aspectRatio: '16/9' }}
+            />
+          </motion.div>
+          
+        </motion.div>
+      )}
+    </motion.div>
   )
 }
 
