@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import React from 'react'
-import { CaretRight } from 'react-bootstrap-icons'
 import { motion, AnimatePresence } from 'framer-motion'
+import { CaretDownFill, CaretRightFill } from 'react-bootstrap-icons'
 
 const ResourceCenterPage = () => {
 
@@ -94,7 +94,7 @@ const ResourceCenterPage = () => {
                       <Button
                         onClick={() => setSelected(video)}
                         className={cn(
-                          'text-sm px-4 py-3 w-fit justify-start text-left bg-transparent text-foreground hover:bg-primary/10',
+                          'text-sm p-3 w-fit h-fit justify-start text-left bg-transparent text-foreground hover:bg-primary/10',
                           selected.id === video.id && 'bg-primary text-background hover:bg-primary hover:text-background'
                         )}
                       >
@@ -109,7 +109,11 @@ const ResourceCenterPage = () => {
               onClick={() => setShowList(!showList)}
               className='text-sm mt-2 p-2 w-fit bg-transparent hover:bg-transparent text-foreground hover:text-foreground'
             >
-              {showList ? 'Hide' : 'Show'}
+              {showList ? 
+                <CaretDownFill className='w-4 h-4 text-foreground'/> 
+                : 
+                <CaretRightFill className='w-4 h-4 text-foreground'/>
+              }
             </Button>
           </motion.div>
 
@@ -132,6 +136,28 @@ const ResourceCenterPage = () => {
           
         </motion.div>
       )}
+      <div className='flex gap-10'>
+        {videos
+          .sort((a, b) => 0.5 - Math.random())
+          .filter((video) => video.id !== selected.id)
+          .slice(0, 5)
+          .map((video, index) => (
+            <div 
+              key={video.id} 
+              className='relative w-full h-40 bg-muted rounded-lg shadow-sm cursor-pointer group' 
+              onClick={() => setSelected(video)}
+            >
+              <img 
+                src={`https://img.youtube.com/vi/${video.id}/0.jpg`} 
+                alt={video.title}
+                className='w-full h-full rounded-lg object-cover' 
+              />
+              <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center p-4'>
+                <p className='text-white text-center text-sm'>{video.title}</p>
+              </div>
+            </div>
+          ))}
+      </div>
     </motion.div>
   )
 }

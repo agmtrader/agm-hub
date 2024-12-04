@@ -18,8 +18,7 @@ function FirebaseAuthProvider ({
         if (session && session.firebaseToken) {
             try {
 
-                const response = await signInWithCustomToken(auth, session.firebaseToken)
-                console.log('Firebase Auth User:', response.user)
+                await signInWithCustomToken(auth, session.firebaseToken)
                 
             } catch (error) {
                 console.error('Missing necessary credentials. Limiting user experience to client mode.')

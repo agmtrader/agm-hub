@@ -12,25 +12,25 @@ const DevelopmentPage = () => {
 
   return (
     <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
         className='flex flex-col h-full justify-center text-center items-center gap-5'
     >
         <HardHat size={100} className='text-foreground'/>
         <motion.p 
         className='text-7xl font-bold'
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
         >
         Still under development.
         </motion.p>
         <motion.p 
         className='text-xl text-subtitle'
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
         >
         Check back soon to access the full platform.
         </motion.p>
