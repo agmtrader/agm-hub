@@ -44,7 +44,7 @@ export default function TradeTickets() {
       if (!ticket) return;
       let response = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {
         'flex_query_dict': ticket,
-        'indices': "4"
+        'indices': "0"
       });
       response = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': response['content']});
       if (response['status'] === 'error') {
