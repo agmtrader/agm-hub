@@ -4,9 +4,8 @@ import Services from "@/components/home/services/Services";
 import FAQ from "@/components/home/faq/FAQ";
 
 import Team from "@/components/home/team/Team";
-import Footer from "@/components/Footer";
 import { GraphUpArrow } from "react-bootstrap-icons";
-import { Building, Handshake, BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle } from "lucide-react";
+import { Building, Handshake, BarChart2, PieChart, TrendingUp, Clock, Database, LayoutDashboard, FileText, MessageCircle } from "lucide-react";
 
 export default function Home() {
   
@@ -62,7 +61,7 @@ export default function Home() {
   const services = [
     {
       name: 'AGM Trader',
-      icon: <GraphUpArrow className='text-white h-[12vw] w-[12vw]'/>,
+      icon: <TrendingUp className='text-white h-[12vw] w-[12vw]'/>,
       description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
       url: 'https://agmtrader.com'
     },

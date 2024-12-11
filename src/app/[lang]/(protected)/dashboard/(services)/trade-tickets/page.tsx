@@ -58,7 +58,7 @@ export default function TradeTickets() {
 
       if (!clientMessage) return;
 
-      const clientEmails = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
+      const clientEmails = "aa@agmtechnology.com"
       const response = await accessAPI('/email/send_client_email', 'POST', {
         'plain_text': clientMessage, 
         'client_email': clientEmails, 

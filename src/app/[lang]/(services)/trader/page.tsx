@@ -21,7 +21,7 @@ export default function Home() {
     title: t('agm-trader.title.title'),
     subtitle: t('agm-trader.title.subtitle'),
     ctaText: t('agm-trader.title.action_text'),
-    ctaLink: '/apply'
+    ctaLink: '/apply' 
   };
   
   const services = [
@@ -29,13 +29,13 @@ export default function Home() {
       name: t('shared.services.agm_advisor.title'),
       icon: <Handshake className='text-white h-[12vw] w-[12vw]'/>,
       description:t('shared.services.agm_advisor.description'),
-      url:'https://agm-advisor.vercel.app'
+      url:'/trader'
     },
     {
       name: t('shared.services.agm_institutional.title'),
       icon: <Building className='text-white h-[12vw] w-[12vw]'/>,
       description:t('shared.services.agm_institutional.description'),
-      url:'https://agm-institutional.vercel.app'
+      url:'/institutional'
     }
   ]
   

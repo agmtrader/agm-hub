@@ -22,15 +22,15 @@ export default function Home() {
   const services = [
     {
       name: 'AGM Trader',
-      icon: <GraphUpArrow className='text-white h-[12vw] w-[12vw]'/>,
+      icon: <TrendingUp className='text-white h-[12vw] w-[12vw]'/>,
       description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
-      url: 'https://agmtrader.com'
+      url: '/trader'
     },
     {
       name: 'AGM Advisor',
       icon: <Handshake className='text-white h-[12vw] w-[12vw]'/>,
       description:'We also provide Advisory services for those clients that would like to delegate a portion of their financial assets or wealth through our advisory division.',
-      url:'https://agm-advisor.vercel.app'
+      url:'/advisor'
     }
   ]
   

@@ -4,7 +4,9 @@ import React, {useState} from 'react'
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Laptop, Smartphone } from 'lucide-react'
-import { Apple, Windows, Ubuntu, Android2, Globe } from 'react-bootstrap-icons'
+
+import { Globe } from 'lucide-react';
+import { Windows, Ubuntu, Apple, Android2 } from 'react-bootstrap-icons';
 
 import { DeviceTypes, osTypes } from '@/lib/types'
 
@@ -91,7 +93,7 @@ function Download({}: Props) {
           </motion.div>
           <Button asChild variant='secondary' className='h-32'>
             <Link href={'https://www.clientam.com/sso/Login?partnerID=agmbvi2022'} rel="noopener noreferrer" target="_blank" className='w-32'>
-              <Globe size={'90%'}/>
+              <Globe className='text-orange h-[12vw] w-[12vw]'/>
             </Link>
           </Button>
         </div>
