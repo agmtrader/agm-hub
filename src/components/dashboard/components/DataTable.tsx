@@ -259,7 +259,7 @@ export const DataTable = <TData,>({
   }
 
   return (
-    <div className={cn('w-full rounded-md text-foreground relative border p-5', width && `w-[${width}%]`)}>
+    <div className={cn('w-full max-w-7xl rounded-md text-foreground relative border p-5', width && `w-[${width}%]`)}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

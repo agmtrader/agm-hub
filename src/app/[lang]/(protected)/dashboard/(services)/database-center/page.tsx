@@ -14,37 +14,29 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 const Page = () => {
 
-  const [documents, setDocuments] = useState<any[]>([])
   const router = useRouter()
   const { lang } = useTranslationProvider()
+  
+  const tables = [
+    { id: 'accounts', name: 'Accounts', path: 'db.clients.accounts' },
+    { id: 'tickets', name: 'Tickets', path: 'db.clients.tickets' }
+  ]
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        let response = await accessAPI('/drive/get_files_in_folder', 'POST', {
-          parent_id: '18Gtm0jl1HRfb1B_3iGidp9uPvM5ZYhOF',
-          mime_type: 'text/csv'
-        })
-        setDocuments(response['content'])
-      } catch (error) {
-        console.error('Error fetching CSV:', error)
-      }
-    }
-    fetchData()
-  }, [])
-
-  function redirectToReport(reportId: string) {
-    router.push(formatURL(`/dashboard/reporting/${reportId}`, lang))
+  function redirectToTable(tablePath: string) {
+    router.push(formatURL(`/dashboard/database-center/${tablePath}`, lang))
   }
 
-  if (documents && documents.length === 0) return <LoadingComponent/>
+  if (tables && tables.length === 0) return <LoadingComponent/>
 
   const fadeIn = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.5 } }
   }
 
-
+  async function migrateReports() {
+    let response = await accessAPI('/reporting/migrate', 'POST')
+    console.log(response)
+  }
   return (
     <div className="w-full h-full flex flex-col gap-5 items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-5">
@@ -52,31 +44,27 @@ const Page = () => {
           variants={fadeIn}
           className="text-7xl font-bold text-foreground"
         >
-          AGM Reporting
+          AGM Database Center
         </motion.h1>
         <motion.p className='text-2xl text-subtitle' variants={fadeIn}>
-          Download, transform and backup daily reports.
+          Check out tables and query data from the database.
         </motion.p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
-        {documents.map((doc) => (
+        {tables.map((table) => (
           <Card 
-            key={doc.id} 
+            key={table.id} 
             className='hover:shadow-lg w-96 transition-shadow cursor-pointer'
-            onClick={() => redirectToReport(doc.id)}
+            onClick={() => redirectToTable(table.path)}
           >
-            <CardHeader className="font-semibold">{doc.name}</CardHeader>
+            <CardHeader className="font-semibold">{table.name}</CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600">Last modified: {new Date(doc.modifiedTime).toLocaleDateString()}</p>
+              <p className="text-sm text-gray-600">Last modified: {new Date().toLocaleDateString()}</p>
             </CardContent>
           </Card>
         ))}
       </div>
-      <Link href={formatURL('/dashboard/reporting/generate', lang)}> 
-        <Button>
-          Generate Reports
-        </Button>
-      </Link>
+      <Button onClick={migrateReports}>Migrate Reports</Button>
     </div>
   )
 }
