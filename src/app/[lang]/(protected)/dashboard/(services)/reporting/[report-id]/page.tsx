@@ -1,19 +1,19 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import { accessAPI } from '@/utils/api'
 import { ColumnDefinition } from '@/components/dashboard/components/DataTable'
 import CSVReader from '@/components/dashboard/components/CSVReader'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 
 type Props = {
-  params: {
+  params: Promise<{
     'report-id': string
-  }
+  }>
 }
 
 const Page = ({ params }: Props) => {
 
-  const reportId = params['report-id']
+  const { 'report-id': reportId } = use(params)
   const [reportData, setReportData] = useState<any[] | null>(null)
 
   useEffect(() => {

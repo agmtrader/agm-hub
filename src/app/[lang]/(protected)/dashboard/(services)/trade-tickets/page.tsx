@@ -13,7 +13,6 @@ export default function TradeTickets() {
 
     const [flexQueryId, setFlexQueryId] = useState<string | null>(null)
     const [flexQuery, setFlexQuery] = useState<any[] | null>(null)
-
     const [selectedTrades, setSelectedTrades] = useState<any[]>([])
     const [clientMessage, setClientMessage] = useState<string | null>(null)
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)

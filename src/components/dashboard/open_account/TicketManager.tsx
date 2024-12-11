@@ -121,8 +121,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
           <DataTable 
             columns={columns as ColumnDefinition<Ticket>[]} 
             enableSelection 
-            data={tickets} 
-            setSelection={handleTicketSelection as Dispatch<SetStateAction<Ticket | null>>}
+            data={tickets}
           />
         </motion.div>
       ) : (

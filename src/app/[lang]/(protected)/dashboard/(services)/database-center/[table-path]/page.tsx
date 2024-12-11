@@ -1,19 +1,19 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import { accessAPI } from '@/utils/api'
 import { ColumnDefinition } from '@/components/dashboard/components/DataTable'
 import CSVReader from '@/components/dashboard/components/CSVReader'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 
 type Props = {
-  params: {
+  params: Promise<{
     'table-path': string
-  }
+  }>
 }
 
 const Page = ({ params }: Props) => {
 
-  const tablePath = params['table-path'].replaceAll('.', '/')
+  const { 'table-path': tablePath } = use(params)
   const [tableData, setTableData] = useState<any[] | null>(null)
 
   useEffect(() => {
