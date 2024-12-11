@@ -64,11 +64,12 @@ interface DataTableProps<TData> {
   columns?: ColumnDefinition<TData>[] // New prop
   width?: number
   dark?: boolean
-  setSelection?: React.Dispatch<React.SetStateAction<TData | null>>
+  setSelection?: React.Dispatch<React.SetStateAction<TData[]>>
   enableSelection?: boolean
   enablePagination?: boolean
   enableRowActions?: boolean
   rowActions?: RowAction[]
+  selection?: TData[]
 }
 
 export const DataTable = <TData,>({
@@ -80,6 +81,7 @@ export const DataTable = <TData,>({
   enableSelection = false,
   enablePagination = false,
   enableRowActions = false,
+  selection,
   rowActions,
 }: DataTableProps<TData>) => {
   const [rowSelection, setRowSelection] = useState({})
@@ -228,8 +230,8 @@ export const DataTable = <TData,>({
 
   useEffect(() => {
     if (enableSelection && setSelection) {
-      const selectedRow = table.getFilteredSelectedRowModel().rows[0]
-      setSelection(selectedRow ? selectedRow.original as TData : null)
+      const selectedRows = table.getFilteredSelectedRowModel().rows
+      setSelection(selectedRows.map((row) => row.original as TData))
     }
   }, [rowSelection, enableSelection, setSelection, table])
 

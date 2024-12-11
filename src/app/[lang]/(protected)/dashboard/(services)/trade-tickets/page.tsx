@@ -7,69 +7,20 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
+import { useToast } from '@/hooks/use-toast'
 
 export default function TradeTickets() {
 
-    const [ticketId, setTicketId] = useState<string | null>(null)
+    const [flexQueryId, setFlexQueryId] = useState<string | null>(null)
+    const [flexQuery, setFlexQuery] = useState<any[] | null>(null)
 
-    const [ticket, setTicket] = useState<any[] | null>(null)
+    const [selectedTrades, setSelectedTrades] = useState<any[]>([])
     const [clientMessage, setClientMessage] = useState<string | null>(null)
-
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
-    useEffect(() => {
-      if (ticketId) {
-        fetchTickets()
-      }
-    }, [ticketId])
+    const { toast } = useToast()
 
-
-    async function fetchTickets() {
-      if (!ticketId) return;
-
-      const response = await accessAPI('/flex_query/fetch', 'POST', {'queryIds': [ticketId]})
-      if (response['status'] !== 'success') {
-        throw new Error(response['content'])
-      }
-      const trades = response['content'][ticketId as string]
-      trades.sort((a: any, b: any) => {
-        const dateA = new Date(a['Date/Time']).getTime()
-        const dateB = new Date(b['Date/Time']).getTime()
-        return dateB - dateA
-      })
-      setTicket(trades)
-    }
-
-    async function generateTradeTicket() {
-      if (!ticket) return;
-      let response = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {
-        'flex_query_dict': ticket,
-        'indices': "0"
-      });
-      response = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': response['content']});
-      if (response['status'] === 'error') {
-        throw new Error(response['content']);
-      } else {
-        setClientMessage(response['content']['message']);
-      }
-    }
-
-    async function sendToClient() {
-
-      if (!clientMessage) return;
-
-      const clientEmails = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
-      const response = await accessAPI('/email/send_client_email', 'POST', {
-        'plain_text': clientMessage, 
-        'client_email': clientEmails, 
-        'subject': 'Confirmación de Transacción'
-      })
-      if (response['status'] === 'error') {
-        throw new Error(response['content'])
-      }
-    }
-
-    const ticketIds = [
+    const flexQueryIds = [
       {
         name: 'ACOBO',
         user_id: 'U1213465',
@@ -100,10 +51,88 @@ export default function TradeTickets() {
       }
     ]
 
-    console.log(clientMessage)
+    useEffect(() => {
+      if (flexQueryId) {
+        fetchFlexQuery()
+      }
+    }, [flexQueryId])
 
-    const [indices, setIndices] = useState<number[]>([])
-    console.log(indices)
+    useEffect(() => {
+      if (selectedTrades.length > 1) {
+        toast({
+          title: 'Creating Consolidated Trade Ticket',
+        })
+      }
+    }, [selectedTrades])
+
+    async function fetchFlexQuery() {
+      if (!flexQueryId) return;
+
+      const response = await accessAPI('/flex_query/fetch', 'POST', {'queryIds': [flexQueryId]})
+      if (response['status'] !== 'success') {
+        throw new Error(response['content'])
+      }
+      const trades = response['content'][flexQueryId as string]
+      trades.sort((a: any, b: any) => {
+        const dateA = new Date(a['Date/Time']).getTime()
+        const dateB = new Date(b['Date/Time']).getTime()
+        return dateB - dateA
+      })
+      setFlexQuery(trades)
+    }
+
+    async function generateTradeTicket() {
+
+      if (!flexQuery) return;
+
+        // Check if all selected trades have the same description
+        const firstSymbol = selectedTrades[0]?.Symbol;
+        const allSameSymbol = selectedTrades.every(trade => trade.Symbol === firstSymbol);
+        
+        if (!allSameSymbol) {
+          toast({
+            title: 'Error',
+            description: 'All selected trades must be for the same symbol',
+            variant: 'destructive'
+          })
+          return;
+        }
+
+      const selectedIndices = selectedTrades.map(selectedTrade => 
+        flexQuery.findIndex(trade => 
+          trade['Date/Time'] === selectedTrade['Date/Time'] && 
+          trade['Description'] === selectedTrade['Description'] &&
+          trade['Quantity'] === selectedTrade['Quantity']
+        )
+      ).filter(index => index !== -1);
+      console.log(selectedIndices)
+
+      let response = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {
+        'flex_query_dict': flexQuery,
+        'indices': selectedIndices.join(',')
+      });
+      response = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': response['content']});
+      if (response['status'] === 'error') {
+        throw new Error(response['content']);
+      } else {
+        setClientMessage(response['content']['message']);
+      }
+    }
+
+    async function sendToClient() {
+
+      if (!clientMessage) return;
+
+      const clientEmails = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
+      const response = await accessAPI('/email/send_client_email', 'POST', {
+        'plain_text': clientMessage, 
+        'client_email': clientEmails, 
+        'subject': 'Confirmación de Transacción'
+      })
+      if (response['status'] === 'error') {
+        throw new Error(response['content'])
+      }
+    }
 
   return (
     <div className="w-full h-full flex flex-col gap-y-10 justify-start items-center">
@@ -115,26 +144,35 @@ export default function TradeTickets() {
 
         <div className='w-full flex flex-col gap-5 justify-center items-center'>
           
-          <Select onValueChange={(value) => setTicketId(value)}>
-            <SelectTrigger className="w-fit gap-2">
-              <SelectValue placeholder="Select Account" />
-            </SelectTrigger>
-            <SelectContent>
-              {ticketIds.map((ticket) => (
-                <SelectItem className='p-2' key={ticket.id} value={ticket.id}>{ticket.name} - {ticket.user_id}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className='w-full flex gap-5 justify-center items-center'>
+            <Select onValueChange={(value) => setFlexQueryId(value)}>
+              <SelectTrigger className="w-fit gap-2">
+                <SelectValue placeholder="Select Account" />
+              </SelectTrigger>
+              <SelectContent>
+                {flexQueryIds.map((flexQuery) => (
+                  <SelectItem className='p-2' key={flexQuery.id} value={flexQuery.id}>{flexQuery.name} - {flexQuery.user_id}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Button onClick={generateTradeTicket}>
+              Generate Trade Ticket
+            </Button>
+          </div>
 
           <div className='w-full h-fit flex flex-col gap-y-5 justify-center items-center'>
             <ScrollArea className='w-full h-full flex justify-center items-center'>
-              {ticket !== null ?
-                ticket.length > 0 ? 
+              {flexQuery !== null ?
+                flexQuery.length > 0 ? 
                   <div className='w-full h-full flex flex-col gap-y-5 justify-center items-center'>
-                    <DataTable enablePagination columns={columns} enableSelection data={ticket}/> 
-                    <Button onClick={generateTradeTicket}>
-                      Generate Trade Ticket
-                    </Button>
+                    <DataTable 
+                      data={flexQuery}
+                      columns={columns} 
+                      enableSelection setSelection={setSelectedTrades} 
+                      selection={selectedTrades}
+                      enablePagination 
+                    />
                   </div>
                   : 
                   <p className='text-foreground text-center'>Account has executed no trades today.</p>
