@@ -99,21 +99,21 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
       {primaryHolderInfo && Object.keys(primaryHolderInfo).length > 0 && 
         <motion.div className='w-full flex flex-col gap-5' variants={itemVariants}>
           <p className='text-lg font-semibold'>Primary Holder Information</p>
-          <DataTable data={[primaryHolderInfo]} width={100}/>
+          <DataTable data={[primaryHolderInfo]}/>
         </motion.div>
       }
 
       {secondaryHolderInfo && Object.keys(secondaryHolderInfo).length > 0 &&
         <motion.div className='w-full flex flex-col gap-5' variants={itemVariants}>
           <p className='text-lg font-semibold'>Secondary Holder Information</p>
-          <DataTable data={[secondaryHolderInfo]} width={100}/>
+          <DataTable data={[secondaryHolderInfo]}/>
         </motion.div>
       }
       
       {regulatoryInfo && Object.keys(regulatoryInfo).length > 0 &&
         <motion.div className='w-full flex flex-col gap-5' variants={itemVariants}>
           <p className='text-lg font-semibold'>Regulatory Information</p>
-          <DataTable data={[regulatoryInfo]} width={100}/>
+          <DataTable data={[regulatoryInfo]}/>
         </motion.div>
       }
 

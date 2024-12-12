@@ -213,7 +213,7 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
       <motion.h1 className='text-7xl font-bold text-foreground' variants={slideUp}>Open a new IBKR account.</motion.h1>
       <motion.p className='text-2xl text-subtitle' variants={slideUp}>Current Ticket</motion.p>
       <motion.div className='w-full h-full' variants={slideUp}>
-        <DataTable data={[ticket]} width={100} columns={ticketColumns as ColumnDefinition<Ticket>[]}/>
+        <DataTable data={[ticket]} columns={ticketColumns as ColumnDefinition<Ticket>[]}/>
       </motion.div>
       <motion.p className='text-2xl text-subtitle' variants={slideUp}>Internal IBKR Account Access Form</motion.p>
       <Form {...form}>
@@ -319,12 +319,12 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
         <motion.h1 className='text-7xl font-bold text-foreground' variants={slideUp}>Active IBKR account</motion.h1>
         <motion.p className='text-lg text-subtitle' variants={slideUp}>Ticket</motion.p>
         <motion.div variants={slideUp}>
-          <DataTable columns={ticketColumns as ColumnDefinition<Ticket>[]} data={[ticket]} width={100}/>
+          <DataTable columns={ticketColumns as ColumnDefinition<Ticket>[]} data={[ticket]}/>
         </motion.div>
         <motion.p className='text-lg text-subtitle' variants={slideUp}>IBKR Account Details</motion.p>
         {account && (
           <motion.div variants={slideUp}>
-            <DataTable columns={accountColumns as ColumnDefinition<Account>[]} data={[account]} width={100}/>
+            <DataTable columns={accountColumns as ColumnDefinition<Account>[]} data={[account]}/>
           </motion.div>
         )}
       </motion.div>

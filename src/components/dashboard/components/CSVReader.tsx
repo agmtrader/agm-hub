@@ -8,7 +8,7 @@ type Props = {
 
 const CSVReader = ({data, columns}: Props) => {
     return (
-      <DataTable data={data} columns={columns} width={100} enablePagination/>
+      <DataTable data={data} columns={columns} enablePagination/>
     )
 }
 

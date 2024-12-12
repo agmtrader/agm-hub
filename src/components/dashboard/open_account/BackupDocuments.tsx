@@ -110,7 +110,7 @@ const BackupDocuments = ({ticket, setCanContinue, account}:Props) => {
       </motion.h1>
       
       <motion.div variants={itemVariants}>
-        <DataTable data={[ticket]} width={100} columns={ticketColumns as ColumnDefinition<Ticket>[]}/>
+        <DataTable data={[ticket]} columns={ticketColumns as ColumnDefinition<Ticket>[]}/>
       </motion.div>
       
       {account && (

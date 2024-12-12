@@ -111,7 +111,7 @@ const RiskProfile = ({riskProfile, account}: Props) => {
         <div className="flex flex-col lg:flex-row gap-5 w-full h-fit justify-center items-center text-center">
           <div className="w-full lg:w-1/2 flex flex-col gap-y-5 justify-center items-center">
             <h2 className="text-2xl font-semibold">{t('dashboard.risk.profile.asset_allocation')}</h2>
-            <DataTable data={assetData} width={100}/>
+            <DataTable data={assetData}/>
             <p className="text-lg font-semibold">
               {t('dashboard.risk.profile.average_yield')}: {(riskProfile.average_yield * 100).toFixed(2)}%
             </p>
