@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
 import { formatURL } from '@/utils/lang'
-import { AlarmClockPlusIcon, ArrowLeft, Bell, BellIcon, Database, FileText, Plus, RefreshCcw, Table, Ticket, Users } from 'lucide-react'
+import { AlarmClockPlusIcon, ArrowLeft, Bell, BellIcon, ChevronLeft, ChevronRight, Database, FileText, Plus, RefreshCcw, Table, Ticket, Users } from 'lucide-react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 import { cn } from '@/lib/utils'
@@ -13,12 +13,12 @@ import { Separator } from '../ui/separator'
 
 const tools = [
   {
-    name: 'Risk profiles',
+    name: 'Risk Profiles',
     url: '/dashboard/risk',
     icon: AlarmClockPlusIcon,
   },
   {
-    name: 'Trade tickets',
+    name: 'Trade Tickets',
     url: '/dashboard/trade-tickets',
     icon: Ticket,
   }, 
@@ -33,7 +33,7 @@ const tools = [
     icon: Users,
   },
   {
-    name: 'Generate reports',
+    name: 'Reporting Center',
     url: '/dashboard/reporting',
     icon: RefreshCcw,
   }, 
@@ -50,33 +50,46 @@ const tools = [
 ]
 
 const Sidebar = () => {
-
-  const {lang, setLang} = useTranslationProvider();
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const {lang, setLang} = useTranslationProvider()
 
   return (
-    <nav className="flex flex-col justify-center items-center text-foreground w-fit h-fit gap-y-10 bg-background">
-      <NavigationMenu className="px-3 py-2 h-fit">
-        <NavigationMenuList className="w-full gap-y-2 flex flex-col h-full justify-between">
-            <NavigationMenuItem key={'dashboard'} className="flex w-full h-fit">
-              <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
-                <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-start justify-start w-full")}>
-                  <BellIcon className="mr-2 h-4 w-4" />
-                  Overview
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-          <Separator orientation="horizontal" className="w-full"/>
+    <nav className="flex flex-col justify-center items-center text-foreground px-5 h-full gap-y-10 w-fit">
+      <NavigationMenu className="py-2 h-fit flex flex-col justify-between items-start">
+        <NavigationMenuList className="w-full flex flex-col gap-2">
+          <NavigationMenuItem key={'dashboard'} className="flex w-full h-fit">
+            <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
+              <NavigationMenuLink className={cn(
+                navigationMenuTriggerStyle(),
+                "text-start justify-start w-full",
+              )}>
+                <BellIcon className="h-4 w-4" />
+                {!isCollapsed && <span className="ml-2">Overview</span>}
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
           {tools.map((item, index) => (
             <NavigationMenuItem key={index} className="flex w-full h-fit">
               <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
-                <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-start text-start w-full whitespace-nowrap")}>
-                  <item.icon className="mr-2 h-4 w-4" />
-                  {item.name}
+                <NavigationMenuLink className={cn(
+                  navigationMenuTriggerStyle(),
+                  "justify-start text-start w-full whitespace-nowrap",
+                )}>
+                  <item.icon className="h-4 w-4" />
+                  {!isCollapsed && <span className="ml-2">{item.name}</span>}
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
           ))}
         </NavigationMenuList>
+        <Button
+            variant="ghost"
+            size="icon"
+            className="p-0"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
       </NavigationMenu>
     </nav>
   )

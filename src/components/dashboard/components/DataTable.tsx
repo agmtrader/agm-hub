@@ -61,10 +61,8 @@ export interface ColumnDefinition<TData> {
 
 interface DataTableProps<TData> {
   data: TData[]
-  columns?: ColumnDefinition<TData>[] // New prop
-  width?: number
-  dark?: boolean
-  setSelection?: React.Dispatch<React.SetStateAction<TData[]>>
+  columns?: ColumnDefinition<TData>[]
+  setSelection?: (selectedData: TData[]) => void
   enableSelection?: boolean
   enablePagination?: boolean
   enableRowActions?: boolean
@@ -75,8 +73,6 @@ interface DataTableProps<TData> {
 export const DataTable = <TData,>({
   data,
   columns: providedColumns,
-  width,
-  dark,
   setSelection,
   enableSelection = false,
   enablePagination = false,
@@ -109,7 +105,6 @@ export const DataTable = <TData,>({
             checked={table.getIsAllPageRowsSelected()}
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
             aria-label="Select all"
-            className={cn(dark && "bg-background")}
           />
         ),
         cell: ({ row }) => (
@@ -117,7 +112,6 @@ export const DataTable = <TData,>({
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             aria-label="Select row"
-            className={cn(dark && "bg-background")}
           />
         ),
         enableSorting: false,
@@ -231,6 +225,7 @@ export const DataTable = <TData,>({
   useEffect(() => {
     if (enableSelection && setSelection) {
       const selectedRows = table.getFilteredSelectedRowModel().rows
+      console.log(selectedRows)
       setSelection(selectedRows.map((row) => row.original as TData))
     }
   }, [rowSelection, enableSelection, setSelection, table])
@@ -261,13 +256,13 @@ export const DataTable = <TData,>({
   }
 
   return (
-    <div className={cn('w-full max-w-7xl rounded-md text-foreground relative border p-5', width && `w-[${width}%]`)}>
+    <div className="w-full rounded-md text-foreground relative border p-5">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className={dark ? "text-background" : ''}>
+                <TableHead key={header.id}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -295,7 +290,7 @@ export const DataTable = <TData,>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell className={dark ? "text-background" : ''} key={cell.id}>
+                    <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

@@ -61,7 +61,7 @@ const ResourceCenterPage = () => {
         transition={{ delay: 0.2 }}
         className='text-lg'
       >
-        In this section you will find a variety of resources to learn about international markets and trading.
+        Check out our videos to learn about international markets and trading.
       </motion.p>
 
       {selected && (

@@ -29,7 +29,6 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
 
   // Initialize data variables
   const [tickets, setTickets] = useState<Ticket[] | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
 
   const columns = [
     { accessorKey: 'TicketID', header: 'Ticket ID' },
@@ -70,15 +69,15 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
 
   }, [ticket])
 
-  const handleTicketSelection = (selectedTicket: Ticket | null) => {
-    if (selectedTicket && selectedTicket.Status === "Opened") {
+  const handleTicketSelection = (selectedTickets: Ticket[]) => {
+    if (selectedTickets && selectedTickets.length > 0 && selectedTickets[0].Status === "Opened") {
       setTicket(null)
       toast({
         title: "Ticket already opened.",
         description: "Please select a different ticket or contact support if you need to modify this ticket.",
       })
     } else {
-      setTicket(selectedTicket)
+      setTicket(selectedTickets[0])
     }
   }
 
@@ -122,6 +121,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
             columns={columns as ColumnDefinition<Ticket>[]} 
             enableSelection 
             data={tickets}
+            setSelection={(selectedTickets: Ticket[]) => handleTicketSelection(selectedTickets)}
           />
         </motion.div>
       ) : (

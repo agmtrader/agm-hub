@@ -14,6 +14,8 @@ type Props = {
 const Page = ({ params }: Props) => {
 
   const { 'table-path': tablePath } = use(params)
+  let table_path = tablePath.replaceAll('.', '/')
+
   const [tableData, setTableData] = useState<any[] | null>(null)
 
   useEffect(() => {
@@ -21,7 +23,7 @@ const Page = ({ params }: Props) => {
       try {
 
         const response = await accessAPI('/database/read', 'POST', {
-          'path': tablePath,
+          'path': table_path,
           'params': {}
         })
 

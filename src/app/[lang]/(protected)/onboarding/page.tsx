@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { getDefaults } from '@/utils/form';
 import Link from 'next/link';
+import CountriesFormField from '@/components/ui/CountriesFormField';
 
 const Onboarding = () => {
 
@@ -173,20 +174,28 @@ const Onboarding = () => {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         {Object.keys(undefinedFields).map((fieldName) => (
-                            <FormField
-                                key={fieldName}
-                                control={form.control}
-                                name={fieldName}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="capitalize">{fieldName}</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            fieldName === 'country' ? (
+                                <CountriesFormField 
+                                    key={fieldName}
+                                    form={form} 
+                                    element={{ name: fieldName, title: fieldName }}
+                                />
+                            ) : (
+                                <FormField
+                                    key={fieldName}
+                                    control={form.control}
+                                    name={fieldName}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="capitalize">{fieldName}</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )
                         ))}
                         
                         <Button 

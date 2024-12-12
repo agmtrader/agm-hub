@@ -36,7 +36,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   ] as ColumnDefinition<CustomDocument>[]
 
   if (query && Object.keys(query).includes('DocumentInfo.account_number')) {
-    console.log(query['DocumentInfo.account_number'])
+    console.log('Queying by account number:', query['DocumentInfo.account_number'])
   }
 
   useEffect(() => {
@@ -47,8 +47,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
 
       if (!query) {
         toast({
-          title: "No query provided.",
-          description: "Please provide a query.",
+          title: "No query provided, showing all documents.",
           variant: "destructive",
         })
         query = {}
@@ -116,7 +115,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
 
   if (loading) return (
     <div className='w-full h-full flex justify-center items-center'>
-      <Loader2 className='animate-spin text-foreground h-10 w-10 text-primary' />
+      <Loader2 className='animate-spin h-10 w-10 text-primary' />
     </div>
   )
 

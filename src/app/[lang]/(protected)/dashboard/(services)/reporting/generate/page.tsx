@@ -219,7 +219,7 @@ export default function ReportingDashboard() {
             {batchFiles && (
               <motion.div variants={slideUp} className="bg-white p-6 rounded-lg shadow-lg">
                 <h2 className="text-2xl font-semibold mb-4">Extracted Reports</h2>
-                <DataTable data={batchFiles} width={90} />
+                <DataTable data={batchFiles} />
               </motion.div>
             )}
           </TabsContent>
@@ -227,7 +227,7 @@ export default function ReportingDashboard() {
             {resourcesFiles && (
               <motion.div variants={slideUp} className="bg-white p-6 rounded-lg shadow-lg">
                 <h2 className="text-2xl font-semibold mb-4">Transformed Reports</h2>
-                <DataTable data={resourcesFiles} width={90} />
+                <DataTable data={resourcesFiles} />
               </motion.div>
             )}
           </TabsContent>
