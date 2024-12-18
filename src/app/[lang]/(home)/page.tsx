@@ -15,7 +15,7 @@ export default function Home() {
   const { t } = useTranslationProvider()
   
   const titleProps = {
-    backgroundImage: '/images/wall_street.jpg',
+    backgroundImage: '/images/agm-technology.jpg',
     logoSrc: '/images/brand/agm-logo-white.png',
     title: t('agm-technology.title.title'),
     subtitle: t('agm-technology.title.subtitle'),
@@ -46,19 +46,19 @@ export default function Home() {
         title: t('agm-technology.introduction.cards.1.title'),
         description: t('agm-technology.introduction.cards.1.description'),
         items: [
-          { icon: <Clock />, label: '24/7 customer support' },
-          { icon: <Database />, label: 'Real-time market data' },
-          { icon: <LayoutDashboard />, label: 'Advanced trading tools' },
-          { icon: <FileText />, label: 'Statements reporting' }
+          { icon: <Clock />, label: t('agm-technology.introduction.cards.1.item_labels.0') },
+          { icon: <Database />, label: t('agm-technology.introduction.cards.1.item_labels.1') },
+          { icon: <LayoutDashboard />, label: t('agm-technology.introduction.cards.1.item_labels.2') },
+          { icon: <FileText />, label: t('agm-technology.introduction.cards.1.item_labels.3') }
         ]
       },
       {
         title: t('agm-technology.introduction.cards.2.title'),
         description: t('agm-technology.introduction.cards.2.description'),
         items: [
-          { icon: <Mail />, label: 'Email' },
-          { icon: <Phone />, label: 'Phone' },
-          { icon: <MessageCircle />, label: 'Live chat' }
+          { icon: <Mail />, label: t('agm-technology.introduction.cards.2.item_labels.0') },
+          { icon: <Phone />, label: t('agm-technology.introduction.cards.2.item_labels.1') },
+          { icon: <MessageCircle />, label: t('agm-technology.introduction.cards.2.item_labels.2') }
         ]
       }
     ],
@@ -69,19 +69,19 @@ export default function Home() {
   const services = [
     {
       name: t('shared.services.agm_trader.title'),
-      icon: <LineChart className='text-background h-[12vw] w-[12vw]'/>,
+      image: '/images/agm-trader.jpg',
       description: t('shared.services.agm_trader.description'),
       url: '/trader'
     },
     {
       name: t('shared.services.agm_advisor.title'),
-      icon: <Handshake className='text-background h-[12vw] w-[12vw]'/>,
+      image: '/images/agm-advisor.webp',
       description: t('shared.services.agm_advisor.description'),
       url: '/advisor'
     },
     {
       name: t('shared.services.agm_institutional.title'),
-      icon: <Building className='text-background h-[12vw] w-[12vw]'/>,
+      image: '/images/agm-institutional.jpg',
       description: t('shared.services.agm_institutional.description'),
       url: '/institutional'
     }

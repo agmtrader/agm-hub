@@ -46,6 +46,11 @@ const tools = [
     name: 'Database Center',
     url: '/dashboard/database-center',
     icon: Database,
+  },
+  {
+    name: 'Investment Proposals',
+    url: '/dashboard/investment-proposals',
+    icon: FileText,
   }
 ]
 

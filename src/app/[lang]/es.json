@@ -1,9 +1,9 @@
 {
     "agm-technology": {
         "title": {
-            "title": "Invierta desde cualquier lugar & en cualquier momento",
+            "title": "Invierta en cualquier lugar / momento",
             "subtitle": "Explore un mundo de oportunidades con nuestra plataforma de inversión global.",
-            "action_text": "Abra una cuenta"
+            "action_text": "Solicitar una cuenta"
         },
         "introduction": {
             "title": "Apoyando a los Inversionistas de Hoy para los Mercados del Mañana",
@@ -14,50 +14,80 @@
             "cards": [
                 {
                     "title": "Invierta en cualquier momento y lugar",
-                    "description": "Invierta en acciones, ETFs, opciones, futuros, bonos, criptomonedas y más desde cualquier ubicación y en cualquier momento con nuestra plataforma y servicios de trading avanzados."
+                    "description": "Invierta en acciones, ETFs, opciones, futuros, bonos, criptomonedas y más desde cualquier ubicación y en cualquier momento con nuestra plataforma y servicios de trading avanzados.",
+                    "item_labels": [
+                        "Acciones",
+                        "ETFs",
+                        "Opciones",
+                        "Futuros",
+                        "Bonos",
+                        "Criptomonedas"
+                    ]
                 },
                 {
                     "title": "Herramientas profesionales",
-                    "description": "Nuestra plataforma de trading, panel de control y herramientas están diseñados para proporcionarte las herramientas necesarias para tener éxito en los mercados financieros."
+                    "description": "Nuestra plataforma de trading, panel de control y herramientas están diseñados para proporcionarte las herramientas necesarias para tener éxito en los mercados financieros.",
+                    "item_labels": [
+                        "24/7 soporte al cliente",
+                        "Datos de mercado en tiempo real",
+                        "Herramientas de trading avanzadas",
+                        "Informes de estados"
+                    ]
                 },
                 {
                     "title": "Soporte al cliente activo",
-                    "description": "Nuestro equipo de soporte al cliente está siempre listo y feliz de ayudarte con cualquier pregunta o inquietud que puedas tener."
+                    "description": "Nuestro equipo de soporte al cliente está siempre listo y feliz de ayudarte con cualquier pregunta o inquietud que puedas tener.",
+                    "item_labels": [
+                        "Correo electrónico",
+                        "Teléfono",
+                        "Chat en vivo"
+                    ]
                 }
             ]
         }
     },
     "agm-trader": {
         "title": {
-            "title": "AGM Trader",
-            "subtitle": "Opera activos en cualquier momento y lugar utilizando nuestra plataforma de trading y aplicaciones avanzadas.",
-            "action_text": "Solicitar una cuenta"
+            "title": "Trader",
+            "subtitle": "Invierta en: acciones, bonos, ETFs, opciones, futuros, criptomonedas y más en cualquier momento y lugar.",
+            "action_text": "Descargar ahora"
         },
         "introduction": {
             "title": "Innovando a Escala Global",
             "description": "AGM Trader te permite operar e invertir 24/7 en una amplia gama de instrumentos financieros en más de 150 mercados y 20 diferentes monedas desde una sola cuenta.",
             "cta_text": "¿Listo para comenzar a operar desde cualquier lugar?",
-            "cta_subtext": "Descarga nuestra aplicación ahora.",
+            "cta_subtext": "Descarga ahora.",
             "cards": [
                 {
                     "title": "Opera en Cualquier Momento y Lugar",
-                    "description": "Accede a mercados globales e instrumentos financieros diversos a través de nuestras plataformas de trading avanzadas."
+                    "description": "Accede a mercados globales e instrumentos financieros diversos a través de nuestras plataformas de trading avanzadas.",
+                    "item_labels": [
+                        "Acciones, bonos, ETFs, opciones y más",
+                        "24/7 trading",
+                        "150+ mercados",
+                        "20+ monedas"
+                    ]
                 },
                 {
                     "title": "Elige tu Experiencia de Trading",
-                    "description": "Selecciona la plataforma que mejor se adapte a tu estilo de trading y necesidades."
+                    "description": "Selecciona la plataforma que mejor se adapte a tu estilo de trading y necesidades.",
+                    "item_labels": [
+                        "AGM Trader (aplicación móvil)",
+                        "AGM Trader Pro (escritorio)",
+                        "AGM Webtrader (web)"
+                    ]
                 },
                 {
                     "title": "Opera con Confianza",
-                    "description": "Nuestras plataformas de trading están diseñadas para proporcionarte las herramientas necesarias para tener éxito en los mercados financieros."
+                    "description": "Nuestras plataformas de trading están diseñadas para proporcionarte las herramientas necesarias para tener éxito en los mercados financieros.",
+                    "item_labels": [
+                        "Seguro",
+                        "Análisis en tiempo real",
+                        "Recursos educativos",
+                        "Soporte 24/7"
+                    ]
                 }
             ]
-        },
-        "download": {
-            "title": "Descarga Nuestras Aplicaciones",
-            "device": "Primero, ¿qué dispositivo estás usando?",
-            "operating_system": "¿Qué sistema operativo estás usando?",
-            "download_now": "Descargar ahora."
         }
     },
     "shared":{
@@ -101,7 +131,9 @@
                 "cristian_description": "Cristian ha estado con AGM durante más de 8 años, tiene experiencia en negocios y análisis de datos, además de ser nuestro CFO, es un trader experimentado en Opciones y ha sido parte de un par de Broker/Dealers y una empresa de Gestión de Fondos en el pasado. El Sr. Ramirez tiene una sólida experiencia en análisis Estadístico y Financiero, así como en contabilidad.",
                 "javier_title": "Especialista en Soporte de Comercio",
                 "javier_description": "Javier comenzó en AGM como pasante de la Universidad Texas Tech, donde está en su último año para obtener su licenciatura en Negocios. Ha estado con nosotros durante 2 años y ha destacado en las diferentes áreas en las que ha estado. Está a cargo del Departamento de Servicio al Cliente y se asegura de que cada cliente tenga una introducción personalizada a su relación con AGM.",
+                "maria_jose_title": "Especialista en Soporte de Comercio",
                 "maria_jose_description": "Maria Jose es nuestra incorporación más reciente al equipo de AGM, también está en su último año para obtener su licenciatura en Negocios de la Universidad Texas Tech. Ella es parte de nuestro Departamento de Servicio al Cliente y se asegura de que cada cliente tenga una gran experiencia de servicio y apoyo con AGM. También está a cargo de nuestro departamento de marketing y redes sociales.",
+                "andres_title": "Especialista en TI",
                 "andres_description": "Andres ha estado con AGM desde principios de 2024, está trabajando para obtener su licenciatura en Ciencias de la Computación de la Universidad Texas Tech. Andres está a cargo de nuestro departamento de TI y ha demostrado grandes habilidades para desarrollar nuestros sistemas de front end para poder proporcionar una mejor experiencia a nuestros clientes. También es responsable de la mayoría de nuestros procesos de back end para que todo funcione como se espera."
             }
         },
@@ -122,8 +154,14 @@
             "answer_6": "Solo el propietario de la cuenta, la primera persona designada, puede mover el dinero dentro y fuera de la cuenta a una cuenta bancaria a nombre del propietario de la cuenta. El custodio no permite transferencias de terceros para la protección del cliente."
         },
         "footer": {
-            "title": "Contacto",
-            "description": "¿Tienes alguna pregunta? ¡Estamos aquí para ayudarte!"
+            "title": "AGM Trader Broker & Advisor",
+            "copyright": "Copyright © 2024 AGM Trader Broker & Advisor. Todos los derechos reservados.",
+            "terms_of_use": "Términos de Uso y Descargo de Responsabilidad",
+            "products": "Productos",
+            "download": "Descargar",
+            "help_center": "Centro de Ayuda",
+            "more_faqs": "Más Preguntas Frecuentes",
+            "email_support": "Soporte por Correo Electrónico"
         }
     },
     "apply": {

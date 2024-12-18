@@ -90,10 +90,6 @@ export const DataTable = <TData,>({
   })
   const [isPageTransition, setIsPageTransition] = useState(false)
 
-  if (data.length === 0) {
-    return <div></div>
-  }
-
   const buildColumns = (data: Map, providedColumns?: ColumnDefinition<TData>[], rowActions?: RowAction[]) => {
     const columns: ColumnDef<Map>[] = []
 
@@ -255,6 +251,10 @@ export const DataTable = <TData,>({
     tap: { scale: 0.95 },
   }
 
+  if (data.length === 0) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div className="w-full rounded-md text-foreground relative border p-5">
       <Table>
@@ -309,8 +309,20 @@ export const DataTable = <TData,>({
       {enablePagination && (
         <div className="flex items-center justify-between space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+
+
+            {enableSelection ? (
+              <span>
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+              </span>
+            ) : (
+              <span>
+                {table.getFilteredRowModel().rows.length} rows
+              </span>
+            )}
+            
+
           </div>
           <div className="flex gap-2">
             <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">

@@ -19,6 +19,15 @@ export type Drive = {
 [key: string]: Document[]
 }
 
+export type GoogleDriveFile = {
+    'createdTime': string
+    'id': string
+    'mimeType': string
+    'modifiedTime': string
+    'name': string
+    'parents': string[]
+}
+
 // Static folder dictionary
 export const folderDictionary: FolderDictionary[] = [
     { drive_id: '1tuS0EOHoFm9TiJlv3uyXpbMrSgIKC2QL', id: 'poa', name: 'POA', label: 'Proof of Address' },

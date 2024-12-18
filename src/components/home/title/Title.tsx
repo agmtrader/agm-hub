@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { RainbowButton } from '@/components/ui/rainbow-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import ShimmerButton from '@/components/ui/shimmer-button'
 
 interface TitleProps {
   backgroundImage: string;
@@ -72,9 +73,12 @@ const Title: React.FC<TitleProps> = ({
           transition={{ duration: 0.8, delay: 0.6 }}
         >
           <Link href={ctaLink} rel="noopener noreferrer" target="_blank">
-            <RainbowButton className='text-lg font-bold bg-primary text-background px-8 py-4 rounded-full hover:scale-105 transition-transform duration-300'>
-              {ctaText}
-            </RainbowButton>
+            <ShimmerButton
+              className="px-8 py-3 text-lg font-semibold mt-4"
+              background='#f26c0d'
+            >
+                <p className="text-sm">{ctaText}</p>
+            </ShimmerButton>
           </Link>
         </motion.div>
       </div>

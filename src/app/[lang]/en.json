@@ -14,15 +14,34 @@
             "cards": [
                 {
                     "title": "Trade anytime, anywhere",
-                    "description": "Trade stocks, ETFs, options, futures, bonds, cryptocurrencies, and more from any location and at any time with our advanced trading platform and services."
+                    "description": "Trade stocks, ETFs, options, futures, bonds, cryptocurrencies, and more from any location and at any time with our advanced trading platform and services.",
+                    "item_labels": [
+                        "Stocks",
+                        "ETFs",
+                        "Options",
+                        "Futures",
+                        "Bonds",
+                        "Cryptocurrencies"
+                    ]
                 },
                 {
                     "title": "Professional tools",
-                    "description": "Our trading platform, dashboard, and tools are designed to provide you with the necessary tools to succeed in the financial markets."
+                    "description": "Our trading platform, dashboard, and tools are designed to provide you with the necessary tools to succeed in the financial markets.",
+                    "item_labels": [
+                        "24/7 customer support",
+                        "Real-time market data",
+                        "Advanced trading tools",
+                        "Statements reporting"
+                    ]
                 },
                 {
                     "title": "Active customer support",
-                    "description": "Our customer support team is always ready and happy to help you with any questions or concerns you may have."
+                    "description": "Our customer support team is always ready and happy to help you with any questions or concerns you may have.",
+                    "item_labels": [
+                        "Email",
+                        "Phone",
+                        "Live chat"
+                    ]
                 }
             ]
         }
@@ -30,8 +49,8 @@
     "agm-trader": {
         "title": {
             "title": "Trader",
-            "subtitle": "Trade: stocks, ETFs, options, futures, bonds, cryptocurrencies, and more any time, anywhere using our advanced trading platform and apps.",
-            "action_text": "Apply for an account"
+            "subtitle": "Trade: stocks, ETFs, options, futures, bonds, cryptocurrencies, and more any time, anywhere.",
+            "action_text": "Download now"
         },
         "introduction": {
             "title": "Execute your trading strategy at the speed of your fingertips",
@@ -41,15 +60,32 @@
             "cards": [
                 {
                     "title": "Trade Any Time, Anywhere",
-                    "description": "Access global markets and diverse financial instruments through our advanced trading platforms."
+                    "description": "Access global markets and diverse financial instruments through our advanced trading platforms.",
+                    "item_labels": [
+                        "Stocks, bonds, ETFs, options & more",
+                        "24/7 trading",
+                        "150+ markets",
+                        "20+ currencies"
+                    ]
                 },
                 {
                     "title": "Choose Your Trading Experience",
-                    "description": "Select the platform that best suits your trading style and needs."
+                    "description": "Select the platform that best suits your trading style and needs.",
+                    "item_labels": [
+                        "AGM Trader (mobile app)",
+                        "AGM Trader Pro (desktop)",
+                        "AGM Webtrader (web-based)"
+                    ]
                 },
                 {
                     "title": "Trade with Confidence",
-                    "description": "Our trading platforms are designed to provide you with the tools you need to succeed in the financial markets."
+                    "description": "Our trading platforms are designed to provide you with the tools you need to succeed in the financial markets.",
+                    "item_labels": [
+                        "Secure trading",
+                        "Real-time analytics",
+                        "Educational resources",
+                        "24/7 support"
+                    ]
                 }
             ]
         },
@@ -124,8 +160,14 @@
             "answer_6": "Only the account owner, the first designated person, can move the money in and out of the account to a bank account in the same name of the account owner. The custodian does not allow third party wires for the protection of the client."
         },
         "footer": {
-            "title": "Contact",
-            "description": "Have any questions? We're here to help!"
+            "title": "AGM Trader Broker & Advisor",
+            "copyright": "Copyright © 2024 AGM Trader Broker & Advisor. All rights reserved.",
+            "terms_of_use": "Terms of Use and Disclosures",
+            "products": "Products",
+            "download": "Download",
+            "help_center": "Help Center",
+            "more_faqs": "More FAQs",
+            "email_support": "Email Support"
         }
     },
     "apply": {

@@ -1,43 +1,28 @@
 'use client'
 import React from 'react'
-import { Linkedin, Facebook, Instagram, Twitter, Discord } from 'react-bootstrap-icons'
 import { motion } from 'framer-motion'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import { containerVariants, itemVariants } from '@/lib/anims'
+import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa'
 
 const Footer = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
-  }
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-      },
-    },
-  }
+  const { t } = useTranslationProvider()
 
-  const socialIconVariants = {
-    hidden: { scale: 0 },
-    visible: {
-      scale: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 200,
-        damping: 10,
-      },
+  const socialIcons = [
+    {
+      icon: FaFacebook,
+      href: 'https://www.facebook.com/agmtrader/'
     },
-  }
+    {
+      icon: FaInstagram,
+      href: 'https://www.instagram.com/agmtrader/'
+    },
+    {
+      icon: FaLinkedin,
+      href: 'https://www.linkedin.com/company/agmtrader/'
+    }
+  ]
 
   return (
     <footer className='py-8'>
@@ -52,18 +37,17 @@ const Footer = () => {
           <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
             {/* Company info */}
             <motion.div variants={itemVariants}>
-              <h3 className='font-bold mb-4'>AGM Trader Broker & Advisor</h3>
-              <p className='text-sm text-gray-600 mb-4'></p>
-              <p className='text-sm text-gray-600'>© 2023 AGM Trader Broker & Advisor, all rights reserved.</p>
+              <h3 className='font-bold mb-4'>{t('shared.footer.title')}</h3>
+              <p className='text-sm text-foreground'>{t('shared.footer.copyright')}</p>
             </motion.div>
             
             {/* Product links */}
             <motion.div variants={itemVariants}>
-              <h4 className='font-semibold mb-4'>Product</h4>
+              <h4 className='font-semibold mb-4'>{t('shared.footer.products')}</h4>
               <ul className='space-y-2'>
-                {['Download'].map((item, index) => (
+                {[t('shared.footer.download')].map((item, index) => (
                   <motion.li key={index} variants={itemVariants}>
-                    <a href='#' className='text-sm text-gray-600 hover:text-gray-900'>{item}</a>
+                    <a href='#' className='text-sm text-foreground'>{item}</a>
                   </motion.li>
                 ))}
               </ul>
@@ -71,11 +55,11 @@ const Footer = () => {
             
             {/* Help links */}
             <motion.div variants={itemVariants}>
-              <h4 className='font-semibold mb-4'>Help Center</h4>
+              <h4 className='font-semibold mb-4'>{t('shared.footer.help_center')}</h4>
               <ul className='space-y-2'>
-                {['More FAQs', 'Email Support'].map((item, index) => (
+                {[t('shared.footer.more_faqs'), t('shared.footer.email_support')].map((item, index) => (
                   <motion.li key={index} variants={itemVariants}>
-                    <a href='#' className='text-sm text-gray-600 hover:text-gray-900'>{item}</a>
+                    <a href='#' className='text-sm text-foreground'>{item}</a>
                   </motion.li>
                 ))}
               </ul>
@@ -83,15 +67,13 @@ const Footer = () => {
             
             {/* Social links */}
             <motion.div variants={itemVariants}>
-              <div className='flex flex-col space-y-2'>
-                {[Linkedin, Instagram, Facebook].map((Icon, index) => (
+              <div className='flex flex-col gap-4'>
+                {socialIcons.map(({ icon: Icon, href }, index) => (
                   <motion.a
                     key={index}
-                    href='#'
-                    className='text-gray-600 hover:text-gray-900'
-                    variants={socialIconVariants}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
+                    href={href}
+                    className='text-secondary-light'
+                    variants={itemVariants}
                   >
                     <Icon size={20} />
                   </motion.a>
@@ -107,7 +89,7 @@ const Footer = () => {
           >
             <div className='flex flex-wrap justify-between w-full items-center'>
               <div className='space-x-4'>
-                <a href='/disclosures' className='text-sm text-gray-600 hover:text-gray-900'>Terms of Use Agreement and Disclosures</a>
+                <a href='/disclosures' className='text-sm text-foreground'>{t('shared.footer.terms_of_use')}</a>
               </div>
             </div>
           </motion.div>

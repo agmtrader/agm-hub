@@ -54,7 +54,7 @@ const Page = ({ params }: Props) => {
   }
 
   return (
-    <div>
+    <div className='flex flex-col gap-4 max-w-7xl'>
       <CSVReader data={tableData} columns={columns}/>
     </div>
   )

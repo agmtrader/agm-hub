@@ -4,6 +4,7 @@ import { TeamCarousel } from './Carousel'
 import { Button } from '@/components/ui/button'
 import { motion, useInView } from 'framer-motion'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import Link from 'next/link'
 
 const Team = () => {
 
@@ -48,7 +49,9 @@ const Team = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.6 }}
       >
-        <Button>{t('shared.team.contact_us')}</Button>
+        <Link href="mailto:info@agmtechnology.com">
+          <Button>{t('shared.team.contact_us')}</Button>
+        </Link>
       </motion.div>
     </motion.div>
   )

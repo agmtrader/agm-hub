@@ -11,7 +11,7 @@ import { formatURL } from '@/utils/lang'
 
 interface Service {
   name: string;
-  icon: React.ReactNode;
+  image: string;
   description: string;
   url: string;
 }
@@ -89,13 +89,18 @@ const Services = ({ services }: ServicesProps) => {
               variants={itemVariants}
               className="flex flex-col w-full justify-center items-center gap-5"
             >
-              <Card className='bg-secondary-dark p-2 border-0 text-background transition-transform duration-300 hover:scale-110'>
-                
-                <CardContent className="flex aspect-square items-center justify-center p-6">
+              <Card className='group relative bg-secondary-dark overflow-hidden border-0 transition-transform duration-300 hover:scale-110'>
+                <div className='absolute inset-0 bg-black/60 transition-opacity duration-300 group-hover:opacity-30'/>
+                <img 
+                  src={service.image} 
+                  alt={service.name}
+                  className='w-full h-full object-cover aspect-square'
+                />
+                <CardContent className="absolute inset-0 flex items-center justify-center p-6">
                   <Dialog>
                     <DialogTrigger asChild>
                       <div className='w-full h-full flex justify-center text-background items-center cursor-pointer'>
-                        {service.icon}
+                        <span className='text-xl font-bold'>{service.name}</span>
                       </div>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px] bg-background text-foreground flex flex-col gap-y-5 justify-center items-center">
@@ -116,7 +121,6 @@ const Services = ({ services }: ServicesProps) => {
                   </Dialog>
                 </CardContent>
               </Card>
-              <p className='text-background w-fit text-center text-lg font-semibold'>{service.name}</p>
             </motion.div>
           ))}
         </div>

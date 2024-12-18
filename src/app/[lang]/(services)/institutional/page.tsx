@@ -11,7 +11,7 @@ import { Building, Handshake, BarChart2, Briefcase, Banknote, PieChart, Trending
 export default function Home() {
   
   const titleProps = {
-    backgroundImage: '/images/nasdaq.jpg',
+    backgroundImage: '/images/agm-institutional.jpg',
     logoSrc: '/images/brand/agm-logo-white.png',
     title: 'Institutional',
     subtitle: 'Unlock a world of opportunities with our global investment platform.',
@@ -22,13 +22,13 @@ export default function Home() {
   const services = [
     {
       name: 'AGM Trader',
-      icon: <TrendingUp className='text-white h-[12vw] w-[12vw]'/>,
+      image: '/images/agm-trader.jpg',
       description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
       url: '/trader'
     },
     {
       name: 'AGM Advisor',
-      icon: <Handshake className='text-white h-[12vw] w-[12vw]'/>,
+      image: '/images/agm-advisor.webp',
       description:'We also provide Advisory services for those clients that would like to delegate a portion of their financial assets or wealth through our advisory division.',
       url:'/advisor'
     }

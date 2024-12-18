@@ -10,7 +10,7 @@ import { Building, Handshake, BarChart2, PieChart, TrendingUp, Clock, Database, 
 export default function Home() {
   
   const titleProps = {
-    backgroundImage: '/images/advisor.webp',
+    backgroundImage: '/images/agm-advisor.webp',
     logoSrc: '/images/brand/agm-logo-white.png',
     title: 'Advisor',
     subtitle: 'Help reach your financial goals with industry leading tools and experts.',
@@ -61,15 +61,15 @@ export default function Home() {
   const services = [
     {
       name: 'AGM Trader',
-      icon: <TrendingUp className='text-white h-[12vw] w-[12vw]'/>,
+      image: '/images/agm-trader.jpg',
       description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
-      url: 'https://agmtrader.com'
+      url: '/trader'
     },
     {
       name: 'AGM Institutional',
-      icon: <Building className='text-white h-[12vw] w-[12vw]'/>,
+      image: '/images/agm-institutional.jpg',
       description:'Our Institutional division provides world class execution services to the most sophisticated institutions like Advisory Firms, Hedge Funds, Broker/Dealers, Wealth Management firms, Insurance companies and more.',
-      url:'https://agm-institutional.vercel.app'
+      url:'/institutional'
     }
   ]
 
