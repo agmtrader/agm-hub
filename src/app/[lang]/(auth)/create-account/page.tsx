@@ -25,6 +25,10 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { User } from 'next-auth'
 
+type UserPayload = User & {
+  password: string
+}
+
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -125,7 +129,7 @@ const CreateAccount = () => {
 
       const timestamp = formatTimestamp(new Date())
 
-      const user:User = {
+      const user:UserPayload = {
         'id': timestamp,
         'name': values.name,
         'email': values.email,

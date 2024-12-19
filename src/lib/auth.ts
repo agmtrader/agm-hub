@@ -74,7 +74,6 @@ export const authOptions: NextAuthOptions = {
           token.emailVerified = user.emailVerified || false
           token.country = user.country || null
           token.username = user.username || null
-          token.password = user.password || null
 
           if (account?.provider === 'google') {
             token.accessToken = account.access_token || null
@@ -99,7 +98,6 @@ export const authOptions: NextAuthOptions = {
 
             session.user.emailVerified = token.emailVerified || false
             session.user.username = token.username || null
-            session.user.password = token.password || null
             session.user.country = token.country || null
             session.user.role = token.role || 'user'
 

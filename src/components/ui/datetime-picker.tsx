@@ -248,7 +248,7 @@ const TimePeriodSelect = React.forwardRef<HTMLButtonElement, PeriodSelectorProps
         <Select defaultValue={period} onValueChange={(value: Period) => handleValueChange(value)}>
           <SelectTrigger
             ref={ref}
-            className="w-[65px] bg-muted focus:bg-muted focus:text-foreground"
+            className="w-[65px]"
             onKeyDown={handleKeyDown}
           >
             <SelectValue />
@@ -356,7 +356,7 @@ const TimePickerInput = React.forwardRef<HTMLInputElement, TimePickerInputProps>
         id={id || picker}
         name={name || picker}
         className={cn(
-          'w-[48px] text-center text-sm tabular-nums bg-muted caret-transparent focus:bg-muted focus:text-accent-foreground [&::-webkit-inner-spin-button]:appearance-none',
+          'w-[48px] text-center text-sm tabular-nums caret-transparent bg-muted focus:bg-muted focus:text-foreground [&::-webkit-inner-spin-button]:appearance-none',
           className,
         )}
         value={value || calculatedValue}
@@ -523,7 +523,7 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
       disabled = false,
       displayFormat,
       granularity = 'second',
-      placeholder = '',
+      placeholder = 'Pick a date',
       className,
       ...props
     },
@@ -582,9 +582,9 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
       <Popover>
         <PopoverTrigger asChild disabled={disabled}>
           <Button
-            variant="outline"
             className={cn(
-              'w-full bg-muted justify-start text-subtitle text-left font-normal hover:text-foreground',
+              'w-full bg-muted hover:bg-muted text-subtitle hover:text-foreground justify-start text-left font-normal',
+              !value && 'text-subtitle',
               className,
             )}
             ref={buttonRef}

@@ -20,6 +20,7 @@ import { CalendarIcon, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { countries } from "@/lib/form"
+import { DateTimePicker } from '@/components/ui/datetime-picker'
 
 interface POIFormProps {
   onSubmit: (values: any, files: File[] | null) => Promise<void>
@@ -43,7 +44,7 @@ const POIForm: React.FC<POIFormProps> = ({ onSubmit, accountNumber, uploading })
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
 
         <FormField
           control={form.control}
@@ -162,39 +163,11 @@ const POIForm: React.FC<POIFormProps> = ({ onSubmit, accountNumber, uploading })
           name="issued_date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Issued Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
+              <div className="flex gap-2">
+                <FormLabel>Issued Date</FormLabel>
+                <FormMessage />
+              </div>
+              <DateTimePicker {...field} granularity="day" />
             </FormItem>
           )}
         />
@@ -204,79 +177,25 @@ const POIForm: React.FC<POIFormProps> = ({ onSubmit, accountNumber, uploading })
           name="date_of_birth"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date of Birth</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
+              <div className="flex gap-2">
+                <FormLabel>Date of Birth</FormLabel>
+                <FormMessage />
+              </div>
+              <DateTimePicker {...field} granularity="day" />
             </FormItem>
           )}
         />
-
+        
         <FormField
           control={form.control}
           name="expiration_date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Expiration Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
+              <div className="flex gap-2">
+                <FormLabel>Expiration Date</FormLabel>
+                <FormMessage />
+              </div>
+              <DateTimePicker {...field} granularity="day" />
             </FormItem>
           )}
         />

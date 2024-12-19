@@ -10,8 +10,9 @@ import { toast } from "@/hooks/use-toast"
 import { Map } from '@/lib/types'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { FolderDictionary, folderDictionary } from '@/lib/drive'
+import { FolderDictionary, defaultFolderDictionary } from '@/lib/drive'
 import { Drive, Document as CustomDocument } from '@/lib/drive'
+import LoadingComponent from '@/components/misc/LoadingComponent'
 
 interface DocumentCenterProps {
   folderDictionary?: FolderDictionary[];
@@ -25,7 +26,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   const [currentFolderID, setCurrentFolderID] = useState<string | null>(null)
 
   // Use the prop folderDictionary if provided, otherwise use the default
-  const activeFolderDictionary = propsFolderDictionary || folderDictionary
+  const activeFolderDictionary = propsFolderDictionary || defaultFolderDictionary
 
   const columns = [
     { accessorKey: 'FileInfo.name', header: 'Name' },
@@ -54,7 +55,6 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
       }
 
       for (let folder of activeFolderDictionary) {
-        console.log(folder)
         const response = await accessAPI('/database/read', 'POST', {
           'path': `db/document_center/${folder.id}`,
           'query': query
@@ -73,8 +73,6 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
         setLoading(false)
       }
 
-      console.log(files)
-
       setFiles(files)
       setCurrentFolderID(Object.keys(files)[0] || null)
       setLoading(false)
@@ -83,7 +81,6 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   }, [activeFolderDictionary])
 
   const handleDownload = (row: any) => {
-    console.log(row)
     toast({
       title: "Downloading",
       description: `Downloading ${row.FileInfo.name}...`,
@@ -114,8 +111,8 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   }
 
   if (loading) return (
-    <div className='w-full h-full flex justify-center items-center'>
-      <Loader2 className='animate-spin h-10 w-10 text-primary' />
+    <div className='w-full h-full flex justify-start items-start'>
+      <LoadingComponent />
     </div>
   )
 

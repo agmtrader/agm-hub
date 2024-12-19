@@ -7,28 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
+import { containerVariants, itemVariants } from '@/lib/anims'
 
-// Add these animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-}
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5
-    }
-  }
-}
 
 export function Dashboard() {
   
@@ -65,7 +45,7 @@ export function Dashboard() {
                 initial="hidden"
                 animate="visible"
               >
-                <motion.div variants={cardVariants}>
+                <motion.div variants={itemVariants}>
                   <Card className="col-span-1 row-span-1">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -76,7 +56,7 @@ export function Dashboard() {
                     </CardContent>
                   </Card>
                 </motion.div>
-                <motion.div variants={cardVariants}>
+                <motion.div variants={itemVariants}>
                   <Card className="col-span-1 row-span-1">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">New clients</CardTitle>
@@ -87,7 +67,7 @@ export function Dashboard() {
                     </CardContent>
                   </Card>
                 </motion.div>
-                <motion.div variants={cardVariants}>
+                <motion.div variants={itemVariants}>
                   <Card className="col-span-1 row-span-1">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">Commissions</CardTitle>
@@ -98,7 +78,7 @@ export function Dashboard() {
                     </CardContent>
                   </Card>
                 </motion.div>
-                <motion.div variants={cardVariants}>
+                <motion.div variants={itemVariants}>
                   <Card className="col-span-1 row-span-1">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">Users Trading Today</CardTitle>
@@ -109,7 +89,7 @@ export function Dashboard() {
                     </CardContent>
                   </Card>
                 </motion.div>
-                <motion.div variants={cardVariants}>
+                <motion.div variants={itemVariants}>
                   <Card className="col-span-3 row-span-2 row-start-2">
                     <CardHeader>
                       <CardTitle>Open account applications</CardTitle>
@@ -119,7 +99,7 @@ export function Dashboard() {
                     </CardContent>
                   </Card>
                 </motion.div>
-                <motion.div variants={cardVariants}>
+                <motion.div variants={itemVariants}>
                   <Card className="row-span-2 col-start-4 row-start-2">
                     <CardHeader>
                       <CardTitle>Test</CardTitle>
@@ -131,12 +111,12 @@ export function Dashboard() {
                     </CardContent>
                   </Card>
                 </motion.div>
-                <motion.div variants={cardVariants}>
+                <motion.div variants={itemVariants}>
                   <Card className="col-span-2 row-span-2 row-start-4">
                     {/* Add content for the new card in position 13 */}
                   </Card>
                 </motion.div>
-                <motion.div variants={cardVariants}>
+                <motion.div variants={itemVariants}>
                   <Card className="col-span-2 row-span-2 col-start-3 row-start-4">
                     {/* Add content for the new card in position 14 */}
                   </Card>

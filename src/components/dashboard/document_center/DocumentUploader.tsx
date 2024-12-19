@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from '@/hooks/use-toast'
-
-import { poa_schema, poi_schema, sow_schema } from "@/lib/schemas"
 import POAForm from './forms/POAForm'
 import POIForm from './forms/POIForm'
 import SOWForm from './forms/SOWForm'
@@ -32,19 +30,11 @@ interface DocumentUploaderProps {
 const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, accountNumber }) => {
 
     const { data: session } = useSession()
-    const [selectedType, setSelectedType] = useState<string>(folderDictionary[0].id)
     const { toast } = useToast()
 
+    const [selectedType, setSelectedType] = useState<string>(folderDictionary[0].id)
     const [uploading, setUploading] = useState<boolean>(false)
     const [files, setFiles] = useState<File[] | null>(null)
-
-    const typeFields = folderDictionary.map(folder => ({
-        ...folder,
-        schema: folder.id === 'poa' ? poa_schema :
-                folder.id === 'identity' ? poi_schema :
-                folder.id === 'sow' ? sow_schema :
-                null
-    }))
 
     const renderForm = () => {
         switch(selectedType) {
@@ -82,18 +72,14 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                 file: base64File, // This now includes the full data URL
                 fileName: file.name,
                 mimeType: file.type,
-                parentFolderId: typeFields.find((field) => field.id === selectedType)?.drive_id || ''
+                parentFolderId: folderDictionary.find((folder) => folder.id === selectedType)?.drive_id || ''
             }
-
-            console.log(filePayload)
 
             let fileInfo = await accessAPI('/drive/upload_file', 'POST', filePayload);
 
             if (fileInfo['status'] !== 'success') {
                 throw new Error(fileInfo['content']);
             }
-
-            console.log(fileInfo)
             
             let documentPayload:Document = {
                 Category: selectedType,
@@ -108,7 +94,10 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                 path: `db/document_center/${selectedType}`,
                 id: timestamp
             })
-            console.log(response)
+
+            if (response['status'] !== 'success') {
+                throw new Error(response['content']);
+            }
 
             toast({
                 title: "Success",
@@ -136,7 +125,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                         Upload
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[500px]">
+                <DialogContent className="max-w-[50%]">
                     <DialogHeader>
                         <DialogTitle>Upload</DialogTitle>
                         <DialogDescription>
@@ -151,7 +140,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                             <SelectValue placeholder="Select document type" />
                         </SelectTrigger>
                         <SelectContent>
-                            {typeFields.map(field => (
+                            {folderDictionary.map(field => (
                                 <SelectItem key={field.id} value={field.id}>{field.label}</SelectItem>
                             ))}
                         </SelectContent>
@@ -161,7 +150,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                         onValueChange={setFiles}
                         dropzoneOptions={{
                             maxFiles: 1,
-                            maxSize: 10 * 1024 * 1024, // 10MB
+                            maxSize: 10 * 1024 * 1024,
                             accept: {
                                 'application/pdf': ['.pdf'],
                                 'image/*': ['.png', '.jpg', '.jpeg']

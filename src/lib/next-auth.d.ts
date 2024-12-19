@@ -6,7 +6,6 @@ declare module "next-auth" {
   interface User extends DefaultUser {
     emailVerified: boolean
     username: string | null
-    password: string | null
     country: string | null
     role: string,
     accessToken?: string;
@@ -29,7 +28,6 @@ declare module "next-auth/jwt" {
     image: User["image"]
     emailVerified: User["emailVerified"]
     username: User["username"]
-    password: User["password"]
     country: User["country"]
     role: User["role"]
     accessToken: User["accessToken"]
