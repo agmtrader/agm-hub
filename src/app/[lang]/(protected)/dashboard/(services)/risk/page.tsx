@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
 import { accessAPI } from "@/utils/api"
 
+import { motion } from "framer-motion"
+
 import {
   Select,
   SelectContent,
@@ -13,8 +15,9 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { ReloadIcon } from "@radix-ui/react-icons"
-import { SearchIcon } from "lucide-react"
+import { SearchIcon, X } from "lucide-react"
 import LoadingComponent from "@/components/misc/LoadingComponent"
+import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog"
 
 const page = () => {
 
@@ -143,7 +146,30 @@ const page = () => {
       )}
 
       {riskProfile && (
-        <RiskProfile riskProfile={riskProfile} account={account}/>
+        <Dialog open={!!riskProfile} onOpenChange={setRiskProfile}>
+        <DialogContent className="max-w-fit w-full">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.1 }}
+            className="w-full h-full flex flex-col gap-y-5 justify-center items-center"
+          >
+            <DialogClose className="absolute right-4 top-4" asChild>
+              <Button type="button" variant="ghost" size="icon">
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogClose>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <RiskProfile riskProfile={riskProfile}/>
+            </motion.div>
+          </motion.div>
+        </DialogContent>
+      </Dialog>
       )}
     </div>
   )

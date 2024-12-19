@@ -117,7 +117,6 @@ const RiskProfile = ({riskProfile, account}: Props) => {
             </p>
           </div>
           <div className="w-full lg:w-1/2 flex gap-y-5 justify-center items-center flex-col">
-            <h2 className="text-2xl font-semibold">{t('dashboard.risk.profile.title')}</h2>
             <div className="w-full max-w-md">
               <Doughnut data={data} options={options} />
             </div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Loader2 } from 'lucide-react'
 import { ColumnDefinition, DataTable } from '../components/DataTable'
 import { accessAPI } from '@/utils/api'
 import DocumentUploader from './DocumentUploader'
@@ -13,6 +12,8 @@ import { cn } from '@/lib/utils'
 import { FolderDictionary, defaultFolderDictionary } from '@/lib/drive'
 import { Drive, Document as CustomDocument } from '@/lib/drive'
 import LoadingComponent from '@/components/misc/LoadingComponent'
+import DocumentViewer from './DocumentViewer'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 
 interface DocumentCenterProps {
   folderDictionary?: FolderDictionary[];
@@ -24,6 +25,8 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   const [files, setFiles] = useState<Drive>({})
   const [loading, setLoading] = useState<boolean>(true)
   const [currentFolderID, setCurrentFolderID] = useState<string | null>(null)
+  const [viewDialogOpen, setViewDialogOpen] = useState(false)
+  const [selectedFileId, setSelectedFileId] = useState<string | null>(null)
 
   // Use the prop folderDictionary if provided, otherwise use the default
   const activeFolderDictionary = propsFolderDictionary || defaultFolderDictionary
@@ -36,47 +39,43 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     { accessorKey: 'Uploader', header: 'Uploaded By' },
   ] as ColumnDefinition<CustomDocument>[]
 
-  if (query && Object.keys(query).includes('DocumentInfo.account_number')) {
-    console.log('Queying by account number:', query['DocumentInfo.account_number'])
+  const fetchData = async () => {
+    setLoading(true)
+    let files:Drive = {}
+
+    if (!query) {
+      toast({
+        title: "No query provided, showing all documents.",
+        variant: "destructive",
+      })
+      query = {}
+    }
+
+    for (let folder of activeFolderDictionary) {
+      const response = await accessAPI('/database/read', 'POST', {
+        'path': `db/document_center/${folder.id}`,
+        'query': query
+      })
+      if (response['content']) {
+        files[folder.id] = response['content']
+      }
+    }
+
+    if (Object.keys(files).length === 0) {
+      toast({
+        title: "No files found.",
+        description: "Please upload some files.",
+        variant: "destructive",
+      })
+      setLoading(false)
+    }
+
+    setFiles(files)
+    setCurrentFolderID(Object.keys(files)[0] || null)
+    setLoading(false)
   }
 
   useEffect(() => {
-    async function fetchData() {
-      
-      setLoading(true)
-      let files:Drive = {}
-
-      if (!query) {
-        toast({
-          title: "No query provided, showing all documents.",
-          variant: "destructive",
-        })
-        query = {}
-      }
-
-      for (let folder of activeFolderDictionary) {
-        const response = await accessAPI('/database/read', 'POST', {
-          'path': `db/document_center/${folder.id}`,
-          'query': query
-        })
-        if (response['content']) {
-          files[folder.id] = response['content']
-        }
-      }
-
-      if (Object.keys(files).length === 0) {
-        toast({
-          title: "No files found.",
-          description: "Please upload some files.",
-          variant: "destructive",
-        })
-        setLoading(false)
-      }
-
-      setFiles(files)
-      setCurrentFolderID(Object.keys(files)[0] || null)
-      setLoading(false)
-    }
     fetchData()
   }, [activeFolderDictionary])
 
@@ -85,16 +84,81 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
       title: "Downloading",
       description: `Downloading ${row.FileInfo.name}...`,
     })
+
+    // Create a temporary anchor element to trigger the download
+    const downloadUrl = `https://drive.google.com/uc?export=download&id=${row.FileInfo.id}`;
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = row.FileInfo.name; // Set the file name for download
+    document.body.appendChild(link);
+    link.click(); // Trigger the download
+    document.body.removeChild(link); // Clean up the DOM
+
+    toast({
+      title: "Downloaded",
+      description: `Downloaded ${row.FileInfo.name}...`,
+    })
+
+
   }
 
-  const handleDelete = (row: any) => {
+  const handleView = (row: any) => {
+    setSelectedFileId(row.FileInfo.id)
+    setViewDialogOpen(true)
+  }
+
+  const handleDelete = async (row: any) => {
+
     toast({
       title: "Deleting",
-      description: `Deleting ${row.name}...`,
+      description: `Deleting ${row.FileInfo.name || ''}...`,
     })
+
+    const fileDriveId = row.FileInfo.id
+    const documentId = row.DocumentID
+
+    let response = await accessAPI('/drive/delete_file', 'POST', {
+      'fileId': fileDriveId,
+    })
+
+    if (response['status'] !== 'success') {
+      toast({
+        title: "Error",
+        description: `Error deleting ${row.FileInfo.name} from Drive.`,
+        variant: "destructive",
+      })
+      throw new Error(response['content'])
+    }
+
+    response = await accessAPI('/database/delete', 'POST', {
+      'path': `db/document_center/${currentFolderID}`,
+      'query': {
+        'DocumentID': documentId,
+      }
+    })
+
+    if (response['status'] !== 'success') {
+      toast({
+        title: "Error",
+        description: `Error deleting ${row.FileInfo.name} from Database.`,
+        variant: "destructive",
+      })
+      throw new Error(response['content'])
+    }
+
+    toast({
+      title: "Deleted",
+      description: `Deleted ${row.FileInfo.name}...`,
+    })
+
+    fetchData()
   }
 
   const rowActions = [
+    {
+      label: "View",
+      onClick: handleView,
+    },
     {
       label: "Download",
       onClick: handleDownload,
@@ -104,11 +168,6 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
       onClick: handleDelete,
     },
   ]
-
-  const getFolderLabel = (folderId: string) => {
-    const folder = activeFolderDictionary.find(f => f.id === folderId)
-    return folder ? folder.label : folderId
-  }
 
   if (loading) return (
     <div className='w-full h-full flex justify-start items-start'>
@@ -129,18 +188,18 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
         transition={{ duration: 0.5, staggerChildren: 0.1 }}
         className="flex gap-2"
       >
-        {Object.keys(files).map((folderId, index) => (
-          <motion.div key={folderId} custom={index} variants={{
+        {activeFolderDictionary.map((folder, index) => (
+          <motion.div key={folder.id} custom={index} variants={{
             hidden: { x: -20, opacity: 0 },
             visible: (i) => ({ x: 0, opacity: 1, transition: { delay: i * 0.1 } })
           }} initial="hidden" animate="visible">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentFolderID(folderId)}
-              className={cn(currentFolderID === folderId && 'font-bold text-foreground', 'text-foreground')}
+              onClick={() => setCurrentFolderID(folder.id)}
+              className={cn(currentFolderID === folder.id && 'font-bold text-foreground', 'text-foreground')}
             >
-              {getFolderLabel(folderId)}
+              {folder.label}
             </Button>
           </motion.div>
         ))}
@@ -176,9 +235,19 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.2 }}
         >
-          <DocumentUploader accountNumber={query && query['DocumentInfo.account_number']} folderDictionary={activeFolderDictionary} />
+          <DocumentUploader 
+            accountNumber={query && query['DocumentInfo.account_number']} 
+            folderDictionary={activeFolderDictionary} 
+            onUploadSuccess={fetchData}
+          />
         </motion.div>
       </motion.div>
+
+      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+        <DialogContent className="max-w-[80%] h-[80vh]">
+          {selectedFileId && <DocumentViewer fileId={selectedFileId} />}
+        </DialogContent>
+      </Dialog>
     </motion.div>
   )
 

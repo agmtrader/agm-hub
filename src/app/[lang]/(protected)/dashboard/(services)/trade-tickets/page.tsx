@@ -168,8 +168,8 @@ export default function TradeTickets() {
                     <DataTable 
                       data={flexQuery}
                       columns={columns} 
-                      enableSelection setSelection={setSelectedTrades} 
-                      selection={selectedTrades}
+                      enableSelection 
+                      setSelection={setSelectedTrades} 
                       enablePagination 
                     />
                   </div>

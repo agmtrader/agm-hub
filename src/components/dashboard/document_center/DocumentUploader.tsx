@@ -25,9 +25,10 @@ import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from '
 interface DocumentUploaderProps {
   folderDictionary: FolderDictionary[]
   accountNumber?: string
+  onUploadSuccess?: () => void
 }
 
-const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, accountNumber }) => {
+const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, accountNumber, onUploadSuccess }) => {
 
     const { data: session } = useSession()
     const { toast } = useToast()
@@ -35,6 +36,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
     const [selectedType, setSelectedType] = useState<string>(folderDictionary[0].id)
     const [uploading, setUploading] = useState<boolean>(false)
     const [files, setFiles] = useState<File[] | null>(null)
+    const [open, setOpen] = useState(false)
 
     const renderForm = () => {
         switch(selectedType) {
@@ -105,7 +107,13 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                 variant: "default",
             });
 
+            setFiles(null)
+            setSelectedType(folderDictionary[0].id)
+            setOpen(false)
             setUploading(false)
+            
+            // Call the callback after successful upload
+            onUploadSuccess?.()
 
         } catch (error) {
             toast({
@@ -113,12 +121,13 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                 description: error instanceof Error ? error.message : "An unknown error occurred",
                 variant: "destructive",
             });
+            setUploading(false)
         }
     }
 
     return (
         <div>
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                     <Button className='w-fit h-fit flex gap-x-5'>
                         <Upload className='h-4 w-4' />

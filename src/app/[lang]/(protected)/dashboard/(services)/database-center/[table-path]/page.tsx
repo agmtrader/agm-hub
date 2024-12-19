@@ -2,7 +2,7 @@
 import React, { use, useEffect, useState } from 'react'
 import { accessAPI } from '@/utils/api'
 import { ColumnDefinition } from '@/components/dashboard/components/DataTable'
-import CSVReader from '@/components/dashboard/components/CSVReader'
+import { DataTable } from '@/components/dashboard/components/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 
 type Props = {
@@ -55,7 +55,7 @@ const Page = ({ params }: Props) => {
 
   return (
     <div className='flex flex-col gap-4 max-w-7xl'>
-      <CSVReader data={tableData} columns={columns}/>
+      <DataTable data={tableData} columns={columns}/>
     </div>
   )
 }

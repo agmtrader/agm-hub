@@ -1,8 +1,7 @@
 'use client'
 import React, { use, useEffect, useState } from 'react'
 import { accessAPI } from '@/utils/api'
-import { ColumnDefinition } from '@/components/dashboard/components/DataTable'
-import CSVReader from '@/components/dashboard/components/CSVReader'
+import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 
 type Props = {
@@ -65,8 +64,8 @@ const Page = ({ params }: Props) => {
   }
 
   return (
-    <div>
-      <CSVReader data={reportData} columns={columns}/>
+    <div className='flex flex-col gap-5 max-w-7xl'>
+      <DataTable data={reportData} columns={columns} enablePagination pageSize={5}/>
     </div>
   )
 }

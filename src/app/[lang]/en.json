@@ -476,6 +476,14 @@
             }
         }
     },
+    "dashboard": {
+        "risk": {
+            "profile": {
+                "asset_allocation": "Asset Allocation",
+                "average_yield": "Average Yield"
+            }
+        }
+    },
     "forms": {
         "search": "Search...",
         "no_results": "No results found.",

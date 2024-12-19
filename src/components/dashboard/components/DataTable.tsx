@@ -26,18 +26,14 @@ import {
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { cn } from "@/lib/utils"
 import { Map } from "@/lib/types"
 import { Info } from "lucide-react"
 import {
@@ -47,6 +43,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { motion, AnimatePresence } from "framer-motion"
+import { itemVariants } from "@/lib/anims"
+import { Input } from "@/components/ui/input"
 
 interface RowAction {
   label: string;
@@ -67,7 +65,9 @@ interface DataTableProps<TData> {
   enablePagination?: boolean
   enableRowActions?: boolean
   rowActions?: RowAction[]
-  selection?: TData[]
+  enableFiltering?: boolean
+  filterColumns?: string[]
+  pageSize?: number
 }
 
 export const DataTable = <TData,>({
@@ -77,16 +77,19 @@ export const DataTable = <TData,>({
   enableSelection = false,
   enablePagination = false,
   enableRowActions = false,
-  selection,
   rowActions,
+  enableFiltering = false,
+  filterColumns = [],
+  pageSize = 10,
 }: DataTableProps<TData>) => {
+
   const [rowSelection, setRowSelection] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: pageSize,
   })
   const [isPageTransition, setIsPageTransition] = useState(false)
 
@@ -117,6 +120,11 @@ export const DataTable = <TData,>({
 
     const createObjectCell = (getValue: () => any) => {
       const value = getValue()
+      if (typeof value === 'boolean') {
+        return (
+          <Checkbox checked={value} />
+        )
+      }
       if (typeof value === 'object' && value !== null) {
         return (
           <TooltipProvider delayDuration={10}>
@@ -211,9 +219,9 @@ export const DataTable = <TData,>({
       columnVisibility,
       pagination,
     },
-    initialState: { //This line
+    initialState: {
       pagination: {
-          pageSize: 20,
+          pageSize: pageSize,
       },
     }
   })
@@ -232,31 +240,31 @@ export const DataTable = <TData,>({
     }
   }, [pagination.pageIndex])
 
-  const rowVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.05,
-        duration: 0.3,
-        ease: "easeInOut",
-      },
-    }),
-    hover: { scale: 1.00, transition: { duration: 0.2 } },
-  }
-
-  const buttonVariants = {
-    hover: { scale: 1.05 },
-    tap: { scale: 0.95 },
+  if (!data) {
+    return null
   }
 
   if (data.length === 0) {
-    return <div>Loading...</div>
+    return <div>No content to display</div>
   }
 
   return (
     <div className="w-full rounded-md text-foreground relative border p-5">
+      {enableFiltering && filterColumns.length > 0 && (
+        <div className="flex items-center gap-4 py-4">
+          {filterColumns.map((column) => (
+            <Input
+              key={column}
+              placeholder={`Filter ${column}...`}
+              value={(table.getColumn(column)?.getFilterValue() as string) ?? ""}
+              onChange={(event) =>
+                table.getColumn(column)?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm"
+            />
+          ))}
+        </div>
+      )}
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -280,7 +288,7 @@ export const DataTable = <TData,>({
               table.getRowModel().rows.map((row, index) => (
                 <motion.tr
                   key={row.id}
-                  variants={rowVariants}
+                  variants={itemVariants}
                   initial={isPageTransition ? "visible" : "hidden"}
                   animate="visible"
                   exit="hidden"
@@ -325,7 +333,7 @@ export const DataTable = <TData,>({
 
           </div>
           <div className="flex gap-2">
-            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+            <motion.div variants={itemVariants} whileHover="hover" whileTap="tap">
               <Button
                 variant="outline"
                 size="sm"
@@ -335,7 +343,7 @@ export const DataTable = <TData,>({
                 Previous
               </Button>
             </motion.div>
-            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+            <motion.div variants={itemVariants} whileHover="hover" whileTap="tap">
               <Button
                 variant="outline"
                 size="sm"
