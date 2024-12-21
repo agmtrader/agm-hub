@@ -2,10 +2,10 @@ import { z } from "zod"
 
 // Risk assessment
 export const risk_assesment_schema = (t: (key: string) => string) => z.object({
-    account_number: z.string({
-        required_error: t('forms.errors.select_required')
+    account_number: z.string().optional(),
+    client_name: z.string({
+        required_error: t('forms.errors.input_required')
     }),
-    client_name: z.string().optional(),
     type: z.enum(["1", "2.5", "4"], {
         errorMap: (issue, ctx) => {
         return {message: t('forms.errors.select_required')};

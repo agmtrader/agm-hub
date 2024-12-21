@@ -172,11 +172,10 @@
     },
     "apply": {
         "account": {
-
             "title": {
                 "ready": "Ready to make money?",
-                "description": "Unlock the world of financial opportunities with your AGM trading account.",
-                "signIn": "Sign In",
+                "description": "Unlock the world of financial opportunities with your AGM account.",
+                "signIn": "Sign in or register now.",
                 "createAccount": "Create Account",
                 "startApplication": "Start Application"
             },
@@ -428,7 +427,7 @@
             "title": "Risk Assessment Questionnaire",
             "description": "Please complete this form to help us understand your risk tolerance and investment preferences.",
             "form": {
-                "account_number": "Account number (enter . if you don't have an account)",
+                "account_number": "Account number",
                 "client_name": "Full name",
                 "type": {
                     "title": "What type of investor do you consider yourself?",
@@ -487,7 +486,6 @@
     "forms": {
         "search": "Search...",
         "no_results": "No results found.",
-        "required": "Required field",
         "not_required": "Leave blank if not applicable.",
         "submit": "Submit",
         "submitting": "Submitting...",

@@ -69,9 +69,9 @@ const Title = ({setStarted}:Props) => {
             <ShimmerButton
               onClick={session?.user ? handleStartApplication : handleSignIn}
               className="px-8 py-3 text-lg font-semibold mt-4"
-              background='#22c55e'
+              background={session?.user ? '#22c55e' : '#f26c0d'}
             >
-                <p className="text-sm">{t('apply.account.title.startApplication')}</p>
+                {session?.user ? <p className="text-sm">{t('apply.account.title.startApplication')}</p> : <p className="text-sm">{t('apply.account.title.signIn')}</p>}
             </ShimmerButton>
           </motion.div>
         </motion.div>

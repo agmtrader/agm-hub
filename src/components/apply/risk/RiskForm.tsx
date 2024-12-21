@@ -35,6 +35,7 @@ import { ReloadIcon } from "@radix-ui/react-icons"
 import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
+import { Progress } from "@/components/ui/progress"
 
 // Risk profile types
 export const risk_profile_types = [
@@ -44,7 +45,9 @@ export const risk_profile_types = [
     bonds_bbb: 0.7,
     bonds_bb: 0,
     etfs: 0,
-    average_yield: .06103
+    average_yield: .06103,
+    min_score: 0,
+    max_score: 0.9
   },
   {
     name: 'Conservative B',
@@ -52,7 +55,9 @@ export const risk_profile_types = [
     bonds_bbb: 0.54,
     bonds_bb: .18,
     etfs: .1,
-    average_yield: .0723
+    average_yield: .0723,
+    min_score: 0.9,
+    max_score: 1.25
   },
   {
     name: 'Moderate A',
@@ -60,7 +65,9 @@ export const risk_profile_types = [
     bonds_bbb: 0.48,
     bonds_bb: 0.16,
     etfs: 0.2,
-    average_yield: .0764
+    average_yield: .0764,
+    min_score: 1.25,
+    max_score: 1.5
   },
   {
     name: 'Moderate B',
@@ -68,7 +75,9 @@ export const risk_profile_types = [
     bonds_bbb: 0.375,
     bonds_bb: 0.15,
     etfs: 0.25,
-    average_yield: .0736
+    average_yield: .0736,
+    min_score: 1.5,
+    max_score: 2
   },
   {
     name: 'Moderate C',
@@ -76,7 +85,9 @@ export const risk_profile_types = [
     bonds_bbb: 0.35,
     bonds_bb: 0.21,
     etfs: 0.3,
-    average_yield: .06103
+    average_yield: .06103,
+    min_score: 2,
+    max_score: 2.5
   },
   {
     name: 'Aggressive A',
@@ -84,7 +95,9 @@ export const risk_profile_types = [
     bonds_bbb: 0.325,
     bonds_bb: .195,
     etfs: .35,
-    average_yield: .0845
+    average_yield: .0845,
+    min_score: 2.5,
+    max_score: 2.75
   },
   {
     name: 'Aggressive B',
@@ -92,7 +105,9 @@ export const risk_profile_types = [
     bonds_bbb: 0.30,
     bonds_bb: 0.18,
     etfs: 0.4,
-    average_yield: .0865
+    average_yield: .0865,
+    min_score: 2.75,
+    max_score: 3
   },
   {
     name: 'Aggressive C',
@@ -100,12 +115,14 @@ export const risk_profile_types = [
     bonds_bbb: 0.25,
     bonds_bb: 0.20,
     etfs: 0.5,
-    average_yield: .0925
+    average_yield: .0925,
+    min_score: 3,
+    max_score: 10
   }
 ]
 
 // Question weights
-const weights = [
+export const weights = [
   {
     name: 'type',
     weight: 0.2
@@ -138,27 +155,35 @@ const weights = [
 // Question weight is stored in the weights array
 // Answer weight is stored in the question schema
 
+export type RiskProfile = {
+  AccountNumber: string;
+  ClientName: string;
+  Score: number;
+  RiskProfileID: string;
+  RiskProfile: any;
+}
+
 const RiskForm = () => {
 
   // Client message and portfolio
   const [riskProfile, setRiskProfile] = useState<any | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
+  const {toast} = useToast()
   const {t} = useTranslationProvider()
 
-  // Form
   let formSchema:any;
   let initialFormValues:any = {};
   formSchema = risk_assesment_schema(t)
   initialFormValues = getDefaults(formSchema)
+
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       values: initialFormValues,
   })
 
-  const {toast} = useToast()
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
+
     setSubmitting(true)
     
     const timestamp = new Date()
@@ -178,56 +203,40 @@ const RiskForm = () => {
 
     // Calculate risk type
     let risk_profile_type = ''
-    if (sum < .9) {
-      risk_profile_type = 'Conservative A'
-    } else if (sum >= 0.9 && sum < 1.25) {
-      risk_profile_type = 'Conservative B'
-    } else if (sum >= 1.25 && sum < 1.5) {
-      risk_profile_type = 'Moderate A'
-    } else if (sum >= 1.5 && sum < 2) {
-      risk_profile_type = 'Moderate B'
-    } else if (sum >= 2 && sum < 2.5) {
-      risk_profile_type = 'Moderate C'
-    } else if (sum >= 2.5 && sum < 2.75) {
-      risk_profile_type = 'Aggressive A'
-    } else if (sum >= 2.75 && sum < 3) {
-      risk_profile_type = 'Aggressive B'
-    } else if (sum >= 3) {
-      risk_profile_type = 'Aggressive C'
-    }
+    risk_profile_types.forEach(type => {
+      if (sum >= type.min_score && sum < type.max_score) {
+        risk_profile_type = type.name;
+      }
+    })
     
     // Get risk profile type from dictionary
-    const profile = risk_profile_types.find((type) => type.name === risk_profile_type) || null
+    const risk_profile_properties = risk_profile_types.find((type) => type.name === risk_profile_type) || null
 
     // Build a risk profile for the user
-    delete values.account_number
-    delete values.client_name
-
-    const risk_profile = {
-      AccountNumber: values.account_number,
+    const risk_profile:RiskProfile = {
+      AccountNumber: values.account_number || '',
       ClientName: values.client_name,
       Score: sum,
-      Answers: values,
       RiskProfileID: riskProfileID,
-      RiskProfile: profile
+      RiskProfile: risk_profile_properties
     }
 
     // Save the user's risk profile in the database
     let data = await accessAPI('/database/create', 'POST', {data: risk_profile, path:'db/clients/risk', id:riskProfileID})
     setSubmitting(false)
 
-    if (data.status === 'error') {
+    if (data['status'] !== 'success') {
       toast({
         title: 'Error submitting risk profile',
         description: 'Contact support or try again later.',
         variant: 'destructive'
       })
 
-      throw new Error(data.message)
+      throw new Error(data['content'])
     }
     
     // Display the risk profile
-    setRiskProfile(profile)
+    setRiskProfile(risk_profile_properties)
 
     // Reset the form after submission
     form.reset(initialFormValues)
@@ -324,16 +333,22 @@ const RiskForm = () => {
     {
       value: '1',
       label: t('apply.risk.form.diversification.portfolio_a'),
+      bonds_percentage: 100,
+      stocks_percentage: 0,
       id: 1
     },
     {
       value: '2',
       label: t('apply.risk.form.diversification.portfolio_b'),
+      bonds_percentage: 80,
+      stocks_percentage: 20,
       id: 2
     },
     {
       value: '3',
       label: t('apply.risk.form.diversification.portfolio_c'),
+      bonds_percentage: 60,
+      stocks_percentage: 40,
       id: 3
     }
   ]
@@ -382,7 +397,7 @@ const RiskForm = () => {
                       <FormMessage />
                     </div>
                   <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input placeholder={t('forms.not_required')} {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -419,7 +434,6 @@ const RiskForm = () => {
                       defaultValue={field.value}
                       className="flex flex-col"
                     >
-
                       {types.map((type) => (
                         <FormItem key={type.id} className="flex flex-row gap-x-2">
                           <FormControl>
@@ -428,10 +442,8 @@ const RiskForm = () => {
                           <FormLabel className="font-normal">{type.label}</FormLabel>
                         </FormItem>
                       ))}
-
                     </RadioGroup>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -537,8 +549,6 @@ const RiskForm = () => {
                     <FormMessage />
                   </div>
 
-
-
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -551,13 +561,16 @@ const RiskForm = () => {
                           <FormControl>
                             <RadioGroupItem value={diversification.value} />
                           </FormControl>
-                          <FormLabel className="font-normal">{diversification.label}</FormLabel>
+                          <FormLabel className="font-normal whitespace-nowrap">{diversification.label}</FormLabel>
+                          <Progress className="bg-secondary w-64" value={diversification.bonds_percentage} />
                         </FormItem>
                       ))}
 
                     </RadioGroup>
                   </FormControl>
                 </FormItem>
+
+                
               )}
             />
 

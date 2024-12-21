@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Card, CardContent, CardTitle, CardHeader } from '@/components/ui/card';
 import Image from 'next/image';
+import { Separator } from '@/components/ui/separator';
+import { FaGoogle } from 'react-icons/fa';
 
 function SignIn() {
 
@@ -56,24 +58,15 @@ function SignIn() {
 
   return (
     <div className='flex items-center justify-center min-h-screen'>
-      <Card className='w-96 h-fit gap-5 flex flex-col justify-center items-center'>
+      <Card className='w-96 h-fit gap-2 flex flex-col justify-center items-center'>
         <CardHeader className='flex flex-col justify-center items-center gap-2'>
         <Image src='/images/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
-        <CardTitle className='text-center text-3xl' >Sign In</CardTitle>
-        <div className='flex flex-col gap-2 bg-error/20 p-2 rounded-md items-center justify-center'>
-            <p className='text-sm text-subtitle text-center'>You must register with AGM before applying for an account.</p>
-            <Link 
-              href={
-                callbackUrl ? 
-                formatURL(`/create-account?callbackUrl=${encodeURIComponent(callbackUrl)}`, lang) 
-                : 
-                formatURL('/create-account', lang)
-              } 
-              className='underline text-subtitle text-sm font-bold'
-            >
-              Register
-            </Link> 
-        </div>
+        <CardTitle className='text-center font-bold text-3xl' >Sign In</CardTitle>
+        {callbackUrl === formatURL(`/apply`, lang) && (
+          <div className='flex flex-col gap-2 bg-error/20 p-2 rounded-md items-center justify-center'>
+              <p className='text-sm text-subtitle text-center'>You must register for an AGM account before applying for a trading account.</p>
+          </div>
+        )}
       </CardHeader>
       <CardContent className='w-full'>
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
@@ -103,9 +96,12 @@ function SignIn() {
               'Sign In'
             )}
           </Button>
+          <p className='text-subtitle text-sm text-center'>Don't have an account? <Link href={formatURL('/create-account', lang)} className='underline text-subtitle text-sm font-bold'>Register</Link></p>
         </form>
-        <div className="mt-4 text-center text-sm">
-          Or continue with
+        <div className='flex items-center gap-4 justify-center'>
+          <Separator className='my-4 w-[40%]' />
+          <p className='text-subtitle text-sm'>OR</p>
+          <Separator className='my-4 w-[40%]' />
         </div>
         <Button
           variant='ghost'
@@ -119,7 +115,10 @@ function SignIn() {
               Signing In...
             </>
           ) : (
-            'Sign in with Google'
+            <div className='flex items-center gap-2'>
+              <FaGoogle className='h-4 w-4' />
+              Sign in with Google
+            </div>
           )}
         </Button>
       </CardContent>

@@ -14,6 +14,7 @@ import { Drive, Document as CustomDocument } from '@/lib/drive'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import DocumentViewer from './DocumentViewer'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+import Link from 'next/link'
 
 interface DocumentCenterProps {
   folderDictionary?: FolderDictionary[];
@@ -234,7 +235,11 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.2 }}
+          className='flex gap-2'
         >
+          <Link href={`https://drive.google.com/drive/folders/${activeFolderDictionary.find(folder => folder.id === currentFolderID)?.drive_id}`} target='_blank'>
+            <Button variant="outline" size="sm">View in Drive</Button>
+          </Link>
           <DocumentUploader 
             accountNumber={query && query['DocumentInfo.account_number']} 
             folderDictionary={activeFolderDictionary} 

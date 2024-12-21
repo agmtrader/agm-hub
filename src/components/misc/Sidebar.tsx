@@ -20,9 +20,9 @@ const navbarContent = [
   { name: 'AGM Trader', url: '/trader' },
   { name: 'AGM Advisor', url: '/advisor' },
   { name: 'AGM Institutional', url: '/institutional'},
-  { name: 'AGM Dashboard', url: '/dashboard' },
-  { name: 'AGM Account Management', url: 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022' },
-  { name: 'Apply for an account', url: '/apply' },
+  { name: 'AGM Account Portal', url: 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022' },
+  { name: 'Apply for an Account', url: '/apply' },
+  { name: 'Fill Risk Profile', url: '/apply/risk' },
   { name: 'Resource Center', url: '/resources' },
   { name: 'Help Center', url: '/help' },
 ]
@@ -64,6 +64,7 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
         </NavigationMenu>
       </motion.div>
     </div>
+
   )
 }
 

@@ -3,7 +3,6 @@ import { Map } from "./types"
 export type FolderDictionary = {
     drive_id: string
     id: string
-    name: string
     label: string
 }
 
@@ -30,7 +29,9 @@ export type GoogleDriveFile = {
 
 // Static folder dictionary
 export const defaultFolderDictionary: FolderDictionary[] = [
-    { drive_id: '1tuS0EOHoFm9TiJlv3uyXpbMrSgIKC2QL', id: 'poa', name: 'POA', label: 'Proof of Address' },
-    { drive_id: '1VY0hfcj3EKcDMD6O_d2_gmiKL6rSt_M3', id: 'identity', name: 'Identity', label: 'Proof of Identity' },
-    { drive_id: '1WNJkWYWPX6LqWGOTsdq6r1ihAkPJPMHb', id: 'sow', name: 'SOW', label: 'Source of Wealth' },
+    { drive_id: '1tuS0EOHoFm9TiJlv3uyXpbMrSgIKC2QL', id: 'poa', label: 'Proof of Address' },
+    { drive_id: '1VY0hfcj3EKcDMD6O_d2_gmiKL6rSt_M3', id: 'identity', label: 'Proof of Identity' },
+    { drive_id: '1WNJkWYWPX6LqWGOTsdq6r1ihAkPJPMHb', id: 'sow', label: 'Source of Wealth' },
+    { drive_id: '1ik8zbnEJ9fdruy8VPQ59EQqK6ze6cc4-', id: 'deposits', label: 'Deposits and Withdrawals' },
+    { drive_id: '1-SB4FB1AukcpTMHlDXkfmqTHBOASX8iB', id: 'manifest', label: 'Manifests' },
 ]

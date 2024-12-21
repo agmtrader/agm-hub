@@ -11,6 +11,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import Iphone15Pro from '@/components/ui/iphone-15-pro'
+import { cn } from '@/lib/utils'
 
 // ... (keep the existing imports)
 
@@ -24,9 +26,10 @@ interface IntroductionProps {
   }[];
   ctaText: string;
   ctaSubtext: string;
+  phone?: boolean;
 }
 
-const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, ctaText, ctaSubtext }) => {
+const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, ctaText, ctaSubtext, phone }) => {
   const { t } = useTranslationProvider()
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -77,12 +80,12 @@ const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, 
   return (
     <motion.div 
       ref={ref}
-      className="flex flex-col h-fit w-full justify-center items-center py-10"
+      className="flex h-fit w-full justify-center items-center py-10 gap-32"
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={containerVariants}
     >
-      <div className="flex flex-col h-full text-foreground w-full max-w-6xl text-center gap-y-10 justify-center items-center">
+      <div className={cn("flex flex-col h-full text-foreground w-full max-w-6xl text-center gap-y-10 justify-center items-center", phone && 'w-1/2')}>
         <motion.h1 variants={itemVariants} className='text-5xl max-w-3xl font-semibold'>{title}</motion.h1>
         {description.map((paragraph, index) => (
           <motion.p key={index} variants={itemVariants} className='text-xl font-light'>
@@ -141,6 +144,7 @@ const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, 
           </Button>
         </motion.div>
       </div>
+      {phone && <Iphone15Pro className='h-[40rem]' style={{ transform: 'perspective(1000px) rotateY(-15deg) rotateZ(0deg)' }} />}
     </motion.div>
   )
 }

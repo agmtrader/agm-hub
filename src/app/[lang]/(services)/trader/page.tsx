@@ -7,6 +7,7 @@ import FAQ from "../../../../components/home/faq/FAQ";
 
 import { Clock, Database, TrendingUp, Monitor, DollarSign, Smartphone, Globe, Headphones, Shield, BarChart, BookOpen } from "lucide-react";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
+import Download from "@/components/home/download/Download";
 
 export default function Home() {
 
@@ -18,7 +19,7 @@ export default function Home() {
     title: t('agm-trader.title.title'),
     subtitle: t('agm-trader.title.subtitle'),
     ctaText: t('agm-trader.title.action_text'),
-    ctaLink: '/apply' 
+    ctaLink: '/trader#download' 
   };
   
   const services = [
@@ -42,16 +43,6 @@ export default function Home() {
       t('agm-trader.introduction.description'),
     ],
     cards: [
-      {
-        title: t('agm-trader.introduction.cards.0.title'),
-        description: t('agm-trader.introduction.cards.0.description'),
-        items: [
-          { icon: <TrendingUp />, label: t('agm-trader.introduction.cards.0.item_labels.0') },
-          { icon: <Clock />, label: t('agm-trader.introduction.cards.0.item_labels.1') },
-          { icon: <Database />, label: t('agm-trader.introduction.cards.0.item_labels.2') },
-          { icon: <DollarSign />, label: t('agm-trader.introduction.cards.0.item_labels.3') }
-        ]
-      },
       {
         title: t('agm-trader.introduction.cards.1.title'),
         description: t('agm-trader.introduction.cards.1.description'),
@@ -79,8 +70,9 @@ export default function Home() {
   return (
     <div className="flex flex-col h-full w-full gap-y-20">
       <Title {...titleProps} />
-      <Introduction {...introductionProps} />
+      <Introduction {...introductionProps} phone />
       <Services services={services} />
+      <Download />
       <FAQ />
     </div>
   )

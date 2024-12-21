@@ -76,9 +76,8 @@ export const FormHeader = () => {
               </Button>
             </Link>
             <Button 
-              variant="ghost" 
               onClick={() => setExpandSidebar(true)}
-              className="z-20"
+              className="z-20 bg-transparent hover:bg-transparent"
             >
               <AlignJustify className="text-2xl text-foreground" />
             </Button>
@@ -90,5 +89,6 @@ export const FormHeader = () => {
         {expandSidebar && <Sidebar setExpandSidebar={setExpandSidebar} />}
       </AnimatePresence>
     </>
+    
   )
 }

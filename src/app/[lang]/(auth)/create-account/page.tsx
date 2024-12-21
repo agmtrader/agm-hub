@@ -177,7 +177,8 @@ const CreateAccount = () => {
 
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center gap-y-6">
-      <h1 className="text-4xl font-bold text-agm-dark-blue">Tell Us About Yourself</h1>
+      <h1 className="text-4xl font-bold text-agm-dark-blue">Create an AGM Account</h1>
+      <p className='text-subtitle text-sm text-center'>Please fill out the form below to create an AGM account.</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md flex flex-col gap-y-4">
           <FormField
@@ -187,7 +188,7 @@ const CreateAccount = () => {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter your name" />
+                  <Input {...field} placeholder="" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -200,7 +201,7 @@ const CreateAccount = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input {...field} type="email" placeholder="Enter your email" />
+                  <Input {...field} type="email" placeholder="" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -216,7 +217,7 @@ const CreateAccount = () => {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter a username" {...field} />
+                  <Input placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -229,7 +230,7 @@ const CreateAccount = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Enter a password" {...field} />
+                  <Input type="password" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -242,7 +243,7 @@ const CreateAccount = () => {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Confirm your password" {...field} />
+                  <Input type="password" placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -254,9 +255,14 @@ const CreateAccount = () => {
           </Button>
         </form>
       </Form>
-      <Button variant="outline" asChild>
-        <Link href="/">Go back home</Link>
-      </Button>
+      <div className='flex gap-2'>
+        <Button variant="ghost" asChild>
+          <Link href={formatURL('/signin', lang)}>Go back</Link>
+        </Button>
+        <Button variant="ghost" asChild>
+          <Link href={formatURL('/', lang)}>Go back home</Link>
+        </Button>
+      </div>
     </div>
   )
 }

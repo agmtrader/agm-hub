@@ -1,8 +1,12 @@
+import Footer from '@/components/Footer';
+import { FormHeader } from '@/components/Header';
 import React from 'react';
 
 const Page = () => {
   return (
-    <div className='container flex flex-col gap-y-10 w-3/4 m-10 p-6'>
+    <div className='w-full flex flex-col gap-10'>
+      <FormHeader/>
+      <div className='w-full flex flex-col gap-10 px-10'>
       <h1 className='text-5xl font-bold mb-4'>Terms of Use Agreement and Disclosures</h1>
       <p>
         AGM Technology (BVI) Inc., known as AGM Trader Broker & Advisor, is a company registered in the British Virgin Islands (BVI) under number 2045201 and is regulated by the BVI Financial Services Commission (BVIFSC). Its legal address is Commerce House, Wickhams Cay 1, Road Town, Tortola, British Virgin Islands, VG1110.
@@ -77,6 +81,8 @@ const Page = () => {
       <p>
         © 2023 AGM Trader Broker & Advisor. All rights reserved.
       </p>
+      </div>
+      <Footer/>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GeneralInfo from './components/GeneralInfo';
 import Regulatory from './components/Regulatory';
@@ -46,6 +46,15 @@ const ClientForm = () => {
     ease: 'anticipate',
     duration: 0.5,
   }
+
+  const handleRefresh = () => {
+    const confirmRefresh = window.confirm("Are you sure you want to refresh? This will delete your current progress.");
+    if (confirmRefresh) {
+      // Logic to reset the form or progress
+      setStep(1);
+      setTicket(null);
+    }
+  };
 
   const renderFormStep = () => {
 
@@ -170,11 +179,23 @@ const ClientForm = () => {
       }
     }
     
-  };
+  }
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "Are you sure you want to refresh? This will delete your current progress.";
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [])
 
   return (
     <div className='w-full h-fit flex flex-col justify-center items-center'>
-
       <FormHeader/>
 
       <AnimatePresence mode="wait">
