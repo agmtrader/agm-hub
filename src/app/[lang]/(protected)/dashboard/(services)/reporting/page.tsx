@@ -15,7 +15,6 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 const Page = () => {
 
   const [documents, setDocuments] = useState<any[]>([])
-  const router = useRouter()
   const { lang } = useTranslationProvider()
 
   useEffect(() => {
@@ -23,7 +22,6 @@ const Page = () => {
       try {
         let response = await accessAPI('/drive/get_files_in_folder', 'POST', {
           parent_id: '18Gtm0jl1HRfb1B_3iGidp9uPvM5ZYhOF',
-          mime_type: 'text/csv'
         })
         setDocuments(response['content'])
       } catch (error) {
@@ -32,10 +30,6 @@ const Page = () => {
     }
     fetchData()
   }, [])
-
-  function redirectToReport(reportId: string) {
-    router.push(formatURL(`/dashboard/reporting/${reportId}`, lang))
-  }
 
   if (documents && documents.length === 0) return <LoadingComponent/>
 
@@ -52,25 +46,11 @@ const Page = () => {
           variants={fadeIn}
           className="text-7xl font-bold text-foreground"
         >
-          AGM Reporting
+          Reporting Center
         </motion.h1>
-        <motion.p className='text-2xl text-subtitle' variants={fadeIn}>
+        <motion.p className='text-lg text-subtitle' variants={fadeIn}>
           Download, transform and backup daily reports.
         </motion.p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
-        {documents.map((doc) => (
-          <Card 
-            key={doc.id} 
-            className='hover:shadow-lg w-96 transition-shadow cursor-pointer'
-            onClick={() => redirectToReport(doc.id)}
-          >
-            <CardHeader className="font-semibold">{doc.name}</CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600">Last modified: {new Date(doc.modifiedTime).toLocaleDateString()}</p>
-            </CardContent>
-          </Card>
-        ))}
       </div>
       <Link href={formatURL('/dashboard/reporting/generate', lang)}> 
         <Button>
@@ -82,3 +62,29 @@ const Page = () => {
 }
 
 export default Page
+
+const RawReports = ({documents}:{documents:any}) => {
+
+  const router = useRouter()
+  const {lang} = useTranslationProvider()
+  function redirectToReport(reportId: string) {
+    router.push(formatURL(`/dashboard/reporting/${reportId}`, lang))
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
+      {documents.map((doc:any) => (
+        <Card 
+          key={doc.id} 
+          className='hover:shadow-lg w-96 transition-shadow cursor-pointer'
+          onClick={() => redirectToReport(doc.id)}
+        >
+          <CardHeader className="font-semibold">{doc.name}</CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600">Last modified: {new Date(doc.modifiedTime).toLocaleDateString()}</p>
+          </CardContent>
+        </Card>
+      ))}
+  </div>
+  )
+}

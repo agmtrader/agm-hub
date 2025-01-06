@@ -96,6 +96,101 @@
             "download_now": "Download now."
         }
     },
+    "agm-advisor": {
+        "title": {
+            "title": "Advisor",
+            "subtitle": "Unlock a world of opportunities with our global investment platform.",
+            "action_text": "Apply for an account"
+        },
+        "introduction": {
+            "title": "Your Legacy Matters.",
+            "description": [
+                "AGM Advisor, our Advisory services firm, provides individual portfolio investment strategies that are tailored made for each client (Segregated Portfolio Accounts).",
+                "Any client that would like to delegate a portion of their financial assets or wealth through our advisory division, gets one on one service from one of our Advisors that is assigned. We strive to provide best in class service to each of our advisory clients!",
+                "Get to know your risk profile as an investor and the proposed investment portfolio that matches your profile."
+            ],
+            "cards": [
+                {
+                    "title": "Personalized Investment Strategies",
+                    "description": "We create tailored investment portfolios designed to meet your unique financial goals and risk tolerance.",
+                    "item_labels": [
+                        "Custom portfolios",
+                        "Risk assessment",
+                        "Goal-oriented planning"
+                    ]
+                },
+                {
+                    "title": "One-on-One Advisory Service",
+                    "description": "Experience dedicated support with a personal advisor assigned to manage your financial assets and wealth.",
+                    "item_labels": [
+                        "Dedicated advisor",
+                        "Personalized communication",
+                        "Regular portfolio reviews"
+                    ]
+                },
+                {
+                    "title": "Best-in-Class Service",
+                    "description": "Benefit from our commitment to providing exceptional service and support to each of our advisory clients.",
+                    "item_labels": [
+                        "Expert advice",
+                        "Risk management",
+                        "Performance tracking"
+                    ]
+                }
+            ],
+            "cta_text": "Discover Your Investment Profile",
+            "cta_subtext": "Take our risk assessment to get started with a tailored investment strategy."
+        }
+    },
+    "agm-institutional": {
+        "title": {
+            "title": "Institutional",
+            "subtitle": "Unlock a world of opportunities with our global investment platform.",
+            "action_text": "Apply for an account"
+        },
+        "introduction": {
+            "title": "Your Business Matters",
+            "description": [
+                "Our Institutional division provides world-class execution services to the most sophisticated institutions.",
+                "Our dedicated team of professionals ensures that any need or requirement is met, providing the best execution and pricing in over 150 markets worldwide across all asset classes."
+            ],
+            "cta_text": "Ready to start trading anywhere?",
+            "cta_subtext": "Download our app now.",
+            "cards": [
+                {
+                    "title": "Who We Serve",
+                    "description": "We cater to a wide range of institutional clients, including:",
+                    "item_labels": [
+                        "Advisory Firms",
+                        "Hedge Funds",
+                        "Broker/Dealers",
+                        "Wealth Management firms",
+                        "Insurance companies",
+                        "Family Offices"
+                    ]
+                },
+                {
+                    "title": "Our Services",
+                    "description": "We offer comprehensive execution services across various markets and asset classes.",
+                    "item_labels": [
+                        "150+ Global Markets",
+                        "Multiple Asset Classes",
+                        "Best Execution",
+                        "Competitive Pricing"
+                    ]
+                },
+                {
+                    "title": "Get in Touch",
+                    "description": "Contact us to learn more about our institutional services and how we can help your business.",
+                    "item_labels": [
+                        "Email",
+                        "Phone",
+                        "Live chat"
+                    ]
+                }
+            ]
+        }
+    },
     "shared": {
         "account": {
             "sign_out": "Sign out",

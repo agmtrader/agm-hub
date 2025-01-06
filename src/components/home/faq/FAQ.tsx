@@ -42,7 +42,7 @@ function FAQ({}: Props) {
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={containerVariants}
-      className='w-full h-fit flex flex-col justify-center text-agm-dark-blue gap-y-16 items-center'
+      className='w-full h-fit flex flex-col justify-center text-agm-dark-blue p-5 gap-5 items-center'
     >
       <motion.p variants={itemVariants} className='text-5xl text-center font-bold'>{t('shared.faq.title')}</motion.p>
       <Accordion type="single" collapsible className="w-[80%] text-start">

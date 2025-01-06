@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import "../../globals.css";
+import "../../../globals.css";
 import { FormHeader, Header } from "@/components/Header";
-import FirebaseAuthProvider from "../../../utils/providers/FirebaseAuthProvider";
+import FirebaseAuthProvider from "../../../../utils/providers/FirebaseAuthProvider";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {

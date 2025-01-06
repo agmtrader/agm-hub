@@ -1,74 +1,78 @@
+'use client'
+
 import Title from "@/components/home/title/Title";
 import Introduction from "@/components/home/introduction/Introduction"
 import Services from "@/components/home/services/Services";
 import FAQ from "@/components/home/faq/FAQ";
 
 import Team from "@/components/home/team/Team";
-import { GraphUpArrow } from "react-bootstrap-icons";
-import { Building, Handshake, BarChart2, PieChart, TrendingUp, Clock, Database, LayoutDashboard, FileText, MessageCircle } from "lucide-react";
+import { Handshake, BarChart2, PieChart, TrendingUp, Clock, Database, LayoutDashboard, FileText, MessageCircle } from "lucide-react";
+import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 
 export default function Home() {
+
+  const { t, lang } = useTranslationProvider()
   
   const titleProps = {
     backgroundImage: '/images/agm-advisor.webp',
     logoSrc: '/images/brand/agm-logo-white.png',
-    title: 'Advisor',
-    subtitle: 'Help reach your financial goals with industry leading tools and experts.',
-    ctaText: 'Apply for an account',
+    title: t('agm-advisor.title.title'),
+    subtitle: t('agm-advisor.title.subtitle'),
+    ctaText: t('agm-advisor.title.action_text'),
     ctaLink: '/apply'
-  };
+  }
 
   const introductionProps = {
-    title: "Your Legacy Matters.",
+    title: t('agm-advisor.introduction.title'),
     description: [
-      "AGM Advisor, our Advisory services firm, provides individual portfolio investment strategies that are tailored made for each client (Segregated Portfolio Accounts).",
-      "Any client that would like to delegate a portion of their financial assets or wealth through our advisory division, gets one on one service from one of our Advisors that is assigned. We strive to provide best in class service to each of our advisory clients!",
-      "Get to know your risk profile as an investor and the proposed investment portfolio that matches your profile."
+      t('agm-advisor.introduction.description.0'),
+      t('agm-advisor.introduction.description.1'),
     ],
     cards: [
       {
-        title: "Personalized Investment Strategies",
-        description: "We create tailored investment portfolios designed to meet your unique financial goals and risk tolerance.",
+        title: t('agm-advisor.introduction.cards.0.title'),
+        description: t('agm-advisor.introduction.cards.0.description'),
         items: [
-          { icon: <BarChart2 />, label: 'Custom portfolios' },
-          { icon: <PieChart />, label: 'Risk assessment' },
-          { icon: <TrendingUp />, label: 'Goal-oriented planning' }
+          { icon: <BarChart2 />, label: t('agm-advisor.introduction.cards.0.item_labels.0') },
+          { icon: <PieChart />, label: t('agm-advisor.introduction.cards.0.item_labels.1') },
+          { icon: <TrendingUp />, label: t('agm-advisor.introduction.cards.0.item_labels.2') }
         ]
       },
       {
-        title: "One-on-One Advisory Service",
-        description: "Experience dedicated support with a personal advisor assigned to manage your financial assets and wealth.",
+        title: t('agm-advisor.introduction.cards.1.title'),
+        description: t('agm-advisor.introduction.cards.1.description'),
         items: [
-          { icon: <Handshake />, label: 'Dedicated advisor' },
-          { icon: <MessageCircle />, label: 'Personalized communication' },
-          { icon: <FileText />, label: 'Regular portfolio reviews' }
+          { icon: <Handshake />, label: t('agm-advisor.introduction.cards.1.item_labels.0') },
+          { icon: <MessageCircle />, label: t('agm-advisor.introduction.cards.1.item_labels.1') },
+          { icon: <FileText />, label: t('agm-advisor.introduction.cards.1.item_labels.2') }
         ]
       },
       {
-        title: "Best-in-Class Service",
-        description: "Benefit from our commitment to providing exceptional service and support to each of our advisory clients.",
+        title: t('agm-advisor.introduction.cards.2.title'),
+        description: t('agm-advisor.introduction.cards.2.description'),
         items: [
-          { icon: <Clock />, label: 'Responsive support' },
-          { icon: <LayoutDashboard />, label: 'Comprehensive reporting' },
-          { icon: <Database />, label: 'Market insights' }
+          { icon: <Clock />, label: t('agm-advisor.introduction.cards.2.item_labels.0') },
+          { icon: <LayoutDashboard />, label: t('agm-advisor.introduction.cards.2.item_labels.1') },
+          { icon: <Database />, label: t('agm-advisor.introduction.cards.2.item_labels.2') }
         ]
       }
     ],
-    ctaText: "Discover Your Investment Profile",
-    ctaSubtext: "Take our risk assessment to get started with a tailored investment strategy."
-  };
+    ctaText: t('agm-advisor.introduction.cta_text'),
+    ctaSubtext: t('agm-advisor.introduction.cta_subtext'),
+    ctaLink: '/apply/risk'
+  }
 
   const services = [
     {
-      name: 'AGM Trader',
+      name: t('shared.services.agm_trader.title'),
       image: '/images/agm-trader.jpg',
-      description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
+      description: t('shared.services.agm_trader.description'),
       url: '/trader'
     },
     {
-      name: 'AGM Institutional',
+      name: t('shared.services.agm_institutional.title'),
       image: '/images/agm-institutional.jpg',
-      description:'Our Institutional division provides world class execution services to the most sophisticated institutions like Advisory Firms, Hedge Funds, Broker/Dealers, Wealth Management firms, Insurance companies and more.',
+      description: t('shared.services.agm_institutional.description'),
       url:'/institutional'
     }
   ]

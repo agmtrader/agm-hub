@@ -21,9 +21,10 @@ const RiskProfile = ({riskProfile, account}: Props) => {
       if (riskProfile) {
           labels = Object.keys(riskProfile).filter((element) => element !== 'name' && element !== 'average_yield')
           labels.forEach((label) => {
-              // Convert decimal to percentage
-              riskProfile[label] = riskProfile[label] * 100
-              values.push(riskProfile[label])
+              if (label !== 'min_score' && label !== 'max_score') {
+                // Convert decimal to percentage without modifying original data
+                values.push(riskProfile[label] * 100)
+              }
           })
       }
       return {labels, values}
@@ -33,22 +34,22 @@ const RiskProfile = ({riskProfile, account}: Props) => {
   const assetData = [
     {
       "Asset Class": "Bonds AAA - A",
-      "Allocation": `${riskProfile.bonds_aaa_a.toFixed(2)}%`,
+      "Allocation": `${(riskProfile.bonds_aaa_a * 100).toFixed(2)}%`,
       "Risk Level": "Most Conservative",
     },
     {
       "Asset Class": "Bonds BBB",
-      "Allocation": `${riskProfile.bonds_bbb.toFixed(2)}%`,
+      "Allocation": `${(riskProfile.bonds_bbb * 100).toFixed(2)}%`,
       "Risk Level": "Moderately Conservative",
     },
     {
       "Asset Class": "Bonds BB",
-      "Allocation": `${riskProfile.bonds_bb.toFixed(2)}%`,
+      "Allocation": `${(riskProfile.bonds_bb * 100).toFixed(2)}%`,
       "Risk Level": "Moderate",
     },
     {
       "Asset Class": "Stocks (ETFs)",
-      "Allocation": `${riskProfile.etfs.toFixed(2)}%`,
+      "Allocation": `${(riskProfile.etfs * 100).toFixed(2)}%`,
       "Risk Level": "Most Aggressive",
     }
   ]
@@ -106,7 +107,7 @@ const RiskProfile = ({riskProfile, account}: Props) => {
 
   return (
     <div className="w-full h-full flex gap-y-5 justify-start flex-col items-center text-foreground">
-        <p className="text-7xl text-foreground font-bold">{account ? account : 'Anonymous'}</p>
+        <p className="text-7xl text-foreground font-bold">{account ? account.AccountNumber : 'Anonymous'}</p>
         {riskProfile.name && <h1 className="text-3xl font-bold">{riskProfile.name}</h1>}
         <div className="flex flex-col lg:flex-row gap-5 w-full h-fit justify-center items-center text-center">
           <div className="w-full lg:w-1/2 flex flex-col gap-y-5 justify-center items-center">

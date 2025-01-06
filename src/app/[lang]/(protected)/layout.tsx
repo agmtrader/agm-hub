@@ -58,7 +58,7 @@ export default function Layout({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              Locked out.
+              Locked out
             </motion.p>
             <motion.p 
               className='text-xl text-subtitle'
@@ -66,7 +66,7 @@ export default function Layout({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              Sign in to access your personal dashboard.
+              Sign in to access AGM Client features.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}

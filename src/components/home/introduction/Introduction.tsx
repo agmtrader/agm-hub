@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/tooltip"
 import Iphone15Pro from '@/components/ui/iphone-15-pro'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
+import { formatURL } from '@/utils/lang'
 
 // ... (keep the existing imports)
 
@@ -26,11 +28,12 @@ interface IntroductionProps {
   }[];
   ctaText: string;
   ctaSubtext: string;
+  ctaLink: string;
   phone?: boolean;
 }
 
-const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, ctaText, ctaSubtext, phone }) => {
-  const { t } = useTranslationProvider()
+const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, ctaText, ctaSubtext, ctaLink, phone }) => {
+  const { lang } = useTranslationProvider()
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -80,12 +83,12 @@ const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, 
   return (
     <motion.div 
       ref={ref}
-      className="flex h-fit w-full justify-center items-center py-10 gap-32"
+      className={cn("flex h-fit w-full justify-center items-center p-6 gap-32")}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={containerVariants}
     >
-      <div className={cn("flex flex-col h-full text-foreground w-full max-w-6xl text-center gap-y-10 justify-center items-center", phone && 'w-1/2')}>
+      <div className={cn("flex flex-col h-full text-foreground w-full max-w-6xl text-center gap-y-10 justify-center items-center")}>
         <motion.h1 variants={itemVariants} className='text-5xl max-w-3xl font-semibold'>{title}</motion.h1>
         {description.map((paragraph, index) => (
           <motion.p key={index} variants={itemVariants} className='text-xl font-light'>
@@ -138,13 +141,15 @@ const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, 
           ))}
         </div>
         <motion.div variants={itemVariants} className='w-full flex justify-center items-center'>
-          <Button size="lg" className="mt-6 flex flex-col p-5 py-10">
-            <span className='text-lg font-semibold'>{ctaText}</span>
-            <span className='text-sm'>{ctaSubtext}</span>
-          </Button>
+          <Link href={formatURL(ctaLink, lang)} target="_blank" rel="noopener noreferrer">
+            <Button className="h-full w-fit flex flex-col p-5 py-10">
+              <span className='text-lg font-semibold'>{ctaText}</span>
+              <span className='text-sm'>{ctaSubtext}</span>
+            </Button>
+          </Link>
         </motion.div>
       </div>
-      {phone && <Iphone15Pro className='h-[40rem]' style={{ transform: 'perspective(1000px) rotateY(-15deg) rotateZ(0deg)' }} />}
+      {/* {phone && <Iphone15Pro className='h-[40rem]' style={{ transform: 'perspective(1000px) rotateY(-15deg) rotateZ(0deg)' }} />} */}
     </motion.div>
   )
 }

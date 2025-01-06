@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { RainbowButton } from '@/components/ui/rainbow-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import ShimmerButton from '@/components/ui/shimmer-button'
+import { formatURL } from '@/utils/lang'
 
 interface TitleProps {
   backgroundImage: string;
@@ -25,7 +26,9 @@ const Title: React.FC<TitleProps> = ({
   ctaLink
 }) => {
 
-  const { t } = useTranslationProvider()
+  const { t, lang
+    
+   } = useTranslationProvider()
   return (
     <div className='w-full h-screen bg-blue-900 relative overflow-hidden'>
       <motion.div
@@ -72,7 +75,7 @@ const Title: React.FC<TitleProps> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <Link href={ctaLink} rel="noopener noreferrer" target="_blank">
+          <Link href={formatURL(ctaLink, lang)} rel="noopener noreferrer" target="_blank">
             <ShimmerButton
               className="px-8 py-3 text-lg font-semibold mt-4"
               background='#f26c0d'
@@ -88,7 +91,7 @@ const Title: React.FC<TitleProps> = ({
           transition={{ delay: 0.5, duration: 1 }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-background text-center"
         >
-          <p className="text-lg mb-2">{t('shared.title.scroll_text')}</p>
+          <p className="text-lg mb-2 whitespace-nowrap">{t('shared.title.scroll_text')}</p>
           <svg className="w-6 h-6 mx-auto animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>

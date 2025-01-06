@@ -124,7 +124,7 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
       <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
         
         <div className='flex'>
-          <div className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
+          <div className='flex flex-col justify-center gap-y-5 items-center text-center w-full h-full'>
             <UserRound className='h-24 w-24 text-secondary'/>
             <p className='text-5xl font-bold'>{t('apply.account.general_info.title')}</p>
           </div>
@@ -142,9 +142,9 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
               <p>
                 {t('apply.account.general_info.disclaimer.contact')}
                 <br />
-                <span className="font-medium">Email:</span> info@agmtechnology.com
+                <span className="font-medium">Email:</span> <a className="underline" href="mailto:info@agmtechnology.com" target="_blank" rel="noopener noreferrer">info@agmtechnology.com</a>
                 <br />
-                <span className="font-medium">Whatsapp:</span> +1 (786) 251-1496
+                <span className="font-medium">Whatsapp:</span> <a className="underline" href="https://wa.me/17862511496" target="_blank" rel="noopener noreferrer">+1 (786) 251-1496</a>
               </p>
             </div>
           </div>

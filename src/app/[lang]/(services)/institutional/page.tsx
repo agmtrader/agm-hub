@@ -1,82 +1,84 @@
+'use client'
 import Title from "@/components/home/title/Title";
 import Introduction from "@/components/home/introduction/Introduction"
 import Services from "@/components/home/services/Services";
 import FAQ from "@/components/home/faq/FAQ";
-
 import Team from "@/components/home/team/Team";
-import Footer from "@/components/Footer";
-import { GraphUpArrow } from "react-bootstrap-icons";
-import { Building, Handshake, BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle, DollarSign, Zap, Globe } from "lucide-react";
+import { Building, BarChart2, Briefcase, Banknote, PieChart, TrendingUp, FileText, Mail, Phone, MessageCircle, DollarSign, Zap, Globe } from "lucide-react";
+import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 
 export default function Home() {
+
+  const { t, lang } = useTranslationProvider()
   
   const titleProps = {
     backgroundImage: '/images/agm-institutional.jpg',
     logoSrc: '/images/brand/agm-logo-white.png',
-    title: 'Institutional',
-    subtitle: 'Unlock a world of opportunities with our global investment platform.',
-    ctaText: 'Apply for an account',
+    title: t('agm-institutional.title.title'),
+    subtitle: t('agm-institutional.title.subtitle'),
+    ctaText: t('agm-institutional.title.action_text'),
     ctaLink: '/apply'
-  };
+  }
+
+  const introductionProps = {
+    title: t('agm-institutional.introduction.title'),
+    description: [
+      t('agm-institutional.introduction.description.0'),
+      t('agm-institutional.introduction.description.1')
+    ],
+    cards: [
+      {
+        title: t('agm-institutional.introduction.cards.0.title'),
+        description: t('agm-institutional.introduction.cards.0.description'),
+        items: [
+          { icon: <Building />, label: t('agm-institutional.introduction.cards.0.item_labels.0') },
+          { icon: <TrendingUp />, label: t('agm-institutional.introduction.cards.0.item_labels.1') },
+          { icon: <Briefcase />, label: t('agm-institutional.introduction.cards.0.item_labels.2') },
+          { icon: <PieChart />, label: t('agm-institutional.introduction.cards.0.item_labels.3') },
+          { icon: <Banknote />, label: t('agm-institutional.introduction.cards.0.item_labels.4') },
+          { icon: <FileText />, label: t('agm-institutional.introduction.cards.0.item_labels.5') }
+        ]
+      },
+      {
+        title: t('agm-institutional.introduction.cards.1.title'),
+        description: t('agm-institutional.introduction.cards.1.description'),
+        items: [
+          { icon: <Globe />, label: t('agm-institutional.introduction.cards.1.item_labels.0') },
+          { icon: <BarChart2 />, label: t('agm-institutional.introduction.cards.1.item_labels.1') },
+          { icon: <Zap />, label: t('agm-institutional.introduction.cards.1.item_labels.2') },
+          { icon: <DollarSign />, label: t('agm-institutional.introduction.cards.1.item_labels.3') }
+        ]
+      },
+      {
+        title: t('agm-institutional.introduction.cards.2.title'),
+        description: t('agm-institutional.introduction.cards.2.description'),
+        items: [
+          { icon: <Mail />, label: t('agm-institutional.introduction.cards.2.item_labels.0') },
+          { icon: <Phone />, label: t('agm-institutional.introduction.cards.2.item_labels.1') },
+          { icon: <MessageCircle />, label: t('agm-institutional.introduction.cards.2.item_labels.2') }
+        ]
+      }
+    ],
+    ctaText: t('agm-institutional.introduction.cta_text'),
+    ctaSubtext: t('agm-institutional.introduction.cta_subtext'),
+    ctaLink: '/apply'
+  }
 
   const services = [
     {
-      name: 'AGM Trader',
+      name: t('shared.services.agm_trader.title'),
       image: '/images/agm-trader.jpg',
-      description: 'We provide easy trading and investing access through our mobile, desktop and web applications connected to more than 150 financial markets worldwide.',
+      description: t('shared.services.agm_trader.description'),
       url: '/trader'
     },
     {
-      name: 'AGM Advisor',
+      name: t('shared.services.agm_advisor.title'),
       image: '/images/agm-advisor.webp',
-      description:'We also provide Advisory services for those clients that would like to delegate a portion of their financial assets or wealth through our advisory division.',
+      description: t('shared.services.agm_advisor.description'),
       url:'/advisor'
     }
   ]
   
-  const introductionProps = {
-    title: "Your Business Matters",
-    description: [
-      "Our Institutional division provides world-class execution services to the most sophisticated institutions.",
-      "Our dedicated team of professionals ensures that any need or requirement is met, providing the best execution and pricing in over 150 markets worldwide across all asset classes."
-    ],
-    cards: [
-      {
-        title: "Who We Serve",
-        description: "We cater to a wide range of institutional clients, including:",
-        items: [
-          { icon: <Building />, label: 'Advisory Firms' },
-          { icon: <TrendingUp />, label: 'Hedge Funds' },
-          { icon: <Briefcase />, label: 'Broker/Dealers' },
-          { icon: <PieChart />, label: 'Wealth Management Firms' },
-          { icon: <Banknote />, label: 'Family Offices' },
-          { icon: <FileText />, label: 'Insurance Companies' }
-        ]
-      },
-      {
-        title: "Our Services",
-        description: "We offer comprehensive execution services across various markets and asset classes.",
-        items: [
-          { icon: <Globe />, label: '150+ Global Markets' },
-          { icon: <BarChart2 />, label: 'Multiple Asset Classes' },
-          { icon: <Zap />, label: 'Best Execution' },
-          { icon: <DollarSign />, label: 'Competitive Pricing' }
-        ]
-      },
-      {
-        title: "Get in Touch",
-        description: "Our team is ready to assist you with any inquiries or requirements you may have.",
-        items: [
-          { icon: <Mail />, label: 'Email Us' },
-          { icon: <Phone />, label: 'Call Us' },
-          { icon: <MessageCircle />, label: 'Live Chat' }
-        ]
-      }
-    ],
-    ctaText: "Learn More",
-    ctaSubtext: "Discover how our institutional services can benefit your business."
-  };
-
   return (
     <div className="flex flex-col h-full w-full gap-y-20">
       <Title {...titleProps} />

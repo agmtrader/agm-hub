@@ -10,10 +10,12 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { motion } from "framer-motion"
-import Account from "./Account"
-import { Button } from "../ui/button"
+import Account from "./misc/Account"
+import { Button } from "./ui/button"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { formatURL } from "@/utils/lang"
+import { X } from "lucide-react"
+import LanguageSwitcher from "./misc/LanguageSwitcher"
 
 const navbarContent = [
   { name: 'AGM Home', url: '/' },
@@ -46,10 +48,13 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
         className='z-50 fixed right-0 top-0 w-fit h-full bg-background shadow-lg'
       >
         <NavigationMenu className="h-full w-full flex flex-col justify-between p-5">
-          <NavigationMenuList className="w-full p-4 flex flex-col items-end justify-end gap-4">
-            <Button variant='ghost' onClick={() => setExpandSidebar(false)}>
-                X
+          <NavigationMenuList className="w-full py-4 flex flex-col items-end justify-end gap-4">
+            <Button className="w-fit p-2" variant='ghost' onClick={() => setExpandSidebar(false)}>
+                <X className="w-6 h-6"/>
             </Button>
+            <NavigationMenuItem className="flex w-full text-end justify-end items-end">
+              <LanguageSwitcher />
+            </NavigationMenuItem>
             {navbarContent.map((item, index) => (
               <NavigationMenuItem key={index} onClick={() => setExpandSidebar(false)} className="w-full text-end">
                 <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
@@ -59,6 +64,13 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
                 </Link>
               </NavigationMenuItem>
             ))}
+            <NavigationMenuItem className="w-full text-end">
+              <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
+                <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-end")}>
+                  Dashboard
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
           </NavigationMenuList>
           <Account />
         </NavigationMenu>

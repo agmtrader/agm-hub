@@ -49,9 +49,11 @@ const Team = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.6 }}
       >
-        <Link href="mailto:info@agmtechnology.com">
-          <Button>{t('shared.team.contact_us')}</Button>
-        </Link>
+        <Button asChild>
+          <a href="mailto:info@agmtechnology.com">
+            <Button>{t('shared.team.contact_us')}</Button>
+          </a>
+        </Button>
       </motion.div>
     </motion.div>
   )

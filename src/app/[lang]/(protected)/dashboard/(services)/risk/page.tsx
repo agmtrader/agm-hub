@@ -56,41 +56,39 @@ const page = () => {
       (profile: any) => profile.RiskProfileID === selectedProfileID
     )
 
-    if (!selectedProfile) {
-      toast({
-        title: 'Error',
-        description: 'No risk profile found',
-      })
-      throw new Error('No risk profile found')
-    }
 
     // Fetch account associated with risk profile
     const response = await accessAPI('/database/read', 'POST', {
       'path': 'db/clients/accounts',
       'query': { 'AccountNumber': selectedProfile.AccountNumber }
     })
+
+    try {
     
-    if (response['status'] === 'success') {
-      if (response['content'].length === 1) {
-        setAccount(response['content'][0])
-      } else if (response['content'].length === 0) {
-        toast({
-          title: 'Warning',
-          description: 'No account found',
-        })
+      if (response['status'] === 'success') {
+        if (response['content'].length === 1) {
+          setAccount(response['content'][0])
+        } else if (response['content'].length === 0) {
+          toast({
+            title: 'Warning',
+            description: 'No IBKR Account found',
+            variant: 'warning',
+          })
+        } else {
+          throw new Error('Multiple accounts found')
+        }
       } else {
-        toast({
-          title: 'Error',
-          description: 'Multiple accounts found',
-        })
-        throw new Error('Multiple accounts found')
+        throw new Error('Error fetching account')
       }
-    } else {
-      toast({
+
+
+    } catch (error:any) {
+
+    toast({
         title: 'Error',
-        description: 'Error fetching account',
+        description: error.message,
+        variant: 'destructive',
       })
-      throw new Error('Error fetching account')
     }
 
     setLoading(false)
@@ -119,9 +117,8 @@ const page = () => {
                   {riskProfiles?.map((profile) => (
                     profile.RiskProfileID &&
                       <SelectItem key={profile.RiskProfileID} value={profile.RiskProfileID}>
-                        {profile.AccountNumber + ' ' + profile.ClientName}
+                        {profile.AccountNumber} {profile.ClientName}
                       </SelectItem>
-                    
                   ))}
 
                 </SelectContent>
@@ -165,7 +162,7 @@ const page = () => {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <RiskProfile riskProfile={riskProfile}/>
+              <RiskProfile riskProfile={riskProfile} account={account}/>
             </motion.div>
           </motion.div>
         </DialogContent>

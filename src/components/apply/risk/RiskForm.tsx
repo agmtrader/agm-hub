@@ -36,6 +36,7 @@ import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
+import { useSession } from "next-auth/react"
 
 // Risk profile types
 export const risk_profile_types = [
@@ -161,6 +162,7 @@ export type RiskProfile = {
   Score: number;
   RiskProfileID: string;
   RiskProfile: any;
+  UserID: string;
 }
 
 const RiskForm = () => {
@@ -170,6 +172,7 @@ const RiskForm = () => {
   const [submitting, setSubmitting] = useState(false)
 
   const {toast} = useToast()
+  const {data:session} = useSession()
   const {t} = useTranslationProvider()
 
   let formSchema:any;
@@ -185,61 +188,66 @@ const RiskForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
     setSubmitting(true)
-    
-    const timestamp = new Date()
-    const riskProfileID = formatTimestamp(timestamp)
 
-    // Calculate risk score
-    let sum = 0
+    try {
 
-    // Loop through form values, ignore certain fields and calculate risk score using the category and question weights
-    Object.entries(values).forEach((element) => {
-      const [key, value] = element
-      if (key !== 'account_number' && key !== 'client_name') {
-        const weight = weights.find(el => el.name === key)?.weight || 0
-        sum += weight * Number(value)
-      }
-    })
+      if (!session?.user) throw new Error('User not found')
+      
+      const timestamp = new Date()
+      const riskProfileID = formatTimestamp(timestamp)
 
-    // Calculate risk type
-    let risk_profile_type = ''
-    risk_profile_types.forEach(type => {
-      if (sum >= type.min_score && sum < type.max_score) {
-        risk_profile_type = type.name;
-      }
-    })
-    
-    // Get risk profile type from dictionary
-    const risk_profile_properties = risk_profile_types.find((type) => type.name === risk_profile_type) || null
+      // Calculate risk score
+      let sum = 0
 
-    // Build a risk profile for the user
-    const risk_profile:RiskProfile = {
-      AccountNumber: values.account_number || '',
-      ClientName: values.client_name,
-      Score: sum,
-      RiskProfileID: riskProfileID,
-      RiskProfile: risk_profile_properties
-    }
-
-    // Save the user's risk profile in the database
-    let data = await accessAPI('/database/create', 'POST', {data: risk_profile, path:'db/clients/risk', id:riskProfileID})
-    setSubmitting(false)
-
-    if (data['status'] !== 'success') {
-      toast({
-        title: 'Error submitting risk profile',
-        description: 'Contact support or try again later.',
-        variant: 'destructive'
+      // Loop through form values, ignore certain fields and calculate risk score using the category and question weights
+      Object.entries(values).forEach((element) => {
+        const [key, value] = element
+        if (key !== 'account_number' && key !== 'client_name') {
+          const weight = weights.find(el => el.name === key)?.weight || 0
+          sum += weight * Number(value)
+        }
       })
 
-      throw new Error(data['content'])
-    }
-    
-    // Display the risk profile
-    setRiskProfile(risk_profile_properties)
+      // Calculate risk type
+      let risk_profile_type = ''
+      risk_profile_types.forEach(type => {
+        if (sum >= type.min_score && sum < type.max_score) {
+          risk_profile_type = type.name;
+        }
+      })
+      
+      // Get risk profile type from dictionary
+      const risk_profile_properties = risk_profile_types.find((type) => type.name === risk_profile_type) || null
 
-    // Reset the form after submission
-    form.reset(initialFormValues)
+      // Build a risk profile for the user
+      const risk_profile:RiskProfile = {
+        AccountNumber: values.account_number || '',
+        ClientName: values.client_name,
+        Score: sum,
+        RiskProfileID: riskProfileID,
+        RiskProfile: risk_profile_properties,
+        UserID: session?.user?.id
+      }
+
+      // Save the user's risk profile in the database
+      let data = await accessAPI('/database/create', 'POST', {data: risk_profile, path:'db/clients/risk', id:riskProfileID})
+      setSubmitting(false)
+
+      if (data['status'] !== 'success') throw new Error('Error submitting risk profile')
+      
+      // Display the risk profile
+      setRiskProfile(risk_profile_properties)
+
+      // Reset the form after submission
+      form.reset(initialFormValues)
+
+    } catch (error:any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive'
+      })
+    }
 
   }
 
@@ -381,7 +389,7 @@ const RiskForm = () => {
       <Form {...form}>
         <motion.form 
           onSubmit={form.handleSubmit(onSubmit)} 
-          className="w-full flex flex-col gap-10"
+          className="w-full flex flex-col gap-10 p-5"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}

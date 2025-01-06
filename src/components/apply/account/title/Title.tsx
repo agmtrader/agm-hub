@@ -28,8 +28,6 @@ const Title = ({setStarted}:Props) => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
   }
 
-  const {data:session} = useSession()
-
   const {t, lang} = useTranslationProvider()
 
   function handleStartApplication() {
@@ -67,11 +65,11 @@ const Title = ({setStarted}:Props) => {
           </motion.div>
           <motion.div variants={itemVariants}>
             <ShimmerButton
-              onClick={session?.user ? handleStartApplication : handleSignIn}
+              onClick={handleStartApplication}
               className="px-8 py-3 text-lg font-semibold mt-4"
-              background={session?.user ? '#22c55e' : '#f26c0d'}
+              background='#22c55e'
             >
-                {session?.user ? <p className="text-sm">{t('apply.account.title.startApplication')}</p> : <p className="text-sm">{t('apply.account.title.signIn')}</p>}
+                <p className="text-sm">{t('apply.account.title.startApplication')}</p>
             </ShimmerButton>
           </motion.div>
         </motion.div>

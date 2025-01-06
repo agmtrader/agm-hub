@@ -88,6 +88,107 @@
                     ]
                 }
             ]
+        },
+        "download": {
+            "title": "Descargar AGM Trader",
+            "device": "Elige tu dispositivo",
+            "operating_system": "Elige tu sistema operativo",
+            "download_now": "Descargar ahora"
+        }
+    },
+    "agm-advisor": {
+        "title": {
+            "title": "Asesor",
+            "subtitle": "Desbloquea un mundo de oportunidades con nuestra plataforma de inversión global.",
+            "action_text": "Solicitar una cuenta"
+        },
+        "introduction": {
+            "title": "Tu Legado Importa.",
+            "description": [
+                "AGM Advisor, nuestra firma de servicios de asesoría, proporciona estrategias de inversión de cartera individuales que están hechas a medida para cada cliente (Cuentas de Cartera Segregadas).",
+                "Cualquier cliente que desee delegar una parte de sus activos financieros o patrimonio a través de nuestra división de asesoría, recibe un servicio personalizado de uno de nuestros Asesores asignados. ¡Nos esforzamos por proporcionar un servicio de primera clase a cada uno de nuestros clientes de asesoría!",
+                "Conoce tu perfil de riesgo como inversor y la cartera de inversión propuesta que coincide con tu perfil."
+            ],
+            "cards": [
+                {
+                    "title": "Estrategias de Inversión Personalizadas",
+                    "description": "Creamos carteras de inversión a medida diseñadas para cumplir con tus objetivos financieros únicos y tolerancia al riesgo.",
+                    "item_labels": [
+                        "Carteras personalizadas",
+                        "Evaluación de riesgos",
+                        "Planificación orientada a objetivos"
+                    ]
+                },
+                {
+                    "title": "Servicio de Asesoría Personalizado",
+                    "description": "Experimenta un apoyo dedicado con un asesor personal asignado para gestionar tus activos financieros y patrimonio.",
+                    "item_labels": [
+                        "Asesor dedicado",
+                        "Comunicación personalizada",
+                        "Revisiones regulares de la cartera"
+                    ]
+                },
+                {
+                    "title": "Servicio de Primera Clase",
+                    "description": "Benefíciate de nuestro compromiso de proporcionar un servicio y apoyo excepcionales a cada uno de nuestros clientes de asesoría.",
+                    "item_labels": [
+                        "Asesoramiento experto",
+                        "Gestión de riesgos",
+                        "Seguimiento del rendimiento"
+                    ]
+                }
+            ],
+            "cta_text": "Descubre Tu Perfil de Inversión",
+            "cta_subtext": "Realiza nuestra evaluación de riesgos para comenzar con una estrategia de inversión personalizada."
+        }
+    },
+    "agm-institutional": {
+        "title": {
+            "title": "Institucional",
+            "subtitle": "Desbloquea un mundo de oportunidades con nuestra plataforma de inversión global.",
+            "action_text": "Solicitar una cuenta"
+        },
+        "introduction": {
+            "title": "Tu Negocio Importa",
+            "description": [
+                "Nuestra división Institucional proporciona servicios de ejecución de clase mundial a las instituciones más sofisticadas.",
+                "Nuestro equipo dedicado de profesionales asegura que cualquier necesidad o requisito sea atendido, proporcionando la mejor ejecución y precios en más de 150 mercados en todo el mundo a través de todas las clases de activos."
+            ],
+            "cta_text": "¿Listo para comenzar a operar desde cualquier lugar?",
+            "cta_subtext": "Descarga nuestra aplicación ahora.",
+            "cards": [
+                {
+                    "title": "A Quién Servimos",
+                    "description": "Atendemos a una amplia gama de clientes institucionales, incluyendo:",
+                    "item_labels": [
+                        "Firmas de Asesoría",
+                        "Fondos de Cobertura",
+                        "Brokers/Dealers",
+                        "Firmas de Gestión de Patrimonio",
+                        "Compañías de Seguros",
+                        "Oficinas Familiares"
+                    ]
+                },
+                {
+                    "title": "Nuestros Servicios",
+                    "description": "Ofrecemos servicios de ejecución integrales a través de varios mercados y clases de activos.",
+                    "item_labels": [
+                        "150+ Mercados Globales",
+                        "Múltiples Clases de Activos",
+                        "Mejor Ejecución",
+                        "Precios Competitivos"
+                    ]
+                },
+                {
+                    "title": "Ponte en Contacto",
+                    "description": "Contáctanos para aprender más sobre nuestros servicios institucionales y cómo podemos ayudar a tu negocio.",
+                    "item_labels": [
+                        "Correo Electrónico",
+                        "Teléfono",
+                        "Chat en vivo"
+                    ]
+                }
+            ]
         }
     },
     "shared":{
@@ -378,10 +479,19 @@
             }
         }
     },
+    "dashboard": {
+        "risk": {
+            "profile": {
+                "asset_allocation": "Asset Allocation",
+                "average_yield": "Average Yield"
+            }
+        }
+    },
     "forms": {
         "search": "Buscar...",
         "no_results": "No se encontraron resultados.",
         "required": "Campo requerido",
+        "not_required": "No requerido",
         "submit": "Enviar",
         "submitting": "Enviando...",
         "previous_step": "Paso anterior",

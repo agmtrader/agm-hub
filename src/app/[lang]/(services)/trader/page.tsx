@@ -20,22 +20,7 @@ export default function Home() {
     subtitle: t('agm-trader.title.subtitle'),
     ctaText: t('agm-trader.title.action_text'),
     ctaLink: '/trader#download' 
-  };
-  
-  const services = [
-    {
-      name: t('shared.services.agm_advisor.title'),
-      image: '/images/agm-advisor.webp',
-      description:t('shared.services.agm_advisor.description'),
-      url:'/advisor'
-    },
-    {
-      name: t('shared.services.agm_institutional.title'),
-      image: '/images/agm-institutional.jpg',
-      description:t('shared.services.agm_institutional.description'),
-      url:'/institutional'
-    }
-  ]
+  }
   
   const introductionProps = {
     title: t('agm-trader.introduction.title'),
@@ -64,8 +49,24 @@ export default function Home() {
       }
     ],
     ctaText: t('agm-trader.introduction.cta_text'),
-    ctaSubtext: t('agm-trader.introduction.cta_subtext')
+    ctaSubtext: t('agm-trader.introduction.cta_subtext'),
+    ctaLink: '/apply'
   }
+
+  const services = [
+    {
+      name: t('shared.services.agm_advisor.title'),
+      image: '/images/agm-advisor.webp',
+      description:t('shared.services.agm_advisor.description'),
+      url:'/advisor'
+    },
+    {
+      name: t('shared.services.agm_institutional.title'),
+      image: '/images/agm-institutional.jpg',
+      description:t('shared.services.agm_institutional.description'),
+      url:'/institutional'
+    }
+  ]
   
   return (
     <div className="flex flex-col h-full w-full gap-y-20">

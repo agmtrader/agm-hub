@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 import {
   flexRender,
@@ -12,6 +12,7 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   VisibilityState,
+  CellContext,
 } from "@tanstack/react-table"
 
 import { MoreHorizontal } from "lucide-react"
@@ -60,14 +61,14 @@ export interface ColumnDefinition<TData> {
 interface DataTableProps<TData> {
   data: TData[]
   columns?: ColumnDefinition<TData>[]
-  setSelection?: (selectedData: TData[]) => void
   enableSelection?: boolean
+  setSelection?: (selectedData: TData[]) => void
   enablePagination?: boolean
+  pageSize?: number
   enableRowActions?: boolean
   rowActions?: RowAction[]
   enableFiltering?: boolean
   filterColumns?: string[]
-  pageSize?: number
 }
 
 export const DataTable = <TData,>({
@@ -76,11 +77,11 @@ export const DataTable = <TData,>({
   setSelection,
   enableSelection = false,
   enablePagination = false,
+  pageSize = 10,
   enableRowActions = false,
   rowActions,
   enableFiltering = false,
   filterColumns = [],
-  pageSize = 10,
 }: DataTableProps<TData>) => {
 
   const [rowSelection, setRowSelection] = useState({})
@@ -95,6 +96,10 @@ export const DataTable = <TData,>({
 
   const buildColumns = (data: Map, providedColumns?: ColumnDefinition<TData>[], rowActions?: RowAction[]) => {
     const columns: ColumnDef<Map>[] = []
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      return columns
+    }
 
     if (enableSelection) {
       columns.push({
@@ -118,13 +123,16 @@ export const DataTable = <TData,>({
       })
     }
 
-    const createObjectCell = (getValue: () => any) => {
+    const createObjectCell = (getValue: () => any, row: any, column: any) => {
+      
       const value = getValue()
+
       if (typeof value === 'boolean') {
         return (
           <Checkbox checked={value} />
         )
       }
+
       if (typeof value === 'object' && value !== null) {
         return (
           <TooltipProvider delayDuration={10}>
@@ -144,6 +152,7 @@ export const DataTable = <TData,>({
           </TooltipProvider>
         )
       }
+
       return value
     }
 
@@ -151,14 +160,14 @@ export const DataTable = <TData,>({
       columns.push(...providedColumns.map(col => ({
         accessorKey: col.accessorKey,
         header: col.header,
-        cell: col.cell || (({ getValue }) => createObjectCell(getValue)),
+        cell: col.cell || ((context: CellContext<Map, any>) => createObjectCell(context.getValue, context.row, context.column)),
       })))
-    } else if (data.length > 0) {
+    } else if (data.length > 0 && typeof data[0] === 'object') {
       Object.keys(data[0]).forEach((column) => {
         columns.push({
           accessorKey: column,
           header: column,
-          cell: ({ getValue }) => createObjectCell(getValue),
+          cell: (context: CellContext<Map, any>) => createObjectCell(context.getValue, context.row, context.column),
         })
       })
     }
@@ -228,9 +237,8 @@ export const DataTable = <TData,>({
 
   useEffect(() => {
     if (enableSelection && setSelection) {
-      const selectedRows = table.getFilteredSelectedRowModel().rows
-      console.log(selectedRows)
-      setSelection(selectedRows.map((row) => row.original as TData))
+      const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => row.original)
+      setSelection(selectedRows as TData[])
     }
   }, [rowSelection, enableSelection, setSelection, table])
 
@@ -240,12 +248,14 @@ export const DataTable = <TData,>({
     }
   }, [pagination.pageIndex])
 
-  if (!data) {
-    return null
-  }
-
-  if (data.length === 0) {
-    return <div>No content to display</div>
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-full rounded-md text-foreground relative border p-5">
+        <div className="flex justify-center items-center h-24">
+          No data available
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -294,7 +304,7 @@ export const DataTable = <TData,>({
                   exit="hidden"
                   custom={index}
                   whileHover="hover"
-                  className="hover:bg-muted cursor-pointer"
+                  className="hover:bg-muted cursor-pointer whitespace-nowrap"
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (

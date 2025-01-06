@@ -18,7 +18,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 
 export function TeamCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: 'start', slidesToScroll: 1 })
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: 'center',
+    slidesToScroll: 1,
+    breakpoints: {
+      '(min-width: 768px)': { slidesToScroll: 2 },
+      '(min-width: 1024px)': { slidesToScroll: 3 }
+    }
+  })
 
   const { t } = useTranslationProvider()
 
@@ -58,19 +66,19 @@ const team = [
 
 
   return (
-    <div className="w-full flex justify-center items-center h-full max-w-[65%] relative">
+    <div className="w-full flex justify-center items-center h-full max-w-[90%] md:max-w-[80%] lg:max-w-[65%] relative">
       <Button
           variant="outline"
           size="icon"
-          className="rounded-full shadow-md"
+          className="rounded-full shadow-md absolute left-0 z-10"
           onClick={() => emblaApi?.scrollPrev()}
         >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <div className="overflow-hidden" ref={emblaRef}>
+      <div className="overflow-hidden w-full" ref={emblaRef}>
         <div className="flex">
           {team.map((member, index) => (
-            <div key={index} className="flex-[0_0_33.33%] min-w-0 px-4">
+            <div key={index} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.33%] min-w-0 px-4">
               <div className="p-1 group">
                 <Card>
                   <CardContent className="flex aspect-square items-center justify-center p-6">
@@ -118,16 +126,14 @@ const team = [
           ))}
         </div>
       </div>
-      <div className="flex justify-between mt-4">
-        <Button
+      <Button
           variant="outline"
           size="icon"
-          className="rounded-full shadow-md"
+          className="rounded-full shadow-md absolute right-0 z-10"
           onClick={() => emblaApi?.scrollNext()}
         >
           <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
+      </Button>
     </div>
   )
 }

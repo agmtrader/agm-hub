@@ -51,6 +51,11 @@ const tools = [
     name: 'Investment Proposals',
     url: '/dashboard/investment-proposals',
     icon: FileText,
+  },
+  {
+    name: 'Advisor Center',
+    url: '/dashboard/advisors',
+    icon: Users,
   }
 ]
 

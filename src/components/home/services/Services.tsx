@@ -67,10 +67,10 @@ const Services = ({ services }: ServicesProps) => {
       className='flex flex-col h-fit w-full'
     >
       <div className='bg-secondary w-full h-full justify-center items-center flex flex-col gap-y-20 py-20'>
-        <div className='flex flex-col gap-y-5 items-center'> 
+        <div className='flex flex-col gap-y-5 items-center justify-center'> 
         <motion.p 
           variants={itemVariants}
-          className='font-bold text-5xl text-background'
+          className='font-bold text-5xl text-background text-center'
         >
           {t('shared.services.title')}
         </motion.p>
@@ -100,7 +100,7 @@ const Services = ({ services }: ServicesProps) => {
                   <Dialog>
                     <DialogTrigger asChild>
                       <div className='w-full h-full flex justify-center text-background items-center cursor-pointer'>
-                        <span className='text-xl font-bold'>{service.name}</span>
+                        <span className='text-3xl font-bold'>{service.name}</span>
                       </div>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px] bg-background text-foreground flex flex-col gap-y-5 justify-center items-center">

@@ -1,17 +1,31 @@
 
 import React from 'react'
 import { Button } from '../ui/button'
-import { changeLang, formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/lang'
 import { usePathname } from 'next/navigation'
+import { redirect } from 'next/navigation'
+import { CR, US } from 'country-flag-icons/react/3x2'
 
 type Props = {}
 
 const LanguageSwitcher = (props: Props) => {
+
   const path = usePathname()
+  function handleChangeLang(lang: string) {
+
+    const paths = path.split('/')
+    paths[1] = lang
+    redirect(formatURL(paths.join('/'), lang))
+  }
+
   return (
-      <div className='flex gap-x-2'>
-          <Button onClick={() => formatURL('en', path)}>EN</Button>
-          <Button onClick={() => formatURL('es', path)}>ES</Button>
+      <div className='flex gap-5 w-fit'>
+          <Button className='w-fit h-fit p-0' variant='ghost' onClick={() => handleChangeLang('en')}>
+            <US title='English' className='w-full h-6 rounded-md'/>
+          </Button>
+          <Button className='w-fit h-fit p-0' variant='ghost' onClick={() => handleChangeLang('es')}>
+            <CR title='Spanish' className='w-full h-6 rounded-md'/>
+          </Button>
       </div>
   )
 }
