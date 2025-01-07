@@ -11,12 +11,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import Iphone15Pro from '@/components/ui/iphone-15-pro'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { formatURL } from '@/utils/lang'
-
-// ... (keep the existing imports)
 
 interface IntroductionProps {
   title: string;
@@ -142,7 +139,7 @@ const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, 
         </div>
         <motion.div variants={itemVariants} className='w-full flex justify-center items-center'>
           <Link href={formatURL(ctaLink, lang)} target="_blank" rel="noopener noreferrer">
-            <Button className="h-full w-fit flex flex-col p-5 py-10">
+            <Button className="h-fit w-fit flex flex-col p-2 py-10">
               <span className='text-lg font-semibold'>{ctaText}</span>
               <span className='text-sm'>{ctaSubtext}</span>
             </Button>
