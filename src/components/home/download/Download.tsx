@@ -1,7 +1,7 @@
 "use client"
 import React, {useState} from 'react'
 import { motion, AnimatePresence } from "framer-motion";
-import { Apple, Laptop, Smartphone } from 'lucide-react'
+import { Laptop, Smartphone } from 'lucide-react'
 
 import { Globe } from 'lucide-react';
 import { DeviceTypes, osTypes } from '@/lib/types'
@@ -9,8 +9,8 @@ import { DeviceTypes, osTypes } from '@/lib/types'
 import { Button } from "../../ui/button"
 import Link from 'next/link';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { FaApple, FaLinux, FaWindows } from 'react-icons/fa';
-import { Android2 } from 'react-bootstrap-icons';
+import { FaApple, FaLinux, FaWindows, FaAndroid } from 'react-icons/fa';
+import { cn } from '@/lib/utils';
 
 type Props = {}
 
@@ -80,18 +80,21 @@ function Download({}: Props) {
         <p className='text-xl font-light'>{t('agm-trader.download.device')}</p>
         <div className='flex flex-row h-full gap-x-10'>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button className='h-32' id='0' variant={device === DeviceTypes.PC ? 'primary':'secondary'} onClick={(event) => handleDevice(event)}>
+            <Button className='h-32 flex flex-col justify-center items-center' id='0' variant={device === DeviceTypes.PC ? 'primary':'secondary'} onClick={(event) => handleDevice(event)}>
               <Laptop size={'90%'} />
+              <p className={cn('text-sm', device === DeviceTypes.PC ? 'text-background':'text-foreground')}>PC</p>
             </Button>
           </motion.div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button className='h-32' id='1' variant={device === DeviceTypes.MOBILE ? 'primary':'secondary'} onClick={(event) => handleDevice(event)}>
+            <Button className='h-32 flex flex-col justify-center items-center' id='1' variant={device === DeviceTypes.MOBILE ? 'primary':'secondary'} onClick={(event) => handleDevice(event)}>
               <Smartphone size={'90%'}/>
+              <p className={cn('text-sm', device === DeviceTypes.MOBILE ? 'text-background':'text-foreground')}>Mobile</p>
             </Button>
           </motion.div>
-          <Button asChild variant='secondary' className='h-32'>
+          <Button asChild variant='secondary' className='h-32 flex flex-col justify-center items-center'>
             <Link href={'https://www.clientam.com/sso/Login?partnerID=agmbvi2022'} rel="noopener noreferrer" target="_blank" className='w-32'>
               <Globe className='text-orange h-[12vw] w-[12vw]'/>
+              <p className='text-sm text-foreground'>Web</p>
             </Link>
           </Button>
         </div>
@@ -109,14 +112,17 @@ function Download({}: Props) {
           >
             <p className='text-xl font-light'>{t('agm-trader.download.operating_system')}</p>
             <div className='flex flex-row h-full gap-x-10'>
-              <Button className='h-32' id='0' variant={os === osTypes.WINDOWS ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
+              <Button className='h-32 flex flex-col justify-center items-center' id='0' variant={os === osTypes.WINDOWS ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
                 <FaWindows size={'90%'}/>
+                <p className={cn('text-sm', os === osTypes.WINDOWS ? 'text-background':'text-foreground')}>Windows</p>
               </Button>
-              <Button className='h-32' id='1' variant={os === osTypes.LINUX ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
+              <Button className='h-32 flex flex-col justify-center items-center' id='1' variant={os === osTypes.LINUX ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
                 <FaLinux size={'90%'}/>
+                <p className={cn('text-sm', os === osTypes.LINUX ? 'text-background':'text-foreground')}>Linux</p>
               </Button>
-              <Button className='h-32' id='2' variant={os === osTypes.MACOS ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
+              <Button className='h-32 flex flex-col justify-center items-center' id='2' variant={os === osTypes.MACOS ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
                 <FaApple size={'90%'}/>
+                <p className={cn('text-sm', os === osTypes.MACOS ? 'text-background':'text-foreground')}>Mac</p>
               </Button>
             </div>
           </motion.div>
@@ -133,11 +139,13 @@ function Download({}: Props) {
           >
             <p className='text-xl font-light'>{t('agm-trader.download.operating_system')}</p>
             <div className='flex flex-row h-full gap-x-10'>
-              <Button className='h-32' id='3' variant={os === osTypes.ANDROID ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
-                <Android2 size={'90%'}/>
+              <Button className='h-32 flex flex-col justify-center items-center' id='3' variant={os === osTypes.ANDROID ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
+                <FaAndroid size={'90%'}/>
+                <p className={cn('text-sm', os === osTypes.ANDROID ? 'text-background':'text-foreground')}>Android</p>
               </Button>
-              <Button className='h-32' id='4' variant={os === osTypes.IOS ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
-                <Apple size={'90%'} />
+              <Button className='h-32 flex flex-col justify-center items-center' id='4' variant={os === osTypes.IOS ? 'primary':'secondary'} onClick={(event) => handleOS(event)}>
+                <FaApple size={'90%'} />
+                <p className={cn('text-sm', os === osTypes.IOS ? 'text-background':'text-foreground')}>iOS</p>
               </Button>
             </div>
           </motion.div>

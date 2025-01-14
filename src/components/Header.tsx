@@ -8,6 +8,7 @@ import { AnimatePresence } from 'framer-motion'
 import Sidebar from './Sidebar'
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { AlignJustify } from 'lucide-react'
+import { formatURL } from '@/utils/lang'
 
 const maxScroll = 100
 
@@ -29,12 +30,12 @@ export const Header = () => {
 
           {/* Header content */}
           <div className="flex items-center justify-between px-5 py-5 relative z-10">
-            <Link className="flex items-center" href={`/${lang}`}>
+            <Link className="flex items-center" href={formatURL(lang, '/')}>
               <Button className="bg-transparent hover:bg-transparent h-fit">
                 {scroll > maxScroll ? 
-                  <Image src="/images/brand/agm-logo.png" priority alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} /> 
+                  <Image src="/images/brand/agm-logo.png" priority={true} alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} /> 
                   : 
-                  <Image src="/images/brand/agm-logo-white.png" priority alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
+                  <Image src="/images/brand/agm-logo-white.png" priority={true} alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
                 }
               </Button>
             </Link>
@@ -70,9 +71,9 @@ export const FormHeader = () => {
 
           {/* Header content */}
           <div className="flex items-center justify-between px-5 py-5 relative z-10">
-            <Link className="flex items-center" href={`/${lang}`}>
+            <Link className="flex items-center" href={formatURL(lang, '/')}>
               <Button className="bg-transparent h-fit" variant="ghost">
-                <Image src="/images/brand/agm-logo.png" priority alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
+                <Image src="/images/brand/agm-logo.png" priority={true} alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
               </Button>
             </Link>
             <Button 

@@ -1,7 +1,7 @@
 'use client'
 
 import Title from "../../../../components/home/title/Title";
-import Introduction from "../../../../components/home/introduction/Introduction"
+import { Introduction } from "../../../../components/home/introduction/Introduction"
 import Services from "@/components/home/services/Services";
 import FAQ from "@/components/home/faq/FAQ";
 import Team from "@/components/home/team/Team";
@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { Building, Handshake, BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle, LineChart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
+import GeminiChatbot from "@/components/misc/GeminiChat";
 
 export default function Home() {
 

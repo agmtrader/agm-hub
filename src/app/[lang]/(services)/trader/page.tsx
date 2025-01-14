@@ -1,7 +1,7 @@
 'use client'
 
 import Title from "../../../../components/home/title/Title";
-import Introduction from "../../../../components/home/introduction/Introduction"
+import { TraderIntroduction } from "../../../../components/home/introduction/Introduction"
 import Services from "../../../../components/home/services/Services";
 import FAQ from "../../../../components/home/faq/FAQ";
 
@@ -71,7 +71,7 @@ export default function Home() {
   return (
     <div className="flex flex-col h-full w-full gap-y-20">
       <Title {...titleProps} />
-      <Introduction {...introductionProps} phone />
+      <TraderIntroduction {...introductionProps} />
       <Services services={services} />
       <Download />
       <FAQ />

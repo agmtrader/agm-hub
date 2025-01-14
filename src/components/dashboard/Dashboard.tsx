@@ -16,8 +16,6 @@ export function Dashboard() {
 
   return (
     <div className="flex w-full h-full">
-    
-
       {/* Main content */}
       <div className="flex-1">
         <header className="flex items-center justify-between p-4 border-b border-muted">

@@ -4,7 +4,7 @@ import { Button } from '../ui/button'
 import { formatURL } from '@/utils/lang'
 import { usePathname } from 'next/navigation'
 import { redirect } from 'next/navigation'
-import { CR, US } from 'country-flag-icons/react/3x2'
+import { ES, US } from 'country-flag-icons/react/3x2'
 
 type Props = {}
 
@@ -24,7 +24,7 @@ const LanguageSwitcher = (props: Props) => {
             <US title='English' className='w-full h-6 rounded-md'/>
           </Button>
           <Button className='w-fit h-fit p-0' variant='ghost' onClick={() => handleChangeLang('es')}>
-            <CR title='Spanish' className='w-full h-6 rounded-md'/>
+            <ES title='Spanish' className='w-full h-6 rounded-md'/>
           </Button>
       </div>
   )

@@ -16,6 +16,7 @@ import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { formatURL } from "@/utils/lang"
 import { X } from "lucide-react"
 import LanguageSwitcher from "./misc/LanguageSwitcher"
+import { useSession } from "next-auth/react"
 
 const navbarContent = [
   { name: 'AGM Home', url: '/' },
@@ -36,6 +37,7 @@ interface Props {
 const Sidebar = ({ setExpandSidebar }: Props) => {
 
   const { lang } = useTranslationProvider()
+  const {data: session} = useSession()
 
   return (
     <div>
@@ -64,13 +66,15 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
                 </Link>
               </NavigationMenuItem>
             ))}
-            <NavigationMenuItem className="w-full text-end">
-              <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
-                <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-end")}>
-                  Dashboard
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
+            {session?.user?.email?.includes('agmtechnology.com') && (
+              <NavigationMenuItem className="w-full text-end">
+                <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
+                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-end")}>
+                    Dashboard
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
           <Account />
         </NavigationMenu>
