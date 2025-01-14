@@ -16,7 +16,6 @@ export function Dashboard() {
 
   return (
     <div className="flex w-full h-full">
-      {/* Main content */}
       <div className="flex-1">
         <header className="flex items-center justify-between p-4 border-b border-muted">
           <div className="flex items-center text-foreground space-x-4">
@@ -85,38 +84,6 @@ export function Dashboard() {
                       <div className="text-2xl font-bold">+10</div>
                       <p className="text-xs">+4 since last hour</p>
                     </CardContent>
-                  </Card>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <Card className="col-span-3 row-span-2 row-start-2">
-                    <CardHeader>
-                      <CardTitle>Open account applications</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pl-2">
-                      
-                    </CardContent>
-                  </Card>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <Card className="row-span-2 col-start-4 row-start-2">
-                    <CardHeader>
-                      <CardTitle>Test</CardTitle>
-                      <CardContent>
-                        <p className="text-sm"></p>
-                      </CardContent>
-                    </CardHeader>
-                    <CardContent>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <Card className="col-span-2 row-span-2 row-start-4">
-                    {/* Add content for the new card in position 13 */}
-                  </Card>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <Card className="col-span-2 row-span-2 col-start-3 row-start-4">
-                    {/* Add content for the new card in position 14 */}
                   </Card>
                 </motion.div>
               </motion.div>

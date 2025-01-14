@@ -5,10 +5,8 @@ import { useSession } from 'next-auth/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
 import Account from '@/components/misc/Account';
-import Sidebar from '@/components/dashboard/Sidebar';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import FirebaseAuthProvider from '@/utils/providers/FirebaseAuthProvider';
-import { Header } from '@/components/Header';
 
 export default function Layout({
   children,
@@ -20,7 +18,7 @@ export default function Layout({
 
   if (status === 'loading') {
     return (
-      <LoadingComponent/>
+      <LoadingComponent className='w-full h-full'/>
     );
   }
 

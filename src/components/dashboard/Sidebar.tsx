@@ -28,11 +28,6 @@ const tools = [
     icon: Plus,
   },
   {
-    name: 'Account Management',
-    url: '/dashboard/account-management',
-    icon: Users,
-  },
-  {
     name: 'Reporting Center',
     url: '/dashboard/reporting',
     icon: RefreshCcw,
@@ -55,6 +50,11 @@ const tools = [
   {
     name: 'Advisor Center',
     url: '/dashboard/advisors',
+    icon: Users,
+  },
+  {
+    name: 'Auto Trader',
+    url: '/dashboard/auto-trader',
     icon: Users,
   }
 ]

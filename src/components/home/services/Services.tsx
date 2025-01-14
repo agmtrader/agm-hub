@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { formatURL } from '@/utils/lang'
+import { containerVariants, itemVariants } from '@/lib/anims'
 
 interface Service {
   name: string;
@@ -28,27 +29,6 @@ const Services = ({ services }: ServicesProps) => {
     threshold: 0.1,
     triggerOnce: true,
   })
-
-  const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.5,
-        staggerChildren: 0.2
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.5 }
-    }
-  }
 
   const getGridColumns = (length: number) => {
     if (length === 1) return 'grid-cols-1';

@@ -1,10 +1,18 @@
-import { Loader2 } from 'lucide-react'
 import React from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
-const LoadingComponent = () => {
+type Props = {
+  className?: string
+  children?: React.ReactNode
+}
+
+const LoadingComponent = ({className, children}: Props) => {
   return (
-    <div className='flex flex-col w-full h-full justify-center items-center gap-5'>
-      <Loader2 className="h-16 w-16 animate-spin text-primary" />
+    <div className={cn('flex items-center justify-center gap-2', className)}>
+      <Loader2 className='text-primary animate-spin' />
+      {children}
     </div>
   )
 }

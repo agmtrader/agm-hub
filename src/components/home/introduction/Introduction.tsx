@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { formatURL } from '@/utils/lang'
 import Iphone15Pro from '@/components/ui/iphone-15-pro'
+import { containerVariants, itemVariants } from '@/lib/anims'
 
 interface IntroductionProps {
   title: string;
@@ -36,27 +37,6 @@ export const Introduction: React.FC<IntroductionProps> = ({ title, description, 
     threshold: 0.1,
     rootMargin: '-100px 0px',
   })
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  }
 
   const listItemVariants = {
     hidden: { opacity: 0, scale: 0.8 },
