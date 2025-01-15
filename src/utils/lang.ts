@@ -12,6 +12,10 @@ export function formatURL(path:string, lang:string) {
 
 }
 
+export function goHome(lang:string) {
+  return changeLang(lang, '/')
+}
+
 export function getCallbackUrl(path: string) {
   const segments = path.split('/');
   if (segments.length <= 2) {

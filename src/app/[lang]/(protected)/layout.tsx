@@ -19,23 +19,21 @@ export default function Layout({
   if (status === 'loading') {
     return (
       <LoadingComponent className='w-full h-full'/>
-    );
+    )
   }
 
   return (
     <FirebaseAuthProvider>
       {session?.user ?
-        <>
-          <AnimatePresence>
-            <motion.div 
-              initial={{opacity:0}}
-              animate={{opacity:1}}
-              className='flex flex-col w-full h-full'
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
-        </>
+        <AnimatePresence>
+          <motion.div 
+            initial={{opacity:0}}
+            animate={{opacity:1}}
+            className='flex flex-col w-full h-full'
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
         :
         <motion.div 
           className='flex flex-col w-full h-full items-center gap-5'

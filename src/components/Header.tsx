@@ -8,7 +8,7 @@ import { AnimatePresence } from 'framer-motion'
 import Sidebar from './Sidebar'
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { AlignJustify } from 'lucide-react'
-import { formatURL } from '@/utils/lang'
+import { formatURL, goHome } from '@/utils/lang'
 
 const maxScroll = 100
 
@@ -22,15 +22,12 @@ export const Header = () => {
     <>
       <header className="fixed w-full z-50">
         <div className="relative">
-          {/* Background that changes opacity based on scroll */}
           <div 
             className="absolute inset-0 bg-background transition-opacity duration-300"
             style={{ opacity: scroll > maxScroll ? 1 : 0 }}
           />
-
-          {/* Header content */}
           <div className="flex items-center justify-between px-5 py-5 relative z-10">
-            <Link className="flex items-center" href={formatURL(lang, '/')}>
+            <Link className="flex items-center" href={goHome(lang)}>
               <Button className="bg-transparent hover:bg-transparent h-fit">
                 {scroll > maxScroll ? 
                   <Image src="/images/brand/agm-logo.png" priority={true} alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} /> 
@@ -64,14 +61,11 @@ export const FormHeader = () => {
     <>
       <header className=" w-full z-50">
         <div className="relative">
-          {/* Background that changes opacity based on scroll */}
           <div 
             className="bg-background"
           />
-
-          {/* Header content */}
           <div className="flex items-center justify-between px-5 py-5 relative z-10">
-            <Link className="flex items-center" href={formatURL(lang, '/')}>
+            <Link className="flex items-center" href={goHome(lang)}>
               <Button className="bg-transparent h-fit" variant="ghost">
                 <Image src="/images/brand/agm-logo.png" priority={true} alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
               </Button>

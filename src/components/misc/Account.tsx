@@ -17,9 +17,9 @@ const Account = ({}: Props) => {
   
   const {data:session} = useSession()
   const { lang, t } = useTranslationProvider()
-  
-  let callbackUrl = getCallbackUrl(window.location.pathname);
 
+  let callbackUrl = getCallbackUrl(window.location.pathname);
+  
   return (
     <div className='h-fit w-full flex flex-col justify-center items-center'>
       <AnimatePresence>
