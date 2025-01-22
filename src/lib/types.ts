@@ -34,6 +34,12 @@ export interface Advisor {
   'id': string
 }
 
+export interface Report {
+  'id': number
+  'name': string
+  'report': React.ReactNode
+}
+
 export interface Commission {
   'Amount': number
   'Beneficiary': string

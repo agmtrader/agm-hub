@@ -1,6 +1,7 @@
 'use client'
 import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
 import DocumentViewer from '@/components/dashboard/document_center/DocumentViewer'
+import DashboardPage from '@/components/misc/DashboardPage'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
@@ -47,11 +48,9 @@ const Page = () => {
   console.log(files)
 
   return (
-    <div className='flex flex-col text-foreground gap-5 w-full'>
-      <p className='text-5xl font-bold'>Investment Proposals</p>
-      <p className='text-xl'>Lookup all investment proposals for a user</p>
+    <DashboardPage title='Investment Proposals' description='View all investment proposals'>
       <DataTable data={files}
-        enablePagination 
+        infiniteScroll
         enableRowActions 
         rowActions={rowActions} 
         enableFiltering
@@ -62,7 +61,7 @@ const Page = () => {
           {selectedFileId && <DocumentViewer fileId={selectedFileId} />}
         </DialogContent>
       </Dialog>
-    </div>
+    </DashboardPage>
   )
 }
 

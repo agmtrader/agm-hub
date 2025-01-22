@@ -1,7 +1,6 @@
 import React from 'react'
 import { DataTable } from '../components/DataTable'
 import { Doughnut } from 'react-chartjs-2'
-import { cn } from '@/lib/utils'
 import 'chart.js/auto'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
@@ -106,21 +105,26 @@ const RiskProfile = ({riskProfile, account}: Props) => {
   }
 
   return (
-    <div className="w-full h-full flex gap-y-5 justify-start flex-col items-center text-foreground">
-        <p className="text-7xl text-foreground font-bold">{account ? account.AccountNumber : 'Anonymous'}</p>
-        {riskProfile.name && <h1 className="text-3xl font-bold">{riskProfile.name}</h1>}
-        <div className="flex flex-col lg:flex-row gap-5 w-full h-fit justify-center items-center text-center">
-          <div className="w-full lg:w-1/2 flex flex-col gap-y-5 justify-center items-center">
-            <h2 className="text-2xl font-semibold">{t('dashboard.risk.profile.asset_allocation')}</h2>
+    <div className="w-full h-full flex gap-10 justify-start flex-col items-center text-foreground">
+        <div className="flex flex-col gap-2 text-center">
+          {riskProfile.name && <h1 className="text-6xl font-bold">{riskProfile.name}</h1>}
+          <p className="text-xl text-subtitle">{account && account.AccountNumber}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-32 text-center">
+          <div className="flex flex-col gap-5">
+            <h2 className='text-xl font-semibold'>
+              {t('dashboard.risk.profile.asset_allocation')}
+            </h2>
             <DataTable data={assetData}/>
-            <p className="text-lg font-semibold">
-              {t('dashboard.risk.profile.average_yield')}: {(riskProfile.average_yield * 100).toFixed(2)}%
+            <p className='text-sm'>
+              {t('dashboard.risk.profile.average_yield')}: <span className='font-semibold text-primary'>{(riskProfile.average_yield * 100).toFixed(2)}%</span>
             </p>
           </div>
-          <div className="w-full lg:w-1/2 flex gap-y-5 justify-center items-center flex-col">
-            <div className="w-full max-w-md">
-              <Doughnut data={data} options={options} />
-            </div>
+          <div className="w-full flex flex-col gap-5 max-w-md">
+            <h2 className='text-xl font-semibold'>
+              {t('dashboard.risk.profile.asset_allocation')}
+            </h2>
+            <Doughnut data={data} options={options} />
           </div>
         </div>
     </div>

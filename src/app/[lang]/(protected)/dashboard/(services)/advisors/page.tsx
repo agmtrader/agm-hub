@@ -37,7 +37,7 @@ const page = () => {
             {advisors ? 
                 <DataTable
                     data={advisors}
-                    enablePagination
+                    infiniteScroll={true}
                     enableFiltering
                     filterColumns={['AdvisorName']}
                 /> 

@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 
 import {
   flexRender,
@@ -69,6 +69,7 @@ interface DataTableProps<TData> {
   rowActions?: RowAction[]
   enableFiltering?: boolean
   filterColumns?: string[]
+  infiniteScroll?: boolean
 }
 
 export const DataTable = <TData,>({
@@ -82,7 +83,10 @@ export const DataTable = <TData,>({
   rowActions,
   enableFiltering = false,
   filterColumns = [],
+  infiniteScroll = false,
 }: DataTableProps<TData>) => {
+  const observerTarget = useRef<HTMLDivElement>(null)
+  const [virtualPageSize, setVirtualPageSize] = useState(pageSize)
 
   const [rowSelection, setRowSelection] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
@@ -90,7 +94,7 @@ export const DataTable = <TData,>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: pageSize,
+    pageSize: infiniteScroll ? data.length : pageSize,
   })
   const [isPageTransition, setIsPageTransition] = useState(false)
 
@@ -210,7 +214,7 @@ export const DataTable = <TData,>({
     data,
     columns: columns as ColumnDef<TData, any>[],
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: infiniteScroll ? undefined : getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onRowSelectionChange: setRowSelection,
@@ -226,14 +230,33 @@ export const DataTable = <TData,>({
       rowSelection,
       columnFilters,
       columnVisibility,
-      pagination,
+      pagination: infiniteScroll ? undefined : pagination,
     },
     initialState: {
       pagination: {
-          pageSize: pageSize,
+        pageSize: infiniteScroll ? data.length : pageSize,
       },
     }
   })
+
+  useEffect(() => {
+    if (!infiniteScroll) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVirtualPageSize(prev => Math.min(prev + pageSize, data.length))
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current)
+    }
+
+    return () => observer.disconnect()
+  }, [infiniteScroll, pageSize, data.length])
 
   useEffect(() => {
     if (enableSelection && setSelection) {
@@ -247,6 +270,15 @@ export const DataTable = <TData,>({
       setIsPageTransition(false)
     }
   }, [pagination.pageIndex])
+
+  const getVisibleRows = useCallback(() => {
+    if (!infiniteScroll) return table.getRowModel().rows
+
+    return table
+      .getRowModel()
+      .rows
+      .slice(0, virtualPageSize)
+  }, [infiniteScroll, table, virtualPageSize])
 
   if (!data || data.length === 0) {
     return (
@@ -275,56 +307,66 @@ export const DataTable = <TData,>({
           ))}
         </div>
       )}
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          <AnimatePresence mode="wait">
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row, index) => (
-                <motion.tr
-                  key={row.id}
-                  variants={itemVariants}
-                  initial={isPageTransition ? "visible" : "hidden"}
-                  animate="visible"
-                  exit="hidden"
-                  custom={index}
-                  whileHover="hover"
-                  className="hover:bg-muted cursor-pointer whitespace-nowrap"
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </motion.tr>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
+      <div className={infiniteScroll ? "max-h-[600px] overflow-y-auto" : ""}>
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
-            )}
-          </AnimatePresence>
-        </TableBody>
-      </Table>
-      {enablePagination && (
+            ))}
+          </TableHeader>
+          <TableBody>
+            <AnimatePresence mode="wait">
+              {getVisibleRows()?.length ? (
+                getVisibleRows().map((row, index) => (
+                  <motion.tr
+                    key={row.id}
+                    variants={itemVariants}
+                    initial={isPageTransition ? "visible" : "hidden"}
+                    animate="visible"
+                    exit="hidden"
+                    custom={index}
+                    whileHover="hover"
+                    className="hover:bg-muted cursor-pointer whitespace-nowrap"
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </motion.tr>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </AnimatePresence>
+          </TableBody>
+        </Table>
+        {infiniteScroll && virtualPageSize < data.length && (
+          <div 
+            ref={observerTarget} 
+            className="h-10 w-full flex items-center justify-center"
+          >
+            <div className="text-sm text-muted-foreground">Loading more...</div>
+          </div>
+        )}
+      </div>
+      {enablePagination && !infiniteScroll && (
         <div className="flex items-center justify-between space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
 

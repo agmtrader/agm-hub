@@ -69,7 +69,11 @@ const AccruedInterest  = (props: Props) => {
   return (
     <DashboardPage title='Accrued Interest' description='View accrued interest up to date'>
       {accruedInterest ? 
-        <DataTable data={accruedInterest} columns={columns} />
+        <DataTable 
+          data={accruedInterest} 
+          columns={columns}
+          infiniteScroll={true}
+        />
         :
         <LoadingComponent className='w-full h-full'/>
       }
