@@ -503,5 +503,31 @@
             "select_required": "Por favor, seleccione una opción.",
             "security_answer": "Por favor, ingrese una respuesta para la pregunta de seguridad."
         }
+    },
+    "signin": {
+        "title": "Iniciar Sesión",
+        "signin": "Iniciar Sesión",
+        "signingIn": "Iniciando sesión...",
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "register": {
+            "message": "¿No tiene una cuenta? ",
+            "link": "Registrarse"
+        },
+        "or": "O",
+        "google": "Iniciar sesión con Google"
+    },
+    "createAccount": {
+        "title": "Crear una cuenta AGM",
+        "message": "Por favor, complete el formulario a continuación para crear una cuenta AGM.",
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "country": "País",
+        "confirmPassword": "Confirmar contraseña",
+        "createAccount": "Crear cuenta",
+        "goBack": "Volver",
+        "goBackHome": "Volver a la página principal"
     }
 }

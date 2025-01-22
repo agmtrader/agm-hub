@@ -24,6 +24,9 @@ import { formatURL } from '@/utils/lang'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { User } from 'next-auth'
+import { ArrowLeft } from 'lucide-react'
+import { containerVariants, itemVariants } from '@/lib/anims'
+import { motion } from 'framer-motion'
 
 type UserPayload = User & {
   password: string
@@ -53,12 +56,13 @@ const CreateAccount = () => {
   const { toast } = useToast()
 
   const initialValues = getDefaults(formSchema)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues,
   })
-  const { lang } = useTranslationProvider()
 
+  const { lang, t } = useTranslationProvider()
   const router = useRouter()
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
@@ -176,17 +180,33 @@ const CreateAccount = () => {
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col justify-center items-center gap-y-6">
-      <h1 className="text-4xl font-bold text-agm-dark-blue">Create an AGM Account</h1>
-      <p className='text-subtitle text-sm text-center'>Please fill out the form below to create an AGM account.</p>
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="h-screen w-screen flex flex-col justify-center items-center gap-y-6"
+    >
+      <motion.div variants={itemVariants} className='flex gap-2'>
+        <Button className='w-fit' variant="ghost" asChild>
+          <Link href={formatURL('/signin', lang)}>
+            <ArrowLeft/>
+          </Link>
+        </Button>
+        <h1 className="text-4xl font-bold text-agm-dark-blue">{t('createAccount.title')}</h1>
+      </motion.div>
+      <motion.p variants={itemVariants} className='text-subtitle text-sm text-center'>{t('createAccount.message')}</motion.p>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md flex flex-col gap-y-4">
+        <motion.form 
+          variants={itemVariants}
+          onSubmit={form.handleSubmit(onSubmit)} 
+          className="w-full max-w-md flex justify-center items-center flex-col gap-y-4"
+        >
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{t('createAccount.name')}</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="" />
                 </FormControl>
@@ -199,7 +219,7 @@ const CreateAccount = () => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t('createAccount.email')}</FormLabel>
                 <FormControl>
                   <Input {...field} type="email" placeholder="" />
                 </FormControl>
@@ -208,14 +228,14 @@ const CreateAccount = () => {
             )}
           />
 
-          <CountriesFormField form={form} element={{ title: 'Country of Residence', name: 'country' }} />
+          <CountriesFormField form={form} element={{ title: t('createAccount.country'), name: 'country' }} />
 
           <FormField
             control={form.control}
             name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>{t('createAccount.username')}</FormLabel>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -228,7 +248,7 @@ const CreateAccount = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t('createAccount.password')}</FormLabel>
                 <FormControl>
                   <Input type="password" placeholder="" {...field} />
                 </FormControl>
@@ -241,7 +261,7 @@ const CreateAccount = () => {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>{t('createAccount.confirmPassword')}</FormLabel>
                 <FormControl>
                   <Input type="password" placeholder="" {...field} />
                 </FormControl>
@@ -250,20 +270,17 @@ const CreateAccount = () => {
             )}
           />
 
-          <Button type="submit" className="mt-4">
-            Create Account
+          <Button type="submit" className="w-fit">
+            {t('createAccount.createAccount')}
           </Button>
-        </form>
+        </motion.form>
       </Form>
-      <div className='flex gap-2'>
+      <motion.div variants={itemVariants}>
         <Button variant="ghost" asChild>
-          <Link href={formatURL('/signin', lang)}>Go back</Link>
+          <Link href={formatURL('/', lang)}>{t('createAccount.goBackHome')}</Link>
         </Button>
-        <Button variant="ghost" asChild>
-          <Link href={formatURL('/', lang)}>Go back home</Link>
-        </Button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

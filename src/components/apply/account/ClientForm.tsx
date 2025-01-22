@@ -195,23 +195,25 @@ const ClientForm = () => {
   }, [])
 
   return (
-    <div className='w-full h-fit flex flex-col justify-center items-center'>
+    <div className='w-full flex flex-col h-full'>
       <FormHeader/>
+      <div className='w-full h-fit flex flex-col my-16 justify-center items-center'>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step}
-          initial="initial"
-          animate="in"
-          exit="out"
-          variants={pageVariants}
-          transition={pageTransition}
-          className='w-full max-w-xl p-5 h-fit flex flex-col justify-center items-center pb-10'
-        >
-          {renderFormStep()}
-        </motion.div>
-      </AnimatePresence>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial="initial"
+            animate="in"
+            exit="out"
+            variants={pageVariants}
+            transition={pageTransition}
+            className='w-full max-w-xl p-5 h-fit flex flex-col justify-center items-center pb-10'
+          >
+            {renderFormStep()}
+          </motion.div>
+        </AnimatePresence>
 
+      </div>
     </div>
 )}
 

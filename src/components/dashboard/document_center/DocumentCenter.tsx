@@ -45,10 +45,6 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     let files:Drive = {}
 
     if (!query) {
-      toast({
-        title: "No query provided, showing all documents.",
-        variant: "destructive",
-      })
       query = {}
     }
 

@@ -595,5 +595,31 @@
             "security_answer": "Please enter an answer for the security question.",
             "true_required": "Checkbox must be checked."
         }
+    },
+    "signin": {
+        "title": "Sign In",
+        "signin": "Sign in",
+        "signingIn": "Signing in...",
+        "username": "Username",
+        "password": "Password",
+        "register": {
+            "message": "Don't have an account? ",
+            "link": "Register"
+        },
+        "or": "OR",
+        "google": "Sign in with Google"
+    },
+    "createAccount": {
+        "title": "Create an AGM Account",
+        "message": "Please fill out the form below to create an AGM account.",
+        "name": "Name",
+        "email": "Email",
+        "username": "Username",
+        "password": "Password",
+        "country": "Country",
+        "confirmPassword": "Confirm Password",
+        "createAccount": "Create Account",
+        "goBack": "Go back",
+        "goBackHome": "Go back home"
     }
 }

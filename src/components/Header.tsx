@@ -61,7 +61,7 @@ export const FormHeader = () => {
 
   return (
     <>
-      <header className=" w-full z-50">
+      <header className="fixed w-full z-50">
         <div className="relative">
           <div 
             className="bg-background"

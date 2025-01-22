@@ -13,10 +13,12 @@ import { Card, CardContent, CardTitle, CardHeader } from '@/components/ui/card';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { FaGoogle } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { containerVariants, itemVariants } from '@/lib/anims';
 
 function SignIn() {
 
-  const { lang } = useTranslationProvider()
+  const { lang, t } = useTranslationProvider()
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -54,77 +56,90 @@ function SignIn() {
     await signIn('google', {
       callbackUrl: callbackUrl ? formatURL(`/onboarding?callbackUrl=${encodeURIComponent(callbackUrl)}`, lang) : formatURL('/onboarding', lang),
     });
-  };
+  }
 
   return (
-    <div className='flex items-center justify-center min-h-screen'>
-      <Card className='w-96 h-fit gap-2 flex flex-col justify-center items-center'>
-        <CardHeader className='flex flex-col justify-center items-center gap-2'>
-        <Image src='/images/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
-        <CardTitle className='text-center font-bold text-3xl' >Sign In</CardTitle>
-        {callbackUrl === formatURL(`/apply`, lang) && (
-          <div className='flex flex-col gap-2 bg-error/20 p-2 rounded-md items-center justify-center'>
-              <p className='text-sm text-subtitle text-center'>You must register for an AGM account before applying for a trading account.</p>
-          </div>
-        )}
-      </CardHeader>
-      <CardContent className='w-full'>
-        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-          <Input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            disabled={isLoading}
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={isLoading}
-          />
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing In...
-              </>
-            ) : (
-              'Sign In'
-            )}
-          </Button>
-          <p className='text-subtitle text-sm text-center'>Don't have an account? <Link href={formatURL('/create-account', lang)} className='underline text-subtitle text-sm font-bold'>Register</Link></p>
-        </form>
-        <div className='flex items-center gap-4 justify-center'>
-          <Separator className='my-4 w-[40%]' />
-          <p className='text-subtitle text-sm'>OR</p>
-          <Separator className='my-4 w-[40%]' />
-        </div>
-        <Button
-          variant='ghost'
-          onClick={handleGoogleSignIn}
-          className="w-full mt-4"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing In...
-            </>
-          ) : (
-            <div className='flex items-center gap-2'>
-              <FaGoogle className='h-4 w-4' />
-              Sign in with Google
-            </div>
-          )}
-        </Button>
-      </CardContent>
-    </Card>
-    </div>
-  );
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className='flex items-center justify-center min-h-screen'
+    >
+      <motion.div variants={itemVariants}>
+        <Card className='w-96 h-fit gap-2 flex flex-col justify-center items-center'>
+          <motion.div variants={itemVariants}>
+            <CardHeader className='flex flex-col justify-center items-center gap-2'>
+              <Image src='/images/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
+              <CardTitle className='text-center font-bold text-3xl'>{t('signin.title')}</CardTitle>
+              {callbackUrl === formatURL(`/apply`, lang) && (
+                <div className='flex flex-col gap-2 bg-error/20 p-2 rounded-md items-center justify-center'>
+                  <p className='text-sm text-subtitle text-center'>{t('signin.apply.message')}</p>
+                </div>
+              )}
+            </CardHeader>
+          </motion.div>
+          <motion.div variants={itemVariants} className='w-full'>
+            <CardContent className='w-full'>
+              <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-full'>
+                <Input
+                  type="text"
+                  placeholder={t('signin.username')}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  disabled={isLoading}
+                />
+                <Input
+                  type="password"
+                  placeholder={t('signin.password')}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                />
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('signin.signingIn')}
+                    </>
+                  ) : (
+                    t('signin.signin')
+                  )}
+                </Button>
+                <p className='text-subtitle text-sm text-center'>
+                  {t('signin.register.message')} <Link href={formatURL('/create-account', lang)} className='underline text-subtitle text-sm font-bold'>{t('signin.register.link')}</Link>
+                </p>
+              </form>
+              <div className='flex items-center gap-4 justify-center'>
+                <Separator className='my-4 w-[40%]' />
+                <p className='text-subtitle text-sm'>{t('signin.or')}</p>
+                <Separator className='my-4 w-[40%]' />
+              </div>
+              <Button
+                variant='ghost'
+                onClick={handleGoogleSignIn}
+                className="w-full mt-4"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('signin.signingIn')}
+                  </>
+                ) : (
+                  <div className='flex items-center gap-2'>
+                    <FaGoogle className='h-4 w-4' />
+                    {t('signin.google')}
+                  </div>
+                )}
+              </Button>
+            </CardContent>
+          </motion.div>
+        </Card>
+      </motion.div>
+    </motion.div>
+  )
 }
 
 export default SignIn;

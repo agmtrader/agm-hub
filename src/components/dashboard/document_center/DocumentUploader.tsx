@@ -72,9 +72,9 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
 
             let filePayload = {
                 file: base64File, // This now includes the full data URL
-                fileName: file.name,
-                mimeType: file.type,
-                parentFolderId: folderDictionary.find((folder) => folder.id === selectedType)?.drive_id || ''
+                file_name: file.name,
+                mime_type: file.type,
+                parent_folder_id: folderDictionary.find((folder) => folder.id === selectedType)?.drive_id || ''
             }
 
             let fileInfo = await accessAPI('/drive/upload_file', 'POST', filePayload);
@@ -105,14 +105,13 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
                 title: "Success",
                 description: "Document uploaded successfully",
                 variant: "default",
-            });
+            })
 
             setFiles(null)
             setSelectedType(folderDictionary[0].id)
             setOpen(false)
             setUploading(false)
             
-            // Call the callback after successful upload
             onUploadSuccess?.()
 
         } catch (error) {
