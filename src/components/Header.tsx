@@ -9,6 +9,7 @@ import Sidebar from './Sidebar'
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { AlignJustify } from 'lucide-react'
 import { formatURL, goHome } from '@/utils/lang'
+import { cn } from '@/lib/utils'
 
 const maxScroll = 100
 
@@ -20,14 +21,14 @@ export const Header = () => {
 
   return (
     <>
-      <header className="fixed w-full z-50">
+      <header className={cn("fixed w-full z-50")}>
         <div className="relative">
           <div 
             className="absolute inset-0 bg-background transition-opacity duration-300"
             style={{ opacity: scroll > maxScroll ? 1 : 0 }}
           />
           <div className="flex items-center justify-between px-5 py-5 relative z-10">
-            <Link className="flex items-center" href={goHome(lang)}>
+            <Link className="flex items-center" href={formatURL('/', lang)}>
               <Button className="bg-transparent hover:bg-transparent h-fit">
                 {scroll > maxScroll ? 
                   <Image src="/images/brand/agm-logo.png" priority={true} alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} /> 
@@ -52,6 +53,7 @@ export const Header = () => {
     </>
   )
 }
+
 
 export const FormHeader = () => {
   const { lang } = useTranslationProvider()

@@ -24,8 +24,22 @@ export interface Account {
   'Advisor':string | null
 }
 
-// Table
-export type Selection = Document | Ticket
+export interface Advisor {
+  'AdvisorCode': string
+  'AdvisorName': string
+  'Agency': string
+  'HierarchyL1': string
+  'HierarchyL2': string
+  'InceptionDate': string
+  'id': string
+}
+
+export interface Commission {
+  'Amount': number
+  'Beneficiary': string
+  'YYYY': number
+  'YYYYMM': number
+}
 
 // Document Center
 

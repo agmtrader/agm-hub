@@ -21,7 +21,7 @@ const Account = ({}: Props) => {
   let callbackUrl = getCallbackUrl(window.location.pathname);
   
   return (
-    <div className='h-fit w-full flex flex-col justify-center items-center'>
+    <div className='h-fit w-fit flex flex-col justify-center items-center'>
       <AnimatePresence>
         {session?.user ? (
           <motion.div

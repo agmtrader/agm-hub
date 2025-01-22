@@ -20,12 +20,11 @@ export default function Layout({
   }
 
   return (
-    <div className="flex flex-col h-full w-full scroll-smooth">
-        <FormHeader/>
-        <div className="flex flex-row h-full w-full">
-          <Sidebar/>
-          {children}
-        </div>
+    <div className="flex h-full w-full scroll-smooth">
+      <Sidebar/>
+      <div className="p-5 w-full h-full">
+        {children}
+      </div>
     </div>
   )
 }

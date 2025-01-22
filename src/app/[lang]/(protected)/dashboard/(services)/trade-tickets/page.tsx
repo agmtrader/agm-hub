@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
 import { useToast } from '@/hooks/use-toast'
+import DashboardPage from '@/components/misc/DashboardPage'
+import LoadingComponent from '@/components/misc/LoadingComponent'
 
 export default function TradeTickets() {
 
@@ -134,69 +136,40 @@ export default function TradeTickets() {
     }
 
   return (
-    <div className="w-full h-full flex flex-col gap-y-10 justify-start items-center">
-
-      <h1 className="text-7xl text-foreground font-bold">Generate Trade Tickets</h1>
-      <p className='text-subtitle'>Please select one or more tickets to generate trade tickets for. All tickets must be of the same symbol.</p>
-
+    <DashboardPage title='Trade Tickets' description='Generate trade tickets for clients'>
+      <Select onValueChange={(value) => setFlexQueryId(value)}>
+        <SelectTrigger className="w-fit gap-2">
+          <SelectValue placeholder="Select Account" />
+        </SelectTrigger>
+        <SelectContent>
+          {flexQueryIds.map((flexQuery) => (
+            <SelectItem className='p-2' key={flexQuery.id} value={flexQuery.id}>{flexQuery.name} - {flexQuery.user_id}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       <div className="flex gap-10 justify-center items-center">
 
-        <div className='w-full flex flex-col gap-5 justify-center items-center'>
-          
-          <div className='w-full flex gap-5 justify-center items-center'>
-            <Select onValueChange={(value) => setFlexQueryId(value)}>
-              <SelectTrigger className="w-fit gap-2">
-                <SelectValue placeholder="Select Account" />
-              </SelectTrigger>
-              <SelectContent>
-                {flexQueryIds.map((flexQuery) => (
-                  <SelectItem className='p-2' key={flexQuery.id} value={flexQuery.id}>{flexQuery.name} - {flexQuery.user_id}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Button onClick={generateTradeTicket}>
-              Generate Trade Ticket
-            </Button>
-          </div>
-
-          <div className='w-full h-fit flex flex-col gap-y-5 justify-center items-center'>
-            <ScrollArea className='w-full h-full flex justify-center items-center'>
-              {flexQuery !== null ?
-                flexQuery.length > 0 ? 
-                  <div className='w-full h-full flex flex-col gap-y-5 justify-center items-center'>
-                    <DataTable 
-                      data={flexQuery}
-                      columns={columns} 
-                      enableSelection 
-                      setSelection={setSelectedTrades} 
-                      enablePagination 
-                    />
-                  </div>
-                  : 
-                  <p className='text-foreground text-center'>Account has executed no trades today.</p>
-                :
-                null
-              }
-            </ScrollArea>
-          </div>
-
-          <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirm Send to Client</DialogTitle>
-                <DialogDescription>
-                  Make sure you have reviewed the trade ticket before sending it to the client.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
-                <Button onClick={() => { sendToClient(); setConfirmDialogOpen(false); }}>Confirm</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          
-        </div>
+        {flexQueryId ?
+            flexQuery ?
+              <div className='flex flex-col gap-5 w-full h-full justify-center items-center'>
+                <DataTable 
+                  data={flexQuery}
+                  columns={columns} 
+                  enableSelection 
+                  setSelection={setSelectedTrades} 
+                  enablePagination 
+                  enableFiltering
+                  filterColumns={['Description']}
+                />
+                <Button disabled={selectedTrades.length === 0} className='w-fit' onClick={generateTradeTicket}>
+                  Generate Trade Ticket
+                </Button>
+              </div>
+            :
+            <LoadingComponent className='h-full w-full'/>
+          :
+          <p className='text-foreground text-center'>Select an account to view trades</p>
+        }
 
         {clientMessage &&
           <div className='w-full text-foreground h-full flex flex-col gap-y-5 justify-center items-center'>
@@ -212,8 +185,23 @@ export default function TradeTickets() {
           </div>
         }
 
-      </div>
 
-    </div>
+        <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Send to Client</DialogTitle>
+              <DialogDescription>
+                Make sure you have reviewed the trade ticket before sending it to the client.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
+              <Button onClick={() => { sendToClient(); setConfirmDialogOpen(false); }}>Confirm</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+      </div>
+    </DashboardPage>
   )
 }

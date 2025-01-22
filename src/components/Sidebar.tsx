@@ -76,7 +76,9 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
               </NavigationMenuItem>
             )}
           </NavigationMenuList>
-          <Account />
+          <div className="w-full flex flex-col justify-end items-end">
+            <Account />
+          </div>
         </NavigationMenu>
       </motion.div>
     </div>

@@ -11,7 +11,12 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { cn } from '@/lib/utils'
 import { Separator } from '../ui/separator'
 
-const tools = [
+const client_tools = [
+  {
+    name: 'Account Applications',
+    url: '/dashboard/open-account',
+    icon: Plus,
+  },
   {
     name: 'Risk Profiles',
     url: '/dashboard/risk',
@@ -23,10 +28,13 @@ const tools = [
     icon: Ticket,
   }, 
   {
-    name: 'Account Applications',
-    url: '/dashboard/open-account',
-    icon: Plus,
+    name: 'Investment Proposals',
+    url: '/dashboard/investment-proposals',
+    icon: FileText,
   },
+]
+
+const admin_tools = [
   {
     name: 'Reporting Center',
     url: '/dashboard/reporting',
@@ -38,34 +46,24 @@ const tools = [
     icon: FileText,
   },
   {
-    name: 'Database Center',
-    url: '/dashboard/database-center',
-    icon: Database,
-  },
-  {
-    name: 'Investment Proposals',
-    url: '/dashboard/investment-proposals',
-    icon: FileText,
-  },
-  {
     name: 'Advisor Center',
     url: '/dashboard/advisors',
     icon: Users,
   },
-  {
-    name: 'Auto Trader',
-    url: '/dashboard/auto-trader',
-    icon: Users,
-  }
 ]
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const {lang, setLang} = useTranslationProvider()
+  const { lang } = useTranslationProvider()
 
   return (
-    <nav className="flex flex-col justify-center items-center text-foreground px-5 h-full gap-y-10 w-fit">
-      <NavigationMenu className="py-2 h-fit flex flex-col justify-between items-start">
+    <NavigationMenu className="p-5 h-full flex flex-col gap-10 justify-between items-start">
+      <div className='flex flex-col items-center justify-center gap-10'>
+        <Button variant="ghost" className='w-fit h-fit'>
+          <Link href={formatURL('/', lang)} legacyBehavior passHref>
+            <Image src="/images/brand/agm-logo.png" alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
+          </Link>
+        </Button>
         <NavigationMenuList className="w-full flex flex-col gap-2">
           <NavigationMenuItem key={'dashboard'} className="flex w-full h-fit">
             <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
@@ -78,7 +76,8 @@ const Sidebar = () => {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
-          {tools.map((item, index) => (
+          <Separator />
+          {client_tools.map((item, index) => (
             <NavigationMenuItem key={index} className="flex w-full h-fit">
               <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
                 <NavigationMenuLink className={cn(
@@ -91,17 +90,28 @@ const Sidebar = () => {
               </Link>
             </NavigationMenuItem>
           ))}
+          <Separator />
+          {admin_tools.map((item, index) => (
+            <NavigationMenuItem key={index} className="flex w-full h-fit">
+              <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
+                <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-start text-start w-full whitespace-nowrap")}>
+                  <item.icon className="h-4 w-4" />
+                  {!isCollapsed && <span className="ml-2">{item.name}</span>}
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          ))}
         </NavigationMenuList>
-        <Button
-            variant="ghost"
-            size="icon"
-            className="p-0"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-          >
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
-      </NavigationMenu>
-    </nav>
+      </div>
+      <Button
+          variant="ghost"
+          size="icon"
+          className="p-0"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+        >
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+      </Button>
+  </NavigationMenu>
   )
 }
 

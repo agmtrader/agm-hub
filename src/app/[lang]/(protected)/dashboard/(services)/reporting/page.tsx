@@ -31,7 +31,7 @@ const Page = () => {
     fetchData()
   }, [])
 
-  if (documents && documents.length === 0) return <LoadingComponent/>
+  if (documents && documents.length === 0) return <LoadingComponent className='h-full w-full'/>
 
   const fadeIn = {
     hidden: { opacity: 0 },

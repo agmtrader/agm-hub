@@ -11,7 +11,7 @@ import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 
 export default function Home() {
 
-  const { t, lang } = useTranslationProvider()
+  const { t } = useTranslationProvider()
   
   const titleProps = {
     backgroundImage: '/images/agm-advisor.webp',

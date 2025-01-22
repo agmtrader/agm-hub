@@ -119,7 +119,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     const documentId = row.DocumentID
 
     let response = await accessAPI('/drive/delete_file', 'POST', {
-      'fileId': fileDriveId,
+      'file_id': fileDriveId,
     })
 
     if (response['status'] !== 'success') {
@@ -170,11 +170,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     },
   ]
 
-  if (loading) return (
-    <div className='w-full h-full flex justify-start items-start'>
-      <LoadingComponent />
-    </div>
-  )
+  if (loading) return <LoadingComponent className='w-full h-full'/>
 
   return (
     <motion.div
