@@ -2,10 +2,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
 import { Button } from "@/components/ui/button"
 import 'chart.js/auto'
-
 import {
   Form,
   FormControl,
@@ -16,15 +14,12 @@ import {
 } from "@/components/ui/form"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
-
 import { getDefaults } from '@/utils/form'
 import { risk_assesment_schema } from "@/lib/schemas"
-
 import { Input } from "@/components/ui/input"
 import { formatTimestamp } from "@/utils/dates"
 import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
-import { motion, AnimatePresence, m } from "framer-motion"
-
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Dialog,
   DialogClose,
@@ -37,153 +32,33 @@ import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
 import { useSession } from "next-auth/react"
+import { getRiskFormQuestions, risk_profiles, RiskProfile as RiskProfileType, UserRiskProfile, weights } from "@/lib/risk-profile"
 
-// Risk profile types
-export const risk_profile_types = [
-  {
-    name: 'Conservative A',
-    bonds_aaa_a: 0.3,
-    bonds_bbb: 0.7,
-    bonds_bb: 0,
-    etfs: 0,
-    average_yield: .06103,
-    min_score: 0,
-    max_score: 0.9
-  },
-  {
-    name: 'Conservative B',
-    bonds_aaa_a: 0.18,
-    bonds_bbb: 0.54,
-    bonds_bb: .18,
-    etfs: .1,
-    average_yield: .0723,
-    min_score: 0.9,
-    max_score: 1.25
-  },
-  {
-    name: 'Moderate A',
-    bonds_aaa_a: 0.16,
-    bonds_bbb: 0.48,
-    bonds_bb: 0.16,
-    etfs: 0.2,
-    average_yield: .0764,
-    min_score: 1.25,
-    max_score: 1.5
-  },
-  {
-    name: 'Moderate B',
-    bonds_aaa_a: 0.15,
-    bonds_bbb: 0.375,
-    bonds_bb: 0.15,
-    etfs: 0.25,
-    average_yield: .0736,
-    min_score: 1.5,
-    max_score: 2
-  },
-  {
-    name: 'Moderate C',
-    bonds_aaa_a: 0.14,
-    bonds_bbb: 0.35,
-    bonds_bb: 0.21,
-    etfs: 0.3,
-    average_yield: .06103,
-    min_score: 2,
-    max_score: 2.5
-  },
-  {
-    name: 'Aggressive A',
-    bonds_aaa_a: 0.13,
-    bonds_bbb: 0.325,
-    bonds_bb: .195,
-    etfs: .35,
-    average_yield: .0845,
-    min_score: 2.5,
-    max_score: 2.75
-  },
-  {
-    name: 'Aggressive B',
-    bonds_aaa_a: 0.12,
-    bonds_bbb: 0.30,
-    bonds_bb: 0.18,
-    etfs: 0.4,
-    average_yield: .0865,
-    min_score: 2.75,
-    max_score: 3
-  },
-  {
-    name: 'Aggressive C',
-    bonds_aaa_a: 0.05,
-    bonds_bbb: 0.25,
-    bonds_bb: 0.20,
-    etfs: 0.5,
-    average_yield: .0925,
-    min_score: 3,
-    max_score: 10
-  }
-]
-
-// Question weights
-export const weights = [
-  {
-    name: 'type',
-    weight: 0.2
-  }, 
-  {
-    name: 'loss',
-    weight: 0.15
-  },
-  {
-    name: 'gain',
-    weight: 0.15
-  }, 
-  {
-    name: 'period',
-    weight: 0.15
-  },
-  {
-    name: 'diversification',
-    weight: 0.15
-  },
-  {
-    name: 'goals',
-    weight: 0.2
-  }
-]
 
 // Each question in the form has a weight and each answer in the question has a weight
 // The risk score is calculated by summing the weighted values of the answers
 
 // Question weight is stored in the weights array
 // Answer weight is stored in the question schema
-
-export type RiskProfile = {
-  AccountNumber: string;
-  ClientName: string;
-  Score: number;
-  RiskProfileID: string;
-  RiskProfile: any;
-  UserID: string;
-}
-
 const RiskForm = () => {
-
-  // Client message and portfolio
-  const [riskProfile, setRiskProfile] = useState<any | null>(null)
-  const [submitting, setSubmitting] = useState(false)
 
   const {toast} = useToast()
   const {data:session} = useSession()
   const {t} = useTranslationProvider()
 
+  const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
+
   let formSchema:any;
   let initialFormValues:any = {};
   formSchema = risk_assesment_schema(t)
   initialFormValues = getDefaults(formSchema)
-
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       values: initialFormValues,
   })
+
+  const [riskProfile, setRiskProfile] = useState<any | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -192,51 +67,53 @@ const RiskForm = () => {
     try {
 
       if (!session?.user) throw new Error('User not found')
-      
-      const timestamp = new Date()
-      const riskProfileID = formatTimestamp(timestamp)
 
       // Calculate risk score
-      let sum = 0
+      let risk_score = 0
+      Object.entries(values).forEach((answer) => {
 
-      // Loop through form values, ignore certain fields and calculate risk score using the category and question weights
-      Object.entries(values).forEach((element) => {
-        const [key, value] = element
+        // Extract the question key and answer value
+        const [key, value] = answer
+
+        // Ignore certain fields
         if (key !== 'account_number' && key !== 'client_name') {
+
+          // Get the weight of the question
           const weight = weights.find(el => el.name === key)?.weight || 0
-          sum += weight * Number(value)
+
+          // Add onto the risk score by multiplying the weight of the question by the value of the answer
+          risk_score += weight * Number(value)
         }
       })
 
-      // Calculate risk type
-      let risk_profile_type = ''
-      risk_profile_types.forEach(type => {
-        if (sum >= type.min_score && sum < type.max_score) {
-          risk_profile_type = type.name;
+      // Find assigned risk profile using the calculated risk score
+      let assigned_risk_profile:RiskProfileType | null = null
+      risk_profiles.forEach(profile => {
+        if (risk_score >= profile.min_score && risk_score < profile.max_score) {
+          assigned_risk_profile = profile
         }
       })
-      
-      // Get risk profile type from dictionary
-      const risk_profile_properties = risk_profile_types.find((type) => type.name === risk_profile_type) || null
 
-      // Build a risk profile for the user
-      const risk_profile:RiskProfile = {
+      // Build a user risk profile for the database
+      const timestamp = new Date()
+      const riskProfileID = formatTimestamp(timestamp)
+      const user_risk_profile:UserRiskProfile = {
+        RiskProfileID: riskProfileID,
         AccountNumber: values.account_number || '',
         ClientName: values.client_name,
-        Score: sum,
-        RiskProfileID: riskProfileID,
-        RiskProfile: risk_profile_properties,
+        Score: risk_score,
+        RiskProfile: assigned_risk_profile,
         UserID: session?.user?.id
       }
 
-      // Save the user's risk profile in the database
-      let data = await accessAPI('/database/create', 'POST', {data: risk_profile, path:'db/clients/risk', id:riskProfileID})
+      // Save the user risk profile in the database
+      let data = await accessAPI('/database/create', 'POST', {data: user_risk_profile, path:'db/clients/risk', id:riskProfileID})
       setSubmitting(false)
 
       if (data['status'] !== 'success') throw new Error('Error submitting risk profile')
       
-      // Display the risk profile
-      setRiskProfile(risk_profile_properties)
+      // Display the assigned risk profile
+      setRiskProfile(user_risk_profile.RiskProfile)
 
       // Reset the form after submission
       form.reset(initialFormValues)
@@ -254,130 +131,6 @@ const RiskForm = () => {
   const handleDialogClose = () => {
     setRiskProfile(null);
   }
-
-  const types = [
-    {
-      value: '1',
-      label: t('apply.risk.form.type.conservative'),
-      id: 1
-    },
-    {
-      value: '2.5',
-      label: t('apply.risk.form.type.moderate'),
-      id: 2
-    },
-    {
-      value: '4',
-      label: t('apply.risk.form.type.aggressive'),
-      id: 3
-    }
-  ]
-
-  const losses = [
-    {
-      value: '1',
-      label: t('apply.risk.form.loss.sell_everything'),
-      id: 1
-    },
-    {
-      value: '2',
-      label: t('apply.risk.form.loss.sell_some'),
-      id: 2
-    },
-    {
-      value: '3',
-      label: t('apply.risk.form.loss.do_nothing'),
-      id: 3
-    },
-    {
-      value: '4',
-      label: t('apply.risk.form.loss.invest_more'),
-      id: 4
-    },
-  ]
-
-  const gains = [
-    {
-      value: '1',
-      label: t('apply.risk.form.gain.sell_everything'),
-      id: 1
-    },
-    {
-      value: '2',
-      label: t('apply.risk.form.gain.sell_some'),
-      id: 2
-    },
-    {
-      value: '3',
-      label: t('apply.risk.form.gain.do_nothing'),
-      id: 3
-    },
-    {
-      value: '4',
-      label: t('apply.risk.form.gain.invest_more'),
-      id: 4
-    }
-  ] 
-
-  const periods = [
-    {
-      value: '1',
-      label: t('apply.risk.form.period.more_than_21_years'),
-      id: 1
-    },
-    {
-      value: '2',
-      label: t('apply.risk.form.period.11_to_20_years'),
-      id: 2
-    },
-    {
-      value: '3',
-      label: t('apply.risk.form.period.5_to_10_years'),
-      id: 3
-    }
-  ]
-
-  const diversifications = [
-    {
-      value: '1',
-      label: t('apply.risk.form.diversification.portfolio_a'),
-      bonds_percentage: 100,
-      stocks_percentage: 0,
-      id: 1
-    },
-    {
-      value: '2',
-      label: t('apply.risk.form.diversification.portfolio_b'),
-      bonds_percentage: 80,
-      stocks_percentage: 20,
-      id: 2
-    },
-    {
-      value: '3',
-      label: t('apply.risk.form.diversification.portfolio_c'),
-      bonds_percentage: 60,
-      stocks_percentage: 40,
-      id: 3
-    }
-  ]
-
-  const goals = [
-    {
-      value: '1',
-      label: t('apply.risk.form.goals.portfolio_a'),
-      id: 1
-    },
-    {
-      value: '2',
-      label: t('apply.risk.form.goals.portfolio_b'),
-      id: 2
-    },
-    {
-      value: '3',
-      label: t('apply.risk.form.goals.portfolio_c'),
-      id: 3
-    }
-  ]
 
   return (
     <motion.div 
@@ -648,14 +401,6 @@ const RiskForm = () => {
                       <X className="h-4 w-4" />
                     </Button>
                   </DialogClose>
-                  <motion.p 
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-5xl font-bold"
-                  >
-                    {t('apply.risk.result.title')}
-                  </motion.p>
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}

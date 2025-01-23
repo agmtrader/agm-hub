@@ -1,4 +1,14 @@
 {
+    "sidebar": {
+        "apply": "Solicitar una cuenta",
+        "risk": "Completar perfil de riesgo",
+        "resources": "Centro de Recursos",
+        "help": "Centro de Ayuda"
+    },
+    "protected": {
+        "lockedOut": "Bloqueado",
+        "lockedOutMessage": "Inicia sesión para acceder a las funciones del cliente AGM."
+    },
     "agm-technology": {
         "title": {
             "title": "Invierta en cualquier lugar / momento",
@@ -482,8 +492,37 @@
     "dashboard": {
         "risk": {
             "profile": {
-                "asset_allocation": "Asset Allocation",
-                "average_yield": "Average Yield"
+                "title": {
+                    "conservative_a": "Perfil de riesgo conservador A",
+                    "conservative_b": "Perfil de riesgo conservador B",
+                    "moderate_a": "Perfil de riesgo conservador moderado A",
+                    "moderate_b": "Perfil de riesgo conservador moderado B",
+                    "moderate_c": "Perfil de riesgo conservador moderado C",
+                    "aggressive_a": "Perfil de riesgo agresivo A",
+                    "aggressive_b": "Perfil de riesgo agresivo B",
+                    "aggressive_c": "Perfil de riesgo agresivo C"
+                },
+                "asset_allocation": {
+                    "title": "Distribución de activos",
+                    "table": {
+                        "header": {
+                            "asset_class": "Clase de activo",
+                            "allocation": "Distribución",
+                            "risk_level": "Nivel de riesgo"
+                        },
+                        "rows": {
+                            "bonds_aaa_a": "Bonos AAA - A",
+                            "bonds_bbb": "Bonos BBB",
+                            "bonds_bb": "Bonos BB",
+                            "etfs": "Acciones (ETFs)",
+                            "most_conservative": "Más conservador",
+                            "moderately_conservative": "Moderadamente conservador",
+                            "moderate": "Moderado",
+                            "most_aggressive": "Más agresivo"
+                        }
+                    }
+                },
+                "average_yield": "Rendimiento promedio"
             }
         }
     },

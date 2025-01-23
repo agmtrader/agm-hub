@@ -18,26 +18,26 @@ import { X } from "lucide-react"
 import LanguageSwitcher from "./misc/LanguageSwitcher"
 import { useSession } from "next-auth/react"
 
-const navbarContent = [
-  { name: 'AGM Home', url: '/' },
-  { name: 'AGM Trader', url: '/trader' },
-  { name: 'AGM Advisor', url: '/advisor' },
-  { name: 'AGM Institutional', url: '/institutional'},
-  { name: 'AGM Account Portal', url: 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022' },
-  { name: 'Apply for an Account', url: '/apply' },
-  { name: 'Fill Risk Profile', url: '/apply/risk' },
-  { name: 'Resource Center', url: '/resources' },
-  { name: 'Help Center', url: '/help' },
-]
-
 interface Props {
   setExpandSidebar: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const Sidebar = ({ setExpandSidebar }: Props) => {
 
-  const { lang } = useTranslationProvider()
+  const { lang, t } = useTranslationProvider()
   const {data: session} = useSession()
+
+  const navbarContent = [
+    { name: 'AGM Home', url: '/' },
+    { name: 'AGM Trader', url: '/trader' },
+    { name: 'AGM Advisor', url: '/advisor' },
+    { name: 'AGM Institutional', url: '/institutional'},
+    { name: 'AGM Account Portal', url: 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022' },
+    { name: t('sidebar.apply'), url: '/apply' },
+    { name: t('sidebar.risk'), url: '/apply/risk' },
+    { name: t('sidebar.resources'), url: '/resources' },
+    { name: t('sidebar.help'), url: '/help' },
+  ]
 
   return (
     <div>
@@ -66,7 +66,8 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
                 </Link>
               </NavigationMenuItem>
             ))}
-            {session?.user?.email?.includes('agmtechnology.com') && (
+
+            {session?.user?.role === 'admin' && (
               <NavigationMenuItem className="w-full text-end">
                 <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
                   <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-end")}>
@@ -75,6 +76,17 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
                 </Link>
               </NavigationMenuItem>
             )}
+
+            {session?.user?.role === 'trader' && (
+               <NavigationMenuItem className="w-full text-end">
+               <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
+                 <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-end")}>
+                   Dashboard
+                 </NavigationMenuLink>
+               </Link>
+             </NavigationMenuItem>
+            )}
+            
           </NavigationMenuList>
           <div className="w-full flex flex-col justify-end items-end">
             <Account />

@@ -1,4 +1,17 @@
 {
+    "sidebar":{
+        "apply": "Apply for an Account",
+        "risk": "Fill Risk Profile",
+        "resources": "Resource Center",
+        "help": "Help Center"
+    },
+    "protected": {
+        "lockedOut": "Locked out",
+        "lockedOutMessage": "Sign in to access AGM Client features.",
+        "noPermissions": "No permissions",
+        "noPermissionsMessage": "You are not authorized to access this page",
+        "goBack": "Go back home"
+    },
     "agm-technology": {
         "title": {
             "title": "Invest anytime / anywhere",
@@ -573,7 +586,36 @@
     "dashboard": {
         "risk": {
             "profile": {
-                "asset_allocation": "Asset Allocation",
+                "title": {
+                    "conservative_a": "Conservative A",
+                    "conservative_b": "Conservative B",
+                    "moderate_a": "Moderate A",
+                    "moderate_b": "Moderate B",
+                    "moderate_c": "Moderate C",
+                    "aggressive_a": "Aggressive A",
+                    "aggressive_b": "Aggressive B",
+                    "aggressive_c": "Aggressive C"
+                },
+                "asset_allocation": {
+                    "title": "Asset Allocation",
+                    "table": {
+                        "header": {
+                            "asset_class": "Asset Class",
+                            "allocation": "Allocation",
+                            "risk_level": "Risk Level"
+                        },
+                        "rows": {
+                            "bonds_aaa_a": "Bonds AAA - A",
+                            "bonds_bbb": "Bonds BBB",
+                            "bonds_bb": "Bonds BB",
+                            "etfs": "Stocks (ETFs)",
+                            "most_conservative": "Most Conservative",
+                            "moderately_conservative": "Moderately Conservative",
+                            "moderate": "Moderate",
+                            "most_aggressive": "Most Aggressive"
+                        }
+                    }
+                },
                 "average_yield": "Average Yield"
             }
         }

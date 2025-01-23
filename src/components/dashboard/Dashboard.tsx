@@ -35,59 +35,6 @@ export function Dashboard() {
               <TabsTrigger value="reports">Reports</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
-            <TabsContent value="overview" className="space-y-4">
-              <motion.div 
-                className="grid grid-cols-5 grid-rows-5 gap-4"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <motion.div variants={itemVariants}>
-                  <Card className="col-span-1 row-span-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">$2,231.89</div>
-                      <p className="text-xs">+20.1% from last month</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <Card className="col-span-1 row-span-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">New clients</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">+12</div>
-                      <p className="text-xs">+180.1% from last month</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <Card className="col-span-1 row-span-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Commissions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">+$435</div>
-                      <p className="text-xs">+19% from last month</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <Card className="col-span-1 row-span-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Users Trading Today</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">+10</div>
-                      <p className="text-xs">+4 since last hour</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </motion.div>
-            </TabsContent>
           </Tabs>
         </main>
       </div>

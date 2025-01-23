@@ -1,5 +1,5 @@
 import React from 'react'
-import { DataTable } from '../components/DataTable'
+import { ColumnDefinition, DataTable } from '../components/DataTable'
 import { Doughnut } from 'react-chartjs-2'
 import 'chart.js/auto'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
@@ -23,6 +23,8 @@ const RiskProfile = ({riskProfile, account}: Props) => {
               if (label !== 'min_score' && label !== 'max_score') {
                 // Convert decimal to percentage without modifying original data
                 values.push(riskProfile[label] * 100)
+                // Translate the label
+                labels[labels.indexOf(label)] = t(`dashboard.risk.profile.asset_allocation.table.rows.${label}`);
               }
           })
       }
@@ -32,26 +34,41 @@ const RiskProfile = ({riskProfile, account}: Props) => {
 
   const assetData = [
     {
-      "Asset Class": "Bonds AAA - A",
+      "Asset Class": t('dashboard.risk.profile.asset_allocation.table.rows.bonds_aaa_a'),
       "Allocation": `${(riskProfile.bonds_aaa_a * 100).toFixed(2)}%`,
-      "Risk Level": "Most Conservative",
+      "Risk Level": t('dashboard.risk.profile.asset_allocation.table.rows.most_conservative'),
     },
     {
-      "Asset Class": "Bonds BBB",
+      "Asset Class": t('dashboard.risk.profile.asset_allocation.table.rows.bonds_bbb'),
       "Allocation": `${(riskProfile.bonds_bbb * 100).toFixed(2)}%`,
-      "Risk Level": "Moderately Conservative",
+      "Risk Level": t('dashboard.risk.profile.asset_allocation.table.rows.moderately_conservative'),
     },
     {
-      "Asset Class": "Bonds BB",
+      "Asset Class": t('dashboard.risk.profile.asset_allocation.table.rows.bonds_bb'),
       "Allocation": `${(riskProfile.bonds_bb * 100).toFixed(2)}%`,
-      "Risk Level": "Moderate",
+      "Risk Level": t('dashboard.risk.profile.asset_allocation.table.rows.moderate'),
     },
     {
-      "Asset Class": "Stocks (ETFs)",
+      "Asset Class": t('dashboard.risk.profile.asset_allocation.table.rows.etfs'),
       "Allocation": `${(riskProfile.etfs * 100).toFixed(2)}%`,
-      "Risk Level": "Most Aggressive",
+      "Risk Level": t('dashboard.risk.profile.asset_allocation.table.rows.most_aggressive'),
     }
   ]
+
+  const columns = [
+    {
+      accessorKey: 'Asset Class',
+      header: t('dashboard.risk.profile.asset_allocation.table.header.asset_class') as string,
+    },
+    {
+      accessorKey: 'Allocation',
+      header: t('dashboard.risk.profile.asset_allocation.table.header.allocation') as string,
+    },
+    {
+      accessorKey: 'Risk Level',
+      header: t('dashboard.risk.profile.asset_allocation.table.header.risk_level') as string,
+    }
+  ] as ColumnDefinition<any>[]
 
   const data = {
     backgroundColor: [
@@ -107,22 +124,22 @@ const RiskProfile = ({riskProfile, account}: Props) => {
   return (
     <div className="w-full h-full flex gap-10 justify-start flex-col items-center text-foreground">
         <div className="flex flex-col gap-2 text-center">
-          {riskProfile.name && <h1 className="text-6xl font-bold">{riskProfile.name}</h1>}
+          {riskProfile.name && <h1 className="text-6xl font-bold">{t('dashboard.risk.profile.title' + '.' + riskProfile.name.toLowerCase().replace(' ', '_'))}</h1>}
           <p className="text-xl text-subtitle">{account && account.AccountNumber}</p>
         </div>
         <div className="grid grid-cols-2 gap-32 text-center">
           <div className="flex flex-col gap-5">
             <h2 className='text-xl font-semibold'>
-              {t('dashboard.risk.profile.asset_allocation')}
+              {t('dashboard.risk.profile.asset_allocation.title')}
             </h2>
-            <DataTable data={assetData}/>
+            <DataTable data={assetData} columns={columns}/>
             <p className='text-sm'>
               {t('dashboard.risk.profile.average_yield')}: <span className='font-semibold text-primary'>{(riskProfile.average_yield * 100).toFixed(2)}%</span>
             </p>
           </div>
           <div className="w-full flex flex-col gap-5 max-w-md">
             <h2 className='text-xl font-semibold'>
-              {t('dashboard.risk.profile.asset_allocation')}
+              {t('dashboard.risk.profile.asset_allocation.title')}
             </h2>
             <Doughnut data={data} options={options} />
           </div>

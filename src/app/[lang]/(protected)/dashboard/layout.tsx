@@ -2,8 +2,7 @@
 import { useSession } from "next-auth/react";
 import "../../../globals.css";
 import Sidebar from "@/components/dashboard/Sidebar";
-import DevelopmentPage from "@/components/misc/DevelopmentPage";
-import { FormHeader, Header } from "@/components/Header";
+import RoleProvider from "@/utils/providers/RoleProvider";
 
 export default function Layout({
   children,
@@ -11,20 +10,15 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
 
-  const { data: session } = useSession()
-
-  if (session?.user.role !== 'admin') {
-    return (
-      <DevelopmentPage/>
-    )
-  }
-
   return (
-    <div className="flex h-full w-full scroll-smooth">
-      <Sidebar/>
-      <div className="p-5 w-full h-full">
-        {children}
+    <RoleProvider>
+      <div className="flex h-full w-full scroll-smooth">
+        <Sidebar/>
+        <div className="p-5 w-full h-full">
+          {children}
+        </div>
       </div>
-    </div>
+    </RoleProvider>
   )
+
 }

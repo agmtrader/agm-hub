@@ -10,7 +10,6 @@ import { Report } from '@/lib/types'
 import { Recycle } from 'lucide-react'
 import Link from 'next/link'
 
-
 const Page = () => {
 
   const reports: Report[] = [
