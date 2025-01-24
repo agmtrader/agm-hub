@@ -1,41 +1,24 @@
-import React, { useEffect } from 'react'
+import React, { useState } from 'react'
 import { Header } from '@/components/Header'
 import { motion } from 'framer-motion'
 import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { redirect } from 'next/navigation'
 import { formatURL } from '@/utils/lang'
-import { useSession } from 'next-auth/react'
-
+import { containerVariants, itemVariants } from '@/lib/anims'
+import PreviousApplications from './PreviousApplications'
+import { Ticket } from '@/lib/types'
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
+  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>
 }
 
-const Title = ({setStarted}:Props) => {
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.3
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
-  }
+const Title = ({setStarted, setTicket}:Props) => {
 
   const {t, lang} = useTranslationProvider()
 
   function handleStartApplication() {
     setStarted(true)
-  }
-
-  function handleSignIn() {
-    redirect(formatURL(`/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`, lang))
   }
 
   return (
@@ -71,6 +54,9 @@ const Title = ({setStarted}:Props) => {
             >
                 <p className="text-sm">{t('apply.account.title.startApplication')}</p>
             </ShimmerButton>
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <PreviousApplications setTicket={setTicket} setStarted={setStarted}/>
           </motion.div>
         </motion.div>
       </div>

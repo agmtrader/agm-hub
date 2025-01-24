@@ -659,7 +659,7 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
               )}
             />
 
-            {form.watch("employment_status") === "Employed" && (
+            {(form.watch("employment_status") === "Employed" || form.watch("employment_status") === "Self-employed") && (
               <>
                 <FormField
                   control={form.control}

@@ -12,10 +12,14 @@ import DevelopmentPage from '@/components/misc/DevelopmentPage';
 import AuthorizedPerson from './components/AuthorizedPerson';
 import AboutOrganization from './components/AboutOrganization';
 
-const ClientForm = () => {
+interface Props {
+  ticketProp: Ticket | null
+}
+
+const ClientForm = ({ticketProp}: Props) => {
 
   const [step, setStep] = useState<number>(1)
-  const [ticket, setTicket] = useState<Ticket | null>(null)
+  const [ticket, setTicket] = useState<Ticket | null>(ticketProp || null)
 
   function stepForward() {
       setStep(step + 1)
@@ -76,6 +80,15 @@ const ClientForm = () => {
     if (ticket) {
 
       if (ticket.ApplicationInfo.account_type === 'Individual') {
+        if (step === 1) {
+          return (
+            <GeneralInfo 
+              ticket={ticket}
+              stepForward={stepForward} 
+              setTicket={setTicket}
+            />
+          )
+        }
         if (step === 2) {
           return (
             <AboutYou 
@@ -101,6 +114,15 @@ const ClientForm = () => {
       }
 
       if (ticket.ApplicationInfo.account_type === 'Joint') {
+        if (step === 1) {
+          return (
+            <GeneralInfo 
+              ticket={ticket}
+              stepForward={stepForward} 
+              setTicket={setTicket}
+            />
+          )
+        }
         if (step === 2) {
           return (
             <AboutYou 
@@ -136,6 +158,16 @@ const ClientForm = () => {
       }
 
       if (ticket.ApplicationInfo.account_type === 'Institutional') {
+
+        if (step === 1) {
+          return (
+            <GeneralInfo 
+              ticket={ticket}
+              stepForward={stepForward} 
+              setTicket={setTicket}
+            />
+          )
+        }
         
         if (step === 2) {
           return (
@@ -180,6 +212,8 @@ const ClientForm = () => {
     }
     
   }
+
+  console.log(ticket)
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
