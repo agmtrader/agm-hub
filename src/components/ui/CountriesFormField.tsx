@@ -19,7 +19,7 @@ const CountriesFormField = ({ form, element }: { form: any, element: any }) => {
       render={({ field }) => (
         <FormItem>
           <div className='flex gap-2 items-center'>
-            <FormLabel>{element.title}</FormLabel>
+            <FormLabel className='capitalize'>{element.title}</FormLabel>
             <FormMessage />
           </div>
           <Popover>

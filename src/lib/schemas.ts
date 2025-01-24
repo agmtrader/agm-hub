@@ -123,30 +123,14 @@ const base_about_you_schema = z.object({
     employment_status: z.string().min(1, {
         message: 'You must select an employment status.',
     }),
-    employer_name: z.string().min(1, {
-        message: 'You must enter an employer name.',
-    }),
-    employer_address: z.string().min(1, {
-        message: 'You must enter an employer address.',
-    }),
-    employer_city: z.string().min(1, {
-        message: 'You must enter an employer city.',
-    }),
-    employer_state: z.string().min(1, {
-        message: 'You must enter an employer state.',
-    }),
-    employer_country: z.string().min(1, {
-        message: 'You must select an employer country.',
-    }),
-    employer_zip: z.string().min(1, {
-        message: 'You must enter an employer zip.',
-    }),
-    nature_of_business: z.string().min(1, {
-        message: 'You must enter a nature of business.',
-    }),
-    occupation: z.string().min(1, {
-        message: 'You must enter an occupation.',
-    }),
+    employer_name: z.string().optional(),
+    employer_address: z.string().optional(),
+    employer_city: z.string().optional(),
+    employer_state: z.string().optional(),
+    employer_country: z.string().optional(),
+    employer_zip: z.string().optional(),
+    nature_of_business: z.string().optional(),
+    occupation: z.string().optional(),
     source_of_wealth: z.array(z.string()).refine((value) => value.some((item) => item), {
         message: "You must select at least one source of wealth.",
     }).default([]),

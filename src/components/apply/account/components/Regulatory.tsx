@@ -116,7 +116,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
     <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
         
       <div className='flex'>
-        <div className='flex flex-col justify-center gap-y-5 items-center w-full h-full'>
+        <div className='flex flex-col justify-center gap-y-5 items-center text-center w-full h-full'>
           <FileCheck2 className='h-24 w-24 text-secondary'/>
           <p className='text-5xl font-bold'>{t('apply.account.regulatory.title')}</p>
         </div>

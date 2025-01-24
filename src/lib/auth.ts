@@ -150,14 +150,8 @@ export const authOptions: NextAuthOptions = {
         }
         return session
       },
-      async signIn({ account }) {
-
-        if (account?.provider === 'google') {
-          return true
-        }
-
+      async signIn({ }) {
         return true
-        
       }
 
     },

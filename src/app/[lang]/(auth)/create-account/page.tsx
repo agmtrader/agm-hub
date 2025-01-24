@@ -180,107 +180,107 @@ const CreateAccount = () => {
   }
 
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="h-screen w-screen flex flex-col justify-center items-center gap-y-6"
-    >
-      <motion.div variants={itemVariants} className='flex gap-2'>
-        <Button className='w-fit' variant="ghost" asChild>
-          <Link href={formatURL('/signin', lang)}>
-            <ArrowLeft/>
-          </Link>
-        </Button>
-        <h1 className="text-4xl font-bold text-agm-dark-blue">{t('createAccount.title')}</h1>
-      </motion.div>
-      <motion.p variants={itemVariants} className='text-subtitle text-sm text-center'>{t('createAccount.message')}</motion.p>
-      <Form {...form}>
-        <motion.form 
-          variants={itemVariants}
-          onSubmit={form.handleSubmit(onSubmit)} 
-          className="w-full max-w-md flex justify-center items-center flex-col gap-y-4"
-        >
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('createAccount.name')}</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('createAccount.email')}</FormLabel>
-                <FormControl>
-                  <Input {...field} type="email" placeholder="" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="container mx-auto p-8 min-h-screen flex flex-col items-center justify-center">
+      <div className="w-full max-w-xl bg-card p-8 rounded-lg shadow-lg">
+        <motion.div variants={itemVariants} className='flex flex-col items-center gap-2 mb-6'>
+          <div className="flex items-center gap-2">
+            <Button className='w-fit' variant="ghost" asChild>
+              <Link href={formatURL('/signin', lang)}>
+                <ArrowLeft/>
+              </Link>
+            </Button>
+            <h1 className="text-4xl font-bold">{t('createAccount.title')}</h1>
+          </div>
+          <p className='text-sm text-muted-foreground'>{t('createAccount.message')}</p>
+        </motion.div>
 
-          <CountriesFormField form={form} element={{ title: t('createAccount.country'), name: 'country' }} />
+        <Form {...form}>
+          <motion.form 
+            variants={itemVariants}
+            onSubmit={form.handleSubmit(onSubmit)} 
+            className="space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('createAccount.name')}</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('createAccount.email')}</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="email" placeholder="" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('createAccount.username')}</FormLabel>
-                <FormControl>
-                  <Input placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('createAccount.password')}</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('createAccount.confirmPassword')}</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <CountriesFormField form={form} element={{ title: t('createAccount.country'), name: 'country' }} />
 
-          <Button type="submit" className="w-fit">
-            {t('createAccount.createAccount')}
-          </Button>
-        </motion.form>
-      </Form>
-      <motion.div variants={itemVariants}>
-        <Button variant="ghost" asChild>
-          <Link href={formatURL('/', lang)}>{t('createAccount.goBackHome')}</Link>
-        </Button>
-      </motion.div>
-    </motion.div>
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('createAccount.username')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('createAccount.password')}</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('createAccount.confirmPassword')}</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex flex-col gap-2">
+              <Button type="submit" className="w-full">
+                {t('createAccount.createAccount')}
+              </Button>
+              <Button variant="ghost" className="w-full" asChild>
+                <Link href={formatURL('/', lang)}>{t('createAccount.goBackHome')}</Link>
+              </Button>
+            </div>
+          </motion.form>
+        </Form>
+      </div>
+    </div>
   )
 }
 
