@@ -62,10 +62,15 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
 
             const timestamp = formatTimestamp(new Date())
 
-            // Read the file as a data URL
+            // Read the file as a base64 string without data URL prefix
             const base64File = await new Promise<string>((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = () => resolve(reader.result as string);
+                reader.onload = () => {
+                    const result = reader.result as string;
+                    // Remove the data URL prefix if present
+                    const base64Data = result.split(',')[1] || result;
+                    resolve(base64Data);
+                };
                 reader.onerror = reject;
                 reader.readAsDataURL(file);
             });
