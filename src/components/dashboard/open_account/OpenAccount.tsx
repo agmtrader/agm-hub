@@ -57,6 +57,10 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
   const accountColumns = [
     { accessorKey: 'AccountID', header: 'Account ID' },
     { accessorKey: 'AccountNumber', header: 'Account Number' },
+    { accessorKey: 'IBKRUsername', header: 'IBKR Username' },
+    { accessorKey: 'IBKRPassword', header: 'IBKR Password' },
+    { accessorKey: 'TemporalEmail', header: 'Temporal Email' },
+    { accessorKey: 'TemporalPassword', header: 'Temporal Password' },
   ]
   
   // Current ticket
