@@ -54,7 +54,13 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
         'query': query
       })
       if (response['content']) {
-        files[folder.id] = response['content']
+        // Sort files by modified_time in descending order (newest first)
+        const sortedFiles = response['content'].sort((a: CustomDocument, b: CustomDocument) => {
+          const timeA = new Date(a.FileInfo.modifiedTime);
+          const timeB = new Date(b.FileInfo.modifiedTime);
+          return timeB.getTime() - timeA.getTime();
+        });
+        files[folder.id] = sortedFiles;
       }
     }
 
@@ -219,6 +225,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
                 columns={columns}
                 data={files[currentFolderID]} 
                 rowActions={rowActions}
+                infiniteScroll={true}
               />
             </motion.div>
           )}

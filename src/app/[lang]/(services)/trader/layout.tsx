@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Discover the new trading world.",
 };
 
-export default async function Layout(
+export default function Layout(
   props: Readonly<{
     children: React.ReactNode;
   }>
