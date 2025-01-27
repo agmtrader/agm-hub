@@ -31,7 +31,7 @@ function RoleProvider ({
     ]
 
     const role_endpoint = role_endpoints.find(role => role.endpoints.includes(pathname) && role.role === session?.user.role)
-    console.log(role_endpoint)
+
     if (!role_endpoint) {
         return <NoPermissionsPage/>
     }

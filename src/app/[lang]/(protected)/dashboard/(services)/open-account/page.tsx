@@ -76,7 +76,7 @@ const page = () => {
   
   return (
     
-    <div className='w-full h-fit gap-5 flex flex-col justify-center items-center'>
+    <div className='w-full h-full gap-5 flex flex-col justify-center items-center'>
 
       {step == 1 && <TicketManager setTicket={setTicket} ticket={ticket} setCanContinue={setCanContinue}/>}
 

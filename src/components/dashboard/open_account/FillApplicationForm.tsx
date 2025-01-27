@@ -7,6 +7,7 @@ import { Map, Ticket } from '@/lib/types';
 
 import { getDefaults } from '@/utils/form';
 import { about_you_primary_schema, about_you_secondary_schema, regulatory_schema } from '@/lib/schemas';
+import DashboardPage from '@/components/misc/DashboardPage';
 
 interface Props {
   ticket: Ticket,
@@ -83,41 +84,30 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
   }
 
   return (
-    <motion.div 
-      className='w-full max-w-7xl h-fit gap-5 text-foreground flex flex-col justify-center items-center'
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <motion.h1 
-        className='text-7xl text-foreground font-bold'
-        variants={itemVariants}
-      >
-        Open Account.
-      </motion.h1>
+    <DashboardPage title='Fill out the application form' description=''>
 
       {primaryHolderInfo && Object.keys(primaryHolderInfo).length > 0 && 
-        <motion.div className='w-full flex flex-col gap-5' variants={itemVariants}>
+        <motion.div className='w-full max-w-7xl flex flex-col gap-5' variants={itemVariants}>
           <p className='text-lg font-semibold'>Primary Holder Information</p>
           <DataTable data={[primaryHolderInfo]}/>
         </motion.div>
       }
 
       {secondaryHolderInfo && Object.keys(secondaryHolderInfo).length > 0 &&
-        <motion.div className='w-full flex flex-col gap-5' variants={itemVariants}>
+        <motion.div className='w-full max-w-7xl flex flex-col gap-5' variants={itemVariants}>
           <p className='text-lg font-semibold'>Secondary Holder Information</p>
           <DataTable data={[secondaryHolderInfo]}/>
         </motion.div>
       }
       
       {regulatoryInfo && Object.keys(regulatoryInfo).length > 0 &&
-        <motion.div className='w-full flex flex-col gap-5' variants={itemVariants}>
+        <motion.div className='w-full max-w-7xl flex flex-col gap-5' variants={itemVariants}>
           <p className='text-lg font-semibold'>Regulatory Information</p>
           <DataTable data={[regulatoryInfo]}/>
         </motion.div>
       }
 
-    </motion.div>
+    </DashboardPage>
   )
 }
 

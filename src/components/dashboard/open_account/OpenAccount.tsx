@@ -26,6 +26,8 @@ import { accessAPI } from '@/utils/api'
 import { addColumnsFromJSON } from '@/utils/table'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
+import DashboardPage from '@/components/misc/DashboardPage'
+import LoadingComponent from '@/components/misc/LoadingComponent'
 
 interface Props {
   ticket:Ticket, 
@@ -180,46 +182,21 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
     }
   }
 
-  const fadeIn = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.5 } }
-  }
-
   const slideUp = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   }
 
-  if (isLoading) {
-    return (
-      <motion.div 
-        className="flex flex-col w-full h-full items-center justify-center gap-y-10"
-        initial="hidden"
-        animate="visible"
-        variants={fadeIn}
-      >
-        <motion.p className='text-7xl font-bold text-foreground' variants={fadeIn}>Checking account status...</motion.p>
-        <motion.div variants={fadeIn}>
-          <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        </motion.div>
-      </motion.div>
-    )
-  }
+  if (isLoading) return <LoadingComponent className='w-full h-full'/>
 
   if (!account) {
     return (
-    <motion.div 
-      className='w-fit h-fit justify-center items-center flex flex-col gap-y-10'
-      initial="hidden"
-      animate="visible"
-      variants={fadeIn}
-    >
-      <motion.h1 className='text-7xl font-bold text-foreground' variants={slideUp}>Open a new IBKR account.</motion.h1>
-      <motion.p className='text-2xl text-subtitle' variants={slideUp}>Current Ticket</motion.p>
+      <DashboardPage title='User does not have an active IBKR account' description=''>
       <motion.div className='w-full h-full' variants={slideUp}>
+        <motion.p className='text-lg font-semibold' variants={slideUp}>Current Ticket</motion.p>
         <DataTable data={[ticket]} columns={ticketColumns as ColumnDefinition<Ticket>[]}/>
       </motion.div>
-      <motion.p className='text-2xl text-subtitle' variants={slideUp}>Internal IBKR Account Access Form</motion.p>
+      <motion.p className='text-lg font-semibold' variants={slideUp}>IBKR Account Access Form</motion.p>
       <Form {...form}>
         <motion.form 
           onSubmit={form.handleSubmit(onSubmit)} 
@@ -308,30 +285,24 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
           </motion.div>
         </motion.form>
       </Form>
-    </motion.div>
+      </DashboardPage>
     )
   } 
   
   else if (account) {
     return (
-      <motion.div 
-        className='w-full h-full flex flex-col items-center justify-center gap-y-10'
-        initial="hidden"
-        animate="visible"
-        variants={fadeIn}
-      >
-        <motion.h1 className='text-7xl font-bold text-foreground' variants={slideUp}>Active IBKR account</motion.h1>
-        <motion.p className='text-lg text-subtitle' variants={slideUp}>Ticket</motion.p>
+      <DashboardPage title='User has an active IBKR account' description=''>
+        <motion.p className='text-lg font-semibold' variants={slideUp}>Current Ticket</motion.p>
         <motion.div variants={slideUp}>
           <DataTable columns={ticketColumns as ColumnDefinition<Ticket>[]} data={[ticket]}/>
         </motion.div>
-        <motion.p className='text-lg text-subtitle' variants={slideUp}>IBKR Account Details</motion.p>
+        <motion.p className='text-lg font-semibold' variants={slideUp}>IBKR Account Details</motion.p>
         {account && (
           <motion.div variants={slideUp}>
             <DataTable columns={accountColumns as ColumnDefinition<Account>[]} data={[account]}/>
           </motion.div>
         )}
-      </motion.div>
+      </DashboardPage>
     )
   }
 }

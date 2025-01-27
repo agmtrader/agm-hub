@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast"
 import { ColumnDefinition, DataTable } from '../components/DataTable';
+import DashboardPage from '@/components/misc/DashboardPage';
 
 interface Props {
   ticket: Ticket,
@@ -96,22 +97,15 @@ const BackupDocuments = ({ticket, setCanContinue, account}:Props) => {
   }
 
   return (
-    <motion.div 
-      className='w-full h-fit gap-5 flex flex-col justify-center items-center'
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <motion.h1 
-        className='text-7xl font-bold text-foreground'
-        variants={itemVariants}
-      >
-        Upload and revise documents.
-      </motion.h1>
+    <DashboardPage title='Backup Documents' description=''>
+
+      <motion.p className='text-lg font-semibold' variants={itemVariants}>Current Ticket</motion.p>
       
       <motion.div variants={itemVariants}>
         <DataTable data={[ticket]} columns={ticketColumns as ColumnDefinition<Ticket>[]}/>
       </motion.div>
+
+      <motion.p className='text-lg font-semibold' variants={itemVariants}>Client Documents</motion.p>
       
       {account && (
         <motion.div variants={itemVariants}>
@@ -135,7 +129,8 @@ const BackupDocuments = ({ticket, setCanContinue, account}:Props) => {
           I have verified the documents.
         </label>
       </motion.div>
-    </motion.div>
+
+    </DashboardPage>
   )
 }
 

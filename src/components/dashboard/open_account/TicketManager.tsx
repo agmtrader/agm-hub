@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useToast } from '@/hooks/use-toast';
+import DashboardPage from '@/components/misc/DashboardPage';
 
 interface Props {
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
@@ -103,18 +104,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
   }
 
   return (
-    <motion.div
-      className='w-full h-fit gap-5 flex flex-col justify-center items-center'
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <motion.h1 className='text-7xl text-foreground font-bold' variants={itemVariants}>
-        Open a new account.
-      </motion.h1>
-      <motion.p className='text-2xl text-subtitle' variants={itemVariants}>
-        Open Account Applications
-      </motion.p>
+    <DashboardPage title='Open a new account in IBKR' description='Select a ticket to open a new account.'>
       {tickets ? (
         <motion.div variants={itemVariants} className="w-full">
           <DataTable 
@@ -132,7 +122,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
           <Loader2 className="h-16 w-16 animate-spin text-primary" />
         </motion.div>
       )}
-    </motion.div>
+    </DashboardPage>
   )
 }
 
