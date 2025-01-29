@@ -17,8 +17,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon, Loader2 } from "lucide-react"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
 import { countries } from "@/lib/form"
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 
@@ -167,7 +165,7 @@ const POIForm: React.FC<POIFormProps> = ({ onSubmit, accountNumber, uploading })
                 <FormLabel>Issued Date</FormLabel>
                 <FormMessage />
               </div>
-              <DateTimePicker {...field} granularity="day" />
+              <DateTimePicker {...field}  granularity="day" />
             </FormItem>
           )}
         />

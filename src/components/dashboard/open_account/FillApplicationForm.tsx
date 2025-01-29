@@ -6,8 +6,9 @@ import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Map, Ticket } from '@/lib/types';
 
 import { getDefaults } from '@/utils/form';
-import { about_you_primary_schema, about_you_secondary_schema, regulatory_schema } from '@/lib/schemas';
+import { about_you_primary_schema, about_you_secondary_schema, general_info_schema, regulatory_schema } from '@/lib/schemas';
 import DashboardPage from '@/components/misc/DashboardPage';
+import { itemVariants } from '@/lib/anims';
 
 interface Props {
   ticket: Ticket,
@@ -20,7 +21,8 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
   const [primaryHolderInfo, setPrimaryHolderInfo] = useState<Map | null>(null)
   const [secondaryHolderInfo, setSecondaryHolderInfo] = useState<Map | null>(null)
   const [regulatoryInfo, setRegulatoryInfo] = useState<Map | null>(null)
-
+  const [generalInfo, setGeneralInfo] = useState<Map | null>(null)
+  const generalInfoValues = getDefaults(general_info_schema(t => t))
   const primaryDefaultValues = getDefaults(about_you_primary_schema(t => t))
   const secondaryDefaultValues = getDefaults(about_you_secondary_schema(t => t))
   const regulatoryDefaultValues = getDefaults(regulatory_schema(t => t))
@@ -29,6 +31,14 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
   useEffect(() => {
     
     async function queryData () {
+
+      let generalInfo:Map = {}
+      if (ticket) {
+        Object.keys(generalInfoValues).forEach((key:any) => {
+          generalInfo[key] = ticket[key as keyof Ticket]
+        })
+      }
+      setGeneralInfo(generalInfo)
 
       let primaryHolderInfo:Map = {}
       if (ticket) {
@@ -61,30 +71,15 @@ const FillApplicationForm = ({ticket, setCanContinue}:Props) => {
     queryData()
   }, [])
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.3 
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        type: 'spring',
-        stiffness: 100
-      }
-    }
-  }
-
   return (
     <DashboardPage title='Fill out the application form' description=''>
+
+      {generalInfo && Object.keys(generalInfo).length > 0 &&
+        <motion.div className='w-full max-w-7xl flex flex-col gap-5' variants={itemVariants}>
+          <p className='text-lg font-semibold'>General Information</p>
+          <DataTable data={[generalInfo]}/>
+        </motion.div>
+      }
 
       {primaryHolderInfo && Object.keys(primaryHolderInfo).length > 0 && 
         <motion.div className='w-full max-w-7xl flex flex-col gap-5' variants={itemVariants}>

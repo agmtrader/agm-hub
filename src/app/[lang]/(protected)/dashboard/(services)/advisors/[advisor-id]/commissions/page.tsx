@@ -1,19 +1,9 @@
 'use client'
 import { accessAPI } from '@/utils/api'
-import React, { useEffect, useState } from 'react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
+import { useEffect, useState } from 'react'
+import { ColumnDefinition } from '@/components/dashboard/components/DataTable'
 import { useToast } from '@/hooks/use-toast'
-import DashboardPage from '@/components/misc/DashboardPage'
 import { Commission } from '@/lib/types'
-
-
 
 const page = () => {
 
@@ -51,11 +41,13 @@ const page = () => {
             })
         }
       }
-    fetchData()
+    //fetchData()
   }, [])
 
   const filteredCommissions = commissions.filter((commission) => commission.YYYYMM.toString() === selectedMonth)
 
+  {
+    /*
   return (
     <DashboardPage title='Monthly Commissions' description='Select a month to view advisor commissions'>
       <div className='flex flex-col gap-2'>
@@ -74,10 +66,19 @@ const page = () => {
       </div>
 
       <div className="rounded-md border">
-        <DataTable columns={columns} data={filteredCommissions} enablePagination />
+        <DataTable 
+          columns={columns} 
+          data={filteredCommissions} 
+          enablePagination 
+          infiniteScroll
+          enableRowActions
+          rowActions={[]}
+        />
       </div>
     </DashboardPage>
   )
+    */
+  }
 }
 
 export default page

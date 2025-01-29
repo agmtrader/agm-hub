@@ -107,7 +107,7 @@ const RiskForm = () => {
       }
 
       // Save the user risk profile in the database
-      let data = await accessAPI('/database/create', 'POST', {data: user_risk_profile, path:'db/clients/risk', id:riskProfileID})
+      let data = await accessAPI('/database/create', 'POST', {data: user_risk_profile, path:'db/clients/risk_profiles', id:riskProfileID})
       setSubmitting(false)
 
       if (data['status'] !== 'success') throw new Error('Error submitting risk profile')

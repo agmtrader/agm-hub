@@ -33,7 +33,7 @@ const RiskCenter = () => {
 
     async function fetchData () {
 
-        let data = await accessAPI('/database/read','POST', {'path': 'db/clients/risk'})
+        let data = await accessAPI('/database/read','POST', {'path': 'db/clients/risk_profiles'})
         setRiskProfiles(data['content'])
     }
 

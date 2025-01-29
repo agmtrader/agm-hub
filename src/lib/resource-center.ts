@@ -4,6 +4,21 @@ export const chapters = [
       id: '1',
       image: ''
     },
+    {
+      title: 'Coming soon...',
+      id: '2',
+      image: ''
+    },
+    {
+      title: 'Coming soon...',
+      id: '3',
+      image: ''
+    },
+    {
+      title: 'Coming soon...',
+      id: '4',
+      image: ''
+    },
 ]
 
 export const videosDictionary = [

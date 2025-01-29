@@ -52,8 +52,6 @@ const Page = ({ params }: Props) => {
 
   if (!reportData) return <LoadingComponent/>
 
-  console.log(reportData)
-
   let columns: ColumnDefinition<any>[] = []
   if (reportData.length > 0) {
     columns = Object.keys(reportData[0]).map((key: string) => ({

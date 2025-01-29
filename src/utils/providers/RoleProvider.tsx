@@ -25,7 +25,13 @@ function RoleProvider ({
         {
             'role': 'trader',
             'endpoints': [
-                'dashboard/trade-tickets/986431'
+                'dashboard/trade-tickets/*'
+            ]
+        },
+        {
+            'role': 'advisor',
+            'endpoints': [
+                'dashboard/advisors/*'
             ]
         }
     ]
