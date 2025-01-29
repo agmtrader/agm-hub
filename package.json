@@ -85,7 +85,7 @@
     "react-bootstrap-icons": "^1.11.4",
     "react-chartjs-2": "^5.2.0",
     "react-csv-reader": "^4.0.0",
-    "react-day-picker": "^8.10.1",
+    "react-day-picker": "^9",
     "react-device-detect": "^2.2.3",
     "react-dom": "^18",
     "react-dropzone": "^14.2.10",
