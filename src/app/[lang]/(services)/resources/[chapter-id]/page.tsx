@@ -7,7 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CaretDownFill, CaretRightFill } from 'react-bootstrap-icons'
 import { videosDictionary } from '@/lib/resource-center'
 import { chapters } from '@/lib/resource-center'
-
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 type Props = {
     params: Promise<{
         'chapter-id': string
@@ -27,8 +28,15 @@ const ChapterPage = ({ params }: Props) => {
     <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className='h-full my-20 justify-start items-center gap-5 flex flex-col w-full'
+        className='h-full my-32 justify-start items-center gap-5 flex flex-col w-full'
     >
+        <Button asChild className='absolute left-10 z-10' variant='ghost'>
+            <Link href='/resources'>
+                <ArrowLeft className='w-4 h-4 text-foreground'/>
+                Go back
+            </Link>
+        </Button>
+
         <motion.h1 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

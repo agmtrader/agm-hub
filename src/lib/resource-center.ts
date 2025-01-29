@@ -2,22 +2,22 @@ export const chapters = [
     {
       title: 'Introduction to International Markets',
       id: '1',
-      image: ''
+      image: '/assets/resource-center/chapters/1.jpeg'
     },
     {
-      title: 'Coming soon...',
+      title: 'Introduction to Fundamental Analysis',
       id: '2',
-      image: ''
+      image: '/assets/resource-center/chapters/2.jpeg'
     },
     {
-      title: 'Coming soon...',
+      title: 'Introduction to Bonds',
       id: '3',
-      image: ''
+      image: '/assets/resource-center/chapters/3.jpeg'
     },
     {
       title: 'Coming soon...',
       id: '4',
-      image: ''
+      image: '/assets/resource-center/chapters/coming-soon.jpeg'
     },
 ]
 

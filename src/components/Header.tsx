@@ -20,72 +20,60 @@ export const Header = () => {
   const { lang } = useTranslationProvider()
 
   return (
-    <>
-      <header className={cn("fixed w-full z-50")}>
-        <div className="relative">
-          <div 
-            className="absolute inset-0 bg-background transition-opacity duration-300"
-            style={{ opacity: scroll > maxScroll ? 1 : 0 }}
-          />
-          <div className="flex items-center justify-between px-5 py-5 relative z-10">
-            <Link className="flex items-center" href={formatURL('/', lang)}>
-              <Button className="bg-transparent hover:bg-transparent h-fit">
+    <div>
+      <header className={cn("fixed w-full z-50", scroll > maxScroll ? "bg-background" : "bg-transparent")}>
+        <div className="flex items-center justify-between p-5 relative z-10 h-32">
+          <Button asChild className='bg-transparent hover:bg-transparent'>
+            <Link href={formatURL('/', lang)}>
                 {scroll > maxScroll ? 
-                  <Image src="/images/brand/agm-logo.png" priority={true} alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} /> 
+                  <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[150px] object-contain" width={150} height={150} /> 
                   : 
-                  <Image src="/images/brand/agm-logo-white.png" priority={true} alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
+                  <Image src="/assets/brand/agm-logo-white.png" priority={true} alt="AGM Logo" className="w-[150px] h-[150px] object-contain" width={150} height={150} />
                 }
-              </Button>
             </Link>
-            <Button
-              onClick={() => setExpandSidebar(true)}
-              className="z-20 text-background"
-            >
-              <AlignJustify className="text-2xl" />
-            </Button>
-          </div>
+          </Button>
+          <Button
+            onClick={() => setExpandSidebar(true)}
+            className="z-20 text-background"
+          >
+            <AlignJustify className="text-2xl" />
+          </Button>
         </div>
       </header>
 
       <AnimatePresence>
         {expandSidebar && <Sidebar setExpandSidebar={setExpandSidebar} />}
       </AnimatePresence>
-    </>
+    </div>
   )
 }
 
 
-export const FormHeader = () => {
+export const StaticHeader = () => {
   const { lang } = useTranslationProvider()
   const [expandSidebar, setExpandSidebar] = useState(false)
 
   return (
-    <>
-      <header className="fixed w-full z-50">
-        <div className="relative">
-          <div 
-            className="bg-background"
-          />
-          <div className="flex items-center justify-between px-5 py-5 relative z-10">
-            <Link className="flex items-center" href={goHome(lang)}>
-              <Button className="bg-transparent h-fit" variant="ghost">
-                <Image src="/images/brand/agm-logo.png" priority={true} alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
-              </Button>
+    <div className='mb-32'>
+      <header className="fixed w-full z-50 bg-background">
+        <div className="flex items-center justify-between p-5 relative z-10 h-32">
+          <Button asChild className='bg-transparent hover:bg-transparent'>
+            <Link href={formatURL('/', lang)}>
+                <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[150px] object-contain" width={150} height={150} /> 
             </Link>
-            <Button 
-              onClick={() => setExpandSidebar(true)}
-              className="z-20 bg-transparent hover:bg-transparent"
-            >
-              <AlignJustify className="text-2xl text-foreground" />
-            </Button>
-          </div>
+          </Button>
+          <Button
+            onClick={() => setExpandSidebar(true)}
+            className="z-20 text-background"
+          >
+            <AlignJustify className="text-2xl" />
+          </Button>
         </div>
       </header>
 
       <AnimatePresence>
         {expandSidebar && <Sidebar setExpandSidebar={setExpandSidebar} />}
       </AnimatePresence>
-    </>
-    
+    </div>
   )
 }

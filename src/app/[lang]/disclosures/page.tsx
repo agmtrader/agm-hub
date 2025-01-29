@@ -1,11 +1,11 @@
 import Footer from '@/components/Footer';
-import { FormHeader } from '@/components/Header';
+import { StaticHeader } from '@/components/Header';
 import React from 'react';
 
 const Page = () => {
   return (
     <div className='w-full flex flex-col gap-10'>
-      <FormHeader/>
+      <StaticHeader/>
       <div className='w-full flex flex-col gap-10 px-10'>
       <h1 className='text-5xl font-bold mb-4'>Terms of Use Agreement and Disclosures</h1>
       <p>

@@ -6,7 +6,7 @@ import GeneralInfo from './components/GeneralInfo';
 import Regulatory from './components/Regulatory';
 import { Ticket } from '@/lib/types';
 import AboutYou from './components/AboutYou';
-import { FormHeader } from '@/components/Header';
+import { StaticHeader } from '@/components/Header';
 import ApplicationEnd from './components/ApplicationEnd';
 import DevelopmentPage from '@/components/misc/DevelopmentPage';
 import AuthorizedPerson from './components/AuthorizedPerson';
@@ -230,7 +230,7 @@ const ClientForm = ({ticketProp}: Props) => {
 
   return (
     <div className='w-full flex flex-col h-full'>
-      <FormHeader/>
+      <StaticHeader/>
       <div className='w-full h-fit flex flex-col my-16 justify-center items-center'>
 
         <AnimatePresence mode="wait">

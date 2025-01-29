@@ -12,8 +12,8 @@ export default function Home() {
   const { t, lang } = useTranslationProvider()
   
   const titleProps = {
-    backgroundImage: '/images/agm-institutional.jpg',
-    logoSrc: '/images/brand/agm-logo-white.png',
+    backgroundImage: '/assets/backgrounds/agm-institutional.jpg',
+    logoSrc: '/assets/brand/agm-logo-white.png',
     title: t('agm-institutional.title.title'),
     subtitle: t('agm-institutional.title.subtitle'),
     ctaText: t('agm-institutional.title.action_text'),
@@ -67,13 +67,13 @@ export default function Home() {
   const services = [
     {
       name: t('shared.services.agm_trader.title'),
-      image: '/images/agm-trader.jpg',
+      image: '/assets/backgrounds/agm-trader.jpg',
       description: t('shared.services.agm_trader.description'),
       url: '/trader'
     },
     {
       name: t('shared.services.agm_advisor.title'),
-      image: '/images/agm-advisor.webp',
+      image: '/assets/backgrounds/agm-advisor.webp',
       description: t('shared.services.agm_advisor.description'),
       url:'/advisor'
     }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "../../../globals.css";
-import { FormHeader } from "@/components/Header";
+import { StaticHeader } from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "AGM Sign In",
@@ -15,7 +15,7 @@ export default function Layout({
 
   return (
     <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
-      <FormHeader />
+      <StaticHeader />
       {children}
     </div>
   );

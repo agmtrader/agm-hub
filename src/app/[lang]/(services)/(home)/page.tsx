@@ -4,8 +4,7 @@ import { Introduction } from "../../../../components/home/introduction/Introduct
 import Services from "@/components/home/services/Services";
 import FAQ from "@/components/home/faq/FAQ";
 import Team from "@/components/home/team/Team";
-import Footer from "@/components/Footer";
-import { Building, Handshake, BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle, LineChart } from "lucide-react";
+import { BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 import GeminiChatbot from "@/components/misc/GeminiChat";
@@ -15,8 +14,8 @@ export default function Home() {
   const { t } = useTranslationProvider()
   
   const titleProps = {
-    backgroundImage: '/images/agm-technology.jpg',
-    logoSrc: '/images/brand/agm-logo-white.png',
+    backgroundImage: '/assets/backgrounds/agm-technology.jpg',
+    logoSrc: '/assets/brand/agm-logo-white.png',
     title: t('agm-technology.title.title'),
     subtitle: t('agm-technology.title.subtitle'),
     ctaText: t('agm-technology.title.action_text'),
@@ -70,24 +69,23 @@ export default function Home() {
   const services = [
     {
       name: t('shared.services.agm_trader.title'),
-      image: '/images/agm-trader.jpg',
+      image: '/assets/backgrounds/agm-trader.jpg',
       description: t('shared.services.agm_trader.description'),
       url: '/trader'
     },
     {
       name: t('shared.services.agm_advisor.title'),
-      image: '/images/agm-advisor.webp',
+      image: '/assets/backgrounds/agm-advisor.webp',
       description: t('shared.services.agm_advisor.description'),
       url: '/advisor'
     },
     {
       name: t('shared.services.agm_institutional.title'),
-      image: '/images/agm-institutional.jpg',
+      image: '/assets/backgrounds/agm-institutional.jpg',
       description: t('shared.services.agm_institutional.description'),
       url: '/institutional'
     }
   ]
-
 
   return (
     <motion.div 

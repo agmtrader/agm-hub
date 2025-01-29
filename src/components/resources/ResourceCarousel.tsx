@@ -1,6 +1,5 @@
 import * as React from "react"
 import useEmblaCarousel from 'embla-carousel-react'
-import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Link from 'next/link'
 import Image from 'next/image'

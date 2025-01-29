@@ -14,10 +14,8 @@ export default function Layout({
 }>) {
 
   return (
-    <FirebaseAuthProvider>
-      <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
-        {children}
-      </div>
-    </FirebaseAuthProvider>
+    <div className="flex flex-col scrollbar-hide h-full w-full scroll-smooth">
+      {children}
+    </div>
   );
 }

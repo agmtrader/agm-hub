@@ -1,11 +1,9 @@
 'use client'
-
 import Title from "../../../../components/home/title/Title";
 import { TraderIntroduction } from "../../../../components/home/introduction/Introduction"
 import Services from "../../../../components/home/services/Services";
 import FAQ from "../../../../components/home/faq/FAQ";
-
-import { Clock, Database, TrendingUp, Monitor, DollarSign, Smartphone, Globe, Headphones, Shield, BarChart, BookOpen } from "lucide-react";
+import { Monitor, Smartphone, Globe, Headphones, Shield, BarChart, BookOpen } from "lucide-react";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 import Download from "@/components/home/download/Download";
 
@@ -14,8 +12,8 @@ export default function Home() {
   const {t} = useTranslationProvider()
 
   const titleProps = {
-    backgroundImage: '/images/agm-trader.jpg',
-    logoSrc: '/images/brand/agm-logo-white.png',
+    backgroundImage: '/assets/backgrounds/agm-trader.jpg',
+    logoSrc: '/assets/brand/agm-logo-white.png',
     title: t('agm-trader.title.title'),
     subtitle: t('agm-trader.title.subtitle'),
     ctaText: t('agm-trader.title.action_text'),
@@ -56,13 +54,13 @@ export default function Home() {
   const services = [
     {
       name: t('shared.services.agm_advisor.title'),
-      image: '/images/agm-advisor.webp',
+      image: '/assets/backgrounds/agm-advisor.webp',
       description:t('shared.services.agm_advisor.description'),
       url:'/advisor'
     },
     {
       name: t('shared.services.agm_institutional.title'),
-      image: '/images/agm-institutional.jpg',
+      image: '/assets/backgrounds/agm-institutional.jpg',
       description:t('shared.services.agm_institutional.description'),
       url:'/institutional'
     }
