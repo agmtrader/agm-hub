@@ -86,6 +86,9 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
       
       const timestamp = new Date()
       const advisor = searchParams.get('ad') || ''
+      const master_account = searchParams.get('ma') || ''
+      console.log(master_account)
+
       const ticketID = ticket?.TicketID || formatTimestamp(timestamp)
 
       if (!userID) {
