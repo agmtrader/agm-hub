@@ -53,15 +53,16 @@ const admin_tools = [
 ]
 
 const Sidebar = () => {
+
   const [isCollapsed, setIsCollapsed] = useState(false)
   const { lang } = useTranslationProvider()
 
   return (
-    <NavigationMenu className="p-5 h-full flex flex-col gap-10 justify-between items-start">
+    <NavigationMenu className="px-3 py-8 h-full flex flex-col gap-10 justify-between items-start">
       <div className='flex flex-col items-center justify-center gap-10'>
         <Button variant="ghost" className='w-fit h-fit'>
           <Link href={formatURL('/', lang)} legacyBehavior passHref>
-            <Image src="/images/brand/agm-logo.png" alt="AGM Logo" style={{width: 'auto', height: 'auto'}} height={150} width={150} />
+            <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[50px] object-contain" width={150} height={50} /> 
           </Link>
         </Button>
         <NavigationMenuList className="w-full flex flex-col gap-2">

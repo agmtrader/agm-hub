@@ -26,9 +26,9 @@ export const Header = () => {
           <Button asChild className='bg-transparent hover:bg-transparent'>
             <Link href={formatURL('/', lang)}>
                 {scroll > maxScroll ? 
-                  <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[150px] object-contain" width={150} height={150} /> 
+                  <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[50px] object-contain" width={150} height={50} /> 
                   : 
-                  <Image src="/assets/brand/agm-logo-white.png" priority={true} alt="AGM Logo" className="w-[150px] h-[150px] object-contain" width={150} height={150} />
+                  <Image src="/assets/brand/agm-logo-white.png" priority={true} alt="AGM Logo" className="w-[150px] h-[50px] object-contain" width={150} height={50} />
                 }
             </Link>
           </Button>
@@ -54,12 +54,12 @@ export const StaticHeader = () => {
   const [expandSidebar, setExpandSidebar] = useState(false)
 
   return (
-    <div className='mb-32'>
-      <header className="fixed w-full z-50 bg-background">
+    <div className=''>
+      <header className="w-full z-50 bg-background h-32">
         <div className="flex items-center justify-between p-5 relative z-10 h-32">
           <Button asChild className='bg-transparent hover:bg-transparent'>
             <Link href={formatURL('/', lang)}>
-                <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[150px] object-contain" width={150} height={150} /> 
+                <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[50px] object-contain" width={150} height={50} /> 
             </Link>
           </Button>
           <Button

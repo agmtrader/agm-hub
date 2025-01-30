@@ -231,7 +231,7 @@ const ClientForm = ({ticketProp}: Props) => {
   return (
     <div className='w-full flex flex-col h-full'>
       <StaticHeader/>
-      <div className='w-full h-fit flex flex-col my-16 justify-center items-center'>
+      <div className='w-full h-fit flex flex-col justify-center items-center'>
 
         <AnimatePresence mode="wait">
           <motion.div

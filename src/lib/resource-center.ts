@@ -58,18 +58,33 @@ export const videosDictionary = [
         chapter: '1'
     },
     {
-        title: 'Tendencia versus anti tendencia',
-        id: '7BzQoARiUHU',
-        chapter: '2'
-    },
-    {
         title: 'Introducción al Balance General',
         id: 'Af25tdzojb8',
         chapter: '2'
     },
     {
-        title: 'Soporte y resistencia',
+        title: 'Soporte y Resistencia',
         id: 'K7sZUdAdYi8',
+        chapter: '2'
+    },
+    {
+        title: 'Tendencia versus anti tendencia',
+        id: '7BzQoARiUHU',
+        chapter: '2'
+    },
+    {
+        title: 'Análisis de Ganancias',
+        id: 'Af25tdzojb8',
+        chapter: '2'
+    },
+    {
+        title: 'Bonos y su Análisis Fundamental',
+        id: 'VVM2ql-Dfl8',
+        chapter: '2'
+    },
+    {
+        title: 'Tipos Diferentes de Bonos',
+        id: '17pef4ulZWU',
         chapter: '2'
     },
 ]

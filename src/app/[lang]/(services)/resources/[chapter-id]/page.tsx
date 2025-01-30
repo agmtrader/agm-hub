@@ -28,7 +28,7 @@ const ChapterPage = ({ params }: Props) => {
     <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className='h-full my-32 justify-start items-center gap-5 flex flex-col w-full'
+        className='h-full justify-start items-center gap-5 flex flex-col w-full'
     >
         <Button asChild className='absolute left-10 z-10' variant='ghost'>
             <Link href='/resources'>

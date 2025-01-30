@@ -24,7 +24,7 @@ const Title = ({setStarted, setTicket}:Props) => {
   return (
     <div className='w-full h-screen flex flex-col'>
       <Header/>
-      <div className='flex-1 flex flex-col gap-y-10 bg-[url(/images/bull.jpg)] w-full bg-cover bg-center z-0 justify-center items-center relative overflow-hidden'>
+      <div className='flex-1 flex flex-col gap-y-10 bg-[url(/assets/backgrounds/bull.jpg)] w-full bg-cover bg-center z-0 justify-center items-center relative overflow-hidden'>
         <div className='w-full h-full opacity-60 bg-secondary-dark absolute z-1'></div>
         <motion.div 
           variants={containerVariants}

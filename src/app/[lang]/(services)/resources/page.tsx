@@ -7,7 +7,7 @@ const ResourceCenterPage = () => {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className='h-full w-full my-32 gap-10 flex flex-col'
+      className='h-full w-full gap-10 flex flex-col'
     >
       <div className='flex flex-col gap-10 justify-start items-center'>
         <motion.h1 
