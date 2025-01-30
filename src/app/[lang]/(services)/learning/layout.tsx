@@ -4,7 +4,7 @@ import { StaticHeader } from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "AGM Technology",
+  title: "AGM Learning Center",
   description: "Discover the new trading world.",
 };
 

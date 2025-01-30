@@ -35,7 +35,7 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
     { name: 'AGM Account Portal', url: 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022' },
     { name: t('sidebar.apply'), url: '/apply' },
     { name: t('sidebar.risk'), url: '/apply/risk' },
-    { name: t('sidebar.resources'), url: '/resources' },
+    { name: t('sidebar.learning'), url: '/learning' },
     { name: t('sidebar.help'), url: '/help' },
   ]
 

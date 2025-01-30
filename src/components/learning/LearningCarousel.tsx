@@ -10,7 +10,7 @@ import { chapters } from '@/lib/resource-center'
 import { formatURL } from '@/utils/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
-export function ResourceCarousel() {
+export function LearningCarousel() {
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,

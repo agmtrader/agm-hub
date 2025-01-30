@@ -74,7 +74,7 @@ export const videosDictionary = [
     },
     {
         title: 'Análisis de Ganancias',
-        id: 'Af25tdzojb8',
+        id: 'fMBOvNz3gpM',
         chapter: '2'
     },
     {
@@ -87,4 +87,20 @@ export const videosDictionary = [
         id: '17pef4ulZWU',
         chapter: '2'
     },
+    {
+        title: 'Cálculo del Rendimiento para Bonos con Opción de Pago',
+        id: '5NdJCtVPEYU',
+        chapter: '3'
+    },
+    {
+        title: 'Determinación del Interés Acumulado',
+        id: 'SxCIs0VVyMc',
+        chapter: '3'
+    },
+    {
+        title: 'Emisores de Bonos',
+        id: 'PNAq1APG3ug',
+        chapter: '3'
+    },
+
 ]
