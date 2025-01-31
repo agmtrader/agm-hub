@@ -10,6 +10,7 @@ export interface Ticket {
   'ApplicationInfo':Map
   'Advisor':string | null
   'UserID':string
+  'MasterAccount':string
 }
 
 // Account Access

@@ -22,7 +22,7 @@ const PreviousApplications = ({setTicket, setStarted}:Props) => {
     useEffect(() => {
         async function getPreviousTickets() {
             if (!session?.user?.id) return
-            const tickets = await accessAPI('/database/read', 'POST', {'path':'db/clients/tickets', 'query': {'userId': session?.user?.id}})
+            const tickets = await accessAPI('/database/read', 'POST', {'path':'db/clients/tickets', 'query': {'UserID': session?.user?.id}})
             setPreviousTickets(tickets['content'])
         }   
         getPreviousTickets()
@@ -60,8 +60,8 @@ const PreviousApplications = ({setTicket, setStarted}:Props) => {
                 {
                     label: 'Resume',
                     onClick: (ticket: Ticket) => {
-                        setTicket(ticket)
                         setDialogOpen(false)
+                        setTicket(ticket)
                         setStarted(true)
                     }
                 }

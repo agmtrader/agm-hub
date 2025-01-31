@@ -103,8 +103,26 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
     }
   }
 
+  function createNewBrokerAccount(lang:string, master_account:string) {
+    const url = `https://agmtechnology.com/${lang}/apply?ma=${master_account}`
+    navigator.clipboard.writeText(url).then(() => {
+      toast({
+        title: "URL Copied",
+        description: "The broker account URL has been copied to your clipboard.",
+      })
+    }).catch((err) => {
+      toast({
+        title: "Failed to copy",
+        description: "Could not copy the URL to clipboard. Please try again.",
+        variant: "destructive"
+      })
+    });
+  }
+
   return (
     <DashboardPage title='Open a new account in IBKR' description='Select a ticket to open a new account.'>
+      <Button className='w-fit' onClick={() => createNewBrokerAccount('en', 'br')}>Open a new Broker Account</Button>
+      <Button className='w-fit' onClick={() => createNewBrokerAccount('en', 'ad')}>Open a new Advisor Account</Button>
       {tickets ? (
         <motion.div variants={itemVariants} className="w-full">
           <DataTable 

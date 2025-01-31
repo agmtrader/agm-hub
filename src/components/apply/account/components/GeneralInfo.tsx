@@ -100,7 +100,8 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
         'Status': 'Started',
         'ApplicationInfo': values,
         'Advisor': advisor,
-        'UserID': userID
+        'UserID': userID,
+        'MasterAccount': master_account
       }
 
       const response = await accessAPI('/database/create', 'POST', { 'data': updatedTicket, 'path': 'db/clients/tickets', 'id': ticketID })

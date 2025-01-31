@@ -2,7 +2,8 @@
 import NoPermissionsPage from '@/components/misc/NoPermissionsPage';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { accessAPI } from '../api';
 
 function RoleProvider ({
     children,
@@ -17,28 +18,25 @@ function RoleProvider ({
     }
 
     const pathname = usePathname().split('/').slice(2).join('/')
-    const role_endpoints = [
-        {
-            'role': 'user',
-            'endpoints': []
-        },
-        {
-            'role': 'trader',
-            'endpoints': [
-                'dashboard/trade-tickets/*'
-            ]
-        },
-        {
-            'role': 'advisor',
-            'endpoints': [
-                'dashboard/advisors/*'
-            ]
+    const [endpoints, setEndpoints] = useState<any[]>([])
+
+    useEffect(() => {
+        async function fetchPermissions() {
+            const response = await accessAPI('/database/read', 'POST', {
+                'path':`db/permissions/endpoints`,
+                'query':{
+                    'UserID':session?.user.id
+                }
+            })
+            if (response['status'] !== 'success') throw new Error('Failed to fetch permissions')
+            setEndpoints(response['content'][0]['Endpoints'])
         }
-    ]
+        fetchPermissions()
+    }, [session])
 
-    const role_endpoint = role_endpoints.find(role => role.endpoints.includes(pathname) && role.role === session?.user.role)
+    const has_access = endpoints.find((endpoint: any) => endpoint === pathname);
 
-    if (!role_endpoint) {
+    if (!has_access) {
         return <NoPermissionsPage/>
     }
 
