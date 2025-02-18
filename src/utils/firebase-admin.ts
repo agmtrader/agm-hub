@@ -3,8 +3,10 @@
 import { initFirestore } from "@next-auth/firebase-adapter"
 import admin from "firebase-admin"
  
-// This is used to sync Firebase Admin Authentication with NextAuth
-// AdminAuth can create login tokens
+// This is used to sync Firebase Admin with the backend
+
+// AdminAuth can create login tokens and get user information from Firebase Authentication service
+// Firestore admin is passed to the FirestoreAdapter for NextAuth on the backend, gives admin access to Firestore database
 
 let firebaseAdmin
 if (!admin.apps.length) {

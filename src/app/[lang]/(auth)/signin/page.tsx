@@ -69,7 +69,7 @@ function SignIn() {
         <Card className='w-96 h-fit gap-2 flex flex-col justify-center items-center'>
           <motion.div variants={itemVariants}>
             <CardHeader className='flex flex-col justify-center items-center gap-2'>
-              <Image src='/images/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
+              <Image src='/assets/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
               <CardTitle className='text-center font-bold text-3xl'>{t('signin.title')}</CardTitle>
               {callbackUrl === formatURL(`/apply`, lang) && (
                 <div className='flex flex-col gap-2 bg-error/20 p-2 rounded-md items-center justify-center'>
