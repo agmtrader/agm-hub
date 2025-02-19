@@ -39,7 +39,7 @@ export function LearningCarousel() {
           {chapters.map((chapter) => (
             <div key={chapter.id} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.33%] px-4">
               <div className="p-1 h-full">
-                <Link href={formatURL(`/resources/${chapter.id}`, lang)} className="h-full">
+                <Link href={formatURL(`/learning/${chapter.id}`, lang)} className="h-full">
                   <Card className="h-full flex flex-col">
                     <CardContent className="flex-1 p-6 flex items-center justify-center">
                       <div className="relative w-full aspect-video">

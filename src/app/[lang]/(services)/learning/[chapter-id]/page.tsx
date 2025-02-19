@@ -9,6 +9,10 @@ import { videosDictionary } from '@/lib/resource-center'
 import { chapters } from '@/lib/resource-center'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import useEmblaCarousel from 'embla-carousel-react'
+import { formatURL } from '@/utils/lang'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+
 type Props = {
     params: Promise<{
         'chapter-id': string
@@ -21,8 +25,15 @@ const ChapterPage = ({ params }: Props) => {
 
     const videos = videosDictionary.filter((video) => video.chapter === chapterId)
     const [selected, setSelected] = useState<any | null>(videos[0])
-
     const [showList, setShowList] = useState(true)
+
+    const { lang } = useTranslationProvider()
+
+    const [emblaRef, emblaApi] = useEmblaCarousel({
+        loop: false,
+        align: 'start',
+        slidesToScroll: 1
+    })
 
     return (
     <motion.div 
@@ -31,19 +42,20 @@ const ChapterPage = ({ params }: Props) => {
         className='h-full justify-start items-center gap-5 flex flex-col w-full'
     >
         <Button asChild className='absolute left-10 z-10' variant='ghost'>
-            <Link href='/resources'>
+            <Link href={formatURL('/learning', lang)}>
                 <ArrowLeft className='w-4 h-4 text-foreground'/>
                 Go back
             </Link>
         </Button>
 
         <motion.h1 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className='text-5xl font-bold'
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className='text-5xl font-bold'
         >
-        Chapter {chapterId}
+            Chapter {chapterId}
         </motion.h1>
+        
         <motion.p 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -115,41 +127,63 @@ const ChapterPage = ({ params }: Props) => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: "spring", stiffness: 100 }}
-                className='w-fit h-full flex items-center justify-center'
+                className='w-[1024px] max-w-[90vw] h-auto flex items-center justify-center'
                 >
-                <iframe 
-                    width="100%" 
-                    height="600px" 
-                    src={`https://www.youtube.com/embed/${selected.id}`} 
-                    title={selected.title}
-                    className="rounded-lg shadow-sm"
-                    style={{ aspectRatio: '16/9' }}
-                />
+                <div className="w-full relative" style={{ paddingTop: '56.25%' }}>
+                    <iframe 
+                        className="absolute top-0 left-0 w-full h-full rounded-lg shadow-sm"
+                        src={`https://www.youtube.com/embed/${selected.id}`} 
+                        title={selected.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    />
+                </div>
                 </motion.div>
                 
             </motion.div>
         )}
-        <div className='flex gap-4'>
-            {videos
-            .sort((a, b) => 0.5 - Math.random())
-            .filter((video) => video.id !== selected.id)
-            .slice(0, 5)
-            .map((video, index) => (
-                <div 
-                    key={video.id} 
-                    className='relative w-full h-40 bg-muted rounded-lg shadow-sm cursor-pointer group' 
-                    onClick={() => setSelected(video)}
-                >
-                    <img 
-                    src={`https://img.youtube.com/vi/${video.id}/0.jpg`} 
-                    alt={video.title}
-                    className='w-full h-full rounded-lg object-cover' 
-                    />
-                    <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center p-4'>
-                    <p className='text-white text-center text-sm'>{video.title}</p>
-                    </div>
+
+        <div className="w-full max-w-[1024px] relative">
+            <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full shadow-md absolute -left-12 top-1/2 -translate-y-1/2 z-10"
+                onClick={() => emblaApi?.scrollPrev()}
+            >
+                <ArrowLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="overflow-hidden" ref={emblaRef}>
+                <div className="flex gap-4">
+                    {videos
+                    .filter((video) => video.id !== selected.id)
+                    .map((video, index) => (
+                        <div 
+                            key={video.id} 
+                            className='relative aspect-video h-40 bg-muted rounded-lg shadow-sm cursor-pointer group flex-shrink-0' 
+                            onClick={() => setSelected(video)}
+                        >
+                            <img 
+                                src={`https://img.youtube.com/vi/${video.id}/0.jpg`} 
+                                alt={video.title}
+                                className='h-40 aspect-video rounded-lg object-cover' 
+                            />
+                            <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center p-4'>
+                                <p className='text-white text-center text-sm'>{video.title}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
+            </div>
+
+            <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full shadow-md absolute -right-12 top-1/2 -translate-y-1/2 z-10"
+                onClick={() => emblaApi?.scrollNext()}
+            >
+                <ArrowLeft className="h-4 w-4 rotate-180" />
+            </Button>
         </div>
 
     </motion.div>

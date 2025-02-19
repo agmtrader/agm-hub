@@ -20,11 +20,11 @@ const LanguageSwitcher = (props: Props) => {
 
   return (
       <div className='flex gap-5 w-fit'>
-          <Button className='w-fit h-fit p-0' variant='ghost' onClick={() => handleChangeLang('en')}>
-            <US title='English' className='w-full h-6 rounded-md'/>
+          <Button className='p-0' variant='ghost' onClick={() => handleChangeLang('en')}>
+            <US title='English' className='w-10 rounded-md'/>
           </Button>
-          <Button className='w-fit h-fit p-0' variant='ghost' onClick={() => handleChangeLang('es')}>
-            <ES title='Spanish' className='w-full h-6 rounded-md'/>
+          <Button className='p-0' variant='ghost' onClick={() => handleChangeLang('es')}>
+            <ES title='Spanish' className='w-10 rounded-md'/>
           </Button>
       </div>
   )
