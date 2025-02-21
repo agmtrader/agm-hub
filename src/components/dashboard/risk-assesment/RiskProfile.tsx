@@ -1,36 +1,21 @@
 import React from 'react'
 import { ColumnDefinition, DataTable } from '../components/DataTable'
 import { Doughnut } from 'react-chartjs-2'
-import 'chart.js/auto'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import { Account } from '@/lib/entities/account'
+import { RiskProfile as RiskProfileType } from '@/lib/entities/risk-profile'
+import { GetAssetAllocation } from '@/utils/entities/risk-profile'
+import 'chart.js/auto'
 
 type Props = {
-    riskProfile: any,
-    account?: any,
+    riskProfile: RiskProfileType,
+    account?: Account | null,
 }
 
 const RiskProfile = ({riskProfile, account}: Props) => {
 
   const {t} = useTranslationProvider()
-
-  function getAssetAllocation() {
-      let labels:string[] = []
-      let values:number[] = []
-      
-      if (riskProfile) {
-          labels = Object.keys(riskProfile).filter((element) => element !== 'name' && element !== 'average_yield')
-          labels.forEach((label) => {
-              if (label !== 'min_score' && label !== 'max_score') {
-                // Convert decimal to percentage without modifying original data
-                values.push(riskProfile[label] * 100)
-                // Translate the label
-                labels[labels.indexOf(label)] = t(`dashboard.risk.profile.asset_allocation.table.rows.${label}`);
-              }
-          })
-      }
-      return {labels, values}
-  }
-  const {labels, values} = getAssetAllocation()
+  const {labels, values} = GetAssetAllocation(riskProfile)
 
   const assetData = [
     {
@@ -146,6 +131,7 @@ const RiskProfile = ({riskProfile, account}: Props) => {
         </div>
     </div>
   )
+
 }
 
 export default RiskProfile

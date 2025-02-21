@@ -36,12 +36,12 @@ import {
 import { salutations, countries, id_type, employment_status, phone_types, security_questions, currencies, source_of_wealth, purposes } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
 
-import { about_organization_schema } from "@/lib/schemas"
+import { about_organization_schema } from "@/lib/schemas/ticket"
+import { Ticket } from "@/lib/entities/ticket"
 
 import { Checkbox } from "@/components/ui/checkbox"
-import { Ticket } from "@/lib/types"
+
 import { accessAPI } from "@/utils/api"
-import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"

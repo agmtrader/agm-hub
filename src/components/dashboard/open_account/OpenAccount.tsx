@@ -15,13 +15,14 @@ import { Input } from "@/components/ui/input"
 import { ColumnDefinition, DataTable } from '../components/DataTable'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { formatTimestamp } from "@/utils/dates"
+import { formatTimestamp } from "../../../utils/dates"
 
 import { getDefaults } from '@/utils/form'
-import { account_access_schema } from '@/lib/schemas'
+import { account_access_schema } from '@/lib/schemas/account'
 
 import { useForm } from 'react-hook-form'
-import { Account, Ticket } from '@/lib/types'
+import { Account } from '@/lib/entities/account'
+import { Ticket } from '@/lib/entities/ticket'
 import { accessAPI } from '@/utils/api'
 import { addColumnsFromJSON } from '@/utils/table'
 import { useToast } from '@/hooks/use-toast'

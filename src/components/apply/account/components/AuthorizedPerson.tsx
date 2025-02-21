@@ -3,8 +3,7 @@ import React, { useState } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { faker } from '@faker-js/faker';
-import { ChevronDown, Fingerprint, Loader2, User } from "lucide-react"
+import { Loader2, User } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
@@ -36,12 +35,11 @@ import {
 import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, phone_types, security_questions } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
 
-import { authorized_person_schema } from "@/lib/schemas"
+import { authorized_person_schema } from "@/lib/schemas/ticket"
 
 import { Checkbox } from "@/components/ui/checkbox"
-import { Ticket } from "@/lib/types"
+import { Ticket } from "@/lib/entities/ticket"
 import { accessAPI } from "@/utils/api"
-import { PersonLinesFill } from "react-bootstrap-icons"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"

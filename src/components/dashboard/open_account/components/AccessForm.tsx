@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 import { getDefaults } from '@/utils/form'
-import { account_access_schema } from "@/lib/schemas"
+import { account_access_schema } from "@/lib/schemas/account"
 
 interface Props {
   ticketID:string,

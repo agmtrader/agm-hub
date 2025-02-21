@@ -8,4 +8,4 @@ export function getDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
             return [key, undefined]
         })
     )
-  }
+}

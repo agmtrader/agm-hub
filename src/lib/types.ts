@@ -13,17 +13,7 @@ export interface Ticket {
   'MasterAccount':string
 }
 
-// Account Access
-export interface Account {
-  'AccountID':string
-  'TicketID':string
-  'TemporalEmail':string
-  'TemporalPassword':string
-  'AccountNumber':string
-  'IBKRUsername':string, 
-  'IBKRPassword':string, 
-  'Advisor':string | null
-}
+
 
 export interface Advisor {
   'AdvisorCode': string

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GeneralInfo from './components/GeneralInfo';
 import Regulatory from './components/Regulatory';
-import { Ticket } from '@/lib/types';
+import { Ticket } from '@/lib/entities/ticket';
 import AboutYou from './components/AboutYou';
 import { StaticHeader } from '@/components/Header';
 import ApplicationEnd from './components/ApplicationEnd';

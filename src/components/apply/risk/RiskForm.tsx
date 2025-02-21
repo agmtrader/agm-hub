@@ -15,9 +15,9 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
 import { getDefaults } from '@/utils/form'
-import { risk_assesment_schema } from "@/lib/schemas"
+import { risk_assesment_schema } from "@/lib/schemas/risk-profile"
 import { Input } from "@/components/ui/input"
-import { formatTimestamp } from "@/utils/dates"
+import { formatTimestamp } from "../../../utils/dates"
 import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -25,29 +25,37 @@ import {
   DialogClose,
   DialogContent
 } from "@/components/ui/dialog"
-import { accessAPI } from "@/utils/api"
+import { getRiskProfile, saveRiskProfile } from "@/utils/entities/risk-profile"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
 import { useSession } from "next-auth/react"
-import { getRiskFormQuestions, risk_profiles, RiskProfile as RiskProfileType, UserRiskProfile, weights } from "@/lib/risk-profile"
-
+import { getRiskFormQuestions, UserRiskProfile, weights, RiskProfile as RiskProfileType } from "@/lib/entities/risk-profile"
+import { CreateNotification } from "@/utils/entities/notification"
+import { Notification } from "@/lib/entities/notification"
 
 // Each question in the form has a weight and each answer in the question has a weight
 // The risk score is calculated by summing the weighted values of the answers
 
 // Question weight is stored in the weights array
 // Answer weight is stored in the question schema
+
+
+
 const RiskForm = () => {
 
   const {toast} = useToast()
   const {data:session} = useSession()
   const {t} = useTranslationProvider()
 
+  const [riskProfile, setRiskProfile] = useState<RiskProfileType | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
   const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
 
+  // Define the form schema and initial values
   let formSchema:any;
   let initialFormValues:any = {};
   formSchema = risk_assesment_schema(t)
@@ -57,8 +65,25 @@ const RiskForm = () => {
       values: initialFormValues,
   })
 
-  const [riskProfile, setRiskProfile] = useState<any | null>(null)
-  const [submitting, setSubmitting] = useState(false)
+  function calculateRiskScore(values: z.infer<typeof formSchema>): number {
+    let risk_score = 0
+    Object.entries(values).forEach((answer) => {
+  
+      // Extract the question key and answer value
+      const [key, value] = answer
+  
+      // Ignore certain fields
+      if (key !== 'account_number' && key !== 'client_name') {
+  
+        // Get the weight of the question
+        const weight = weights.find(el => el.name === key)?.weight || 0
+  
+        // Add onto the risk score by multiplying the weight of the question by the value of the answer
+        risk_score += weight * Number(value)
+      }
+    })
+    return risk_score
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -68,31 +93,10 @@ const RiskForm = () => {
 
       if (!session?.user) throw new Error('User not found')
 
-      // Calculate risk score
-      let risk_score = 0
-      Object.entries(values).forEach((answer) => {
-
-        // Extract the question key and answer value
-        const [key, value] = answer
-
-        // Ignore certain fields
-        if (key !== 'account_number' && key !== 'client_name') {
-
-          // Get the weight of the question
-          const weight = weights.find(el => el.name === key)?.weight || 0
-
-          // Add onto the risk score by multiplying the weight of the question by the value of the answer
-          risk_score += weight * Number(value)
-        }
-      })
-
-      // Find assigned risk profile using the calculated risk score
-      let assigned_risk_profile:RiskProfileType | null = null
-      risk_profiles.forEach(profile => {
-        if (risk_score >= profile.min_score && risk_score < profile.max_score) {
-          assigned_risk_profile = profile
-        }
-      })
+      // Calculate the risk score and find the assigned risk profile
+      const risk_score = calculateRiskScore(values)
+      const assigned_risk_profile = getRiskProfile(risk_score)
+      if (!assigned_risk_profile) throw new Error('No risk profile found')
 
       // Build a user risk profile for the database
       const timestamp = new Date()
@@ -105,12 +109,17 @@ const RiskForm = () => {
         RiskProfile: assigned_risk_profile,
         UserID: session?.user?.id
       }
+      await saveRiskProfile(user_risk_profile)
 
-      // Save the user risk profile in the database
-      let data = await accessAPI('/database/create', 'POST', {data: user_risk_profile, path:'db/clients/risk_profiles', id:riskProfileID})
+      // Send a notification to the AGM Team
+      const notification:Notification = {
+        id: session?.user?.id || '',
+        title: session?.user?.name || '',
+        description: 'Risk profile submitted',
+        timestamp: new Date().toISOString()
+      }
+      await CreateNotification(notification, 'risk_profiles')
       setSubmitting(false)
-
-      if (data['status'] !== 'success') throw new Error('Error submitting risk profile')
       
       // Display the assigned risk profile
       setRiskProfile(user_risk_profile.RiskProfile)

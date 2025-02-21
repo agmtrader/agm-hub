@@ -8,8 +8,8 @@ import { useToast } from "@/hooks/use-toast"
 import { investment_objectives, products, worths } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
 
-import { regulatory_schema } from "@/lib/schemas"
-import { Ticket } from "@/lib/types"
+import { regulatory_schema } from "@/lib/schemas/ticket"
+import { Ticket } from "@/lib/entities/ticket"
 import { accessAPI } from "@/utils/api"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 

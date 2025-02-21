@@ -1,12 +1,32 @@
+'use client'
 import Confetti from "@/components/ui/confetti"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Check } from "lucide-react"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { formatURL } from "@/utils/lang"
+import { useEffect } from "react"
+import { CreateNotification } from "@/utils/entities/notification"
+import { useSession } from "next-auth/react"
+import { Notification } from "@/lib/entities/notification"
 
 const ApplicationEnd = () => {
     const {t, lang} = useTranslationProvider()
+    const {data:session} = useSession()
+
+    useEffect(() => {
+        async function CreateEndNotification() {
+          let notification:Notification = {
+            id: session?.user?.id || '',
+            title: session?.user?.name || 'No name',
+            description: 'Account application completed',
+            timestamp: new Date().toISOString()
+          }
+
+          await CreateNotification(notification, 'account_applications')
+        }
+        CreateEndNotification()
+    }, [])
 
     return (
       <div className='relative h-full w-full flex flex-col justify-center items-center gap-y-8 py-16'>

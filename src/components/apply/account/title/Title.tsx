@@ -1,13 +1,15 @@
-import React, { useState } from 'react'
+'use client'
+import React from 'react'
 import { Header } from '@/components/Header'
 import { motion } from 'framer-motion'
 import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { redirect } from 'next/navigation'
-import { formatURL } from '@/utils/lang'
 import { containerVariants, itemVariants } from '@/lib/anims'
-import PreviousApplications from './PreviousApplications'
 import { Ticket } from '@/lib/types'
+import { useSession } from 'next-auth/react'
+import { CreateNotification } from '@/utils/entities/notification'
+import { Notification } from '@/lib/entities/notification'
+
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>
@@ -15,10 +17,25 @@ interface Props {
 
 const Title = ({setStarted, setTicket}:Props) => {
 
-  const {t, lang} = useTranslationProvider()
+  const {t} = useTranslationProvider()
 
-  function handleStartApplication() {
-    setStarted(true)
+  const {data:session} = useSession()
+
+  async function handleStartApplication() {
+
+    try {
+      let notification:Notification = {
+        title: session?.user?.name || 'No name',
+        description: 'Account application started',
+        timestamp: new Date().toISOString(),
+        id: session?.user?.id || ''
+      }
+      await CreateNotification(notification, 'account_applications')
+      setStarted(true)
+
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (

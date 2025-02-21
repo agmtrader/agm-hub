@@ -1,45 +1,5 @@
 import { z } from "zod"
 
-// Risk assessment
-export const risk_assesment_schema = (t: (key: string) => string) => z.object({
-    account_number: z.string().optional(),
-    client_name: z.string({
-        required_error: t('forms.errors.input_required')
-    }),
-    type: z.enum(["1", "2.5", "4"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    loss: z.enum(["1", "2", "3", "4"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    gain: z.enum(["1", "2", "3", "4"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    period: z.enum(["1", "2", "3", "4"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    diversification: z.enum(["1", "2", "3"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    goals: z.enum(["1", "2", "3"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-})
-
-// Account Application
-// Individual
 export const general_info_schema = (t: (key: string) => string) => z.object({
     email: z.string({
       required_error: t('forms.errors.email'),
@@ -373,51 +333,5 @@ export const regulatory_schema = (t: (key: string) => string) => z.object({
 
     amount_to_invest: z.string({
         required_error: t('forms.errors.select_required'),
-    })
-})
-
-// Internal Schemas
-// Document Center
-export const poa_schema = z.object({
-    account_number: z.string(),
-    type: z.enum(["Utility bill", "Bank Statement", "Tax Return"]),
-    issued_date: z.date(),
-})
-export const poi_schema = z.object({
-    account_number: z.string(),
-    gender: z.string(),
-    country_of_issue: z.string(),
-    type: z.enum(["ID", "Passport", "License"]),
-    full_name: z.string(),
-    id_number: z.string(),
-    issued_date: z.date(),
-    date_of_birth: z.date(),
-    expiration_date: z.date(),
-    country_of_birth: z.string(),
-})
-export const sow_schema = z.object({
-    account_number: z.string(),
-})
-
-// Account accesses
-export const account_access_schema = z.object({
-    temp_email: z.string().email({
-        message: "Please enter a valid email address.",
-    }).min(1, {
-        message: 'You must enter an email.'
-    }),
-    temp_password: z.string().min(1, {
-        message: 'You must enter a password.'
-    }),
-    account_number: z.string().regex(/^[a-zA-Z]/, {
-        message: 'Account number must start with a letter.'
-    }).min(6, {
-        message: 'Account number must be at least 2 characters long.'
-    }),
-    ibkr_username: z.string().min(1, {
-        message: 'You must enter an IBKR username.'
-    }),
-    ibkr_password: z.string().min(1, {
-        message: 'You must enter an IBKR password.'
     })
 })

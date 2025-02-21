@@ -2,14 +2,14 @@
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { accessAPI } from '@/utils/api'
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { flexQueryIds } from '@/lib/trade-tickets'
+import { Trade, tradeTickets } from '@/lib/entities/trade-ticket'
 import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
 import { useToast } from '@/hooks/use-toast'
 import DashboardPage from '@/components/misc/DashboardPage'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
+import { FetchTrades, GenerateTradeTicket, SendToClient } from '@/utils/entities/trade-tickets'
 
 interface Params {
   flexQueryIdParam?: string
@@ -18,8 +18,9 @@ interface Params {
 export default function TradeTickets({flexQueryIdParam}: Params) {
 
     const [flexQueryId, setFlexQueryId] = useState<string | null>(flexQueryIdParam || null)
-    const [flexQuery, setFlexQuery] = useState<any[] | null>(null)
-    const [selectedTrades, setSelectedTrades] = useState<any[]>([])
+    const [trades, setTrades] = useState<Trade[] | null>(null)
+
+    const [selectedTrades, setSelectedTrades] = useState<Trade[]>([])
     const [clientMessage, setClientMessage] = useState<string | null>(null)
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
@@ -48,35 +49,10 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
       }
     ]
 
+    // Fetch flex queries
     useEffect(() => {
-      if (flexQueryId) {
-        fetchFlexQuery()
-      }
+      handleFetchTrades()
     }, [flexQueryId])
-
-    async function fetchFlexQuery() {
-      try {
-        if (!flexQueryId) return;
-
-        const response = await accessAPI('/flex_query/fetch', 'POST', {'queryIds': [flexQueryId]})
-        if (response['status'] !== 'success') {
-          throw new Error(response['content'])
-        }
-        const trades = response['content'][flexQueryId as string]
-        trades.sort((a: any, b: any) => {
-          const dateA = new Date(a['Date/Time']).getTime()
-          const dateB = new Date(b['Date/Time']).getTime()
-          return dateB - dateA
-        })
-        setFlexQuery(trades)
-      } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch flex query',
-          variant: 'destructive'
-        })
-      }
-    }
 
     // Let the user know that we are creating a consolidated trade ticket
     useEffect(() => {
@@ -87,58 +63,31 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
       }
     }, [selectedTrades])
 
-    async function generateTradeTicket() {
+    async function handleFetchTrades() {
+      if (!flexQueryId) return;
+      const trades = await FetchTrades(flexQueryId)
+      setTrades(trades)
+    }
 
-      if (!flexQuery) return;
-
-        // Check if all selected trades have the same description
-        const firstSymbol = selectedTrades[0]?.Symbol;
-        const allSameSymbol = selectedTrades.every(trade => trade.Symbol === firstSymbol);
-        
-        if (!allSameSymbol) {
-          toast({
-            title: 'Error',
-            description: 'All selected trades must be for the same symbol',
-            variant: 'destructive'
-          })
-          return;
-        }
-
-      const selectedIndices = selectedTrades.map(selectedTrade => 
-        flexQuery.findIndex(trade => 
-          trade['Date/Time'] === selectedTrade['Date/Time'] && 
-          trade['Description'] === selectedTrade['Description'] &&
-          trade['Quantity'] === selectedTrade['Quantity']
-        )
-      ).filter(index => index !== -1);
-      console.log(selectedIndices)
-
-      let response = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {
-        'flex_query_dict': flexQuery,
-        'indices': selectedIndices.join(',')
-      });
-      response = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': response['content']});
-      if (response['status'] === 'error') {
-        throw new Error(response['content']);
-      } else {
-        setClientMessage(response['content']['message']);
+    async function handleGenerateTradeTicket() {
+      if (!trades || !selectedTrades) return;
+      try {
+        const message = await GenerateTradeTicket(trades, selectedTrades)
+        setClientMessage(message)
+      } catch (error: any) {
+        toast({
+          title: 'Error generating trade ticket',
+          description: error.message,
+        })
       }
     }
 
-    async function sendToClient() {
-
+    async function handleSendToClient() {
       if (!clientMessage) return;
-
-      const clientEmails = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
-      const response = await accessAPI('/email/send_client_email', 'POST', {
-        'plain_text': clientMessage, 
-        'client_email': clientEmails, 
-        'subject': 'Confirmación de Transacción'
-      })
-      if (response['status'] === 'error') {
-        throw new Error(response['content'])
-      }
+      await SendToClient(clientMessage)
+      setConfirmDialogOpen(false)
     }
+
 
   return (
     <DashboardPage title='Trade Tickets' description='Generate trade tickets for clients'>
@@ -150,8 +99,8 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
               <SelectValue placeholder="Select Account" />
             </SelectTrigger>
             <SelectContent>
-              {flexQueryIds.map((flexQuery) => (
-                <SelectItem className='p-2' key={flexQuery.id} value={flexQuery.id}>{flexQuery.name} - {flexQuery.user_id}</SelectItem>
+              {tradeTickets.map((tradeTicket) => (
+                <SelectItem className='p-2' key={tradeTicket.id} value={tradeTicket.id}>{tradeTicket.name} - {tradeTicket.user_id}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -161,7 +110,7 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
           <ResizablePanel defaultSize={50} className='flex flex-col gap-5 w-full h-full justify-start items-start'>
             <div className='w-full h-full flex flex-col gap-5 justify-start items-start'>
               <DataTable 
-                data={flexQuery || []}
+                data={trades || []}
                 columns={columns}
                 enableSelection 
                 setSelection={setSelectedTrades} 
@@ -169,7 +118,7 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
                 enableFiltering
                 filterColumns={['Description']}
               />
-              <Button disabled={selectedTrades.length === 0} className='w-fit' onClick={generateTradeTicket}>
+              <Button disabled={selectedTrades.length === 0} className='w-fit' onClick={() => handleGenerateTradeTicket()}>
                 Generate Trade Ticket
               </Button>
             </div>
@@ -201,7 +150,7 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
-            <Button onClick={() => { sendToClient(); setConfirmDialogOpen(false); }}>Confirm</Button>
+            <Button onClick={() => handleSendToClient()}>Confirm</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

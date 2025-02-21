@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getDefaults } from '@/utils/form'
-import { sow_schema } from "@/lib/schemas"
+import { sow_schema } from "@/lib/schemas/document_center"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {

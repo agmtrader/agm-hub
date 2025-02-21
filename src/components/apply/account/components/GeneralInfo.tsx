@@ -5,11 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useSearchParams } from 'next/navigation'
 
-import { Ticket } from "@/lib/types"
-import { formatTimestamp } from "@/utils/dates"
+import { Ticket } from "@/lib/entities/ticket"
+import { formatTimestamp } from "../../../../utils/dates"
 import { account_types } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
-import { general_info_schema } from "@/lib/schemas"
+import { general_info_schema } from "@/lib/schemas/ticket"
 import { accessAPI } from "@/utils/api"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 
@@ -17,8 +17,6 @@ import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 
 import { Button } from "@/components/ui/button"
-
-import { PersonLinesFill } from "react-bootstrap-icons"
 import { Loader2, UserRound } from "lucide-react"
 
 import {

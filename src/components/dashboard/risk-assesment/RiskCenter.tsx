@@ -1,8 +1,7 @@
 "use client"
-import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import RiskProfile from "@/components/dashboard/risk-assesment/RiskProfile"
-import { accessAPI } from "@/utils/api"
+import { RiskProfile as RiskProfileType } from "@/lib/entities/risk-profile"
 import {
   Select,
   SelectContent,
@@ -11,20 +10,19 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
-import { ReloadIcon } from "@radix-ui/react-icons"
-import { SearchIcon } from "lucide-react"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 import DashboardPage from "@/components/misc/DashboardPage"
+import { ReadAccountByAccountNumber } from "@/utils/entities/account"
+import { Account } from "@/lib/entities/account"
+import { ReadRiskProfiles } from "@/utils/entities/risk-profile"
 
 const RiskCenter = () => {
 
   const [riskProfiles, setRiskProfiles] = useState<any[] | null>(null)
   const [selectedProfileID, setSelectedProfileID] = useState<string | null>(null)
 
-  const [riskProfile, setRiskProfile] = useState<any | null>(null)
-  const [account, setAccount] = useState<any | null>(null)
-
-  const [loading, setLoading] = useState<boolean>(false)
+  const [riskProfile, setRiskProfile] = useState<RiskProfileType | null>(null)
+  const [account, setAccount] = useState<Account | null>(null)
 
   const { toast } = useToast()
 
@@ -33,66 +31,40 @@ const RiskCenter = () => {
 
     async function fetchData () {
 
-        let data = await accessAPI('/database/read','POST', {'path': 'db/clients/risk_profiles'})
-        setRiskProfiles(data['content'])
+      const riskProfiles = await ReadRiskProfiles()
+      setRiskProfiles(riskProfiles)
     }
 
     fetchData()
 
   }, [])
 
+  // Query an account that belongs to the selected risk profile
   useEffect(() => {
-    async function selectProfile () {
-
-      setLoading(true)
-
+    async function QueryAccountBelongingToProfile () {
       if (!selectedProfileID || !riskProfiles) return
-  
-      // Find the selected risk profile from existing data
+
       const selectedProfile = riskProfiles.find(
         (profile: any) => profile.RiskProfileID === selectedProfileID
       )
-  
-      // Fetch account associated with risk profile
-      const response = await accessAPI('/database/read', 'POST', {
-        'path': 'db/clients/accounts',
-        'query': { 'AccountNumber': selectedProfile.AccountNumber }
-      })
-  
+
       try {
-      
-        if (response['status'] === 'success') {
-          if (response['content'].length === 1) {
-            setAccount(response['content'][0])
-          } else if (response['content'].length === 0) {
-            toast({
-              title: 'Warning',
-              description: 'No IBKR Account found',
-              variant: 'warning',
-            })
-          } else {
-            throw new Error('Multiple accounts found')
-          }
-        } else {
-          throw new Error('Error fetching account')
-        }
-  
-  
+
+        const account = await ReadAccountByAccountNumber(selectedProfile.AccountNumber)
+        setAccount(account)
+    
       } catch (error:any) {
-  
+    
       toast({
           title: 'Error',
           description: error.message,
           variant: 'destructive',
         })
       }
-  
-      setLoading(false)
       setRiskProfile(selectedProfile.RiskProfile)
     }
-    selectProfile()
+    QueryAccountBelongingToProfile()
   }, [selectedProfileID])
-
 
   if (!riskProfiles) return <LoadingComponent className="h-full w-full"/>
 

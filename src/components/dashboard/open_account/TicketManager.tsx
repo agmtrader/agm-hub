@@ -6,14 +6,6 @@ import { ColumnDefinition, DataTable } from '@/components/dashboard/components/D
 import { Ticket } from '@/lib/types';
 import { accessAPI } from '@/utils/api';
 import { Loader2 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useToast } from '@/hooks/use-toast';
 import DashboardPage from '@/components/misc/DashboardPage';

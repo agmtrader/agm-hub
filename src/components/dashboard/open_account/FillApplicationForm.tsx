@@ -6,7 +6,7 @@ import { DataTable } from '@/components/dashboard/components/DataTable';
 import { Map, Ticket } from '@/lib/types';
 
 import { getDefaults } from '@/utils/form';
-import { about_you_primary_schema, about_you_secondary_schema, general_info_schema, regulatory_schema } from '@/lib/schemas';
+import { about_you_primary_schema, about_you_secondary_schema, general_info_schema, regulatory_schema } from '@/lib/schemas/ticket';
 import DashboardPage from '@/components/misc/DashboardPage';
 import { itemVariants } from '@/lib/anims';
 

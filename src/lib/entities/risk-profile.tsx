@@ -5,19 +5,19 @@ export interface UserRiskProfile {
   ClientName: string;
   Score: number;
   RiskProfileID: string;
-  RiskProfile: any;
+  RiskProfile: RiskProfile;
   UserID: string;
 }
 
 export interface RiskProfile {
-  name: string;
-  bonds_aaa_a: number;
-  bonds_bbb: number;
-  bonds_bb: number;
-  etfs: number;
-  average_yield: number;
-  min_score: number;
-  max_score: number;
+  "name": string;
+  "bonds_aaa_a": number;
+  "bonds_bbb": number;
+  "bonds_bb": number;
+  "etfs": number;
+  "average_yield": number;
+  "min_score": number;
+  "max_score": number;
 }
 
 // This array is used to assign a risk profile to a client given their risk score
