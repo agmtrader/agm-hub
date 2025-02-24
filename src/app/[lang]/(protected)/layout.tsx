@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import FirebaseAuthProvider from '@/utils/providers/FirebaseAuthProvider';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { formatURL } from '@/utils/lang';
+import { formatURL, getCallbackUrl } from '@/utils/lang';
 import { useRouter, usePathname } from 'next/navigation';
 
 export default function Layout({
@@ -26,7 +26,7 @@ export default function Layout({
   }
 
   if (!session?.user) {
-    router.push(formatURL(`/signin?callbackUrl=${encodeURIComponent(pathname)}`, lang))
+    router.push(formatURL(`/signin?callbackUrl=${encodeURIComponent(getCallbackUrl(pathname) || '')}`, lang))
     return null
   }
 
