@@ -63,7 +63,7 @@ function SignIn() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className='flex items-center justify-center min-h-screen'
+      className='flex items-center justify-center my-32'
     >
       <motion.div variants={itemVariants}>
         <Card className='w-96 h-fit gap-2 flex flex-col justify-center items-center'>
@@ -107,8 +107,8 @@ function SignIn() {
                     t('signin.signin')
                   )}
                 </Button>
-                <p className='text-subtitle text-sm text-center'>
-                  {t('signin.register.message')} <Link href={formatURL('/create-account', lang)} className='underline text-subtitle text-sm font-bold'>{t('signin.register.link')}</Link>
+                <p className='text-subtitle text-lg text-center'>
+                  {t('signin.register.message')} <Link href={formatURL('/create-account', lang)} className='underline text-primary font-bold'>{t('signin.register.link')}</Link>
                 </p>
               </form>
               <div className='flex items-center gap-4 justify-center'>

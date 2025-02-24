@@ -9,6 +9,8 @@ import LoadingComponent from '@/components/misc/LoadingComponent';
 import FirebaseAuthProvider from '@/utils/providers/FirebaseAuthProvider';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import LockedOutPage from '@/components/misc/LockedOutPage';
+import { formatURL } from '@/utils/lang';
+import { redirect } from 'next/navigation';
 
 export default function Layout({
   children,
@@ -17,7 +19,7 @@ export default function Layout({
 }) {
 
   const { data: session, status } = useSession();
-  const { t } = useTranslationProvider()
+  const { lang } = useTranslationProvider()
 
   if (status === 'loading') {
     return (
@@ -25,9 +27,13 @@ export default function Layout({
     )
   }
 
+  if (!session?.user) {
+    redirect(formatURL('/signin', lang))
+  }
+
   return (
     <FirebaseAuthProvider>
-      {session?.user ?
+      {session?.user &&
         <AnimatePresence>
           <motion.div 
             initial={{opacity:0}}
@@ -37,8 +43,6 @@ export default function Layout({
             {children}
           </motion.div>
         </AnimatePresence>
-        :
-        <LockedOutPage/>
       }
     </FirebaseAuthProvider>
   )
