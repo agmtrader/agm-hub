@@ -1,16 +1,12 @@
 'use client'
 import React from 'react';
 import { useSession } from 'next-auth/react';
-
 import { AnimatePresence, motion } from 'framer-motion';
-import { Lock } from 'lucide-react';
-import Account from '@/components/misc/Account';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import FirebaseAuthProvider from '@/utils/providers/FirebaseAuthProvider';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import LockedOutPage from '@/components/misc/LockedOutPage';
 import { formatURL } from '@/utils/lang';
-import { redirect } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Layout({
   children,
@@ -20,6 +16,8 @@ export default function Layout({
 
   const { data: session, status } = useSession();
   const { lang } = useTranslationProvider()
+  const router = useRouter()
+  const pathname = usePathname()
 
   if (status === 'loading') {
     return (
@@ -28,7 +26,8 @@ export default function Layout({
   }
 
   if (!session?.user) {
-    redirect(formatURL('/signin', lang))
+    router.push(formatURL(`/signin?callbackUrl=${encodeURIComponent(pathname)}`, lang))
+    return null
   }
 
   return (
