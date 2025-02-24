@@ -9,6 +9,7 @@ import { Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { useToast } from '@/hooks/use-toast';
 import DashboardPage from '@/components/misc/DashboardPage';
+import { itemVariants } from '@/lib/anims';
 
 interface Props {
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
@@ -44,7 +45,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
 
         // Add columns and sort tickets
         let tickets:Ticket[] = await addColumnsFromJSON(data)
-        setTickets(tickets)
+        setTickets(tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString()))))
         
     }
     fetchData()
@@ -71,27 +72,6 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
       })
     } else {
       setTicket(selectedTickets[0])
-    }
-  }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5
-      }
     }
   }
 
@@ -122,6 +102,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
             enableSelection 
             data={tickets}
             setSelection={(selectedTickets: Ticket[]) => handleTicketSelection(selectedTickets)}
+            infiniteScroll
           />
         </motion.div>
       ) : (
