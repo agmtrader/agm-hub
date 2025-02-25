@@ -1,5 +1,4 @@
 import { Map } from "../lib/types"
-import env from "@beam-australia/react-env"
 
 export async function accessAPI(url:string, type:string, params?:Map) {
 
@@ -52,7 +51,7 @@ export async function accessAPI(url:string, type:string, params?:Map) {
     }
 
     let data = null
-    const api_url = env("AGM_API_URL")
+    const api_url = process.env.AGM_API_URL
     const token = await getToken()
 
     if (type === 'GET') {

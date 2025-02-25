@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 
 export function TeamCarousel() {
@@ -31,39 +31,44 @@ export function TeamCarousel() {
   const { t } = useTranslationProvider()
 
 
-const team = [
-  {
-    name: 'Hernan Castro',
-    title: t('shared.team.team_carousel.hernan_title'),
-    description: t('shared.team.team_carousel.hernan_description')
-  },
-  {
-    name: 'Ramon Castro',
-    title: t('shared.team.team_carousel.ramon_title'),
-    description: t('shared.team.team_carousel.ramon_description')
-  },
-  {
-    name: 'Cristian Ramirez',
-    title: t('shared.team.team_carousel.cristian_title'),
-    description: t('shared.team.team_carousel.cristian_description')
-  },
-  {
-    name: 'Javier Cordero',
-    title: t('shared.team.team_carousel.javier_title'),
-    description: t('shared.team.team_carousel.javier_description')
-  },
-  {
-    name: 'Maria Jose Castro',
-    title: t('shared.team.team_carousel.maria_jose_title'),
-    description: t('shared.team.team_carousel.maria_jose_description')
-  },
-  {
-    name: 'Andres Aguilar',
-    title: t('shared.team.team_carousel.andres_title'),
-    description: t('shared.team.team_carousel.andres_description')
-  }
-]
-
+  const team = [
+    {
+      name: 'Hernan Castro',
+      title: t('shared.team.team_carousel.hernan_title'),
+      description: t('shared.team.team_carousel.hernan_description'),
+      avatar: '/assets/team/hernan.jpg'
+    },
+    {
+      name: 'Ramon Castro',
+      title: t('shared.team.team_carousel.ramon_title'),
+      description: t('shared.team.team_carousel.ramon_description'),
+      avatar: '/assets/team/ramon.jpg'
+    },
+    {
+      name: 'Cristian Ramirez',
+      title: t('shared.team.team_carousel.cristian_title'),
+      description: t('shared.team.team_carousel.cristian_description'),
+      avatar: '/assets/team/cristian.jpg'
+    },
+    {
+      name: 'Javier Cordero',
+      title: t('shared.team.team_carousel.javier_title'),
+      description: t('shared.team.team_carousel.javier_description'),
+      avatar: '/assets/team/javier.jpg'
+    },
+    {
+      name: 'Maria Jose Castro',
+      title: t('shared.team.team_carousel.maria_jose_title'),
+      description: t('shared.team.team_carousel.maria_jose_description'),
+      avatar: '/assets/team/maria_jose.jpg'
+    },
+    {
+      name: 'Andres Aguilar',
+      title: t('shared.team.team_carousel.andres_title'),
+      description: t('shared.team.team_carousel.andres_description'),
+      avatar: '/assets/team/andres.jpg'
+    }
+  ]
 
   return (
     <div className="w-full flex justify-center items-center h-full max-w-[90%] md:max-w-[80%] lg:max-w-[65%] relative">
@@ -85,7 +90,8 @@ const team = [
                     <Dialog>
                       <DialogTrigger asChild>
                         <div className="w-full text-foreground cursor-pointer h-full text-center flex flex-col items-center justify-center space-y-4">
-                          <Avatar className="w-24 h-24 border-2 border-agm-dark-blue">
+                          <Avatar className="w-40 h-40 border-2">
+                            <AvatarImage src={member.avatar} className="object-cover" />
                             <AvatarFallback className="text-2xl font-bold bg-background text-foreground">
                               {member.name.split(' ').map(n => n[0]).join('')}
                             </AvatarFallback>

@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.2.0",
-    "@beam-australia/react-env": "^3.1.1",
     "@faker-js/faker": "^9.0.3",
     "@genkit-ai/googleai": "^0.9.12",
     "@google-cloud/local-auth": "^2.1.0",
