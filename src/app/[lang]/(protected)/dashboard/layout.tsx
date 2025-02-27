@@ -1,8 +1,8 @@
 'use client'
-import { useSession } from "next-auth/react";
 import "../../../globals.css";
 import Sidebar from "@/components/dashboard/Sidebar";
 import RoleProvider from "@/utils/providers/RoleProvider";
+import { Separator } from "@/components/ui/separator";
 
 export default function Layout({
   children,
@@ -14,6 +14,7 @@ export default function Layout({
     <RoleProvider>
       <div className="flex h-full w-full scroll-smooth">
         <Sidebar/>
+        <Separator className="h-full" orientation="vertical" />
         <div className="p-5 w-full h-full">
           {children}
         </div>

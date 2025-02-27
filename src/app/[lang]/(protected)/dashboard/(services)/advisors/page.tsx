@@ -1,5 +1,6 @@
 'use client'
 
+import ApplicationLinksDialog from '@/components/dashboard/advisors/ApplicationLinksDialog'
 import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
 import DashboardPage from '@/components/misc/DashboardPage'
 import LoadingComponent from '@/components/misc/LoadingComponent'
@@ -14,6 +15,8 @@ import React, { useEffect, useState } from 'react'
 const page = () => {
 
     const [advisors, setAdvisors] = useState<Advisor[] | null>(null)
+    const [selectedAdvisorForLink, setSelectedAdvisorForLink] = useState<Advisor | null>(null)
+
     const { lang } = useTranslationProvider()
     const columns = [
         {
@@ -26,6 +29,20 @@ const page = () => {
         },
     ] as ColumnDefinition<Advisor>[]
 
+    const rowActions = [
+        {
+            label: 'View profile',
+            onClick: (row: Advisor) => {
+                redirect(formatURL(`/dashboard/advisors/${row.AdvisorCode}`, lang))
+            }
+        }, 
+        {
+            label: 'Generate application link',
+            onClick: (row: Advisor) => {
+                setSelectedAdvisorForLink(row)
+            }
+        }
+    ]
     useEffect(() => {
         async function fetchData() {
             try {
@@ -56,18 +73,14 @@ const page = () => {
                     filterColumns={['AdvisorName']}
                     columns={columns}
                     enableRowActions
-                    rowActions={[
-                        {
-                            label: 'View profile',
-                            onClick: (row: Advisor) => {
-                                redirect(formatURL(`/dashboard/advisors/${row.AdvisorCode}`, lang))
-                            }
-                        }
-                    ]}
+                    rowActions={rowActions}
                 /> 
                 : 
                 <LoadingComponent className='h-full w-full'/>
             }
+            <ApplicationLinksDialog
+                advisor={selectedAdvisorForLink}
+            />
         </DashboardPage>
   )
 }

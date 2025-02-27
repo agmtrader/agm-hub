@@ -52,6 +52,7 @@ export async function accessAPI(url:string, type:string, params?:Map) {
 
     let data = null
     const api_url = process.env.AGM_API_URL
+    console.log(api_url)
     const token = await getToken()
 
     if (type === 'GET') {
