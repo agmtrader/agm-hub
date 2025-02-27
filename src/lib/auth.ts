@@ -33,15 +33,19 @@ export const authOptions: NextAuthOptions = {
             try {
 
               // Fetch user profile from same database where Google Auth is stored
-              const response = await accessAPI('/database/read', 'POST', {
+              const users = await accessAPI('/database/read', 'POST', {
                 path: 'users',
                 query: {
                   'username': credentials.username,
                   'password': credentials.password
                 }
               })
+              
+              if (users.length === 0) {
+                throw new Error('Invalid username or password')
+              }
 
-              const user:User = response['content'][0]
+              const user:User = users[0]
               return user
 
             } catch (error) {

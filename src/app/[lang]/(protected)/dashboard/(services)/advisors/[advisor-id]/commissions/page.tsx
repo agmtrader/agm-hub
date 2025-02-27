@@ -28,7 +28,7 @@ const page = () => {
   useEffect(() => {
     async function fetchData() {
         try{
-            const response = await accessAPI('/advisors/commissions', 'GET')
+            const response = await accessAPI('/advisors/get_commissions', 'GET')
             if (response.status !== 'success') throw new Error('Error fetching commissions')
             setCommissions(response['content'])
             const uniqueMonths = [...new Set(response.content.map((item: Commission) => item.YYYYMM.toString()))] as string[]
@@ -41,7 +41,7 @@ const page = () => {
             })
         }
       }
-    //fetchData()
+    fetchData()
   }, [])
 
   const filteredCommissions = commissions.filter((commission) => commission.YYYYMM.toString() === selectedMonth)
