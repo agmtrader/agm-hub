@@ -2,8 +2,7 @@
 const nextConfig = {
     reactStrictMode: false,
     env: {
-        AGM_API_URL: process.env.AGM_API_URL,
-        DEV_MODE: process.env.DEV_MODE,
+        NEXT_PUBLIC_AGM_API_URL: process.env.NEXT_PUBLIC_AGM_API_URL,
         NEXTAUTH_URL: process.env.NEXTAUTH_URL,
         NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
