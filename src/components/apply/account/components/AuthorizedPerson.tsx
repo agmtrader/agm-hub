@@ -32,18 +32,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { marital_status, salutations, countries, id_type, employment_status, currencies, source_of_wealth, phone_types, security_questions } from "@/lib/form"
+import { salutations, id_type, employment_status, phone_types, security_questions } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
 
 import { authorized_person_schema } from "@/lib/schemas/ticket"
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Ticket } from "@/lib/entities/ticket"
-import { accessAPI } from "@/utils/api"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
+import { UpdateTicketByID } from "@/utils/entities/ticket"
 
 interface Props {
   stepForward:() => void,
@@ -91,16 +91,7 @@ const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward}:Props) 
         ApplicationInfo: updatedApplicationInfo,
       }
 
-      const response = await accessAPI('/database/update', 'POST', {
-        path: `db/clients/tickets`,
-        query: { TicketID: ticket.TicketID },
-        data: { ApplicationInfo: updatedApplicationInfo }
-      })
-
-      if (response['status'] !== 'success') {
-        throw new Error(response['message'] || 'Failed to update ticket')
-      }
-
+      await UpdateTicketByID(ticket.TicketID, {ApplicationInfo: updatedApplicationInfo})
       setTicket(updatedTicket)
       stepForward()
 

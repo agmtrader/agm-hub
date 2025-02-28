@@ -21,6 +21,15 @@ export async function ReadAccounts(): Promise<Account[]> {
     return response['content']
 }
 
+export async function ReadAccountByTicketID(ticketID:string):Promise<Account | null> {
+    let accounts = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'query': {'TicketID': ticketID}})
+    if (accounts.length === 1) {
+        return accounts[0]
+    } else {
+        throw new Error('Multiple accounts found')
+    }
+}
+
 export async function CreateAccount(account: Account) {
     const response = await accessAPI('/database/create', 'POST', {
         'path': 'db/clients/accounts',

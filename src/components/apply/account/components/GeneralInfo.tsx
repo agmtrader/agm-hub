@@ -10,7 +10,6 @@ import { formatTimestamp } from "../../../../utils/dates"
 import { account_types } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
 import { general_info_schema } from "@/lib/schemas/ticket"
-import { accessAPI } from "@/utils/api"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 
 import { useToast } from "@/hooks/use-toast"
@@ -44,6 +43,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useSession } from "next-auth/react"
+import { CreateTicket } from "@/utils/entities/ticket"
 
 interface Props {
   stepForward: () => void,
@@ -86,13 +86,14 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
       const advisor = searchParams.get('ad') || ''
       const master_account = searchParams.get('ma') || ''
 
+      // Get the ticket ID from the current ticket or create a new one if it doesn't exist
       const ticketID = ticket?.TicketID || formatTimestamp(timestamp)
 
       if (!userID) {
-        throw new Error('Critical Error: User ID not found')
+        throw new Error('Critical Error: User ID not found. Cannot continue with application.')
       }
 
-      const updatedTicket:Ticket = {
+      const newTicket:Ticket = {
         'TicketID': ticketID,
         'Status': 'Started',
         'ApplicationInfo': values,
@@ -101,23 +102,17 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
         'MasterAccount': master_account
       }
 
-      const response = await accessAPI('/database/create', 'POST', { 'data': updatedTicket, 'path': 'db/clients/tickets', 'id': ticketID })
-
-      if (response['status'] !== 'success') {
-        throw new Error('Failed to create ticket')
-      }
-      
-      setTicket(updatedTicket)
+      await CreateTicket(newTicket, ticketID)
+      setTicket(newTicket)
       setGenerating(false)
       stepForward()
 
-    } catch {
+    } catch (error:any) {
       toast({
         title: 'Error',
-        description: 'An unexpected error occurred',
+        description: error.message || "An unexpected error occurred",
         variant: 'destructive',
       })
-      throw new Error('An unexpected error occurred')
     }
   }
 

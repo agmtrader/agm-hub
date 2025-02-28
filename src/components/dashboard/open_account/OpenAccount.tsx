@@ -29,6 +29,8 @@ import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
 import DashboardPage from '@/components/misc/DashboardPage'
 import LoadingComponent from '@/components/misc/LoadingComponent'
+import { ReadAccountByTicketID } from '@/utils/entities/account'
+import { UpdateTicketByID } from '@/utils/entities/ticket'
 
 interface Props {
   ticket:Ticket, 
@@ -77,39 +79,20 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
 
     async function queryData () {
       try {
+        
         setIsLoading(true)
         setAccount(null)
 
-        // Fetch account data
-        let response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'query': {'TicketID': ticketID}})
-        if (response.status !== 'success') {
-          throw new Error('Failed to fetch account data');
-        }
-        let accounts = response['content']
+        let account = await ReadAccountByTicketID(ticketID)
 
-        // Verify there is only one account
-        if (accounts.length === 1) {
+        if (account) {
           if (ticket['Status'] !== 'Ready for application' && ticket['Status'] !== 'Opened') {
-            response = await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets`, 'query': {'TicketID': ticketID}, 'data': {'Status': 'Documents need revision'}})
-            if (response.status !== 'success') {
-              throw new Error('Failed to update ticket status')
-            }
+            await UpdateTicketByID(ticketID, {'Status': 'Documents need revision'})
           }
-          accounts = await addColumnsFromJSON(accounts)
-          setAccount(accounts[0])
+          setAccount(account)
           setCanContinue(true)
-
-        } else if (accounts.length === 0) {
-          response = await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets`, 'query': {'TicketID': ticketID}, 'data': {'Status': 'Missing IBKR account'}})
-          if (response.status !== 'success') {
-            throw new Error('Failed to update ticket status')
-          }
-
-        } else if (accounts.length > 1) {
-          throw new Error('More than one account found.')
-
         } else {
-          throw new Error('An unexpected error occurred.')
+          await UpdateTicketByID(ticketID, {'Status': 'Missing IBKR Account'})
         }
 
       } catch (error) {

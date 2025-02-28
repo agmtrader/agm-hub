@@ -39,11 +39,11 @@ import { about_you_primary_schema, about_you_secondary_schema } from "@/lib/sche
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Ticket } from "@/lib/entities/ticket"
-import { accessAPI } from "@/utils/api"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
+import { UpdateTicketByID } from "@/utils/entities/ticket"
 
 interface Props {
   stepForward:() => void,
@@ -87,6 +87,9 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
 
       const updatedApplicationInfo = { ...ticket.ApplicationInfo }
 
+      // This is a bit of a hack to get the values from the form
+      // from the secondary user if the account being applied for is a joint account
+      // Should make another form entirely for the secondary holder but this works
       for (const [key, value] of Object.entries(values)) {
         if (primary) {
           updatedApplicationInfo[key] = value
@@ -100,16 +103,7 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
         ApplicationInfo: updatedApplicationInfo,
       }
 
-      const response = await accessAPI('/database/update', 'POST', {
-        path: `db/clients/tickets`,
-        query: { TicketID: ticket.TicketID },
-        data: { ApplicationInfo: updatedApplicationInfo }
-      })
-
-      if (response['status'] !== 'success') {
-        throw new Error(response['message'] || 'Failed to update ticket')
-      }
-
+      await UpdateTicketByID(ticket.TicketID, {ApplicationInfo: updatedApplicationInfo})
       setTicket(updatedTicket)
       stepForward()
 

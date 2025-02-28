@@ -1,15 +1,13 @@
 "use client"
-import React, { useState, useEffect, SetStateAction, Dispatch } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { addColumnsFromJSON } from '@/utils/table';
 import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable';
 import { Ticket } from '@/lib/types';
-import { accessAPI } from '@/utils/api';
 import { Loader2 } from 'lucide-react';
-import { Button } from "@/components/ui/button"
 import { useToast } from '@/hooks/use-toast';
 import DashboardPage from '@/components/misc/DashboardPage';
 import { itemVariants } from '@/lib/anims';
+import { ReadTickets } from '@/utils/entities/ticket';
 
 interface Props {
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
@@ -21,7 +19,6 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
 
   const { toast } = useToast()
 
-  // Initialize data variables
   const [tickets, setTickets] = useState<Ticket[] | null>(null)
 
   const columns = [
@@ -32,19 +29,13 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
     { accessorKey: 'Advisor', header: 'Advisor' },
   ]
 
-  // Fetch tickets from database
   useEffect(() => {
 
     async function fetchData () {
 
         setTicket(null)
 
-        // Fetch all tickets from database
-        let response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets'})
-        const data = response['content']
-
-        // Add columns and sort tickets
-        let tickets:Ticket[] = await addColumnsFromJSON(data)
+        const tickets = await ReadTickets()
         setTickets(tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString()))))
         
     }
@@ -52,7 +43,6 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
 
   }, [])
 
-  // Allow user to continue if a ticket has been selected
   useEffect(() => {
 
     if (ticket) {

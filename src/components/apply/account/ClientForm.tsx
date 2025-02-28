@@ -213,8 +213,6 @@ const ClientForm = ({ticketProp}: Props) => {
     
   }
 
-  console.log(ticket)
-
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();

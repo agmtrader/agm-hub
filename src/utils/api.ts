@@ -64,7 +64,7 @@ export async function accessAPI(url:string, type:string, params?:Map) {
 
         if (data && !error) {
             const data_response = await data.json()
-            console.log(data_response)
+            console.log('API Response', data_response)
             return data_response
         }
 

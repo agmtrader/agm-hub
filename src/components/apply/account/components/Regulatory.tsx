@@ -10,7 +10,6 @@ import { getDefaults } from '@/utils/form'
 
 import { regulatory_schema } from "@/lib/schemas/ticket"
 import { Ticket } from "@/lib/entities/ticket"
-import { accessAPI } from "@/utils/api"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 
 import { Button } from "@/components/ui/button"
@@ -42,7 +41,7 @@ import {
 } from "@/components/ui/popover"
 
 import { FileCheck2, Loader2 } from "lucide-react"
-import { PersonLinesFill } from "react-bootstrap-icons"
+import { UpdateTicketByID } from "@/utils/entities/ticket"
 
 interface Props {
   stepForward:() => void,
@@ -79,31 +78,18 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
       
       const updatedApplicationInfo = { ...ticket.ApplicationInfo, ...values };
 
-      const response = await accessAPI('/database/update', 'POST', {
-        path: `db/clients/tickets`,
-        query: { TicketID: ticket.TicketID },
-        data: { 
-          ApplicationInfo: updatedApplicationInfo,
-          Status: 'Filled'
-        }
-      });
-
-      if (response.status !== 'success') {
-        throw new Error(response.message || 'Failed to update ticket');
-      }
-
       const updatedTicket: Ticket = {
         ...ticket,
         ApplicationInfo: updatedApplicationInfo,
         Status: 'Filled'
       };
 
+      await UpdateTicketByID(ticket.TicketID, {ApplicationInfo: updatedApplicationInfo, Status: 'Filled'})
       setTicket(updatedTicket);
       setGenerating(false);
       stepForward();
 
     } catch (error) {
-      console.error('Error updating ticket:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "An unexpected error occurred",

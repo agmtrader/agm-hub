@@ -22,7 +22,6 @@ const ApplicationEnd = () => {
             description: 'Account application completed',
             timestamp: new Date().toISOString()
           }
-
           await CreateNotification(notification, 'account_applications')
         }
         CreateEndNotification()
