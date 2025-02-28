@@ -45,6 +45,8 @@ export const authOptions: NextAuthOptions = {
                 throw new Error('Invalid username or password')
               }
 
+              console.log(users)
+
               const user:User = users[0]
               return user
 

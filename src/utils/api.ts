@@ -73,6 +73,7 @@ export async function accessAPI(url:string, type:string, params?:Map) {
 
     let data = null
     const api_url = process.env.NEXT_PUBLIC_AGM_API_URL
+    console.log('API URL', api_url)
     const token = await getToken()
 
     if (!token) throw new Error('Failed to get token')
