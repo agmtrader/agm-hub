@@ -7,7 +7,6 @@ export async function ReadAccounts(): Promise<Account[]> {
         'path': 'db/clients/accounts',
         'query': {}
     })
-    console.log(accounts)
     return accounts
 }
 
@@ -24,7 +23,6 @@ export async function ReadAccountByAccountNumber(accountNumber: string): Promise
 
 export async function ReadAccountByTicketID(ticketID:string):Promise<Account | null> {
     let accounts = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'query': {'TicketID': ticketID}})
-    console.log(accounts)
     if (accounts.length === 1) {
         return accounts[0]
     } else if (accounts.length > 1) {
@@ -41,6 +39,5 @@ export async function CreateAccount(account: Account) {
         'data': account,
         'id': account['AccountID']
     })
-    console.log(response)
     return response
 }

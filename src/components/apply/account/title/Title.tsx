@@ -6,9 +6,7 @@ import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import { Ticket } from '@/lib/entities/ticket'
-import { useSession } from 'next-auth/react'
-import { CreateNotification } from '@/utils/entities/notification'
-import { Notification } from '@/lib/entities/notification'
+import PreviousApplications from './PreviousApplications'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -19,23 +17,8 @@ const Title = ({setStarted, setTicket}:Props) => {
 
   const {t} = useTranslationProvider()
 
-  const {data:session} = useSession()
-
   async function handleStartApplication() {
-
-    try {
-      let notification:Notification = {
-        title: session?.user?.name || 'No name',
-        description: 'Account application started',
-        timestamp: new Date().toISOString(),
-        id: session?.user?.id || ''
-      }
-      await CreateNotification(notification, 'account_applications')
-      setStarted(true)
-
-    } catch (error) {
-      console.error(error)
-    }
+    setStarted(true)
   }
 
   return (
@@ -72,11 +55,9 @@ const Title = ({setStarted, setTicket}:Props) => {
                 <p className="text-sm">{t('apply.account.title.startApplication')}</p>
             </ShimmerButton>
           </motion.div>
-          {/*
-            <motion.div variants={itemVariants}>
-              <PreviousApplications setTicket={setTicket} setStarted={setStarted}/>
-            </motion.div>
-          */}
+          <motion.div variants={itemVariants}>
+            <PreviousApplications setTicket={setTicket} setStarted={setStarted}/>
+          </motion.div>
         </motion.div>
       </div>
     </div>

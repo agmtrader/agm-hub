@@ -44,6 +44,8 @@ import {
 } from "@/components/ui/popover"
 import { useSession } from "next-auth/react"
 import { CreateTicket } from "@/utils/entities/ticket"
+import { Notification } from "@/lib/entities/notification"
+import { CreateNotification } from "@/utils/entities/notification"
 
 interface Props {
   stepForward: () => void,
@@ -73,9 +75,7 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
 
   const {data:session} = useSession()
   const userID = session?.user.id
-  if (!userID) {
-    throw new Error('Critical Error: User ID not found')
-  }
+  if (!userID) throw new Error('Critical Error: User ID not found')
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -103,6 +103,14 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
       }
 
       await CreateTicket(newTicket, ticketID)
+
+      let notification:Notification = {
+        Title: session?.user?.name || 'No name',
+        Description: 'Account application started',
+        NotificationID: formatTimestamp(timestamp),
+        UserID: userID,
+      }
+      await CreateNotification(notification, 'account_applications')
       setTicket(newTicket)
       setGenerating(false)
       stepForward()

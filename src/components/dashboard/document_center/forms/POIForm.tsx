@@ -35,7 +35,7 @@ const POIForm: React.FC<POIFormProps> = ({ onSubmit, accountNumber, uploading })
   })
 
   const handleSubmit = (values: any) => {
-    onSubmit(values, null) // We're not passing files here, as they're managed in the parent component
+    onSubmit(values, null)
   }
 
   return (

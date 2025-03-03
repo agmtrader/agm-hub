@@ -6,5 +6,6 @@ export interface Account {
     'AccountNumber':string
     'IBKRUsername':string, 
     'IBKRPassword':string, 
-    'Advisor':string | null
-  }
+    'Advisor':string | null,
+    'MasterAccount':string
+}

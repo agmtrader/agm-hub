@@ -8,18 +8,20 @@ import { useToast } from '@/hooks/use-toast';
 import DashboardPage from '@/components/misc/DashboardPage';
 import { itemVariants } from '@/lib/anims';
 import { ReadTickets } from '@/utils/entities/ticket';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 interface Props {
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
   ticket: Ticket | null,
-  setCanContinue: any
+  setCanContinue: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
 
   const { toast } = useToast()
-
   const [tickets, setTickets] = useState<Ticket[] | null>(null)
+  const [showAll, setShowAll] = useState(false)
 
   const columns = [
     { accessorKey: 'TicketID', header: 'Ticket ID' },
@@ -27,6 +29,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
     { accessorKey: 'first_name', header: 'First Name' },
     { accessorKey: 'last_name', header: 'Last Name' },
     { accessorKey: 'Advisor', header: 'Advisor' },
+    { accessorKey: 'MasterAccount', header: 'Master Account' },
   ]
 
   useEffect(() => {
@@ -34,14 +37,14 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
     async function fetchData () {
 
         setTicket(null)
-
         const tickets = await ReadTickets()
-        setTickets(tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString()))).filter((ticket) => ticket.Status !== "Started"))
+        const sortedTickets = tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString())))
+        setTickets(showAll ? sortedTickets : sortedTickets.filter((ticket) => ticket.Status !== "Started"))
         
     }
     fetchData()
 
-  }, [])
+  }, [showAll])
 
   useEffect(() => {
 
@@ -67,6 +70,14 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
 
   return (
     <DashboardPage title='Open a new account in IBKR' description='Select a ticket to open a new account.'>
+      <div className="flex items-center space-x-2 mb-4">
+        <Checkbox
+          id="showAll"
+          checked={showAll}
+          onCheckedChange={(checked) => setShowAll(checked as boolean)}
+        />
+        <Label htmlFor="showAll">Show all tickets</Label>
+      </div>
       {tickets ? (
         <motion.div variants={itemVariants} className="w-full">
           <DataTable 

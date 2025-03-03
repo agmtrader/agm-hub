@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { accessAPI } from '@/utils/api'
 import { Ticket } from '@/lib/entities/ticket'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
+import { ReadTicketByUserID, ReadTickets } from '@/utils/entities/ticket'
 
 type Props = {
     setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>
@@ -22,8 +23,9 @@ const PreviousApplications = ({setTicket, setStarted}:Props) => {
     useEffect(() => {
         async function getPreviousTickets() {
             if (!session?.user?.id) return
-            const tickets = await accessAPI('/database/read', 'POST', {'path':'db/clients/tickets', 'query': {'UserID': session?.user?.id}})
-            setPreviousTickets(tickets['content'])
+            let tickets = await ReadTicketByUserID(session?.user?.id)
+            tickets = tickets.filter((ticket) => ticket.Status === 'Started')
+            setPreviousTickets(tickets)
         }   
         getPreviousTickets()
     }, [session])

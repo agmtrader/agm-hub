@@ -20,19 +20,18 @@ import { account_access_schema } from '@/lib/schemas/account'
 import { useForm } from 'react-hook-form'
 import { Account } from '@/lib/entities/account'
 import { Ticket } from '@/lib/entities/ticket'
-import { addColumnsFromJSON } from '@/utils/table'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
 import DashboardPage from '@/components/misc/DashboardPage'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-import { CreateAccount, ReadAccountByTicketID, ReadAccounts } from '@/utils/entities/account'
+import { CreateAccount, ReadAccountByTicketID } from '@/utils/entities/account'
 import { UpdateTicketByID } from '@/utils/entities/ticket'
 
 interface Props {
   ticket:Ticket, 
   setCanContinue: React.Dispatch<React.SetStateAction<boolean>>,
-  setAccount: React.Dispatch<React.SetStateAction<any | null>>,
-  account: any
+  setAccount: React.Dispatch<React.SetStateAction<Account | null>>,
+  account: Account | null
 }
 
 const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
@@ -125,7 +124,7 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
     try {
       let timestamp = new Date()
       let accountTimestamp = formatTimestamp(timestamp)
-      
+
       const account_details:Account = {
         'AccountID':accountTimestamp, 
         'TicketID':ticket['TicketID'], 
@@ -134,7 +133,8 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
         'AccountNumber':values.account_number,
         'IBKRUsername':values.ibkr_username,
         'IBKRPassword':values.ibkr_password,
-        'Advisor':ticket['Advisor']
+        'Advisor':ticket['Advisor'],
+        'MasterAccount':ticket['MasterAccount']
       }
 
       await CreateAccount(account_details)

@@ -5,8 +5,19 @@ import { addColumnsFromJSON } from "../table"
 export async function ReadTickets() {
     let tickets:Ticket[] = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets'})
     tickets = await addColumnsFromJSON(tickets)
+    return tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString())))   
+}
+
+export async function ReadTicketByTicketID(ticketID:string) {
+    let tickets:Ticket[] = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets', 'query': {'TicketID': ticketID}})
+    tickets = await addColumnsFromJSON(tickets)
     return tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString())))
-    
+}
+
+export async function ReadTicketByUserID(userID:string) {
+    let tickets:Ticket[] = await accessAPI('/database/read', 'POST', {'path': 'db/clients/tickets', 'query': {'UserID': userID}})
+    tickets = await addColumnsFromJSON(tickets)
+    return tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString())))
 }
 
 export async function UpdateTicketByID(ticketID:string, data:any) {

@@ -1,6 +1,6 @@
 export interface Notification {
-    id: string
-    title: string
-    description: string
-    timestamp: string
+    NotificationID: string
+    UserID: string
+    Title: string
+    Description: string
 }

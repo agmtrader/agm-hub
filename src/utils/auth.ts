@@ -44,11 +44,9 @@ export const authOptions: NextAuthOptions = {
                 }
               })
               
-              if (users.length === 0) {
+              if (users.length !== 1) {
                 throw new Error('Invalid username or password')
               }
-
-              console.log(users)
 
               const user:User = users[0]
               return user

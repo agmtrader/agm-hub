@@ -5,7 +5,7 @@ export async function CreateNotification(notification:Notification, type:string)
   let notification_response = await accessAPI('/database/create', 'POST', {
     'path':`db/notifications/${type}`,
     'data':notification,
-    'id':notification.id
+    'id':notification.NotificationID
   })
   return notification_response
 }

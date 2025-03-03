@@ -8,12 +8,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast"
 import { ColumnDefinition, DataTable } from '../../misc/DataTable';
 import DashboardPage from '@/components/misc/DashboardPage';
+import { Account } from '@/lib/entities/account';
 
 interface Props {
   ticket: Ticket,
   setCanContinue: React.Dispatch<React.SetStateAction<boolean>>,
   canContinue: boolean,
-  account: any
+  account: Account | null
 }
 
 // Static folder dictionary
