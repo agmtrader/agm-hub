@@ -17,10 +17,10 @@ const ApplicationEnd = () => {
     useEffect(() => {
         async function CreateEndNotification() {
           let notification:Notification = {
-            id: session?.user?.id || '',
-            title: session?.user?.name || 'No name',
-            description: 'Account application completed',
-            timestamp: new Date().toISOString()
+            UserID: session?.user?.id || '',
+            Title: session?.user?.name || 'No name',
+            Description: 'Account application completed',
+            NotificationID: new Date().toISOString()
           }
           await CreateNotification(notification, 'account_applications')
         }

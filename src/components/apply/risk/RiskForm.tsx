@@ -113,10 +113,10 @@ const RiskForm = () => {
 
       // Send a notification to the AGM Team
       const notification:Notification = {
-        id: session?.user?.id || '',
-        title: session?.user?.name || '',
-        description: 'Risk profile submitted',
-        timestamp: new Date().toISOString()
+        UserID: session?.user?.id || '',
+        Title: session?.user?.name || '',
+        Description: 'Risk profile submitted',
+        NotificationID: new Date().toISOString()
       }
       await CreateNotification(notification, 'risk_profiles')
       setSubmitting(false)
