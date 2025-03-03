@@ -3,7 +3,7 @@
 import { toast } from '@/hooks/use-toast'
 import { accessAPI } from '@/utils/api'
 import React, { useEffect, useState } from 'react'
-import { ColumnDefinition, DataTable } from '../components/DataTable'
+import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import DashboardPage from '@/components/misc/DashboardPage'
 

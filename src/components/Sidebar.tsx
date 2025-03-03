@@ -10,7 +10,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { motion } from "framer-motion"
-import Account from "./misc/Account"
+import Account from "./auth/Account"
 import { Button } from "./ui/button"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { formatURL } from "@/utils/lang"

@@ -2,7 +2,7 @@
 import DashboardPage from '@/components/misc/DashboardPage'
 import { accessAPI } from '@/utils/api'
 import React, { useEffect, useState } from 'react'
-import { ColumnDefinition, DataTable } from '../components/DataTable'
+import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import { toast } from '@/hooks/use-toast'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Lock } from 'lucide-react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import Account from './Account'
+import Account from '../auth/Account'
 
 const LockedOutPage = () => {
 

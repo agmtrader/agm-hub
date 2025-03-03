@@ -1,40 +1,46 @@
 import { accessAPI } from "../api"
 import { Account } from "@/lib/entities/account"
 
-export async function ReadAccountByAccountNumber(accountNumber: string): Promise<Account> {
-    const response = await accessAPI('/database/read', 'POST', {
-        'path': 'db/clients/accounts',
-        'query': {'AccountNumber': accountNumber}
-    })
-    if (response['status'] !== 'success') throw new Error('Error fetching account')
-    if (response['content'].length === 0) throw new Error('Account not found')
-    if (response['content'].length > 1) throw new Error('Multiple accounts found')
-    return response['content'][0]
-}
 
 export async function ReadAccounts(): Promise<Account[]> {
-    const response = await accessAPI('/database/read', 'POST', {
+    const accounts = await accessAPI('/database/read', 'POST', {
         'path': 'db/clients/accounts',
         'query': {}
     })
-    if (response['status'] !== 'success') throw new Error('Error fetching account')
-    return response['content']
+    console.log(accounts)
+    return accounts
 }
+
+export async function ReadAccountByAccountNumber(accountNumber: string): Promise<Account | null> {
+    const accounts = await accessAPI('/database/read', 'POST', {
+        'path': 'db/clients/accounts',
+        'query': {'AccountNumber': accountNumber}
+    })
+    if (accounts.length === 0) return null
+    if (accounts.length > 1) throw new Error('Multiple accounts found')
+    return accounts[0]
+}
+
 
 export async function ReadAccountByTicketID(ticketID:string):Promise<Account | null> {
     let accounts = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'query': {'TicketID': ticketID}})
+    console.log(accounts)
     if (accounts.length === 1) {
         return accounts[0]
-    } else {
+    } else if (accounts.length > 1) {
         throw new Error('Multiple accounts found')
+    } else {
+        return null
     }
 }
 
 export async function CreateAccount(account: Account) {
+    if (!account['AccountID']) throw new Error('Account ID is required')
     const response = await accessAPI('/database/create', 'POST', {
         'path': 'db/clients/accounts',
-        'data': account
+        'data': account,
+        'id': account['AccountID']
     })
-    if (response['status'] !== 'success') throw new Error('Error creating account')
-    return response['content']
+    console.log(response)
+    return response
 }

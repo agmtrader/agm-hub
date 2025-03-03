@@ -1,5 +1,5 @@
 import React from 'react'
-import { ColumnDefinition, DataTable } from '../components/DataTable'
+import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import { Doughnut } from 'react-chartjs-2'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { Account } from '@/lib/entities/account'

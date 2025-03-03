@@ -8,9 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
+import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
-import { Advisor } from '@/lib/types'
+import { Advisor } from '@/lib/entities/advisors'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 
 interface Commission {

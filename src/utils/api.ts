@@ -64,7 +64,6 @@ export async function accessAPI(url:string, type:string, params?:Map) {
 
         if (data && !error) {
             const data_response = await data.json()
-            console.log('API Response', data_response)
             return data_response
         }
 
@@ -72,7 +71,7 @@ export async function accessAPI(url:string, type:string, params?:Map) {
     }
 
     let data = null
-    const api_url = 'https://api.agmtechnology.com'
+    const api_url = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:5000' : 'https://api.agmtechnology.com'
     const token = await getToken()
 
     if (!token) throw new Error('Failed to get token')

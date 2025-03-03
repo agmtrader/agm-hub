@@ -1,6 +1,6 @@
 import React from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Advisor } from '@/lib/types'
+import { Advisor } from '@/lib/entities/advisors'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'

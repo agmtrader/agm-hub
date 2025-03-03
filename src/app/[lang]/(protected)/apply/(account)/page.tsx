@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import ClientForm from '@/components/apply/account/ClientForm';
 import Title from '@/components/apply/account/title/Title';
-import { Ticket } from '@/lib/types';
+import { Ticket } from '@/lib/entities/ticket';
 
 const page = () => {
 

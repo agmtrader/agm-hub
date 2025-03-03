@@ -1,15 +1,12 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button';  
-import Link from 'next/link';
-import { Ticket } from '@/lib/types';
+import { Ticket } from '@/lib/entities/ticket';
 import DocumentCenter from '../document_center/DocumentCenter';
 import { accessAPI } from '@/utils/api';
-import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast"
-import { ColumnDefinition, DataTable } from '../components/DataTable';
+import { ColumnDefinition, DataTable } from '../../misc/DataTable';
 import DashboardPage from '@/components/misc/DashboardPage';
 
 interface Props {

@@ -1,7 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -12,24 +11,21 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { ColumnDefinition, DataTable } from '../components/DataTable'
+import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { formatTimestamp } from "../../../utils/dates"
-
 import { getDefaults } from '@/utils/form'
 import { account_access_schema } from '@/lib/schemas/account'
-
 import { useForm } from 'react-hook-form'
 import { Account } from '@/lib/entities/account'
 import { Ticket } from '@/lib/entities/ticket'
-import { accessAPI } from '@/utils/api'
 import { addColumnsFromJSON } from '@/utils/table'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
 import DashboardPage from '@/components/misc/DashboardPage'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-import { ReadAccountByTicketID } from '@/utils/entities/account'
+import { CreateAccount, ReadAccountByTicketID, ReadAccounts } from '@/utils/entities/account'
 import { UpdateTicketByID } from '@/utils/entities/ticket'
 
 interface Props {
@@ -79,11 +75,20 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
 
     async function queryData () {
       try {
-        
+
+        setCanContinue(false)
         setIsLoading(true)
         setAccount(null)
 
         let account = await ReadAccountByTicketID(ticketID)
+
+        if (!account) {
+          toast({
+            title: 'Warning',
+            description: 'No account found for this ticket',
+            variant: 'warning'
+          })
+        }
 
         if (account) {
           if (ticket['Status'] !== 'Ready for application' && ticket['Status'] !== 'Opened') {
@@ -120,8 +125,6 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
     try {
       let timestamp = new Date()
       let accountTimestamp = formatTimestamp(timestamp)
-      
-      // TODO create type for this
       const account_details:Account = {
         'AccountID':accountTimestamp, 
         'TicketID':ticket['TicketID'], 
@@ -132,28 +135,15 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
         'IBKRPassword':values.ibkr_password,
         'Advisor':ticket['Advisor']
       }
-      
-      let response = await accessAPI('/database/create', 'POST', {'path': 'db/clients/accounts', 'data': account_details, 'id': accountTimestamp})
-      
-      if (response.status !== 'success') {
-        throw new Error('Failed to create account');
-      }
 
-      response = await accessAPI('/database/read', 'POST', {'path': 'db/clients/accounts', 'query': {'TicketID': ticketID}})
-      if (response.status !== 'success') {
+      await CreateAccount(account_details)
+
+      let account = await ReadAccountByTicketID(ticketID)
+      if (!account) {
         throw new Error('Failed to fetch account data');
       }
-      let accounts = response['content']
-      if (accounts.length === 1) {
-        accounts = await addColumnsFromJSON(accounts)
-        setAccount(accounts[0])
-        response = await accessAPI('/database/update', 'POST', {'path': `db/clients/tickets`, 'query': {'TicketID': ticketID}, 'data': {'Status': 'Documents need revision'}})
-        if (response.status !== 'success') {
-          throw new Error('Failed to update ticket status')
-        }
-      } else {
-        throw new Error('An unexpected error occurred.')
-      }
+      setAccount(account)
+      await UpdateTicketByID(ticketID, {'Status': 'Documents need revision'})
       setCanContinue(true);
 
     } catch (err) {
@@ -293,3 +283,58 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
 }
 
 export default OpenAccount
+
+
+
+{
+  /*
+/ Submit account details when creating a new account in IBKR
+  async function submitEmail(values: z.infer<typeof formSchema>) {
+    
+    setIsSubmitting(true);
+    
+    try {
+      let timestamp = new Date()
+      let accountTimestamp = formatTimestamp(timestamp)
+      const account_details:Account = {
+        'AccountID':accountTimestamp, 
+        'TicketID':ticket['TicketID'], 
+        'TemporalEmail':values.temp_email, 
+        'TemporalPassword':values.temp_password, 
+        'AccountNumber':values.account_number,
+        'IBKRUsername':values.ibkr_username,
+        'IBKRPassword':values.ibkr_password,
+        'Advisor':ticket['Advisor']
+      }
+
+      let test = await CreateAccount(account_details)
+
+      let accounts = await ReadAccounts()
+      if (accounts.length !== 1) {
+        throw new Error('Failed to fetch account data');
+      }
+      
+      let account = accounts[0]
+
+      if (accounts.length !== 1) {
+        throw new Error('Failed to fetch account data');
+      }
+
+      accounts = await addColumnsFromJSON(accounts)
+      setAccount(accounts[0])
+
+      await UpdateTicketByID(ticketID, {'Status': 'Documents need revision'})
+      setCanContinue(true);
+
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: err instanceof Error ? err.message : 'An unexpected error occurred',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+  */
+}

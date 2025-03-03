@@ -2,7 +2,7 @@
 import { accessAPI } from '@/utils/api'
 import React, { use, useEffect, useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
-import { Advisor } from '@/lib/types'
+import { Advisor } from '@/lib/entities/advisors'
 import { useSession } from 'next-auth/react'
 
 type Props = {

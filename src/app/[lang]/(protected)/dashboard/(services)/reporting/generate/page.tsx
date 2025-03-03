@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { accessAPI } from '@/utils/api'
 import { CheckCircle2, ChevronDownIcon, ChevronUpIcon, XCircle } from 'lucide-react'
-import { DataTable } from '@/components/dashboard/components/DataTable'
+import { DataTable } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
 import { motion } from 'framer-motion'
 import {

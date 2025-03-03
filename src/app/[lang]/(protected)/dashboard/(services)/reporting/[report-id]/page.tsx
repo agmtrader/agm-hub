@@ -1,7 +1,7 @@
 'use client'
 import React, { use, useEffect, useState } from 'react'
 import { accessAPI } from '@/utils/api'
-import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
+import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 
 type Props = {

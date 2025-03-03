@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
-import { DataTable } from '@/components/dashboard/components/DataTable';
-import { Map, Ticket } from '@/lib/types';
+import { DataTable } from '@/components/misc/DataTable';
+import { Map } from '@/lib/types';
+import { Ticket } from '@/lib/entities/ticket';
 
 import { getDefaults } from '@/utils/form';
 import { about_you_primary_schema, about_you_secondary_schema, general_info_schema, regulatory_schema } from '@/lib/schemas/ticket';

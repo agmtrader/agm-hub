@@ -6,7 +6,7 @@ import DashboardPage from '@/components/misc/DashboardPage'
 import ClientFees from '@/components/dashboard/reporting_center/ClientFees'
 import AccruedInterest from '@/components/dashboard/reporting_center/AccruedInterest'
 import { Separator } from '@/components/ui/separator'
-import { Report } from '@/lib/types'
+import { Report } from '@/lib/entities/report'
 import { Recycle } from 'lucide-react'
 import Link from 'next/link'
 

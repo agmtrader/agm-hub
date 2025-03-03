@@ -2,19 +2,19 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { ColumnDefinition, DataTable } from '../components/DataTable'
-import { accessAPI } from '@/utils/api'
+import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import DocumentUploader from './DocumentUploader'
 import { toast } from "@/hooks/use-toast"
 import { Map } from '@/lib/types'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { FolderDictionary, defaultFolderDictionary } from '@/lib/drive'
-import { Drive, Document as CustomDocument } from '@/lib/drive'
+import { FolderDictionary, defaultFolderDictionary } from '@/lib/entities/drive'
+import { Drive, Document as CustomDocument } from '@/lib/entities/drive'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import DocumentViewer from './DocumentViewer'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import Link from 'next/link'
+import { DeleteDatabaseEntry, DeleteFile, GetFilesInFolder } from '@/utils/entities/drive'
 
 interface DocumentCenterProps {
   folderDictionary?: FolderDictionary[];
@@ -29,7 +29,6 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null)
 
-  // Use the prop folderDictionary if provided, otherwise use the default
   const activeFolderDictionary = propsFolderDictionary || defaultFolderDictionary
 
   const columns = [
@@ -41,6 +40,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   ] as ColumnDefinition<CustomDocument>[]
 
   const fetchData = async () => {
+
     setLoading(true)
     let files:Drive = {}
 
@@ -49,18 +49,9 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     }
 
     for (let folder of activeFolderDictionary) {
-      const response = await accessAPI('/database/read', 'POST', {
-        'path': `db/document_center/${folder.id}`,
-        'query': query
-      })
-      if (response['content']) {
-        // Sort files by modified_time in descending order (newest first)
-        const sortedFiles = response['content'].sort((a: CustomDocument, b: CustomDocument) => {
-          const timeA = new Date(a.FileInfo.modifiedTime);
-          const timeB = new Date(b.FileInfo.modifiedTime);
-          return timeB.getTime() - timeA.getTime();
-        });
-        files[folder.id] = sortedFiles;
+      const drive = await GetFilesInFolder(folder.id, query)
+      if (drive) {
+        files[folder.id] = drive;
       }
     }
 
@@ -76,6 +67,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     setFiles(files)
     setCurrentFolderID(Object.keys(files)[0] || null)
     setLoading(false)
+    
   }
 
   useEffect(() => {
@@ -102,7 +94,6 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
       description: `Downloaded ${row.FileInfo.name}...`,
     })
 
-
   }
 
   const handleView = (row: any) => {
@@ -112,49 +103,35 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
 
   const handleDelete = async (row: any) => {
 
-    toast({
-      title: "Deleting",
-      description: `Deleting ${row.FileInfo.name || ''}...`,
-    })
+    try {
 
-    const fileDriveId = row.FileInfo.id
-    const documentId = row.DocumentID
+        if (!currentFolderID) throw new Error('No folder selected')
 
-    let response = await accessAPI('/drive/delete_file', 'POST', {
-      'file_id': fileDriveId,
-    })
+        toast({
+          title: "Deleting",
+          description: `Deleting ${row.FileInfo.name || ''}...`,
+        })
 
-    if (response['status'] !== 'success') {
+        const fileDriveId = row.FileInfo.id
+        const documentId = row.DocumentID
+
+        await DeleteFile(fileDriveId)
+        await DeleteDatabaseEntry(documentId, currentFolderID)
+
+        toast({
+          title: "Deleted",
+          description: `Deleted ${row.FileInfo.name}...`,
+        })
+
+      fetchData()
+    } catch (error) {
       toast({
         title: "Error",
-        description: `Error deleting ${row.FileInfo.name} from Drive.`,
+        description: `Error deleting ${row.FileInfo.name}...`,
         variant: "destructive",
       })
-      throw new Error(response['content'])
     }
 
-    response = await accessAPI('/database/delete', 'POST', {
-      'path': `db/document_center/${currentFolderID}`,
-      'query': {
-        'DocumentID': documentId,
-      }
-    })
-
-    if (response['status'] !== 'success') {
-      toast({
-        title: "Error",
-        description: `Error deleting ${row.FileInfo.name} from Database.`,
-        variant: "destructive",
-      })
-      throw new Error(response['content'])
-    }
-
-    toast({
-      title: "Deleted",
-      description: `Deleted ${row.FileInfo.name}...`,
-    })
-
-    fetchData()
   }
 
   const rowActions = [
@@ -226,6 +203,8 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
                 data={files[currentFolderID]} 
                 rowActions={rowActions}
                 infiniteScroll={true}
+                enableFiltering
+                filterColumns={['DocumentID']}
               />
             </motion.div>
           )}

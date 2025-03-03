@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { DataTable } from '@/components/dashboard/components/DataTable'
+import { DataTable } from '@/components/misc/DataTable'
 import DocumentViewer from '@/components/dashboard/document_center/DocumentViewer'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { Dialog, DialogContent } from '@/components/ui/dialog'

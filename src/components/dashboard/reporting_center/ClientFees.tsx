@@ -1,6 +1,6 @@
 import DashboardPage from '@/components/misc/DashboardPage'
 import React from 'react'
-import { DataTable } from '../components/DataTable'
+import { DataTable } from '../../misc/DataTable'
 
 type Props = {}
 

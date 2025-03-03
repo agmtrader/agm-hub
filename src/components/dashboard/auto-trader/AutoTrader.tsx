@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { Card } from "@/components/ui/card";
 import LoadingComponent from '@/components/misc/LoadingComponent';
-import { DataTable } from '@/components/dashboard/components/DataTable';
+import { DataTable } from '@/components/misc/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpCircle, ArrowDownCircle, MinusCircle, DollarSign, BarChart3, Clock, TrendingUp, Briefcase } from 'lucide-react';
 

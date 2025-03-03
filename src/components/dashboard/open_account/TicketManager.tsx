@@ -1,8 +1,8 @@
 "use client"
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable';
-import { Ticket } from '@/lib/types';
+import { ColumnDefinition, DataTable } from '@/components/misc/DataTable';
+import { Ticket } from '@/lib/entities/ticket';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import DashboardPage from '@/components/misc/DashboardPage';

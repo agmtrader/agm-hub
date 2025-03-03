@@ -1,5 +1,3 @@
-import { z } from "zod"
-
 export const countries = [
     { label: "Afghanistan", value: "af" },
     { label: "Albania", value: "al" },

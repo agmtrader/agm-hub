@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import React, { useEffect, useState } from 'react'
 import { accessAPI } from '@/utils/api'
-import { DataTable } from '@/components/dashboard/components/DataTable'
+import { DataTable } from '@/components/misc/DataTable'
 import { toast } from '@/hooks/use-toast'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command'
 import { Command, CommandInput } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Advisor } from '@/lib/types'
+import { Advisor } from '@/lib/entities/advisors'
 
 const formSchema = z.object({
   advisor_code: z.string().min(1, "Advisor Code is required"),

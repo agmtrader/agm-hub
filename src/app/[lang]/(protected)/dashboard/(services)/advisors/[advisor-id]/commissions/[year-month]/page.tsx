@@ -1,16 +1,9 @@
 'use client'
 import { accessAPI } from '@/utils/api'
 import React, { use, useEffect, useState } from 'react'
-import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
 import { useToast } from '@/hooks/use-toast'
-import { Advisor } from '@/lib/types'
-
-interface Commission {
-  Amount: number
-  Beneficiary: string
-  YYYY: number
-  YYYYMM: number
-}
+import { Advisor } from '@/lib/entities/advisors'
+import { Commission } from '@/lib/entities/commission'
 
 type Props = {
   params: Promise<{

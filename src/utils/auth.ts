@@ -32,7 +32,10 @@ export const authOptions: NextAuthOptions = {
           if (credentials?.username && credentials?.password) {
             try {
 
-              // Fetch user profile from same database where Google Auth is stored
+              // Fetch user profile manually from database
+              // When logging in with Google, the user profile is fetched from Firebase Authentication
+              // that uses the same database as this, /users
+              
               const users = await accessAPI('/database/read', 'POST', {
                 path: 'users',
                 query: {
@@ -67,7 +70,7 @@ export const authOptions: NextAuthOptions = {
 
         // Build token from user profile
         // This can be Google Response or Credentials Response
-        // Both use the same database
+        // Both are queried from the same database, /users
         
         if (user) {
 

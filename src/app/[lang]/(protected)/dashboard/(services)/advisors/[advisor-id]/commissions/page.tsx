@@ -1,9 +1,9 @@
 'use client'
 import { accessAPI } from '@/utils/api'
 import { useEffect, useState } from 'react'
-import { ColumnDefinition } from '@/components/dashboard/components/DataTable'
+import { ColumnDefinition } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
-import { Commission } from '@/lib/types'
+import { Commission } from '@/lib/entities/commission'
 
 const page = () => {
 

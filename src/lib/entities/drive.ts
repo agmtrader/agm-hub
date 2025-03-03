@@ -1,4 +1,4 @@
-import { Map } from "./types"
+import { Map } from "../types"
 
 export type FolderDictionary = {
     drive_id: string

@@ -1,11 +1,11 @@
 'use client'
 
 import ApplicationLinksDialog from '@/components/dashboard/advisors/ApplicationLinksDialog'
-import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
+import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import DashboardPage from '@/components/misc/DashboardPage'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { toast } from '@/hooks/use-toast'
-import { Advisor } from '@/lib/types'
+import { Advisor } from '@/lib/entities/advisors'
 import { accessAPI } from '@/utils/api'
 import { formatURL } from '@/utils/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'

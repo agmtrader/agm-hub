@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useSession } from 'next-auth/react'
 import { accessAPI } from '@/utils/api'
-import { Ticket } from '@/lib/types'
-import { ColumnDefinition, DataTable } from '@/components/dashboard/components/DataTable'
+import { Ticket } from '@/lib/entities/ticket'
+import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 
 type Props = {
     setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>

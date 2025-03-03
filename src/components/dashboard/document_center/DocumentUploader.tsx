@@ -15,12 +15,11 @@ import { useToast } from '@/hooks/use-toast'
 import POAForm from './forms/POAForm'
 import POIForm from './forms/POIForm'
 import SOWForm from './forms/SOWForm'
-
-import { accessAPI } from '@/utils/api'
 import { useSession } from 'next-auth/react'
 import { formatTimestamp } from '../../../utils/dates'
-import { FolderDictionary, Document } from '@/lib/drive'
+import { FolderDictionary, Document } from '@/lib/entities/drive'
 import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from '@/components/ui/file-upload'
+import { CreateDatabaseEntry, UploadFile } from '@/utils/entities/drive'
 
 interface DocumentUploaderProps {
   folderDictionary: FolderDictionary[]
@@ -54,58 +53,27 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
     const handleSubmit = async (values: any, files: File[] | null) => {
         setUploading(true)
         try {
-            if (!files || files.length === 0) {
-                throw new Error("Please select a file to upload");
-            }
 
-            const file = files[0]; // We're only using the first file
-
+            if (!files || files.length === 0) throw new Error("Please select a file to upload");
+        
+            const file = files[0]
             const timestamp = formatTimestamp(new Date())
 
-            // Read the file as a base64 string without data URL prefix
             const base64File = await new Promise<string>((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => {
                     const result = reader.result as string;
-                    // Remove the data URL prefix if present
                     const base64Data = result.split(',')[1] || result;
                     resolve(base64Data);
                 };
                 reader.onerror = reject;
                 reader.readAsDataURL(file);
-            });
-
-            let filePayload = {
-                file: base64File, // This now includes the full data URL
-                file_name: file.name,
-                mime_type: file.type,
-                parent_folder_id: folderDictionary.find((folder) => folder.id === selectedType)?.drive_id || ''
-            }
-
-            let fileInfo = await accessAPI('/drive/upload_file', 'POST', filePayload);
-
-            if (fileInfo['status'] !== 'success') {
-                throw new Error(fileInfo['content']);
-            }
-            
-            let documentPayload:Document = {
-                Category: selectedType,
-                DocumentID: timestamp,
-                FileInfo: fileInfo['content'],
-                DocumentInfo: values,
-                Uploader: session?.user?.email || 'Error finding uploader.'
-            }
-
-            let response = await accessAPI('/database/create', 'POST', {
-                data: documentPayload,
-                path: `db/document_center/${selectedType}`,
-                id: timestamp
             })
 
-            if (response['status'] !== 'success') {
-                throw new Error(response['content']);
-            }
-
+            const parent_folder_id = folderDictionary.find((folder) => folder.id === selectedType)?.drive_id || ''
+            
+            let fileInfo = await UploadFile(base64File, file.name, file.type, parent_folder_id)
+            await CreateDatabaseEntry(selectedType, timestamp, fileInfo, values, session)
             toast({
                 title: "Success",
                 description: "Document uploaded successfully",
@@ -116,7 +84,6 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ folderDictionary, a
             setSelectedType(folderDictionary[0].id)
             setOpen(false)
             setUploading(false)
-            
             onUploadSuccess?.()
 
         } catch (error) {
