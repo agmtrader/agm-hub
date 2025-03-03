@@ -36,7 +36,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
         setTicket(null)
 
         const tickets = await ReadTickets()
-        setTickets(tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString()))))
+        setTickets(tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString()))).filter((ticket) => ticket.Status !== "Started"))
         
     }
     fetchData()

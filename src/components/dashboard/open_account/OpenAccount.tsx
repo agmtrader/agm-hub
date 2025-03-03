@@ -125,6 +125,7 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
     try {
       let timestamp = new Date()
       let accountTimestamp = formatTimestamp(timestamp)
+      
       const account_details:Account = {
         'AccountID':accountTimestamp, 
         'TicketID':ticket['TicketID'], 
