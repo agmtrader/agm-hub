@@ -44,13 +44,14 @@ import { FileCheck2, Loader2 } from "lucide-react"
 import { UpdateTicketByID } from "@/utils/entities/ticket"
 
 interface Props {
-  stepForward:() => void,
-  stepBackwards:() => void,
+  stepForward: () => void,
+  stepBackwards: () => void,
   ticket: Ticket,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
+  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
+const Regulatory = ({stepBackwards, ticket, setTicket, stepForward, syncTicketData}:Props) => {
   
   const { toast } = useToast()
 
@@ -72,10 +73,9 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setGenerating(true)
+    setGenerating(true);
 
     try {
-      
       const updatedApplicationInfo = { ...ticket.ApplicationInfo, ...values };
 
       const updatedTicket: Ticket = {
@@ -84,17 +84,20 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward}:Props) => {
         Status: 'Filled'
       };
 
-      await UpdateTicketByID(ticket.TicketID, {ApplicationInfo: updatedApplicationInfo, Status: 'Filled'})
-      setTicket(updatedTicket);
-      setGenerating(false);
-      stepForward();
+      const success = await syncTicketData(updatedTicket);
+      if (!success) {
+        throw new Error('Failed to sync ticket data');
+      }
 
+      stepForward();
     } catch (error) {
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
+    } finally {
+      setGenerating(false);
     }
   }
 

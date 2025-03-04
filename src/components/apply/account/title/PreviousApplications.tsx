@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { useSession } from 'next-auth/react'
-import { accessAPI } from '@/utils/api'
 import { Ticket } from '@/lib/entities/ticket'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
-import { ReadTicketByUserID, ReadTickets } from '@/utils/entities/ticket'
+import { ReadTicketByUserID } from '@/utils/entities/ticket'
 
 type Props = {
     setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>
@@ -22,8 +20,9 @@ const PreviousApplications = ({setTicket, setStarted}:Props) => {
 
     useEffect(() => {
         async function getPreviousTickets() {
-            if (!session?.user?.id) return
+            if (!session?.user?.id) throw new Error('User not found')
             let tickets = await ReadTicketByUserID(session?.user?.id)
+            console.log(tickets)
             tickets = tickets.filter((ticket) => ticket.Status === 'Started')
             setPreviousTickets(tickets)
         }   
@@ -32,6 +31,7 @@ const PreviousApplications = ({setTicket, setStarted}:Props) => {
 
 
     if (!previousTickets) return null
+
 
     const columns = [
         {
@@ -63,8 +63,12 @@ const PreviousApplications = ({setTicket, setStarted}:Props) => {
                     label: 'Resume',
                     onClick: (ticket: Ticket) => {
                         setDialogOpen(false)
-                        setTicket(ticket)
-                        setStarted(true)
+                        setTicket(null)
+                        setStarted(false)
+                        setTimeout(() => {
+                            setTicket(ticket)
+                            setStarted(true)
+                        }, 100)
                     }
                 }
             ]} enableRowActions/>

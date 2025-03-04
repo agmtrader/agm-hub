@@ -55,13 +55,9 @@ const Title = ({setStarted, setTicket}:Props) => {
                 <p className="text-sm">{t('apply.account.title.startApplication')}</p>
             </ShimmerButton>
           </motion.div>
-          {
-            /*
-            <motion.div variants={itemVariants}>
-              <PreviousApplications setTicket={setTicket} setStarted={setStarted}/>
-            </motion.div>
-            */
-          }
+          <motion.div variants={itemVariants}>
+            <PreviousApplications setTicket={setTicket} setStarted={setStarted}/>
+          </motion.div>
         </motion.div>
       </div>
     </div>

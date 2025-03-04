@@ -42,8 +42,6 @@ import { Notification } from "@/lib/entities/notification"
 // Question weight is stored in the weights array
 // Answer weight is stored in the question schema
 
-
-
 const RiskForm = () => {
 
   const {toast} = useToast()

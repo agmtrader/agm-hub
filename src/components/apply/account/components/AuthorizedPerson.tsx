@@ -46,13 +46,14 @@ import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { UpdateTicketByID } from "@/utils/entities/ticket"
 
 interface Props {
-  stepForward:() => void,
-  stepBackward:() => void,
+  stepForward: () => void,
+  stepBackward: () => void,
   ticket: Ticket,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
+  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward}:Props) => {
+const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward, syncTicketData}:Props) => {
 
   const backdoor = process.env.DEV_MODE === 'true'
 
@@ -75,36 +76,34 @@ const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward}:Props) 
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
-    setGenerating(true)
+    setGenerating(true);
 
     try {
-
-      const updatedApplicationInfo = { ...ticket.ApplicationInfo }
+      const updatedApplicationInfo = { ...ticket.ApplicationInfo };
 
       for (const [key, value] of Object.entries(values)) {
-        updatedApplicationInfo[key] = value
+        updatedApplicationInfo[key] = value;
       }
 
-      const updatedTicket:Ticket = {
+      const updatedTicket: Ticket = {
         ...ticket,
         ApplicationInfo: updatedApplicationInfo,
+      };
+
+      const success = await syncTicketData(updatedTicket);
+      if (!success) {
+        throw new Error('Failed to sync ticket data');
       }
 
-      await UpdateTicketByID(ticket.TicketID, {ApplicationInfo: updatedApplicationInfo})
-      setTicket(updatedTicket)
-      stepForward()
-
+      stepForward();
     } catch (err) {
-
       toast({
         title: "Error",
         description: err instanceof Error ? err.message : "An unexpected error occurred",
         variant: "destructive",
-      })
-
+      });
     } finally {
-      setGenerating(false)
+      setGenerating(false);
     }
   }
 

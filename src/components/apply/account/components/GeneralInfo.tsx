@@ -50,10 +50,15 @@ import { CreateNotification } from "@/utils/entities/notification"
 interface Props {
   stepForward: () => void,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
-  ticket: Ticket | null
+  ticket: Ticket | null,
+  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
+const GeneralInfo = ({ stepForward, setTicket, ticket, syncTicketData }: Props) => {
+
+  const {data:session} = useSession()
+  const userID = session?.user.id
+  if (!userID) throw new Error('Critical Error: User ID not found')
 
   const [generating, setGenerating] = useState(false)
   const searchParams = useSearchParams()
@@ -73,54 +78,56 @@ const GeneralInfo = ({ stepForward, setTicket, ticket }: Props) => {
   const {toast} = useToast()
   const translatedAccountTypes = account_types(t)
 
-  const {data:session} = useSession()
-  const userID = session?.user.id
-  if (!userID) throw new Error('Critical Error: User ID not found')
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setGenerating(true);
 
-    setGenerating(true)
     try {
-      
-      const timestamp = new Date()
-      const advisor = searchParams.get('ad') || ''
-      const master_account = searchParams.get('ma') || ''
-
-      // Get the ticket ID from the current ticket or create a new one if it doesn't exist
-      const ticketID = ticket?.TicketID || formatTimestamp(timestamp)
+      const timestamp = new Date();
+      const advisor = searchParams.get('ad') || '';
+      const master_account = searchParams.get('ma') || '';
 
       if (!userID) {
-        throw new Error('Critical Error: User ID not found. Cannot continue with application.')
+        throw new Error('Critical Error: User ID not found. Cannot continue with application.');
       }
 
-      const newTicket:Ticket = {
+      // If we have an existing ticket, use its ID, otherwise create a new one
+      const ticketID = ticket?.TicketID || formatTimestamp(timestamp);
+      const newTicket: Ticket = {
         'TicketID': ticketID,
         'Status': 'Started',
-        'ApplicationInfo': values,
+        'ApplicationInfo': ticket ? { ...ticket.ApplicationInfo, ...values } : values,
         'Advisor': advisor,
         'UserID': userID,
         'MasterAccount': master_account
+      };
+
+      // Only create a new ticket if we don't have an existing one
+      if (!ticket) {
+        await CreateTicket(newTicket, ticketID);
+      }
+      
+      // Then sync it to update state and handle any additional logic
+      const success = await syncTicketData(newTicket);
+      if (!success) {
+        throw new Error('Failed to sync ticket data');
       }
 
-      await CreateTicket(newTicket, ticketID)
-
-      let notification:Notification = {
+      let notification: Notification = {
         Title: session?.user?.name || 'No name',
-        Description: 'Account application started',
+        Description: ticket ? 'Account application updated' : 'Account application started',
         NotificationID: formatTimestamp(timestamp),
         UserID: userID,
-      }
-      await CreateNotification(notification, 'account_applications')
-      setTicket(newTicket)
-      setGenerating(false)
-      stepForward()
-
-    } catch (error:any) {
+      };
+      await CreateNotification(notification, 'account_applications');
+      stepForward();
+    } catch (error: any) {
       toast({
         title: 'Error',
         description: error.message || "An unexpected error occurred",
         variant: 'destructive',
-      })
+      });
+    } finally {
+      setGenerating(false);
     }
   }
 

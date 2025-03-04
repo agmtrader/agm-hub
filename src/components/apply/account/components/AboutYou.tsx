@@ -4,9 +4,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Fingerprint, Loader2 } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
-
 import {
   Form,
   FormControl,
@@ -16,7 +14,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-
 import {
   Command,
   CommandEmpty,
@@ -25,35 +22,31 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-
-import { marital_status, salutations, id_type, employment_status, currencies, source_of_wealth, phone_types, security_questions } from "@/lib/form"
+import { marital_status, salutations, id_type, employment_status, currencies, source_of_wealth, phone_types, security_questions, countries } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
-
 import { about_you_primary_schema, about_you_secondary_schema } from "@/lib/schemas/ticket"
-
 import { Checkbox } from "@/components/ui/checkbox"
 import { Ticket } from "@/lib/entities/ticket"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
-import { UpdateTicketByID } from "@/utils/entities/ticket"
 
 interface Props {
-  stepForward:() => void,
-  stepBackward:() => void,
+  primary: boolean,
+  stepForward: () => void,
+  stepBackward: () => void,
   ticket: Ticket,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
-  primary: boolean
+  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props) => {
+const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket, syncTicketData}:Props) => {
 
   let formSchema:any;
 
@@ -74,49 +67,78 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket}:Props)
     formSchema = about_you_secondary_schema(t)
   }
 
+  let initialFormValues:any;
+  if (primary) {
+    initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema);
+  } else {
+    // For secondary user, extract fields with 'secondary_' prefix
+    initialFormValues = {};
+    const defaults = getDefaults(formSchema);
+    
+    if (ticket?.ApplicationInfo) {
+      for (const [key, value] of Object.entries(ticket.ApplicationInfo)) {
+        if (key.startsWith('secondary_')) {
+          initialFormValues[key.replace('secondary_', '')] = value;
+        }
+      }
+    }
+    
+    // Fill in any missing fields with defaults
+    for (const [key, value] of Object.entries(defaults)) {
+      if (!(key in initialFormValues)) {
+        initialFormValues[key] = value;
+      }
+    }
+  }
+  
+  // Ensure source_of_wealth is always an array
+  if (initialFormValues.source_of_wealth && !Array.isArray(initialFormValues.source_of_wealth)) {
+    initialFormValues.source_of_wealth = [initialFormValues.source_of_wealth];
+  } else if (!initialFormValues.source_of_wealth) {
+    initialFormValues.source_of_wealth = [];
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
-      values: getDefaults(formSchema),
+      values: initialFormValues,
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
-    setGenerating(true)
+    setGenerating(true);
 
     try {
-
-      const updatedApplicationInfo = { ...ticket.ApplicationInfo }
+      const updatedApplicationInfo = { ...ticket.ApplicationInfo };
 
       // This is a bit of a hack to get the values from the form
       // from the secondary user if the account being applied for is a joint account
       // Should make another form entirely for the secondary holder but this works
       for (const [key, value] of Object.entries(values)) {
         if (primary) {
-          updatedApplicationInfo[key] = value
+          updatedApplicationInfo[key] = value;
         } else {
-          updatedApplicationInfo[`secondary_${key}`] = value
+          updatedApplicationInfo[`secondary_${key}`] = value;
         }
       }
 
-      const updatedTicket:Ticket = {
+      const updatedTicket: Ticket = {
         ...ticket,
         ApplicationInfo: updatedApplicationInfo,
+      };
+
+      const success = await syncTicketData(updatedTicket);
+      if (!success) {
+        throw new Error('Failed to sync ticket data');
       }
 
-      await UpdateTicketByID(ticket.TicketID, {ApplicationInfo: updatedApplicationInfo})
-      setTicket(updatedTicket)
-      stepForward()
-
+      stepForward();
     } catch (err) {
-
       toast({
         title: "Error",
         description: err instanceof Error ? err.message : "An unexpected error occurred",
         variant: "destructive",
-      })
-
+      });
     } finally {
-      setGenerating(false)
+      setGenerating(false);
     }
   }
 

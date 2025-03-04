@@ -47,13 +47,14 @@ import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 
 interface Props {
-  stepForward:() => void,
-  stepBackward:() => void,
+  stepForward: () => void,
+  stepBackward: () => void,
   ticket: Ticket,
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
+  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const AboutOrganization = ({stepForward, ticket, setTicket, stepBackward}:Props) => {
+const AboutOrganization = ({stepForward, ticket, setTicket, stepBackward, syncTicketData}:Props) => {
 
   const backdoor = process.env.DEV_MODE === 'true'
 
@@ -78,52 +79,43 @@ const AboutOrganization = ({stepForward, ticket, setTicket, stepBackward}:Props)
   console.log(form.formState.errors)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
-    setGenerating(true)
+    setGenerating(true);
 
     try {
-
       if (values.proprietary_assets === false) {
         toast({
           title: "Error",
           description: t('apply.account.organization.proprietary_assets.error'),
           variant: "destructive",
-        })
-        throw new Error('Proprietary assets verification is required.')
+        });
+        throw new Error('Proprietary assets verification is required.');
       }
 
-      const updatedApplicationInfo = { ...ticket.ApplicationInfo }
+      const updatedApplicationInfo = { ...ticket.ApplicationInfo };
 
       for (const [key, value] of Object.entries(values)) {
-        updatedApplicationInfo[key] = value
+        updatedApplicationInfo[key] = value;
       }
 
-      const updatedTicket:Ticket = {
+      const updatedTicket: Ticket = {
         ...ticket,
         ApplicationInfo: updatedApplicationInfo,
+      };
+
+      const success = await syncTicketData(updatedTicket);
+      if (!success) {
+        throw new Error('Failed to sync ticket data');
       }
 
-      const response = await accessAPI('/database/update', 'POST', {
-        path: `db/clients/tickets`,
-        query: { TicketID: ticket.TicketID },
-        data: { ApplicationInfo: updatedApplicationInfo }
-      })
-
-      if (response['status'] !== 'success') {
-        throw new Error(response['message'] || 'Failed to update ticket')
-      }
-
-      setTicket(updatedTicket)
-      setGenerating(false)
-      stepForward()
-
+      stepForward();
     } catch (err) {
-
       toast({
         title: "Error",
         description: err instanceof Error ? err.message : "An unexpected error occurred",
         variant: "destructive",
-      })
+      });
+    } finally {
+      setGenerating(false);
     }
   }
 
