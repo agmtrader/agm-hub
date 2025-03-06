@@ -4,7 +4,7 @@ import { Lock } from 'lucide-react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { Button } from '../ui/button'
 import Link from 'next/link'
-import { formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/language/lang'
 
 const NoPermissionsPage = () => {
 

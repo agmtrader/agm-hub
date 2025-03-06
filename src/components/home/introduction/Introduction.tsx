@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/tooltip"
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
-import { formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/language/lang'
 import Iphone15Pro from '@/components/ui/iphone-15-pro'
 import { containerVariants, itemVariants } from '@/lib/anims'
 

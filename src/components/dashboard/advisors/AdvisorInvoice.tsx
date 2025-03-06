@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select"
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
-import { Advisor } from '@/lib/entities/advisors'
+import { Advisor } from '@/lib/entities/advisor'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 
 interface Commission {

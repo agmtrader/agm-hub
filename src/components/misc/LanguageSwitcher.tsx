@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { Button } from '../ui/button'
-import { formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/language/lang'
 import { usePathname } from 'next/navigation'
 import { redirect } from 'next/navigation'
 import { ES, US } from 'country-flag-icons/react/3x2'

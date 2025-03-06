@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { RainbowButton } from '@/components/ui/rainbow-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import ShimmerButton from '@/components/ui/shimmer-button'
-import { formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/language/lang'
 
 interface TitleProps {
   backgroundImage: string;

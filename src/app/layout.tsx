@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from "@vercel/analytics/react"
 import { redirect, usePathname } from "next/navigation"
-import { changeLang } from "@/utils/lang"
+import { changeLang } from "@/utils/language/lang"
 
 const inter = Inter({ subsets: ['latin'] })
 

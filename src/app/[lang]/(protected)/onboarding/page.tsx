@@ -1,5 +1,5 @@
 'use client'
-import { formatURL } from '@/utils/lang';
+import { formatURL } from '@/utils/language/lang';
 import { toast, useToast } from '@/hooks/use-toast';
 import { accessAPI } from '@/utils/api';
 import { signIn, signOut, useSession } from 'next-auth/react';

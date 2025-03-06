@@ -7,7 +7,7 @@ import { NavigationMenuLink } from '@radix-ui/react-navigation-menu'
 import { navigationMenuTriggerStyle } from '../ui/navigation-menu'
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { motion, AnimatePresence } from 'framer-motion' // Add this import
-import { formatURL, getCallbackUrl } from '@/utils/lang'
+import { formatURL, getCallbackUrl } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 type Props = {

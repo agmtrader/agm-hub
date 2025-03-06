@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect } from 'react'
-import { getRecoveryData } from '@/utils/firestore'
+import { getRecoveryData } from '@/utils/firebase/firestore'
 
 type Props = {}
 

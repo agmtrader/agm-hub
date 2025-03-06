@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command'
 import { Command, CommandInput } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Advisor } from '@/lib/entities/advisors'
+import { Advisor } from '@/lib/entities/advisor'
 
 const formSchema = z.object({
   advisor_code: z.string().min(1, "Advisor Code is required"),

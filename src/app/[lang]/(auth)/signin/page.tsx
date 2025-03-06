@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { formatURL } from '@/utils/lang';
+import { formatURL } from '@/utils/language/lang';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
