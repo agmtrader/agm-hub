@@ -221,9 +221,8 @@ export const authorized_person_schema = (t: (key: string) => string) => z.object
     position: z.array(z.string()).refine((value) => value.some((item) => item), {
         message: t('forms.errors.select_required'),
     }).default([]),
-    third_party: z.boolean().refine((val) => val === true, {
-        message: t('forms.errors.true_required'),
-    }).default(false),
+
+    third_party: z.boolean().default(false),
 
     email: z.string().email({
         message: t('forms.errors.email'),
@@ -270,24 +269,12 @@ export const authorized_person_schema = (t: (key: string) => string) => z.object
     employment_status: z.string().min(1, {
         message: t('forms.errors.select_required'),
     }),
-    employer_name: z.string().min(1, {
-        message: t('forms.errors.select_required'),
-    }),
-    employer_address: z.string().min(1, {
-        message: t('forms.errors.select_required'),
-    }),
-    employer_city: z.string().min(1, {
-        message: t('forms.errors.select_required'),
-    }),
-    employer_state: z.string().min(1, {
-        message: t('forms.errors.select_required'),
-    }),
-    employer_country: z.string().min(1, {
-        message: t('forms.errors.select_required'),
-    }),
-    employer_zip: z.string().min(1, {
-        message: t('forms.errors.select_required'),
-    }),
+    employer_name: z.string().optional(),
+    employer_address: z.string().optional(),
+    employer_city: z.string().optional(),
+    employer_state: z.string().optional(),
+    employer_country: z.string().optional(),
+    employer_zip: z.string().optional(),
     security_q_1: z.string({
         required_error: t('forms.errors.select_required'),
     }),

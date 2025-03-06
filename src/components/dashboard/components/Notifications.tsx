@@ -7,6 +7,7 @@ import { ReadNotifications } from '@/utils/entities/notification'
 import { Notification } from '@/lib/entities/notification'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { formatDateFromTimestamp } from '@/utils/dates'
+import { Separator } from '@/components/ui/separator'
 
 
 const Notifications = () => {
@@ -32,11 +33,11 @@ const Notifications = () => {
                 <Bell className="h-4 w-4 text-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="flex flex-col gap-4 text-foreground bg-muted p-2 rounded-md">
+                <div className="flex flex-col gap-4">
                     {notifications.map((notification) => (
-                        <div key={notification.NotificationID}>
-                            <h3 className="text-lg font-bold">{notification.Title}</h3>
-                            <p className="text-sm text-muted-foreground">{formatDateFromTimestamp(notification.NotificationID)}</p>
+                        <div className="text-foreground bg-muted p-2 rounded-md">
+                            <h3 className="text-md font-bold">{notification.Title}</h3>
+                            <p className="text-s text-muted-foreground">{formatDateFromTimestamp(notification.NotificationID)}</p>
                             <p className="text-sm">{notification.Description}</p>
                         </div>
                     ))}

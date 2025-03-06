@@ -3,7 +3,7 @@ import { formatURL } from '@/utils/language/lang';
 import { toast, useToast } from '@/hooks/use-toast';
 import { accessAPI } from '@/utils/api';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { useForm } from "react-hook-form"
@@ -20,38 +20,43 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/anims';
 import Image from 'next/image';
+import { GetUserPassword, UpdateUser } from '@/utils/entities/user';
 
 interface UserWithPassword extends User {
     password: string;
 }
 
 const Onboarding = () => {
-
-    const { data: session, update } = useSession();
-
+    const { data: session } = useSession();
     const router = useRouter();
     const { lang } = useTranslationProvider();
-
     const [saving, setSaving] = useState(false);
-
+    const [hasPassword, setHasPassword] = useState<boolean | null>(null);
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
 
+    // Check for password existence when session is available
+    useEffect(() => {
+        if (session?.user?.email) {
+            GetUserPassword({ email: session.user.email })
+                .then(password => {
+                    setHasPassword(!!password);
+                })
+                .catch(error => {
+                    console.error('Error checking password:', error);
+                    setHasPassword(false);
+                });
+        }
+    }, [session?.user?.email]);
+
     const formSchema = useMemo(() => {
-
-        if (!session?.user) return null;
+        if (!session?.user || hasPassword === null) return null;
+        
         const user = session.user as UserWithPassword;
-
-        if (!user) return null;
-
         const schemaFields: Record<string, z.ZodTypeAny> = {};
 
-        ['name', 'email', 'country', 'username', 'image', 'password'].forEach((key) => {
-
-            // If the user does not have the value associated with the key, add it to the schema
+        ['name', 'email', 'country', 'username', 'image'].forEach((key) => {
             if (user[key as keyof User] === undefined || user[key as keyof User] === null) {
-
-                
                 switch(key) {
                     case 'name':
                         schemaFields[key] = z.string().min(2);
@@ -68,9 +73,6 @@ const Onboarding = () => {
                     case 'image':
                         schemaFields[key] = z.string();
                         break;
-                    case 'password':
-                        schemaFields[key] = z.string().min(8);
-                        break;
                     default:
                         console.log(key)
                         toast({
@@ -81,40 +83,40 @@ const Onboarding = () => {
                         throw new Error('Unknown user property');
                 }
             }
-
         });
 
-        return Object.keys(schemaFields).length > 0 ? z.object(schemaFields) : null
+        // Add password field if it hasn't been set yet
+        if (!hasPassword) {
+            schemaFields['password'] = z.string().min(8);
+        }
 
-    }, [session]);
+        return Object.keys(schemaFields).length > 0 ? z.object(schemaFields) : null;
+    }, [session, hasPassword]);
 
-    if (!formSchema) {
-        router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang))
-        return null;
-    };
-
-    toast({
-        title: 'Profile missing key information',
-        description: 'Please fill in the following fields to complete your profile.',
-        variant: 'destructive'
-    });
-
+    // Always initialize form even if schema is null
     const form = useForm<z.infer<NonNullable<typeof formSchema>>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: getDefaults(formSchema),
+        resolver: zodResolver(formSchema || z.object({})),
+        defaultValues: formSchema ? getDefaults(formSchema) : {},
     });
+
+    // Handle redirect if no fields need to be filled
+    useEffect(() => {
+        if (formSchema === null && hasPassword !== null) {
+            router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
+        }
+    }, [formSchema, hasPassword, router, callbackUrl, lang]);
 
     async function onSubmit(values: z.infer<NonNullable<typeof formSchema>>) {
-
-        if (!session || !session.user) return;
+        if (!session || !session.user || !formSchema) return;
         setSaving(true);
+
+        const updatedUser = session.user as UserWithPassword;
 
         // Update the current user object with the new values
         Object.keys(session.user as User).forEach((key) => {
-
             try {
                 if (values[key as keyof typeof values] !== undefined && values[key as keyof typeof values] !== null) {
-                    (session.user as any)[key] = values[key as keyof typeof values];
+                    (updatedUser as any)[key] = values[key as keyof typeof values];
                 }
             } catch (error) {
                 toast({
@@ -128,30 +130,41 @@ const Onboarding = () => {
 
         // Create a new user object with the updated values (including password)
         const user = session.user as UserWithPassword;
-        user.password = values.password;
+        if ('password' in values) {
+            user.password = values.password;
+        }
+
         delete user.accessToken;
         delete user.refreshToken;
 
-        // Update the user in the database
-        const response = await accessAPI('/database/update', 'POST', {
-            path: 'users',
-            data: user,
-            query: {
-                email: session.user.email
-            }
-        });
-
-        if (response['status'] !== 'success') {
-            toast({
-                title: 'Error',
-                description: 'Error updating user profile',
-                variant: 'destructive'
-            });
-            throw new Error('Error updating user profile');
+        const query = {
+            email: session.user.email
         }
 
+        await UpdateUser(user, query)
         setSaving(false);
+
+        toast({
+            title: 'Profile updated',
+            description: 'Your profile has been updated successfully',
+            variant: 'success'
+        });
+
         router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
+    }
+
+    // Show loading state while checking password
+    if (!formSchema || hasPassword === null) {
+        return (
+            <div className='flex items-center justify-center'>
+                <Card className="w-full max-w-xl p-8">
+                    <CardHeader className='flex flex-col justify-center items-center gap-2'>
+                        <Image src='/assets/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
+                        <CardTitle className='text-center font-bold text-3xl'>Loading...</CardTitle>
+                    </CardHeader>
+                </Card>
+            </div>
+        );
     }
 
     return (
@@ -159,12 +172,12 @@ const Onboarding = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className='flex items-center justify-center min-h-screen'
+        className='flex items-center justify-center'
         >
             <Card className="w-full max-w-xl p-8">
                 <motion.div variants={itemVariants}>
                     <CardHeader className='flex flex-col justify-center items-center gap-2'>
-                        <Image src='/images/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
+                        <Image src='/assets/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
                         <CardTitle className='text-center font-bold text-3xl'>Complete Your Profile</CardTitle>
                         <CardDescription className='text-center text-sm text-muted-foreground'>Please fill in the following fields to complete your profile.</CardDescription>
                     </CardHeader>
@@ -172,7 +185,7 @@ const Onboarding = () => {
                 <CardContent>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            {Object.keys(formSchema.shape).map((fieldName) => (
+                            {Object.keys((formSchema as NonNullable<typeof formSchema>).shape).map((fieldName) => (
                                 fieldName === 'country' ? (
                                     <CountriesFormField 
                                         key={fieldName}
@@ -188,7 +201,7 @@ const Onboarding = () => {
                                             <FormItem>
                                                 <FormLabel className="capitalize">{fieldName}</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input type={fieldName === 'password' ? 'password' : 'text'} {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

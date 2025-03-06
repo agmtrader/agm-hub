@@ -74,7 +74,11 @@ export async function accessAPI(url:string, type:string, params?:Map) {
     const api_url = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:5000' : 'https://api.agmtechnology.com'
     const token = await getToken()
 
-    if (!token) throw new Error('Failed to get token')
+    if (!token) {
+        console.error('Failed to get authentication token')
+        throw new Error('Failed to get authentication token')
+    }
+    
     if (type === 'GET') {
         data = await getData(token)
     } else {

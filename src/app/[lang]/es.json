@@ -279,10 +279,152 @@
         "account": {
             "title": {
                 "ready": "¿Listo para ganar dinero?",
-                "description": "Desbloquea el mundo de las oportunidades financieras con tu cuenta de trading AGM.",
-                "signIn": "Iniciar Sesión",
+                "description": "Desbloquea el mundo de oportunidades financieras con tu cuenta AGM.",
+                "signIn": "Inicia sesión o regístrate ahora.",
                 "createAccount": "Crear Cuenta",
-                "startApplication": "Comenzar Solicitud"
+                "startApplication": "Iniciar Solicitud",
+                "previous_applications": {
+                    "title": "Solicitudes Anteriores",
+                    "button": "Ver solicitudes anteriores",
+                    "date": "Fecha de inicio",
+                    "status": "Estado",
+                    "resume": "Reanudar"
+                }
+            },
+            "about_you": {
+                "title": "Sobre Ti",
+                "primary": "Titular Principal",
+                "secondary": "Titular Secundario",
+
+                "basic_info": "Información Básica",
+                "login_info": "Información de Inicio de Sesión",
+                "residential_info": "Información Residencial",
+                "personal_info": "Información Personal",
+                "id_info": "Información de Identificación",
+                "employer_info": "Información del Empleador",
+                "financial_info": "Información Financiera",
+                "security_questions": "Preguntas de Seguridad",
+                
+                "salutation": "Tratamiento",
+                "first_name": "Nombre",
+                "middle_name": "Segundo Nombre",
+                "last_name": "Apellidos",
+
+                "address": "Dirección",
+                "city": "Ciudad",
+                "state": "Estado/Provincia",
+                "zip": "Código Postal",
+                "phone_type": "Tipo de Teléfono",
+                "phone_types": {
+                    "mobile": "Móvil",
+                    "home": "Casa"
+                },
+                "phone_country": "País del Teléfono",
+                "phone_number": "Número de Teléfono",
+                "citizenship": "Ciudadanía",
+                "country_of_birth": "País de Nacimiento",
+                
+                "date_of_birth": "Fecha de Nacimiento",
+                "marital_status": "Estado Civil",
+                "marital_status_list": {
+                    "single": "Soltero/a",
+                    "married": "Casado/a",
+                    "divorced": "Divorciado/a",
+                    "widowed": "Viudo/a"
+                },
+                "select_marital_status": "Selecciona un estado",
+                "number_of_dependents": "Número de Dependientes",
+                "country_of_residence": "País de Residencia",
+                "tax_id": "Identificación Fiscal",
+                
+                "id_country": "País de Identificación",
+                "id_type": "Tipo de Identificación",
+                "id_type_list": {
+                    "passport": "Pasaporte",
+                    "national_id": "DNI",
+                    "license": "Licencia",
+                    "alien": "Tarjeta de Residencia"
+                },
+                "select_id_type": "Selecciona tipo de identificación",
+                "id_number": "Número de Identificación",
+                "id_expiration": "Fecha de Vencimiento",
+                
+                "employment_status": "Situación Laboral",
+                "employment_status_list": {
+                    "employed": "Empleado",
+                    "retired": "Jubilado",
+                    "self_employed": "Autónomo",
+                    "trader": "Comerciante",
+                    "student": "Estudiante",
+                    "homemaker": "Ama/o de Casa",
+                    "unemployed": "Desempleado"
+                },
+                "select_employment_status": "Selecciona una situación",
+                "employer_name": "Nombre del Empleador",
+                "employer_address": "Dirección del Empleador",
+                "employer_city": "Ciudad del Empleador",
+                "employer_state": "Estado/Provincia del Empleador",
+                "employer_country": "País del Empleador",
+                "employer_zip": "Código Postal del Empleador",
+                "nature_of_business": "Naturaleza del Negocio",
+                "occupation": "Ocupación",
+                
+                "source_of_wealth": "Origen de los Fondos",
+                "currency": "Moneda",
+                "select_currency": "Selecciona una moneda",
+                
+                "security_question_1": "Pregunta de Seguridad 1",
+                "security_answer_1": "Respuesta de Seguridad 1",
+                "security_question_2": "Pregunta de Seguridad 2",
+                "security_answer_2": "Respuesta de Seguridad 2",
+                "security_question_3": "Pregunta de Seguridad 3",
+                "security_answer_3": "Respuesta de Seguridad 3",
+                "select_security_question": "Selecciona una pregunta de seguridad",
+                
+                "email": "Correo Electrónico",
+                "username": "Nombre de Usuario",
+                "password": "Contraseña",
+
+                "fill_fake_data": "Rellenar con datos falsos"
+            },
+            "regulatory": {
+                "title": "Información Regulatoria",
+                "annual_net_income": "Ingreso Neto Anual",
+                "liquid_net_worth": "Patrimonio Líquido Neto",
+                "net_worth": "Patrimonio Neto",
+                "investment_objectives": "Objetivos de Inversión",
+                "investment_objectives_list": {
+                    "capital": "Capital",
+                    "growth": "Crecimiento",
+                    "hedging": "Cobertura",
+                    "profits": "Beneficios"
+                },
+                "products_to_trade": "Productos para Operar",
+                "amount_to_invest": "Cantidad a Invertir",
+                "source_of_wealth": {
+                    "allowance": "Asignación",
+                    "disability": "Discapacidad",
+                    "income": "Ingresos",
+                    "inheritance": "Herencia",
+                    "profits": "Beneficios",
+                    "interest": "Intereses",
+                    "pension": "Pensión",
+                    "other": "Otro",
+                    "property": "Propiedad"
+                },
+                "products": {
+                    "bonds": "Bonos",
+                    "stocks": "Acciones",
+                    "futures": "Futuros",
+                    "options": "Opciones",
+                    "etfs": "ETFs"
+                }
+            },
+            "application_end": {
+                "title": "¡Solicitud Enviada con Éxito!",
+                "description": "Gracias por elegir nuestros servicios. Revisaremos tu solicitud y te contactaremos pronto.",
+                "apply_another": "Solicitar otra cuenta",
+                "go_back_home": "Volver a la página principal"
             },
             "general_info": {
                 "title": "Información General",
@@ -298,194 +440,153 @@
                 },
                 "disclaimer": {
                     "title": "AVISO LEGAL",
-                    "content": "Si desea abrir una Cuenta Individual, le aconsejamos que por cuestiones de herencia e impuestos, es mejor abrir una Cuenta Conjunta. Una Cuenta Individual no permite la opción de nombrar Beneficiarios al momento de la apertura ni posteriormente y podría estar sujeta a impuestos de Sucesión. Por favor, considere la opción de abrir una cuenta conjunta en lugar de una cuenta individual.",
-                    "contact": "Si tiene alguna pregunta antes de aplicar, contáctenos en:"
+                    "content": "Si deseas abrir una Cuenta Individual, te aconsejamos que por motivos de herencia e impuestos, es mejor abrir una Cuenta Conjunta. Una Cuenta Individual no permite la opción de nombrar Beneficiarios al momento de la apertura o posteriormente y puede estar sujeta a impuestos sucesorios. Por favor, considera la opción de abrir una cuenta conjunta en lugar de una cuenta individual.",
+                    "contact": "Si tienes alguna pregunta antes de aplicar, contáctanos en:"
                 }
             },
-            "about_you": {
-                "title": "Sobre Ti",
-                "primary": "Titular Principal",
-                "secondary": "Titular Secundario",
+
+            "organization": {
+                "title": "Información de la Organización",
                 "basic_info": "Información Básica",
-                "login_info": "Información de Inicio de Sesión",
+                "purpose_info": "Propósito de la Entidad",
                 "residential_info": "Información Residencial",
-                "personal_info": "Información Personal",
-                "id_info": "Información de Identificación",
-                "employer_info": "Información del Empleador",
-                "financial_info": "Información Financiera",
-                "security_questions": "Preguntas de Seguridad",
-                
-                "salutation": "Saludo",
-                "first_name": "Nombre",
-                "middle_name": "Segundo nombre",
-                "last_name": "Apellido",
+                "contact_info": "Información de Contacto",
+                "tax_info": "Información Fiscal",
+
+                "name": "Nombre de la Organización",
+                "type": "Tipo de Organización",
+                "description": "Descripción",
+                "website": "Sitio Web",
+                "legal_entity_id": "ID de Entidad Legal",
+
+                "purpose_list": {
+                    "title": "Propósito",
+                    "operating_business": "Un negocio operativo formado para ofrecer bienes o servicios a clientes que no fue formado con el propósito de comerciar o mantener activos financieros. Por favor, selecciona esta opción solo para negocios reales, como fabricantes, restaurantes, compañías petroleras, etc.",
+                    "family_investment": "Un vehículo de inversión personal o familiar beneficiosamente propiedad de una sola persona o de un grupo de familiares cercanos que crearon la organización con el propósito de realizar inversiones financieras para el propietario y/o sus familiares cercanos.",
+                    "proprietary_trading": "Una empresa de trading propietario de participación cerrada (o corporación o vehículo similar) creada con el propósito de operar con el capital propio de la empresa. Esto incluye cualquier corporación o LLC donde los miembros aportan su propio capital al LLC y las ganancias pertenecen a la empresa.",
+                    "financial_institution": "Una institución financiera (banco, corredor de bolsa, etc.) que operará por cuenta propia."
+                },
+                "proprietary_assets": {
+                    "title": "Activos Propietarios",
+                    "error": "Se requiere la verificación de activos propietarios."
+                },
+                "third_party": "Administrador Tercero",
+
+                "phone_type": "Tipo de Teléfono",
+                "phone_country": "País del Teléfono",
+                "phone_number": "Número de Teléfono",
 
                 "address": "Dirección",
                 "city": "Ciudad",
                 "state": "Estado/Provincia",
                 "zip": "Código Postal",
-                "phone_type": "Tipo de teléfono",
-                "phone_types": {
-                    "mobile": "Móvil",
-                    "home": "Casa"
-                },
-                "phone_country": "País del teléfono",
-                "phone_number": "Número de teléfono",
-                "citizenship": "Cuidadania",
-                "country_of_birth": "País de nacimiento",
-                
-                "date_of_birth": "Fecha de nacimiento",
-                "marital_status": "Estado civil",
-                "marital_status_list": {
-                    "single": "Soltero",
-                    "married": "Casado",
-                    "divorced": "Divorciado",
-                    "widowed": "Viudo"
-                },
-                "select_marital_status": "Seleccione un estado",
-                "number_of_dependents": "Número de dependientes",
-                "country_of_residence": "País de residencia",
-                "tax_id": "Identificación fiscal",
-                
-                "id_country": "País de identificación",
-                "id_type": "Tipo de identificación",
-                "id_type_list": {
-                    "passport": "Pasaporte",
-                    "national_id": "Cédula de identidad",
-                    "license": "Licencia",
-                    "alien": "Alienía"
-                },
-                "select_id_type": "Seleccione tipo de identificación",
-                "id_number": "Número de identificación",
-                "id_expiration": "Vencimiento de identificación",
-                
-                "employment_status": "Situación laboral",
-                "employment_status_list": {
-                    "employed": "Empleado",
-                    "retired": "Retirado",
-                    "self_employed": "Autónomo",
-                    "trader": "Trader",
-                    "student": "Estudiante",
-                    "homemaker": "Amas de casa",
-                    "unemployed": "Desempleado"
-                },
-                "select_employment_status": "Seleccione una situación",
-                "employer_name": "Nombre del empleador",
-                "employer_address": "Dirección del empleador",
-                "employer_city": "Ciudad del empleador",
-                "employer_state": "Estado/provincia del empleador",
-                "employer_country": "País del empleador",
-                "employer_zip": "Código postal del empleador",
-                "nature_of_business": "Naturaleza del negocio",
-                "occupation": "Ocupación",
-                
-                "source_of_wealth": "Origen de los fondos",
-                "currency": "Moneda",
-                "select_currency": "Seleccione una moneda",
-                
-                "security_question_1": "Pregunta de seguridad 1",
-                "security_answer_1": "Respuesta de seguridad 1",
-                "security_question_2": "Pregunta de seguridad 2",
-                "security_answer_2": "Respuesta de seguridad 2",
-                "security_question_3": "Pregunta de seguridad 3",
-                "security_answer_3": "Respuesta de seguridad 3",
-                "select_security_question": "Seleccione una pregunta de seguridad",
-                
-                "email": "Correo electrónico",
-                "username": "Nombre de usuario",
-                "password": "Contraseña",
 
-                "fill_fake_data": "Llenar con datos ficticios"
+                "tax_country": "País Fiscal",
+                "tax_id": "Identificación Fiscal",
+
+                "source_of_wealth": "Origen de los Fondos",
+                "currency": "Moneda"
             },
-            "regulatory": {
-                "title": "Información Regulatoria",
-                "annual_net_income": "Ingreso Neto Anual",
-                "liquid_net_worth": "Patrimonio Líquido Neto",
-                "net_worth": "Patrimonio Neto",
-                "investment_objectives": "Objetivos de Inversión",
-                "investment_objectives_list": {
-                    "capital": "Capital",
-                    "growth": "Crecimiento",
-                    "hedging": "Hedging",
-                    "profits": "Ganancias"
-                },
-                "products_to_trade": "Productos para operar",
-                "amount_to_invest": "Cantidad a invertir",
-                "source_of_wealth": {
-                    "allowance": "Permiso",
-                    "disability": "Discapacidad",
-                    "income": "Ingresos",
-                    "inheritance": "Herencias",
-                    "profits": "Ganancias",
-                    "interest": "Interés",
-                    "pension": "Pensión",
-                    "other": "Otro",
-                    "property": "Propiedad"
-                },
-                "products": {
-                    "bonds": "Bonos",
-                    "stocks": "Acciones",
-                    "futures": "Futuros",
-                    "options": "Opciones",
-                    "etfs": "ETFs"
-                }
-            },
-            "application_end": {
-                "title": "¡Solicitud enviada con éxito!",
-                "description": "Gracias por elegir nuestros servicios. Revisaremos su solicitud y le responderemos pronto.",
-                "apply_another": "Aplicar para otra cuenta",
-                "go_back_home": "Volver a la página principal"
+            "authorized_person": {
+                "title": "Persona Autorizada",
+                "basic_info": "Información Básica",
+                "contact_info": "Información de Contacto",
+                "personal_info": "Información Personal",
+                "id_info": "Información de Identificación",
+                "employer_info": "Información del Empleador",
+                "security_questions": "Preguntas de Seguridad",
+                
+                "salutation": "Tratamiento",
+                "first_name": "Nombre",
+                "middle_name": "Segundo Nombre",
+                "last_name": "Apellidos",
+                "suffix": "Sufijo",
+                "date_of_birth": "Fecha de Nacimiento",
+                "position": "Cargo",
+
+                "third_party": "¿El vehículo de inversión personal o familiar tiene un administrador profesional tercero o proveedor de servicios corporativos?",
+                
+                "email": "Correo Electrónico",
+                "phone_type": "Tipo de Teléfono",
+                "phone_country": "País del Teléfono",
+                "phone_number": "Número de Teléfono",
+
+                "residential_info": "Información Residencial",
+                "address": "Dirección",
+                "city": "Ciudad",
+                "state": "Estado/Provincia",
+                "zip": "Código Postal",
+                
+                "tax_info": "Información Fiscal",
+                "tax_country": "País Fiscal",
+                "tax_id": "Identificación Fiscal",
+                
+                "id_country": "País de Identificación",
+                "id_type": "Tipo de Identificación",
+                "id_number": "Número de Identificación",
+                "id_expiration": "Fecha de Vencimiento",
+                
+                "employment_status": "Situación Laboral",
+                "employer_name": "Nombre del Empleador",
+                "employer_address": "Dirección del Empleador",
+                "employer_city": "Ciudad del Empleador",
+                "employer_state": "Estado/Provincia del Empleador",
+                "employer_country": "País del Empleador",
+                "employer_zip": "Código Postal del Empleador",
+                
+                "security_question": "Pregunta de Seguridad",
+                "security_answer": "Respuesta de Seguridad"
             }
         },
         "risk": {
             "title": "Cuestionario de Evaluación de Riesgo",
-            "description": "Por favor complete este formulario para ayudarnos a entender su tolerancia al riesgo y sus preferencias de inversión.",
+            "description": "Por favor, completa este formulario para ayudarnos a entender tu tolerancia al riesgo y preferencias de inversión.",
             "form": {
-                "account_number": "Número de cuenta (ingrese . si no tiene cuenta)",
+                "account_number": "Número de cuenta",
                 "client_name": "Nombre completo",
                 "type": {
-                    "title": "¿Qué tipo de inversor se considera?",
+                    "title": "¿Qué tipo de inversor te consideras?",
                     "conservative": "Conservador",
                     "moderate": "Moderado",
                     "aggressive": "Agresivo"
                 },
                 "loss": {
-                    "title": "Si su cartera pierde el 20% de su valor, ¿qué acción tomaría?",
+                    "title": "Si tu cartera pierde 20% de su valor, ¿qué acción tomarías?",
                     "sell_everything": "Vender todo",
                     "sell_some": "Vender algunas inversiones",
                     "do_nothing": "No hacer nada",
                     "invest_more": "Invertir más"
                 },
                 "gain": {
-                    "title": "Si su cartera aprecia el 20% de su valor, ¿qué acción tomaría?",
+                    "title": "Si tu cartera aprecia un 20% de su valor, ¿qué acción tomarías?",
                     "sell_everything": "Vender todo",
                     "sell_some": "Vender algunas inversiones",
                     "do_nothing": "No hacer nada",
                     "invest_more": "Invertir más"
                 },
                 "period": {
-                    "title": "¿Cuál cree que debería ser el plazo promedio de su cartera de inversión?",
+                    "title": "¿Cuál crees que debería ser el plazo promedio de tu cartera de inversión?",
                     "more_than_21_years": "Más de 21 años",
                     "11_to_20_years": "11 a 20 años",
                     "5_to_10_years": "5 a 10 años",
                     "0_to_5_years": "0 a 5 años"
                 },
                 "diversification": {
-                    "title": "Considerando la diversificación de clases de activos, ¿cuál de estas carteras seleccionaría?",        
-                    "portfolio_a": "Cartera A: 100% bonos, 0% acciones",
-                    "portfolio_b": "Cartera B: 80% bonos, 20% acciones",
-                    "portfolio_c": "Cartera C: 60% bonos, 40% acciones"
+                    "title": "Considerando la diversificación de clases de activos, ¿cuál de estos portafolios seleccionarías?",
+                    "portfolio_a": "Portafolio A: 100% bonos, 0% acciones",
+                    "portfolio_b": "Portafolio B: 80% bonos, 20% acciones",
+                    "portfolio_c": "Portafolio C: 60% bonos, 40% acciones"
                 },
                 "goals": {
-                    "title": "¿Cuál de estas carteras representa mejor sus objetivos con los resultados más aceptables?",
-                    "portfolio_a": "Cartera A: Retorno promedio del 4%",
-                    "portfolio_b": "Cartera B: Retorno promedio del 5%",
-                    "portfolio_c": "Cartera C: Retorno promedio del 7%"
+                    "title": "¿Cuál de estos portafolios representa mejor tus objetivos con los resultados más aceptables?",
+                    "portfolio_a": "Portafolio A: 4% rendimiento promedio",
+                    "portfolio_b": "Portafolio B: 5% rendimiento promedio",
+                    "portfolio_c": "Portafolio C: 7% rendimiento promedio"
                 }
             },
             "result": {
-                "title": "Su Perfil de Riesgo",
-                "warning": "¡Por favor tome una foto de esto, ya que será muy difícil verlo de nuevo!"
+                "title": "Tu Perfil de Riesgo",
+                "warning": "¡Por favor toma una foto de esto, ya que será muy difícil verlo de nuevo!"
             }
         }
     },
@@ -535,6 +636,7 @@
         "submitting": "Enviando...",
         "previous_step": "Paso anterior",
         "finish": "Finalizar",
+        "true_required": "Requiere una respuesta verdadera",
         "errors": {
             "email": "Por favor, ingrese un correo electrónico válido.",
             "username_length": "El nombre de usuario debe tener al menos 4 caracteres.",

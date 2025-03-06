@@ -31,17 +31,14 @@ export async function GenerateTradeTicket(trades: Trade[], selectedTrades: Trade
     ).filter(index => index !== -1);
 
     // Generate the trade ticket using the selected indices
-    let response = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {
+    let tradeTicket:Trade = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {
         'flex_query_dict': trades,
         'indices': selectedIndices.join(',')
     });
-    if (response['status'] !== 'success') throw new Error(response['content']);
-    const tradeTicket:Trade = response['content']
 
     // Generate the plain text message
-    response = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': tradeTicket});
-    if (response['status'] === 'error') throw new Error(response['content']);
-    return response['content']['message'];
+    const response:any = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': tradeTicket});
+    return response['message'];
 }
 
 export async function SendToClient(clientMessage: string) {
@@ -54,6 +51,5 @@ export async function SendToClient(clientMessage: string) {
       'client_email': clientEmails, 
       'subject': 'Confirmación de Transacción'
     })
-    if (response['status'] !== 'success') throw new Error(response['content'])
     return true
 }

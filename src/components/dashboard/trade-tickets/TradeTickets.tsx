@@ -73,6 +73,7 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
       if (!trades || !selectedTrades) return;
       try {
         const message = await GenerateTradeTicket(trades, selectedTrades)
+        console.log(message)
         setClientMessage(message)
       } catch (error: any) {
         toast({
