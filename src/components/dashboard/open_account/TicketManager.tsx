@@ -67,6 +67,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
       setTicket(selectedTickets[0])
     }
   }
+  
 
   return (
     <DashboardPage title='Open a new account in IBKR' description='Select a ticket to open a new account.'>

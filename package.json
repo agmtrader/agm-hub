@@ -21,6 +21,7 @@
     "@faker-js/faker": "^9.0.3",
     "@genkit-ai/googleai": "^0.9.12",
     "@google-cloud/local-auth": "^2.1.0",
+    "@google-cloud/secret-manager": "^5.6.0",
     "@googleapis/drive": "^8.8.0",
     "@hookform/resolvers": "^3.3.4",
     "@next-auth/firebase-adapter": "^2.0.1",
