@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
-import { formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/language/lang'
 import { AlarmClockPlusIcon, ArrowLeft, Bell, BellIcon, ChevronLeft, ChevronRight, Database, FileText, Plus, RefreshCcw, Table, Ticket, Users } from 'lucide-react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 

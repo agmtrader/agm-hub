@@ -206,10 +206,6 @@ export const account_types = (t: (key: string) => string) => [
     label: t('apply.account.general_info.account_types.joint')
   },
   {
-    value: "Trust",
-    label: t('apply.account.general_info.account_types.trust')
-  },
-  {
     value: "Institutional",
     label: t('apply.account.general_info.account_types.institutional')
   }

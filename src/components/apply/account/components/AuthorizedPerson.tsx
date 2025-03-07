@@ -305,24 +305,6 @@ const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward, syncTic
             )}
           />
 
-          <p className="text-2xl font-bold">{t('apply.account.authorized_person.third_party_info')}</p>
-
-          <FormField
-            control={form.control}
-            name="third_party"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex gap-2 items-center">
-                  <FormControl>
-                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                  <FormLabel>{t('apply.account.authorized_person.third_party')}</FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
             <FormField
               control={form.control}
               name="email"
@@ -412,6 +394,24 @@ const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward, syncTic
                 </FormItem>
             )}
             />   
+
+
+          <FormField
+            control={form.control}
+            name="third_party"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex gap-2 items-center">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel>{t('apply.account.authorized_person.third_party')}</FormLabel>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           </div>
 
           <div className="flex flex-col gap-y-5 justify-center items-center w-full h-full">

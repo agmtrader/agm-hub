@@ -2,7 +2,7 @@
 import { accessAPI } from '@/utils/api'
 import React, { use, useEffect, useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
-import { Advisor } from '@/lib/entities/advisors'
+import { Advisor } from '@/lib/entities/advisor'
 import { Commission } from '@/lib/entities/commission'
 
 type Props = {

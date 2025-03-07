@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { HardHat } from 'lucide-react'
-import { formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/language/lang'
 import { Button } from '../ui/button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import Link from 'next/link'

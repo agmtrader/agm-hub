@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { chapters } from '@/lib/dictionaries/resource-center'
-import { formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 export function LearningCarousel() {

@@ -71,9 +71,11 @@ const AboutOrganization = ({stepForward, ticket, setTicket, stepBackward, syncTi
 
   formSchema = about_organization_schema(t)
 
+  const initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema);
+
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
-      values: getDefaults(formSchema),
+      values: initialFormValues,
   })
 
   console.log(form.formState.errors)

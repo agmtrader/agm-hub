@@ -1,6 +1,59 @@
+function formatDate(date:any) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+export function formatDateFromTimestamp(timestamp: string | undefined): string {
+
+  if (!timestamp || typeof timestamp !== 'string' || timestamp.length < 14) throw new Error('Invalid timestamp format')
+
+  try {
+      const year = timestamp.slice(0, 4)
+      const month = timestamp.slice(4, 6)
+      const day = timestamp.slice(6, 8)
+      const hour = timestamp.slice(8, 10)
+      const minute = timestamp.slice(10, 12)
+
+      const date = new Date(
+          parseInt(year),
+          parseInt(month) - 1,
+          parseInt(day),
+          parseInt(hour),
+          parseInt(minute)
+      )
+
+      // Check if the date is valid
+      if (isNaN(date.getTime())) throw new Error('Invalid date created from timestamp')
+
+      return new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+      }).format(date)
+
+  } catch (error) {
+      throw error
+  }
+}
+
+export function formatTimestamp(date:any) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes() + 1).padStart(2, '0'); // Months are 0-indexed
+    const sec = String(date.getSeconds()).padStart(2, '0');
+
+    return `${year}${month}${day}${hour}${min}${sec}`;
+}
 
 export function getLastWorkingDay() {
-    
+
   let date = new Date();
   date.setDate(date.getDate() - 1);
 
@@ -17,23 +70,4 @@ export function getLastWorkingDay() {
   }
 
   return formatDate(date);
-}
-
-function formatDate(date:any) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-  const day = String(date.getDate()).padStart(2, '0');
-  
-  return `${year}-${month}-${day}`;
-}
-
-export function formatTimestamp(date:any) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date.getDate()).padStart(2, '0');
-    const hour = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes() + 1).padStart(2, '0'); // Months are 0-indexed
-    const sec = String(date.getSeconds()).padStart(2, '0');
-    
-    return `${year}${month}${day}${hour}${min}${sec}`;
 }

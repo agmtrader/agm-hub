@@ -13,12 +13,14 @@ import AuthorizedPerson from './components/AuthorizedPerson';
 import AboutOrganization from './components/AboutOrganization';
 import { UpdateTicketByID } from '@/utils/entities/ticket';
 import { Loader2 } from 'lucide-react';
+import { pageTransition, pageVariants } from '@/lib/anims';
 
 interface Props {
   ticketProp: Ticket | null
 }
 
 const ClientForm = ({ticketProp}: Props) => {
+
   const { toast } = useToast();
   const [step, setStep] = useState<number>(1);
   const [ticket, setTicket] = useState<Ticket | null>(ticketProp || null);
@@ -30,8 +32,35 @@ const ClientForm = ({ticketProp}: Props) => {
     setStep(1);
   }, [ticketProp]);
 
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      // Save any unsaved changes when component unmounts
+      if (ticket) {
+        syncTicketData(ticket).catch(console.error);
+      }
+    };
+  }, []);
+
+  // Prevent accidental navigation
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (isSaving) {
+        event.preventDefault();
+        event.returnValue = "Changes are being saved. Are you sure you want to leave?";
+        return event.returnValue;
+      }
+      event.preventDefault();
+      event.returnValue = "Are you sure you want to leave? Your progress may be lost.";
+      return event.returnValue;
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isSaving]);
+
   // Sync ticket data with database
-  const syncTicketData = async (updatedTicket: Ticket) => {
+  async function syncTicketData(updatedTicket: Ticket) {
     try {
       setIsSaving(true);
       await UpdateTicketByID(updatedTicket.TicketID, updatedTicket);
@@ -49,11 +78,11 @@ const ClientForm = ({ticketProp}: Props) => {
     return true;
   };
 
-  const stepForward = async () => {
+  const stepForward = () => {
     if (isSaving || isLoading) return;
     
     // Validate current step data before moving forward
-    if (!ticket) {
+    if (!ticket && step !== 1) {
       toast({
         title: 'Error',
         description: 'No ticket data available',
@@ -74,12 +103,12 @@ const ClientForm = ({ticketProp}: Props) => {
 
   const isBrowser = () => typeof window !== 'undefined';
   
-  const scrollToTop = () => {
+  function scrollToTop() {
     if (!isBrowser()) return;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleRefresh = () => {
+  function handleRefresh() {
     if (isSaving || isLoading) return;
     
     const confirmRefresh = window.confirm("Are you sure you want to refresh? This will delete your current progress.");
@@ -87,18 +116,6 @@ const ClientForm = ({ticketProp}: Props) => {
       setStep(1);
       setTicket(null);
     }
-  };
-
-  const pageVariants = {
-    initial: { opacity: 0, x: '-100%' },
-    in: { opacity: 1, x: 0 },
-    out: { opacity: 0, x: '100%' },
-  };
-
-  const pageTransition = {
-    type: 'tween',
-    ease: 'anticipate',
-    duration: 0.5,
   };
 
   const renderFormStep = () => {
@@ -213,7 +230,7 @@ const ClientForm = ({ticketProp}: Props) => {
       }
     }
 
-    if (['Institutional', 'Corporate', 'Trust'].includes(ticket.ApplicationInfo.account_type)) {
+    if (['Institutional'].includes(ticket.ApplicationInfo.account_type)) {
       switch (step) {
         case 1:
           return (
@@ -263,33 +280,6 @@ const ClientForm = ({ticketProp}: Props) => {
 
     return null;
   };
-
-  // Cleanup effect
-  useEffect(() => {
-    return () => {
-      // Save any unsaved changes when component unmounts
-      if (ticket) {
-        syncTicketData(ticket).catch(console.error);
-      }
-    };
-  }, []);
-
-  // Prevent accidental navigation
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (isSaving) {
-        event.preventDefault();
-        event.returnValue = "Changes are being saved. Are you sure you want to leave?";
-        return event.returnValue;
-      }
-      event.preventDefault();
-      event.returnValue = "Are you sure you want to leave? Your progress may be lost.";
-      return event.returnValue;
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isSaving]);
 
   return (
     <div className='w-full flex flex-col h-full'>

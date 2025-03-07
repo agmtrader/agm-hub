@@ -1,5 +1,5 @@
 'use server'
-import { firestoreAdmin } from '@/utils/firebase-admin'
+import { firestoreAdmin } from '@/utils/firebase/firebase-admin'
 
 export async function getRecoveryData() {
     try {

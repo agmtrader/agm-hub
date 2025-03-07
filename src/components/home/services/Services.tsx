@@ -7,7 +7,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/language/lang'
 import { containerVariants, itemVariants } from '@/lib/anims'
 
 interface Service {

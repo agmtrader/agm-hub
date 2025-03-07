@@ -10,7 +10,7 @@ import { chapters } from '@/lib/dictionaries/resource-center'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import useEmblaCarousel from 'embla-carousel-react'
-import { formatURL } from '@/utils/lang'
+import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 type Props = {

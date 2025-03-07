@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import FirebaseAuthProvider from '@/utils/providers/FirebaseAuthProvider';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { formatURL, getCallbackUrl } from '@/utils/lang';
+import { formatURL, getCallbackUrl } from '@/utils/language/lang';
 import { useRouter, usePathname } from 'next/navigation';
 
 export default function Layout({

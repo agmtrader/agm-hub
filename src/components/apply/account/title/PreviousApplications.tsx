@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { Ticket } from '@/lib/entities/ticket'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { ReadTicketByUserID } from '@/utils/entities/ticket'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 type Props = {
     setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>
@@ -14,6 +15,8 @@ type Props = {
 const PreviousApplications = ({setTicket, setStarted}:Props) => {
 
     const [dialogOpen, setDialogOpen] = useState(false)
+
+    const { t } = useTranslationProvider()
 
     const {data:session} = useSession()
     const [previousTickets, setPreviousTickets] = useState<Ticket[]>([])
@@ -32,17 +35,31 @@ const PreviousApplications = ({setTicket, setStarted}:Props) => {
 
     if (!previousTickets) return null
 
-
     const columns = [
         {
-            header: 'Status',
+            header: t('apply.account.title.previous_applications.status'),
             accessorKey: 'Status',
         },
         {
-            header: 'Start Date',
+            header: t('apply.account.title.previous_applications.date'),
             accessorKey: 'id',
         },
     ] as ColumnDefinition<any>[]
+
+    const rowActions = [
+        {
+            label: t('apply.account.title.previous_applications.resume'),
+            onClick: (ticket: Ticket) => {
+                setDialogOpen(false)
+                setTicket(null)
+                setStarted(false)
+                setTimeout(() => {
+                    setTicket(ticket)
+                    setStarted(true)
+                }, 100)
+            }
+        }
+    ]
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -51,27 +68,14 @@ const PreviousApplications = ({setTicket, setStarted}:Props) => {
                 variant="ghost"
                 className="text-sm rounded-full"
             >
-                <p>View previous applications</p>
+                <p>{t('apply.account.title.previous_applications.button')}</p>
             </Button>
         </DialogTrigger>
         <DialogContent className='w-full max-w-5xl'>
             <DialogHeader>
-                <DialogTitle>Previous Applications</DialogTitle>
+                <DialogTitle>{t('apply.account.title.previous_applications.title')}</DialogTitle>
             </DialogHeader>
-            <DataTable data={previousTickets} columns={columns} rowActions={[
-                {
-                    label: 'Resume',
-                    onClick: (ticket: Ticket) => {
-                        setDialogOpen(false)
-                        setTicket(null)
-                        setStarted(false)
-                        setTimeout(() => {
-                            setTicket(ticket)
-                            setStarted(true)
-                        }, 100)
-                    }
-                }
-            ]} enableRowActions/>
+            <DataTable data={previousTickets} columns={columns} rowActions={rowActions} enableRowActions/>
         </DialogContent>
     </Dialog>
   )

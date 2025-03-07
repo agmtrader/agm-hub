@@ -1,5 +1,5 @@
 import { Map } from '@/lib/types';
-import { _t, Dict, Lang} from '@/utils/i18n'
+import { _t, Dict, Lang} from '@/utils/language/i18n'
 
 interface D {
   en : () => Promise<Map>,

@@ -8,7 +8,7 @@ import { AnimatePresence } from 'framer-motion'
 import Sidebar from './Sidebar'
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { AlignJustify } from 'lucide-react'
-import { formatURL, goHome } from '@/utils/lang'
+import { formatURL, goHome } from '@/utils/language/lang'
 import { cn } from '@/lib/utils'
 
 const maxScroll = 100
