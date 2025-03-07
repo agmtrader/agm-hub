@@ -41,14 +41,12 @@ export async function GenerateTradeTicket(trades: Trade[], selectedTrades: Trade
     return response['message'];
 }
 
-export async function SendToClient(clientMessage: string) {
+export async function SendToClient(clientMessage: string, email: string) {
 
     if (!clientMessage) return;
-
-    const clientEmails = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
     const response = await accessAPI('/email/send_client_email', 'POST', {
       'plain_text': clientMessage, 
-      'client_email': clientEmails, 
+      'client_email': email, 
       'subject': 'Confirmación de Transacción'
     })
     return true
