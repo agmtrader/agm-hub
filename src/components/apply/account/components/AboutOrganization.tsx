@@ -70,15 +70,32 @@ const AboutOrganization = ({stepForward, ticket, setTicket, stepBackward, syncTi
   const translatedPurposes = purposes(t)
 
   formSchema = about_organization_schema(t)
+  let initialFormValues:any;
+  initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema);
+  
+  // Ensure source_of_wealth is always an array
+  if (initialFormValues.source_of_wealth && !Array.isArray(initialFormValues.source_of_wealth)) {
+    initialFormValues.source_of_wealth = [initialFormValues.source_of_wealth];
+  } else if (!initialFormValues.source_of_wealth) {
+    initialFormValues.source_of_wealth = [];
+  }
 
-  const initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema);
+  // Ensure purpose is always an array
+  if (initialFormValues.purpose && !Array.isArray(initialFormValues.purpose)) {
+    initialFormValues.purpose = [initialFormValues.purpose];
+  } else if (!initialFormValues.purpose) {
+    initialFormValues.purpose = [];
+  }
+
+  // Ensure phone_type has a default value
+  if (!initialFormValues.phone_type) {
+    initialFormValues.phone_type = '';
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       values: initialFormValues,
   })
-
-  console.log(form.formState.errors)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setGenerating(true);

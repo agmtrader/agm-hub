@@ -473,7 +473,8 @@
                     "title": "Proprietary Assets",
                     "error": "Proprietary assets verification is required."
                 },
-                "third_party": "Third Party Administrator",
+
+                "third_party": "Does the personal or family investment vehicle have a professional third party administrator or corporate services provider?",
 
                 "phone_type": "Phone Type",
                 "phone_country": "Phone Country",
@@ -506,7 +507,8 @@
                 "suffix": "Suffix",
                 "date_of_birth": "Date of Birth",
                 "position": "Position",
-                "third_party_info": "Does the personal or family investment vehicle have a professional third party administrator or corporate services provider?",
+                
+                "third_party": "Does the personal or family investment vehicle have a professional third party administrator or corporate services provider?",
                 
                 "email": "Email",
                 "phone_type": "Phone Type",

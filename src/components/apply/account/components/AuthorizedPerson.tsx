@@ -55,8 +55,6 @@ interface Props {
 
 const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward, syncTicketData}:Props) => {
 
-  const backdoor = process.env.DEV_MODE === 'true'
-
   let formSchema:any;
 
   const { toast } = useToast()
@@ -70,9 +68,11 @@ const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward, syncTic
 
   formSchema = authorized_person_schema(t)
 
+  const initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema)
+
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
-      values: getDefaults(formSchema),
+      values: initialFormValues,
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {

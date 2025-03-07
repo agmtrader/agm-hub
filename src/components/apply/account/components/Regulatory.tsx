@@ -65,7 +65,7 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward, syncTicketDa
   let initialFormValues:any;
 
   formSchema = regulatory_schema(t)
-  initialFormValues = getDefaults(formSchema)
+  initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema)
 
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -83,6 +83,8 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward, syncTicketDa
         ApplicationInfo: updatedApplicationInfo,
         Status: 'Filled'
       };
+
+      console.log(updatedTicket)
 
       const success = await syncTicketData(updatedTicket);
       if (!success) {
