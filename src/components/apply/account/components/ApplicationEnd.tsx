@@ -9,6 +9,7 @@ import { useEffect } from "react"
 import { CreateNotification } from "@/utils/entities/notification"
 import { useSession } from "next-auth/react"
 import { Notification } from "@/lib/entities/notification"
+import { formatTimestamp } from "@/utils/dates"
 
 const ApplicationEnd = () => {
     const {t, lang} = useTranslationProvider()
@@ -16,11 +17,12 @@ const ApplicationEnd = () => {
 
     useEffect(() => {
         async function CreateEndNotification() {
+          const timestamp = new Date()
           let notification:Notification = {
             UserID: session?.user?.id || '',
             Title: session?.user?.name || 'No name',
             Description: 'Account application completed',
-            NotificationID: new Date().toISOString()
+            NotificationID: formatTimestamp(timestamp)
           }
           await CreateNotification(notification, 'account_applications')
         }

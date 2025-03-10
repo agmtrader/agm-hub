@@ -1,8 +1,7 @@
 'use client'
 import { formatURL } from '@/utils/language/lang';
-import { toast, useToast } from '@/hooks/use-toast';
-import { accessAPI } from '@/utils/api';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { toast } from '@/hooks/use-toast';
+import { useSession } from 'next-auth/react';
 import React, { useState, useMemo, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
@@ -21,6 +20,7 @@ import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/anims';
 import Image from 'next/image';
 import { GetUserPassword, UpdateUser } from '@/utils/entities/user';
+import LoadingComponent from '@/components/misc/LoadingComponent';
 
 interface UserWithPassword extends User {
     password: string;
@@ -156,14 +156,7 @@ const Onboarding = () => {
     // Show loading state while checking password
     if (!formSchema || hasPassword === null) {
         return (
-            <div className='flex items-center justify-center'>
-                <Card className="w-full max-w-xl p-8">
-                    <CardHeader className='flex flex-col justify-center items-center gap-2'>
-                        <Image src='/assets/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
-                        <CardTitle className='text-center font-bold text-3xl'>Loading...</CardTitle>
-                    </CardHeader>
-                </Card>
-            </div>
+            <LoadingComponent />
         );
     }
 

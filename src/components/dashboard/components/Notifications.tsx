@@ -17,7 +17,6 @@ const Notifications = () => {
     useEffect(() => {
         const fetchNotifications = async () => {
             const notifications = await ReadNotifications()
-            console.log('Fetched notifications:', notifications)
             setNotifications(notifications)
         }
         fetchNotifications()
@@ -33,8 +32,8 @@ const Notifications = () => {
                 <Bell className="h-4 w-4 text-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="flex flex-col gap-4">
-                    {notifications.map((notification) => (
+                <div className="flex flex-col gap-4 max-h-[300px] overflow-y-auto">
+                    {notifications.slice(0, 10).map((notification) => (
                         <div className="text-foreground bg-muted p-2 rounded-md">
                             <h3 className="text-md font-bold">{notification.Title}</h3>
                             <p className="text-s text-muted-foreground">{formatDateFromTimestamp(notification.NotificationID)}</p>

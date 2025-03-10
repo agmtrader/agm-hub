@@ -10,6 +10,7 @@ import { itemVariants } from '@/lib/anims';
 import { ReadTickets } from '@/utils/entities/ticket';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { addColumnsFromJSON } from '@/utils/table';
 
 interface Props {
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
@@ -39,7 +40,8 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
         setTicket(null)
         const tickets = await ReadTickets()
         const sortedTickets = tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString())))
-        setTickets(showAll ? sortedTickets : sortedTickets.filter((ticket) => ticket.Status !== "Started"))
+        const expandedSortedTickets = await addColumnsFromJSON(sortedTickets)
+        setTickets(showAll ? expandedSortedTickets : expandedSortedTickets.filter((ticket) => ticket.Status !== "Started"))
         
     }
     fetchData()

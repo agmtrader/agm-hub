@@ -3,7 +3,6 @@ import { DataTable } from '@/components/misc/DataTable'
 import DocumentViewer from '@/components/dashboard/document_center/DocumentViewer'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { accessAPI } from '@/utils/api'
 import { FetchInvestmentProposals } from '@/utils/entities/investment-proposal'
 
 const InvestmentProposals = () => {

@@ -118,6 +118,7 @@ const GeneralInfo = ({ stepForward, setTicket, ticket, syncTicketData }: Props) 
         NotificationID: formatTimestamp(timestamp),
         UserID: userID,
       };
+      
       await CreateNotification(notification, 'account_applications');
       stepForward();
     } catch (error: any) {
