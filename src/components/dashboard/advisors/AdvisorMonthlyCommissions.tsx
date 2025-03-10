@@ -1,5 +1,4 @@
 'use client'
-import { accessAPI } from '@/utils/api'
 import React, { useEffect, useState } from 'react'
 import {
   Select,
@@ -12,6 +11,7 @@ import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
 import { Advisor } from '@/lib/entities/advisor'
 import LoadingComponent from '@/components/misc/LoadingComponent'
+import { ReadAdvisorCommissions } from '@/utils/entities/advisor'
 
 interface Commission {
   Amount: number
@@ -20,14 +20,12 @@ interface Commission {
   YYYYMM: number
 }
 
-const AdvisorInvoice = () => {
+const AdvisorMonthlyCommissions = () => {
   const [commissions, setCommissions] = useState<Commission[] | null>(null)
   const [advisor, setAdvisor] = useState<Advisor | null>(null)
 
   const [selectedMonth, setSelectedMonth] = useState<string>('202401')
   const [months, setMonths] = useState<string[]>([])
-
-
 
   const {toast} = useToast()
 
@@ -45,10 +43,9 @@ const AdvisorInvoice = () => {
   useEffect(() => {
     async function fetchData() {
         try{
-            const response = await accessAPI('/advisors/commissions', 'GET')
-            if (response.status !== 'success') throw new Error('Error fetching commissions')
-            setCommissions(response['content'])
-            const uniqueMonths = [...new Set(response.content.map((item: Commission) => item.YYYYMM.toString()))] as string[]
+            const commissions = await ReadAdvisorCommissions()
+            setCommissions(commissions)
+            const uniqueMonths = [...new Set(commissions.map((item: Commission) => item.YYYYMM.toString()))] as string[]
             setMonths(uniqueMonths)
         } catch (error) {
             toast({
@@ -90,4 +87,4 @@ const AdvisorInvoice = () => {
   )
 }
 
-export default AdvisorInvoice
+export default AdvisorMonthlyCommissions

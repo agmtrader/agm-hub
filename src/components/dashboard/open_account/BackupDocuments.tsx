@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Ticket } from '@/lib/entities/ticket';
 import DocumentCenter from '../document_center/DocumentCenter';
-import { accessAPI } from '@/utils/api';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast"
 import { ColumnDefinition, DataTable } from '../../misc/DataTable';
 import DashboardPage from '@/components/misc/DashboardPage';
 import { Account } from '@/lib/entities/account';
+import { UpdateTicketByID } from '@/utils/entities/ticket';
+import { itemVariants } from '@/lib/anims';
 
 interface Props {
   ticket: Ticket,
@@ -49,16 +50,9 @@ const BackupDocuments = ({ticket, setCanContinue, account}:Props) => {
     setCanContinue(newStatus)
 
     try {
-      
-      const response = await accessAPI('/database/update', 'POST', {
-        'path': `db/clients/tickets`,
-        'query': {'TicketID': ticketID},
-        'data': {'Status': statusText}
-      })
 
-      if (response['status'] !== 'success') {
-        throw new Error('Failed to update ticket status')
-      }
+      await UpdateTicketByID(ticketID, {'Status': statusText})
+
     } catch (error) {
       // Revert the UI change on failure
       setIsReady(!newStatus)
@@ -69,28 +63,6 @@ const BackupDocuments = ({ticket, setCanContinue, account}:Props) => {
         description: "Failed to update ticket status. Please try again.",
         variant: "destructive",
       })
-    }
-  }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.3 
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        type: 'spring',
-        stiffness: 100
-      }
     }
   }
 

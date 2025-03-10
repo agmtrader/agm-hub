@@ -1,9 +1,10 @@
 'use client'
-import { accessAPI } from '@/utils/api'
 import React, { use, useEffect, useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 import { Advisor } from '@/lib/entities/advisor'
 import { useSession } from 'next-auth/react'
+import { ReadAdvisorByAdvisorCode } from '@/utils/entities/advisor'
+import DashboardPage from '@/components/misc/DashboardPage'
 
 type Props = {
   params: Promise<{
@@ -11,7 +12,7 @@ type Props = {
   }>
 }
 
-const page = ({
+const AdvisorPage = ({
   params
 }: Props) => {
 
@@ -24,14 +25,7 @@ const page = ({
     async function fetchData() {
         try {
 
-          let response = await accessAPI('/database/read', 'POST', {
-            'path': 'db/advisors/dictionary',
-            'query': {
-              'AdvisorCode': Number(advisorId)
-            }
-          })
-          if (response.status !== 'success') throw new Error('Error fetching advisor.')
-          const advisor = response['content'][0]
+          let advisor = await ReadAdvisorByAdvisorCode(Number(advisorId))
           if (!advisor) throw new Error('Advisor not found.')
 
           if (advisor.UserID !== session?.user.id) throw new Error('Advisor not authenticated.')
@@ -49,10 +43,15 @@ const page = ({
   }, [])
 
   return (
-    <div className='flex flex-col gap-4 w-full h-full p-4 text-foreground'>
-        {advisor?.AdvisorCode}
-    </div>
+    <DashboardPage title='Advisor Management Portal' description='Manage your advisor profile and more'>
+      <div className='flex flex-col gap-4 w-full h-full p-4 text-foreground'>
+        <div className='flex flex-col gap-2'>
+          <p className='text-lg font-bold'>{advisor?.AdvisorCode}</p>
+          <p className='text-sm'>Advisor Code</p>
+        </div>
+      </div>
+    </DashboardPage>
   )
 }
 
-export default page
+export default AdvisorPage

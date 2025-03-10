@@ -1,25 +1,20 @@
 'use client'
 import DashboardPage from '@/components/misc/DashboardPage'
-import { accessAPI } from '@/utils/api'
 import React, { useEffect, useState } from 'react'
 import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import { toast } from '@/hooks/use-toast'
 import LoadingComponent from '@/components/misc/LoadingComponent'
+import { ReadAccruedInterest } from '@/utils/entities/report'
 
-type Props = {}
-
-const AccruedInterest  = (props: Props) => {
+const AccruedInterest  = () => {
 
   const [accruedInterest, setAccruedInterest] = useState<any[] | null>(null)
 
   useEffect(() => {
     async function fetchAccruedInterest() {
       try {
-        const response = await accessAPI('/reporting/get_accrued_interest', 'GET')
-        if (response.status !== 'success') {
-          throw new Error(response.content)
-        }
-        setAccruedInterest(response.content)
+        const report = await ReadAccruedInterest()
+        setAccruedInterest(report)
       } catch (error) {
         toast({
           title: 'Error fetching accrued interest',

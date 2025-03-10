@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react'
-
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { Advisor } from '@/lib/entities/advisor'
 import { ColumnDefinition } from '@/components/misc/DataTable'
 import { redirect } from 'next/navigation'
 import { formatURL } from '@/utils/language/lang'
 import { toast } from '@/hooks/use-toast'
-import { accessAPI } from '@/utils/api'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { DataTable } from '@/components/misc/DataTable'
 import ApplicationLinksDialog from '@/components/dashboard/advisors/ApplicationLinksDialog'
@@ -24,7 +22,7 @@ const AdvisorsPage = (props: Props) => {
     useEffect(() => {
         async function handleReadAdvisors() {
             try {
-                const advisors = await ReadAdvisors()
+                const advisors = await ReadAdvisors(null)
                 setAdvisors(advisors)
             } catch (error: any) {
                 toast({

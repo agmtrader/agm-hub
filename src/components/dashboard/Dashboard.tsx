@@ -1,15 +1,11 @@
 'use client'
 
 import React from 'react'
-import { User, Trash, Users, Bell as BellIcon, Ticket, Plus, Bell, ArrowLeft, AlarmClockPlusIcon } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { User, Bell } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSession } from 'next-auth/react'
-import { motion } from 'framer-motion'
-import { containerVariants, itemVariants } from '@/lib/anims'
-import Overview from './components/Overview'
-
+import Overview from './components/Overview'  
 
 export function Dashboard() {
   

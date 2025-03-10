@@ -2,9 +2,7 @@ import DashboardPage from '@/components/misc/DashboardPage'
 import React from 'react'
 import { DataTable } from '../../misc/DataTable'
 
-type Props = {}
-
-const ClientFees = (props: Props) => {
+const ClientFees = () => {
   return (
     <DashboardPage title='Client Fees' description='View client fees up to date'>
       <DataTable data={[]} infiniteScroll={true}/>

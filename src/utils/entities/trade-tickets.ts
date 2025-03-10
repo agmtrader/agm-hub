@@ -1,6 +1,7 @@
 import { Trade } from "@/lib/entities/trade-ticket"
 import { accessAPI } from "../api"
 import { FetchFlexQuery } from "./flex-query"
+import { sendEmail } from "./email"
 
 export async function FetchTrades(tradeTicketId: string) {
     const trades:Trade[] = await FetchFlexQuery(tradeTicketId)
@@ -42,12 +43,6 @@ export async function GenerateTradeTicket(trades: Trade[], selectedTrades: Trade
 }
 
 export async function SendToClient(clientMessage: string, email: string) {
-
     if (!clientMessage) return;
-    const response = await accessAPI('/email/send_client_email', 'POST', {
-      'plain_text': clientMessage, 
-      'client_email': email, 
-      'subject': 'Confirmación de Transacción'
-    })
-    return true
+    await sendEmail(email, 'Confirmación de Transacción', clientMessage, 'trade_ticket')
 }

@@ -1,11 +1,11 @@
 'use client'
 
 import { toast } from '@/hooks/use-toast'
-import { accessAPI } from '@/utils/api'
 import React, { useEffect, useState } from 'react'
 import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import DashboardPage from '@/components/misc/DashboardPage'
+import { ReadClientsReport } from '@/utils/entities/report'
 
 const Clients = () => {
 
@@ -18,11 +18,9 @@ const Clients = () => {
         try {
         
           // Fetch files in resources folder
-          let response = await accessAPI('/reporting/get_clients_report', 'GET')
-          if (response['status'] !== 'success') throw new Error('Error fetching clients')
-          
-          setClients(response['content']['clients'])
-          setAccounts(response['content']['accounts'])
+          let report = await ReadClientsReport()
+          setClients(report['clients'])
+          setAccounts(report['accounts'])
 
         } catch (error:any) {
           toast({

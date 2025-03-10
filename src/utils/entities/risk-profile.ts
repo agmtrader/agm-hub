@@ -3,14 +3,12 @@ import { risk_profiles, UserRiskProfile, RiskProfile as RiskProfileType } from "
 import { useTranslationProvider } from "../providers/TranslationProvider"
 
 export async function saveRiskProfile(user_risk_profile:UserRiskProfile) {
-    let data = await accessAPI('/database/create', 'POST', {data: user_risk_profile, path:'db/clients/risk_profiles', id:user_risk_profile.UserID})
-    if (data['status'] !== 'success') throw new Error('Error submitting risk profile')
+    await accessAPI('/database/create', 'POST', {data: user_risk_profile, path:'db/clients/risk_profiles', id:user_risk_profile.UserID})
 }
 
 export async function ReadRiskProfiles(): Promise<RiskProfileType[] | null> {
-    let data = await accessAPI('/database/read','POST', {'path': 'db/clients/risk_profiles'})
-    if (data['status'] !== 'success') throw new Error('Error reading risk profile')
-    return data['content']
+    let risk_profiles = await accessAPI('/database/read','POST', {'path': 'db/clients/risk_profiles'})
+    return risk_profiles
 }
 
 // Find assigned risk profile using the calculated risk score

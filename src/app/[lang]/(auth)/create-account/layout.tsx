@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "../../../globals.css";
-import FirebaseAuthProvider from "../../../../utils/providers/FirebaseAuthProvider";
 
 export const metadata: Metadata = {
   title: "AGM Create Account",

@@ -16,7 +16,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { getDefaults } from '@/utils/form'
 import { useToast } from '@/hooks/use-toast'
-import { accessAPI } from '@/utils/api'
 import CountriesFormField from '@/components/ui/CountriesFormField'
 import { formatTimestamp } from '../../../../utils/dates'
 import { signIn } from 'next-auth/react'
@@ -28,6 +27,7 @@ import { ArrowLeft } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { CreateUser, ReadUserByEmail, ReadUserByUsername } from '@/lib/entities/user'
 
 type UserPayload = User & {
   password: string
@@ -70,67 +70,15 @@ const CreateAccount = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
-      let response = await accessAPI('/database/read', 'POST', {
-          path: 'users',
-          query: {
-            email: values.email
-          }
-      })
+    try {
 
-      if (response['status'] === 'error') {
-        toast({
-          title: 'Error',
-          description: response['message'],
-          variant: 'destructive'
-        })
-        throw new Error('Tragic failure')
-      } else if (response['content'].length === 1) {
-        toast({
-          title: 'Error',
-          description: 'User with that email already exists',
-          variant: 'destructive'
-        })
-        throw new Error('User with that email already exists')
-      } else if (response['content'].length > 1) {
-        toast({
-          title: 'Error',
-          description: 'Multiple users with that email',
-          variant: 'destructive'
-        })
-        throw new Error('Multiple users with that email')
-      }
+      let existingUser:User = await ReadUserByEmail(values.email)
+      if (existingUser) throw new Error('User with that email already exists')
 
-      response = await accessAPI('/database/read', 'POST', {
-        path: 'users',
-        query: {
-          username: values.username
-        }
-      })
+      existingUser = await ReadUserByUsername(values.username)
+      if (existingUser) throw new Error('User with that username already exists')
 
-      if (response['status'] === 'error') {
-        toast({
-          title: 'Error',
-          description: response['message'],
-          variant: 'destructive'
-        })
-        throw new Error('Tragic failure')
-      } else if (response['content'].length !== 0) {
-        toast({
-          title: 'Error',
-          description: 'Username already taken.',
-          variant: 'destructive'
-        })
-        throw new Error('Username already taken')
-      }
-
-      if (values.password !== values.confirmPassword) {
-        toast({
-          title: 'Error',
-          description: 'Passwords do not match',
-          variant: 'destructive'
-        })
-        throw new Error('Passwords do not match')
-      }
+      if (values.password !== values.confirmPassword) throw new Error('Passwords do not match')
 
       const timestamp = formatTimestamp(new Date())
 
@@ -146,25 +94,12 @@ const CreateAccount = () => {
         'role': 'user'
       }
 
-      response = await accessAPI('/database/create', 'POST', {
-          path: 'users',
-          data: user,
-          id: timestamp
-      })
-
-      if (response['status'] !== 'success') {
-        console.error('Failed to create user:', response.message);
-        toast({
-          title: 'Error',
-          description: response.message,
-          variant: 'destructive'
-        })
-      }
+      await CreateUser(user)
 
       toast({
         title: 'Success',
         description: 'Account created successfully',
-        variant: 'default'
+        variant: 'success'
       })
 
       const result = await signIn('credentials', {
@@ -177,6 +112,13 @@ const CreateAccount = () => {
       if (result?.ok) {
         router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
       }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'An unknown error occurred',
+        variant: 'destructive'
+      })
+    }
 
   }
 

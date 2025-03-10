@@ -7,8 +7,6 @@ import { ReadNotifications } from '@/utils/entities/notification'
 import { Notification } from '@/lib/entities/notification'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { formatDateFromTimestamp } from '@/utils/dates'
-import { Separator } from '@/components/ui/separator'
-
 
 const Notifications = () => {
 
