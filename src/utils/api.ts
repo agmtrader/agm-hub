@@ -10,7 +10,7 @@ interface AuthenticationResponse {
 // Add token caching
 let cachedToken: string | null = null;
 let tokenExpirationTime: number | null = null;
-const api_url = 'http://127.0.0.1:5000';
+const api_url = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:5000' : 'https://api.agmtechnology.com';
 
 async function getToken(): Promise<string | null> {
 
