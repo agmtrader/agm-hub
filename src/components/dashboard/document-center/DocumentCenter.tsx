@@ -1,20 +1,23 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { ColumnDefinition, DataTable } from '../../misc/DataTable'
-import DocumentUploader from './DocumentUploader'
 import { toast } from "@/hooks/use-toast"
-import { Map } from '@/lib/types'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
-import { FolderDictionary, defaultFolderDictionary } from '@/lib/entities/drive'
-import { Drive, Document as CustomDocument } from '@/lib/entities/drive'
-import LoadingComponent from '@/components/misc/LoadingComponent'
-import DocumentViewer from './DocumentViewer'
+
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import Link from 'next/link'
-import { DeleteDatabaseEntry, DeleteFile, GetFilesInFolder } from '@/utils/entities/drive'
+import { Map } from '@/lib/types'
+import { cn } from '@/lib/utils'
+
+import { Button } from "@/components/ui/button"
+import { ColumnDefinition, DataTable } from '../../misc/DataTable'
+import LoadingComponent from '@/components/misc/LoadingComponent'
+
+import DocumentViewer from './DocumentViewer'
+import DocumentUploader from './DocumentUploader'
+
+import { FolderDictionary, defaultFolderDictionary, Document as CustomDocument, DocumentCenter as DocumentCenterType } from '@/lib/entities/document-center'
+import { DeleteFile, ReadFolders } from '@/utils/entities/document-center'
 
 interface DocumentCenterProps {
   folderDictionary?: FolderDictionary[];
@@ -23,9 +26,10 @@ interface DocumentCenterProps {
 
 export default function DocumentCenter({ folderDictionary: propsFolderDictionary, query }: DocumentCenterProps) {
 
-  const [files, setFiles] = useState<Drive>({})
-  const [loading, setLoading] = useState<boolean>(true)
+  const [documentCenter, setDocumentCenter] = useState<DocumentCenterType>({})
   const [currentFolderID, setCurrentFolderID] = useState<string | null>(null)
+
+  const [loading, setLoading] = useState<boolean>(true)
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null)
 
@@ -39,39 +43,25 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     { accessorKey: 'Uploader', header: 'Uploaded By' },
   ] as ColumnDefinition<CustomDocument>[]
 
-  const fetchData = async () => {
+  const handleFetchData = async () => {
 
     setLoading(true)
-    let files:Drive = {}
-
-    if (!query) {
-      query = {}
-    }
-
-    for (let folder of activeFolderDictionary) {
-      const drive = await GetFilesInFolder(folder.id, query)
-      if (drive) {
-        files[folder.id] = drive;
-      }
-    }
-
-    if (Object.keys(files).length === 0) {
+    try {
+      let documentCenter:DocumentCenterType = await ReadFolders()
+      setDocumentCenter(documentCenter)
+      setCurrentFolderID(Object.keys(documentCenter)[0] || null)
+      setLoading(false)
+    } catch (error) {
       toast({
-        title: "No files found.",
-        description: "Please upload some files.",
+        title: "Error",
+        description: `Error fetching data...`,
         variant: "destructive",
       })
-      setLoading(false)
     }
-
-    setFiles(files)
-    setCurrentFolderID(Object.keys(files)[0] || null)
-    setLoading(false)
-    
   }
 
   useEffect(() => {
-    fetchData()
+    handleFetchData()
   }, [activeFolderDictionary])
 
   const handleDownload = (row: any) => {
@@ -104,31 +94,24 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   const handleDelete = async (row: any) => {
 
     try {
+      if (!currentFolderID) throw new Error('No folder selected')
 
-        if (!currentFolderID) throw new Error('No folder selected')
-
-        toast({
-          title: "Deleting",
-          description: `Deleting ${row.FileInfo.name || ''}...`,
-        })
-
-        const fileDriveId = row.FileInfo.id
-        const documentId = row.DocumentID
-
-        await DeleteFile(fileDriveId)
-        await DeleteDatabaseEntry(documentId, currentFolderID)
-
-        toast({
-          title: "Deleted",
-          description: `Deleted ${row.FileInfo.name}...`,
-        })
-
-      fetchData()
+      toast({
+        title: "Deleting",
+        description: `Deleting ${row.FileInfo.name || ''}...`,
+      })
+      await DeleteFile(row, currentFolderID)
+      handleFetchData()
     } catch (error) {
       toast({
         title: "Error",
         description: `Error deleting ${row.FileInfo.name}...`,
         variant: "destructive",
+      })
+    } finally {
+      toast({
+        title: "Deleted",
+        description: `Deleted ${row.FileInfo.name}...`,
       })
     }
 
@@ -188,7 +171,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
         className="flex w-full flex-col justify-center items-center gap-5"
       >
         <AnimatePresence mode="wait">
-          {files && currentFolderID && files[currentFolderID] && files[currentFolderID].length > 0 && (
+          {documentCenter && currentFolderID && documentCenter[currentFolderID] && documentCenter[currentFolderID].length > 0 && (
             <motion.div
               className="w-full"
               key={currentFolderID}
@@ -200,7 +183,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
               <DataTable 
                 enableRowActions 
                 columns={columns}
-                data={files[currentFolderID]} 
+                data={documentCenter[currentFolderID].sort((a,b) => new Date(b.FileInfo.modifiedTime).getTime() - new Date(a.FileInfo.modifiedTime).getTime())} 
                 rowActions={rowActions}
                 infiniteScroll={true}
                 enableFiltering
@@ -221,7 +204,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
           <DocumentUploader 
             accountNumber={query && query['DocumentInfo.account_number']} 
             folderDictionary={activeFolderDictionary} 
-            onUploadSuccess={fetchData}
+            onUploadSuccess={handleFetchData}
           />
         </motion.div>
       </motion.div>

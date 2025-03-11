@@ -1,24 +1,24 @@
 import { Map } from "../types"
 
-export type FolderDictionary = {
+export interface FolderDictionary {
     drive_id: string
     id: string
     label: string
 }
 
-export type Document = {
+export interface DocumentCenter {
+    [key: string]: Document[]
+}
+
+export interface Document {
     'DocumentID': string
     'DocumentInfo':Map
-    'FileInfo':Map
+    'FileInfo':FileInfo
     'Uploader':string
     'Category':string
 }
 
-export type Drive = {
-[key: string]: Document[]
-}
-
-export type GoogleDriveFile = {
+export interface FileInfo {
     'createdTime': string
     'id': string
     'mimeType': string

@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import DocumentCenter from '@/components/dashboard/document_center/DocumentCenter';
+import DocumentCenter from '@/components/dashboard/document-center/DocumentCenter';
 import DashboardPage from '@/components/misc/DashboardPage';
 
 const page = () => {

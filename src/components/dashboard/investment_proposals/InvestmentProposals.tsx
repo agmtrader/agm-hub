@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { DataTable } from '@/components/misc/DataTable'
-import DocumentViewer from '@/components/dashboard/document_center/DocumentViewer'
+import DocumentViewer from '@/components/dashboard/document-center/DocumentViewer'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { FetchInvestmentProposals } from '@/utils/entities/investment-proposal'

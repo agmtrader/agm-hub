@@ -1,7 +1,7 @@
 'use server'
 
 import { Map } from "../lib/types"
-import { getSecret } from "./secret-manager"
+import { getSecret } from "./secret-manager";
 
 interface AuthenticationResponse {
     access_token: string
@@ -10,7 +10,7 @@ interface AuthenticationResponse {
 // Add token caching
 let cachedToken: string | null = null;
 let tokenExpirationTime: number | null = null;
-const api_url = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:5000' : 'https://api.agmtechnology.com';
+const api_url = 'http://127.0.0.1:5000';
 
 async function getToken(): Promise<string | null> {
 
@@ -18,40 +18,31 @@ async function getToken(): Promise<string | null> {
         return cachedToken;
     }
 
-    try {
-        // Fetch authentication token from secret manager
-        const authToken = await getSecret('AGM_AUTHENTICATION_TOKEN');
+    // Fetch authentication token from secret manager
+    const authToken = await getSecret('AGM_AUTHENTICATION_TOKEN');
 
-        const response = await fetch(`${api_url}/login`, {
-            method: 'POST',
-            headers: {
-                'Cache-Control': 'no-cache',
-            },
-            body: JSON.stringify({token: authToken}),
-        });
+    const response = await fetch(`${api_url}/login`, {
+        method: 'POST',
+        headers: {
+            'Cache-Control': 'no-cache',
+        },
+        body: JSON.stringify({token: authToken}),
+    });
 
-        if (!response.ok) {
-            throw new Error('Failed to authenticate');
-        }
+    if (!response.ok) return null
 
-        const auth_response: AuthenticationResponse = await response.json();
-        // Cache the token and set expiration time (1 hour)
-        cachedToken = auth_response.access_token;
-        tokenExpirationTime = Date.now() + 3600000; // 1 hour in milliseconds
-        return auth_response.access_token;
-    } catch (error) {
-        console.error('Authentication error:', error);
-        return null;
-    }
+    const auth_response: AuthenticationResponse = await response.json();
+
+    // Cache the token and set expiration time (1 hour)
+    cachedToken = auth_response.access_token;
+    tokenExpirationTime = Date.now() + 3600000; // 1 hour in milliseconds
+    return auth_response.access_token;
 }
 
 export async function accessAPI(url: string, type: string, params?: Map) {
 
     const token = await getToken();
-
-    if (!token) {
-        throw new Error('Failed to get authentication token');
-    }
+    if (!token) throw new Error('Failed to get authentication token');
 
     try {
         if (type === 'GET') {
@@ -73,9 +64,7 @@ async function GetData(url: string, token: string) {
         },
     });
 
-    if (!response.ok) {
-        throw new Error('API request failed');
-    }
+    if (!response.ok) throw new Error('API request failed');
 
     const contentType = response.headers.get('content-type');
     if (contentType?.includes('application/json')) {
@@ -93,10 +82,8 @@ async function PostData(url: string, params: Map | undefined, token: string) {
         },
         body: JSON.stringify(params),
     });
-    
-    if (!response.ok) {
-        throw new Error('API request failed');
-    }
+
+    if (!response.ok) throw new Error('API request failed');
 
     return await response.json();
 }

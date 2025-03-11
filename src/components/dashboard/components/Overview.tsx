@@ -4,22 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, Ticket, AlarmClockPlusIcon, Bell, User } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import Notifications from './Notifications'
-import { Button } from '@/components/ui/button'
-import { sendEmail } from '@/utils/entities/email'
-import { useSession } from 'next-auth/react'
 
 const Overview = () => {
-
-    async function handleSendEmail() {
-        await sendEmail('aa@agmtechnology.com', 'Bienvenido a AGM', {
-            name: 'Andres',
-            username: 'aguilarcarboni',
-            password: 'password',
-            temporary_url: 'https://mail.google.com',
-            temporary_email: 'fakemail@gmail.com',
-            temporary_password: 'password',
-        }, 'account_access')
-    }
     
   return (
     <motion.div 
@@ -28,13 +14,6 @@ const Overview = () => {
         animate="visible"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
     >
-
-        <Button onClick={handleSendEmail}>
-            <Bell className="w-4 h-4" />
-            <span>Notifications</span>
-        </Button>
-
-        {/* Summary Card */}
         <motion.div variants={itemVariants}>
             <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -48,7 +27,6 @@ const Overview = () => {
             </Card>
         </motion.div>
 
-        {/* Tickets Card */}
         <motion.div variants={itemVariants}>
             <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -62,7 +40,6 @@ const Overview = () => {
             </Card>
         </motion.div>
 
-        {/* Upcoming Events Card */}
         <motion.div variants={itemVariants}>
             <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -76,7 +53,6 @@ const Overview = () => {
             </Card>
         </motion.div>
 
-        {/* Recent Activity Card - Spans 2 columns */}
         <motion.div variants={itemVariants} className="md:col-span-2">
             <Card>
             <CardHeader>

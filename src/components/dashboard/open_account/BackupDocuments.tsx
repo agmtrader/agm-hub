@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Ticket } from '@/lib/entities/ticket';
-import DocumentCenter from '../document_center/DocumentCenter';
+import DocumentCenter from '../document-center/DocumentCenter';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast"
 import { ColumnDefinition, DataTable } from '../../misc/DataTable';
