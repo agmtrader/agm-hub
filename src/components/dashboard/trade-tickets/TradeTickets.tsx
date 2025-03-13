@@ -85,7 +85,7 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
 
     async function handleSendToClient() {
       if (!clientMessage) return;
-      let email = "aa@agmtechnology.com"
+      let email = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
       await SendToClient(clientMessage, email)
       setConfirmDialogOpen(false)
     }

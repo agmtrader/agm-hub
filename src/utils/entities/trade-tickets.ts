@@ -39,7 +39,8 @@ export async function GenerateTradeTicket(trades: Trade[], selectedTrades: Trade
 
     // Generate the plain text message
     const response:any = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': tradeTicket});
-    return response['message'];
+    console.log(response)
+    return response;
 }
 
 export async function SendToClient(clientMessage: string, email: string) {
