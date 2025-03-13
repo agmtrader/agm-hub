@@ -23,7 +23,7 @@ export default async function Layout(
     <NextAuthProvider>
       <TranslationProvider lang={lang}>
         {children}
-        {true === false && <GeminiChatbot />}
+        <GeminiChatbot />
       </TranslationProvider>
     </NextAuthProvider>
   )
