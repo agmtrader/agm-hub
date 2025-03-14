@@ -67,6 +67,14 @@ const Regulatory = ({stepBackwards, ticket, setTicket, stepForward, syncTicketDa
   formSchema = regulatory_schema(t)
   initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema)
 
+  // Ensure arrays are properly initialized
+  if (!initialFormValues.investment_objectives) {
+    initialFormValues.investment_objectives = []
+  }
+  if (!initialFormValues.products) {
+    initialFormValues.products = []
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       values: initialFormValues,
