@@ -67,29 +67,31 @@ const AccountOpeningPage = () => {
   }
   
   return (
-    
-    <div className='w-full h-full gap-5 flex flex-col justify-center items-center'>
+    <div className='w-full h-full flex flex-col gap-5'>
+      <div className='flex-1'>
+        {step == 1 && <TicketManager setTicket={setTicket} ticket={ticket} setCanContinue={setCanContinue}/>}
 
-      {step == 1 && <TicketManager setTicket={setTicket} ticket={ticket} setCanContinue={setCanContinue}/>}
+        {(step == 2 && ticket) && <OpenAccount ticket={ticket} setCanContinue={setCanContinue} setAccount={setAccount} account={account}/>}
 
-      {(step == 2 && ticket) && <OpenAccount ticket={ticket} setCanContinue={setCanContinue} setAccount={setAccount} account={account}/>}
+        {(step == 3 && ticket) && <BackupDocuments ticket={ticket} setCanContinue={setCanContinue} canContinue={canContinue} account={account}/>}
 
-      {(step == 3 && ticket) && <BackupDocuments ticket={ticket} setCanContinue={setCanContinue} canContinue={canContinue} account={account}/>}
+        {(step == 4 && ticket) && <FillApplicationForm ticket={ticket} setCanContinue={setCanContinue}/>}
 
-      {(step == 4 && ticket) && <FillApplicationForm ticket={ticket} setCanContinue={setCanContinue}/>}
-
-      {(step == 5 && ticket) && <FinalPage />}
+        {(step == 5 && ticket) && <FinalPage />}
+      </div>
 
       {step < 5 && 
-        <div className='h-fit w-fit flex gap-x-5'>
-          {step > 1 && <Button onClick={stepBackwards} >Previous step.</Button>}
-          {step === 4 ? 
-            <div>
-            <Button onClick={() => setOpenDialog(true)} variant='primary'>Finish.</Button> 
-            </div>
-            : 
-            <Button onClick={(e) => stepForward()} variant={canContinue ? 'primary':'ghost'}>Next step.</Button>
-          }
+        <div className='flex justify-center pb-5'>
+          <div className='h-fit w-fit flex gap-x-5'>
+            {step > 1 && <Button onClick={stepBackwards}>Previous step.</Button>}
+            {step === 4 ? 
+              <div>
+                <Button onClick={() => setOpenDialog(true)} variant='primary'>Finish.</Button> 
+              </div>
+              : 
+              <Button onClick={(e) => stepForward()} variant={canContinue ? 'primary':'ghost'}>Next step.</Button>
+            }
+          </div>
         </div>
       }
 

@@ -1,10 +1,11 @@
 import { Document, DocumentCenter } from "@/lib/entities/document-center";
 import { accessAPI } from "../api";
+import { Map } from "@/lib/types";
 
-export async function ReadFolders():Promise<DocumentCenter> {
+export async function ReadFolders(query?: Map):Promise<DocumentCenter> {
 
     let documentCenter = await accessAPI('/document_center/read', 'POST', {
-        'query': {}
+        'query': query || {}
     })
     return documentCenter
 }

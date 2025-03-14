@@ -44,10 +44,9 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   ] as ColumnDefinition<CustomDocument>[]
 
   const handleFetchData = async () => {
-
     setLoading(true)
     try {
-      let documentCenter:DocumentCenterType = await ReadFolders()
+      let documentCenter:DocumentCenterType = await ReadFolders(query)
       setDocumentCenter(documentCenter)
       setCurrentFolderID(Object.keys(documentCenter)[0] || null)
       setLoading(false)
