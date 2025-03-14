@@ -8,6 +8,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { MessageCircle, Send, X, RotateCcw, CalendarPlus, Phone } from 'lucide-react'
 import { chatFlow } from '@/app/api/genkit/genkit'
 import { motion, AnimatePresence } from 'framer-motion'
+import ReactMarkdown from 'react-markdown'
+import type { Components } from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 export default function GeminiChatbot() {
     
@@ -103,7 +106,7 @@ export default function GeminiChatbot() {
                                                 m.role === 'user' ? 'text-right' : 'text-left'
                                             }`}
                                         >
-                                            <motion.span
+                                            <motion.div
                                                 initial={{ scale: 0.8 }}
                                                 animate={{ scale: 1 }}
                                                 className={`inline-block p-2 rounded-lg ${
@@ -112,8 +115,25 @@ export default function GeminiChatbot() {
                                                         : 'bg-muted text-foreground'
                                                 }`}
                                             >
-                                                {m.content}
-                                            </motion.span>
+                                                <div className="prose prose-sm dark:prose-invert max-w-none">
+                                                    <ReactMarkdown 
+                                                        remarkPlugins={[remarkGfm]}
+                                                        components={{
+                                                            p: ({children, ...props}: React.PropsWithChildren<{}>) => (
+                                                                <p className="m-0" {...props}>{children}</p>
+                                                            ),
+                                                            a: ({children, href, ...props}: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+                                                                <a className="text-blue-500 hover:underline" href={href} {...props}>{children}</a>
+                                                            ),
+                                                            code: ({children, ...props}: React.PropsWithChildren<{}>) => (
+                                                                <code className="bg-gray-100 dark:bg-gray-800 rounded px-1" {...props}>{children}</code>
+                                                            )
+                                                        }}
+                                                    >
+                                                        {m.content}
+                                                    </ReactMarkdown>
+                                                </div>
+                                            </motion.div>
                                         </motion.div>
                                     ))}
                                 </ScrollArea>
