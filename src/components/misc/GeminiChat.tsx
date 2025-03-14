@@ -24,10 +24,6 @@ export default function GeminiChatbot() {
         setId(1);
     };
 
-    const handleScheduleCall = () => {
-        window.open('https://supernorm.al/j/LmuKA5', '_blank');
-    };
-
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         if (!input.trim()) return;
@@ -150,20 +146,6 @@ export default function GeminiChatbot() {
                                         placeholder="Type your message..."
                                         className="flex-grow"
                                     />
-                                    <motion.div
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <Button 
-                                            type="button" 
-                                            size="icon"
-                                            variant="outline"
-                                            onClick={handleScheduleCall}
-                                            className="mr-2"
-                                        >
-                                            <Phone className="h-4 w-4" />
-                                        </Button>
-                                    </motion.div>
                                     <motion.div
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
