@@ -5,14 +5,17 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MessageCircle, Send, X, RotateCcw, CalendarPlus, Phone } from 'lucide-react'
-import { chatFlow } from '@/app/api/genkit/genkit'
+import { MessageCircle, Send, X, RotateCcw } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
-import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
-export default function GeminiChatbot() {
+import { chat } from '@/utils/ada'
+import { useSession } from 'next-auth/react'
+
+const AdaChat = () => {
+
+    const {data:session} = useSession()
     
     const [isExpanded, setIsExpanded] = useState(false)
     const [messages, setMessages] = useState<Message[]>([]);
@@ -35,17 +38,31 @@ export default function GeminiChatbot() {
         setInput(''); // Clear input right after sending
 
         try {
-            // Get response from API
-            const response = await chatFlow(input);
+            // Get response from Gemini API
+            const response = await chat([{ role: 'user', content: input }]);
             
             // Add assistant message
-            const assistantMessage: Message = { role: 'assistant', content: response, id: (id + 1).toString() };
+            const assistantMessage: Message = { 
+                role: 'assistant', 
+                content: response.message.content, 
+                id: (id + 1).toString() 
+            };
             setMessages(prevMessages => [...prevMessages, assistantMessage]);
             setId(prev => prev + 1);
         } catch (error) {
             console.error('Error getting response:', error);
+            // Add error message to chat
+            const errorMessage: Message = { 
+                role: 'assistant', 
+                content: 'Sorry, I encountered an error. Please try again.', 
+                id: (id + 1).toString() 
+            };
+            setMessages(prevMessages => [...prevMessages, errorMessage]);
+            setId(prev => prev + 1);
         }
     }
+    
+    if (!session) return null
 
     return (
         <div className="fixed bottom-4 left-4 z-[100]">
@@ -71,7 +88,7 @@ export default function GeminiChatbot() {
                         <Card className="w-80 h-fit flex flex-col">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <div className="flex items-center gap-2">
-                                    <CardTitle className="text-md font-medium">Chat with ADA</CardTitle>
+                                    <CardTitle className="text-md font-medium">Chat with Ada</CardTitle>
                                     <motion.div
                                         whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.9 }}
@@ -164,3 +181,4 @@ export default function GeminiChatbot() {
     )
 }
 
+export default AdaChat;

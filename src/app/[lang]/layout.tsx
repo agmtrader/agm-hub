@@ -1,7 +1,7 @@
 import "../globals.css"
 import { NextAuthProvider } from "../../utils/providers/NextAuthProvider"
 import { TranslationProvider } from "../../utils/providers/TranslationProvider"
-import GeminiChatbot from "@/components/misc/GeminiChat"
+import AdaChat from "@/components/ada/Chat"
 
 export default async function Layout(
   props: Readonly<{
@@ -23,7 +23,7 @@ export default async function Layout(
     <NextAuthProvider>
       <TranslationProvider lang={lang}>
         {children}
-        <GeminiChatbot />
+        <AdaChat />
       </TranslationProvider>
     </NextAuthProvider>
   )

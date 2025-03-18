@@ -7,7 +7,6 @@ import Team from "@/components/home/team/Team";
 import { BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
-import GeminiChatbot from "@/components/misc/GeminiChat";
 
 export default function Home() {
 
