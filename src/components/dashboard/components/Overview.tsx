@@ -53,36 +53,6 @@ const Overview = () => {
             </Card>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="md:col-span-2">
-            <Card>
-            <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                {[
-                    { action: "File uploaded", user: "Sarah Johnson", time: "2 hours ago" },
-                    { action: "Project created", user: "Michael Chen", time: "Yesterday" },
-                    { action: "Comment added", user: "Alex Rodriguez", time: "2 days ago" },
-                    { action: "Task completed", user: "Jamie Smith", time: "3 days ago" },
-                ].map((activity, i) => (
-                    <div key={i} className="flex items-center">
-                    <div className="mr-4 rounded-full bg-primary/10 p-2">
-                        <User className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                        <p className="text-sm font-medium leading-none">{activity.action}</p>
-                        <p className="text-sm text-muted-foreground">
-                        {activity.user} • {activity.time}
-                        </p>
-                    </div>
-                    </div>
-                ))}
-                </div>
-            </CardContent>
-            </Card>
-        </motion.div>
-
         <Notifications />
 
     </motion.div>

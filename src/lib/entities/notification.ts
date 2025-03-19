@@ -1,11 +1,27 @@
 export interface Notification {
     NotificationID: string
-    UserID: string
     Title: string
-    Description: string
+    UserID: string
 }
+
+export interface TicketNotification extends Notification {
+    TicketID: string
+    State: string
+}
+
+export interface AccountApplicationNotification extends Notification {
+    TicketID: string
+    AGMUser: string
+    TicketStatus: string
+}
+
+export interface RiskProfileNotification extends Notification {
+    RiskType: string
+}
+
 
 export const notification_types = [
     'account_applications',
-    'risk_profiles'
+    'risk_profiles',
+    'tickets'
 ]

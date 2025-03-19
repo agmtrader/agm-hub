@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/popover"
 import { useSession } from "next-auth/react"
 import { CreateTicket } from "@/utils/entities/ticket"
-import { Notification } from "@/lib/entities/notification"
+import { Notification, TicketNotification } from "@/lib/entities/notification"
 import { CreateNotification } from "@/utils/entities/notification"
 
 interface Props {
@@ -81,14 +81,14 @@ const GeneralInfo = ({ stepForward, setTicket, ticket, syncTicketData }: Props) 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setGenerating(true);
 
+    if (!session?.user?.name) throw new Error('Critical Error: User name not found')
+
     try {
       const timestamp = new Date();
       const advisor = searchParams.get('ad') || '';
       const master_account = searchParams.get('ma') || '';
 
-      if (!userID) {
-        throw new Error('Critical Error: User ID not found. Cannot continue with application.');
-      }
+      if (!userID) throw new Error('Critical Error: User ID not found. Cannot continue with application.');
 
       // If we have an existing ticket, use its ID, otherwise create a new one
       const ticketID = ticket?.TicketID || formatTimestamp(timestamp);
@@ -108,19 +108,21 @@ const GeneralInfo = ({ stepForward, setTicket, ticket, syncTicketData }: Props) 
       
       // Then sync it to update state and handle any additional logic
       const success = await syncTicketData(newTicket);
-      if (!success) {
-        throw new Error('Failed to sync ticket data');
-      }
+      if (!success) throw new Error('Failed to sync ticket data');
 
-      let notification: Notification = {
-        Title: session?.user?.name || 'No name',
-        Description: ticket ? 'Account application updated' : 'Account application started',
+      // Send notification to database
+      // using clients name
+      let notification: TicketNotification = {
+        Title: session?.user?.name,
         NotificationID: formatTimestamp(timestamp),
-        UserID: userID,
-      };
-      
-      await CreateNotification(notification, 'account_applications');
+        TicketID: ticketID,
+        State: ticket ? 'Updated' : 'Created',
+        UserID: session?.user?.id
+      }
+      await CreateNotification(notification, 'tickets');
+
       stepForward();
+
     } catch (error: any) {
       toast({
         title: 'Error',

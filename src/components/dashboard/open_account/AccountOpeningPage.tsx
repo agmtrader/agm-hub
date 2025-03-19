@@ -12,6 +12,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogTitle, DialogHeader, DialogContent, DialogFooter } from '@/components/ui/dialog';
 import { UpdateTicketByID } from '@/utils/entities/ticket';
 import FinalPage from './FinalPage';
+import { CreateNotification } from '@/utils/entities/notification';
+import { formatTimestamp } from '@/utils/dates';
+import { AccountApplicationNotification, Notification } from '@/lib/entities/notification';
+import { useSession } from 'next-auth/react';
 
 const AccountOpeningPage = () => {
 
@@ -24,14 +28,40 @@ const AccountOpeningPage = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false)
 
   const { toast } = useToast()
+  const {data:session} = useSession()
 
   async function stepForward() {
+    if (!session?.user?.email) throw new Error('Fatal error: No user email')
+
     if (canContinue && ticket) {
       setCanContinue(false)
       setStep(step + 1)
-      if (step === 4) {
-        await UpdateTicketByID(ticket['TicketID'], {'Status': 'Opened'})
+
+      if (step === 1) {
+        const notification: AccountApplicationNotification = {
+          Title: 'Opening account',
+          NotificationID: formatTimestamp(new Date()),
+          TicketID: ticket['TicketID'],
+          AGMUser: session?.user?.email,
+          TicketStatus: ticket['Status'],
+          UserID: session?.user?.id
+        }
+        await CreateNotification(notification, 'account_applications')
       }
+
+      if (step === 5) {
+        const notification: AccountApplicationNotification = {
+          Title: 'Account opened',
+          NotificationID: formatTimestamp(new Date()),
+          TicketID: ticket['TicketID'],
+          AGMUser: session?.user?.email,
+          TicketStatus: ticket['Status'],
+          UserID: session?.user?.id
+        }
+        await CreateNotification(notification, 'account_applications')
+      }
+      
+
     } else {
       let errorMessage = '';
       switch (step) {

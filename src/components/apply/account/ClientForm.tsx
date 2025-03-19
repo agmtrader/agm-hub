@@ -174,7 +174,7 @@ const ClientForm = ({ticketProp}: Props) => {
             />
           );
         case 4:
-          return <ApplicationEnd />;
+          return <ApplicationEnd ticket={ticket}/>;
         default:
           return null;
       }
@@ -224,7 +224,7 @@ const ClientForm = ({ticketProp}: Props) => {
             />
           );
         case 5:
-          return <ApplicationEnd />;
+          return <ApplicationEnd ticket={ticket}/>;
         default:
           return null;
       }
@@ -272,7 +272,7 @@ const ClientForm = ({ticketProp}: Props) => {
             />
           );
         case 5:
-          return <ApplicationEnd />;
+          return <ApplicationEnd ticket={ticket}/>;
         default:
           return null;
       }

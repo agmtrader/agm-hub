@@ -8,23 +8,26 @@ import { formatURL } from "@/utils/language/lang"
 import { useEffect } from "react"
 import { CreateNotification } from "@/utils/entities/notification"
 import { useSession } from "next-auth/react"
-import { Notification } from "@/lib/entities/notification"
+import { TicketNotification } from "@/lib/entities/notification"
 import { formatTimestamp } from "@/utils/dates"
+import { Ticket } from "@/lib/entities/ticket"
 
-const ApplicationEnd = () => {
+const ApplicationEnd = ({ticket}:{ticket:Ticket}) => {
     const {t, lang} = useTranslationProvider()
     const {data:session} = useSession()
 
     useEffect(() => {
         async function CreateEndNotification() {
+          if (!session?.user?.id || !session?.user?.name) throw new Error('Fatal error: No user ID or name')
           const timestamp = new Date()
-          let notification:Notification = {
-            UserID: session?.user?.id || '',
-            Title: session?.user?.name || 'No name',
-            Description: 'Account application completed',
-            NotificationID: formatTimestamp(timestamp)
+          let notification:TicketNotification = {
+            Title: session?.user?.name,
+            NotificationID: formatTimestamp(timestamp),
+            TicketID: ticket['TicketID'],
+            State: 'Completed',
+            UserID: session?.user?.id
           }
-          await CreateNotification(notification, 'account_applications')
+          await CreateNotification(notification, 'tickets')
         }
         CreateEndNotification()
     }, [])

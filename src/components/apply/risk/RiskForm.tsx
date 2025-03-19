@@ -34,7 +34,7 @@ import { Progress } from "@/components/ui/progress"
 import { useSession } from "next-auth/react"
 import { getRiskFormQuestions, UserRiskProfile, weights, RiskProfile as RiskProfileType } from "@/lib/entities/risk-profile"
 import { CreateNotification } from "@/utils/entities/notification"
-import { Notification } from "@/lib/entities/notification"
+import { RiskProfileNotification } from "@/lib/entities/notification"
 
 // Each question in the form has a weight and each answer in the question has a weight
 // The risk score is calculated by summing the weighted values of the answers
@@ -109,12 +109,14 @@ const RiskForm = () => {
       }
       await saveRiskProfile(user_risk_profile)
 
+      if (!session?.user?.name) throw new Error('User name not found')
+
       // Send a notification to the AGM Team
-      const notification:Notification = {
-        UserID: session?.user?.id || '',
-        Title: session?.user?.name || '',
-        Description: 'Risk profile submitted',
-        NotificationID: new Date().toISOString()
+      const notification:RiskProfileNotification = {
+        Title: session?.user?.name,
+        NotificationID: formatTimestamp(new Date()),
+        UserID: session?.user?.id,
+        RiskType: assigned_risk_profile.name
       }
       await CreateNotification(notification, 'risk_profiles')
       setSubmitting(false)
