@@ -72,7 +72,7 @@ export function TeamCarousel() {
       name: 'Ramon Castro Jr',
       title: t('shared.team.team_carousel.ramon_jr_title'),
       description: t('shared.team.team_carousel.ramon_jr_description'),
-      avatar: '/assets/team/ramon_jr.jpg'
+      avatar: '/assets/team/ramonjr.jpg'
     }
   ]
 

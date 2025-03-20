@@ -31,8 +31,8 @@ async function getToken(): Promise<string | null> {
     if (!session || !session?.user) throw new Error('No session found');
 
     if (cachedToken && tokenExpirationTime && Date.now() < tokenExpirationTime) {
-        console.log('Using cached token')
-        return cachedToken;
+        //console.log('Using cached token')
+        //return cachedToken;
     }
 
     try {
@@ -49,8 +49,8 @@ async function getToken(): Promise<string | null> {
         const auth_response: AuthenticationResponse = await response.json();
 
         // Cache the token using server-provided expiration time
-        cachedToken = auth_response.access_token
-        tokenExpirationTime = Date.now() + (auth_response.expires_in * 1000) // Convert seconds to milliseconds
+        //cachedToken = auth_response.access_token
+        //tokenExpirationTime = Date.now() + (auth_response.expires_in * 1000) // Convert seconds to milliseconds
         return auth_response.access_token
 
     } catch (error) {
