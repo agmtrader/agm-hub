@@ -19,6 +19,8 @@ export default function Layout({
   const router = useRouter()
   const pathname = usePathname()
 
+  console.log(session)
+
   if (status === 'loading') {
     return (
       <LoadingComponent className='w-full h-full'/>

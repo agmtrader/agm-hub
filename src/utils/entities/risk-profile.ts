@@ -2,17 +2,17 @@ import { accessAPI } from "@/utils/api"
 import { risk_profiles, UserRiskProfile, RiskProfile as RiskProfileType } from "@/lib/entities/risk-profile"
 import { useTranslationProvider } from "../providers/TranslationProvider"
 
-export async function saveRiskProfile(user_risk_profile:UserRiskProfile) {
-    await accessAPI('/database/create', 'POST', {data: user_risk_profile, path:'db/clients/risk_profiles', id:user_risk_profile.UserID})
+export async function CreateRiskProfile(user_risk_profile:UserRiskProfile) {
+    await accessAPI('/risk_profiles/create', 'POST', {data: user_risk_profile, id: user_risk_profile.RiskProfileID})
 }
 
 export async function ReadRiskProfiles(): Promise<RiskProfileType[] | null> {
-    let risk_profiles = await accessAPI('/database/read','POST', {'path': 'db/clients/risk_profiles'})
+    let risk_profiles = await accessAPI('/risk_profiles/read','GET')
     return risk_profiles
 }
 
 // Find assigned risk profile using the calculated risk score
-export function getRiskProfile(risk_score: number): RiskProfileType | null {
+export function GetRiskProfile(risk_score: number): RiskProfileType | null {
 
     let assigned_risk_profile:RiskProfileType | null = null
     risk_profiles.forEach(profile => {

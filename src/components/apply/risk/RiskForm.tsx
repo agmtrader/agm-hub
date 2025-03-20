@@ -25,7 +25,7 @@ import {
   DialogClose,
   DialogContent
 } from "@/components/ui/dialog"
-import { getRiskProfile, saveRiskProfile } from "@/utils/entities/risk-profile"
+import { GetRiskProfile, CreateRiskProfile } from "@/utils/entities/risk-profile"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
@@ -63,7 +63,7 @@ const RiskForm = () => {
       values: initialFormValues,
   })
 
-  function calculateRiskScore(values: z.infer<typeof formSchema>): number {
+  function CalculateRiskScore(values: z.infer<typeof formSchema>): number {
     let risk_score = 0
     Object.entries(values).forEach((answer) => {
   
@@ -92,8 +92,8 @@ const RiskForm = () => {
       if (!session?.user) throw new Error('User not found')
 
       // Calculate the risk score and find the assigned risk profile
-      const risk_score = calculateRiskScore(values)
-      const assigned_risk_profile = getRiskProfile(risk_score)
+      const risk_score = CalculateRiskScore(values)
+      const assigned_risk_profile = GetRiskProfile(risk_score)
       if (!assigned_risk_profile) throw new Error('No risk profile found')
 
       // Build a user risk profile for the database
@@ -107,7 +107,7 @@ const RiskForm = () => {
         RiskProfile: assigned_risk_profile,
         UserID: session?.user?.id
       }
-      await saveRiskProfile(user_risk_profile)
+      await CreateRiskProfile(user_risk_profile)
 
       if (!session?.user?.name) throw new Error('User name not found')
 
@@ -119,7 +119,6 @@ const RiskForm = () => {
         RiskType: assigned_risk_profile.name
       }
       await CreateNotification(notification, 'risk_profiles')
-      setSubmitting(false)
       
       // Display the assigned risk profile
       setRiskProfile(user_risk_profile.RiskProfile)
@@ -133,6 +132,8 @@ const RiskForm = () => {
         description: error.message,
         variant: 'destructive'
       })
+    } finally {
+      setSubmitting(false)
     }
 
   }

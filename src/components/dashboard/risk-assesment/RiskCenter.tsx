@@ -51,6 +51,13 @@ const RiskCenter = () => {
       try {
 
         const account = await ReadAccountByAccountNumber(selectedProfile.AccountNumber)
+        if (!account) {
+          toast({
+            title: 'Warning',
+            description: 'No IBKR account found for the selected risk profile',
+            variant: 'warning',
+          })
+        }
         setAccount(account)
     
       } catch (error:any) {
@@ -60,8 +67,9 @@ const RiskCenter = () => {
           description: error.message,
           variant: 'destructive',
         })
+      } finally {
+        setRiskProfile(selectedProfile.RiskProfile)
       }
-      setRiskProfile(selectedProfile.RiskProfile)
     }
     QueryAccountBelongingToProfile()
   }, [selectedProfileID])
