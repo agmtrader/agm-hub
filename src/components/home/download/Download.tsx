@@ -3,14 +3,13 @@ import React, {useState} from 'react'
 import { motion, AnimatePresence } from "framer-motion";
 import { Laptop, Smartphone } from 'lucide-react'
 
-import { Globe } from 'lucide-react';
 import { DeviceTypes, osTypes } from '@/lib/types'
 
 import { Button } from "../../ui/button"
-import Link from 'next/link';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { FaApple, FaLinux, FaWindows, FaAndroid } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
+import { downloads } from '@/lib/downloads';
 
 type Props = {}
 
@@ -67,6 +66,21 @@ function Download({}: Props) {
 
   const { t } = useTranslationProvider()  
 
+  const handleDownload = () => {
+    if (device === null || os === null) return;
+    
+    const isDesktop = device === DeviceTypes.PC;
+    const osIndex = os;
+    
+    // Get the download option based on the OS index
+    const downloadOption = downloads[osIndex];
+    const recommendedVersion = downloadOption?.versions.find(v => v.recommended);
+    
+    if (recommendedVersion?.url) {
+      window.location.href = recommendedVersion.url;
+    }
+  };
+
   return (
     <motion.div 
       className='flex flex-col text-foreground justify-center text-center items-center h-full p-5 gap-y-10 w-full'
@@ -91,12 +105,6 @@ function Download({}: Props) {
               <p className={cn('text-sm', device === DeviceTypes.MOBILE ? 'text-background':'text-foreground')}>Mobile</p>
             </Button>
           </motion.div>
-          <Button asChild variant='secondary' className='h-32 flex flex-col justify-center items-center'>
-            <Link href={'https://www.clientam.com/sso/Login?partnerID=agmbvi2022'} rel="noopener noreferrer" target="_blank" className='w-32'>
-              <Globe className='text-orange h-[12vw] w-[12vw]'/>
-              <p className='text-sm text-foreground'>Web</p>
-            </Link>
-          </Button>
         </div>
       </motion.div>
 
@@ -159,7 +167,7 @@ function Download({}: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <Button>{t('agm-trader.download.download_now')}</Button>
+            <Button onClick={handleDownload}>{t('agm-trader.download.download_now')}</Button>
           </motion.div>
         )}
       </AnimatePresence>

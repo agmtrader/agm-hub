@@ -3,7 +3,8 @@
         "apply": "Apply for an Account",
         "risk": "Fill Risk Profile",
         "learning":"Learning Center",
-        "help": "Help Center"
+        "help": "Help Center",
+        "downloads": "Downloads"
     },
     "protected": {
         "lockedOut": "Locked out",
@@ -245,10 +246,12 @@
                 "cristian_description": "Cristian has been with AGM for over 8 years, he has a background in business and data analytics, besides being our CFO, he is an experienced Options trader and has been part of a couple of Broker/Dealers and a Fund Management company in the past. Mr. Ramirez has a very strong background in Statistical and Financial analysis, as well as in accounting.",
                 "javier_title": "Trade Support Specialist",
                 "javier_description": "Javier started with AGM as an Intern from Texas Tech University, where he is in his final year to obtain his BA in Business. He has been with us for 2 years and has excelled in the different areas that he has been part of. He is in charge of the Customer Service Department and makes sure that every client has a tailored introduction to their relationship with AGM.",
+                "maria_jose_title": "Marketing Specialist",
                 "maria_jose_description": "Maria Jose is our newest addition to the AGM team, she is also in her final year to obtain her BA in Business from Texas Tech University. She is part of our Customer Service Department and makes sure that every client has great service and support experience with AGM. She is also in charge of our marketing department and social media.",
-                "maria_jose_title": "Trade Support Specialist",
                 "andres_description": "Andres has been with AGM since the beginning of 2024, he is working on obtaining his BS in Computer Science from Texas Tech University. Andres is in charge of our IT department and has shown great skills to develop our front end systems to be able to provide a better experience to our customers. He is also responsible for most of our back end processes so everything works as expected.",
-                "andres_title": "IT Specialist"
+                "andres_title": "Lead Software Engineer",
+                "ramon_jr_title": "",
+                "ramon_jr_description": ""
             }
         },
         "faq": {

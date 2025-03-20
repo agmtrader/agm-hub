@@ -36,7 +36,7 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
     { name: t('sidebar.apply'), url: '/apply' },
     { name: t('sidebar.risk'), url: '/apply/risk' },
     { name: t('sidebar.learning'), url: '/learning' },
-    { name: t('sidebar.help'), url: '/help' },
+    { name: t('sidebar.downloads'), url: '/downloads' }
   ]
 
   return (

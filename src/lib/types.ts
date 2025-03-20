@@ -9,9 +9,9 @@ export enum DeviceTypes{
   MOBILE
 }
 export enum osTypes {
-  WINDOWS,
-  LINUX,
-  MACOS,
-  ANDROID,
-  IOS
+  WINDOWS = 0,
+  LINUX = 1,
+  MACOS = 2,
+  ANDROID = 3,
+  IOS = 4
 }
