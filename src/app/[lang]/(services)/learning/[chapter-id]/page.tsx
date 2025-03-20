@@ -9,7 +9,6 @@ import { videosDictionary } from '@/lib/dictionaries/resource-center'
 import { chapters } from '@/lib/dictionaries/resource-center'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import useEmblaCarousel from 'embla-carousel-react'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
@@ -29,17 +28,11 @@ const ChapterPage = ({ params }: Props) => {
 
     const { lang } = useTranslationProvider()
 
-    const [emblaRef, emblaApi] = useEmblaCarousel({
-        loop: false,
-        align: 'start',
-        slidesToScroll: 1
-    })
-
     return (
     <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className='h-full justify-start items-center gap-5 flex flex-col w-full'
+        className='h-full justify-start items-center gap-5 my-10 flex flex-col w-full'
     >
         <Button asChild className='absolute left-10 z-10' variant='ghost'>
             <Link href={formatURL('/learning', lang)}>
@@ -143,47 +136,61 @@ const ChapterPage = ({ params }: Props) => {
             </motion.div>
         )}
 
-        <div className="w-full max-w-[1024px] relative">
-            <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full shadow-md absolute -left-12 top-1/2 -translate-y-1/2 z-10"
-                onClick={() => emblaApi?.scrollPrev()}
-            >
-                <ArrowLeft className="h-4 w-4" />
-            </Button>
-            
-            <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex gap-4">
-                    {videos
-                    .filter((video) => video.id !== selected.id)
-                    .map((video, index) => (
-                        <div 
-                            key={video.id} 
-                            className='relative aspect-video h-40 bg-muted rounded-lg shadow-sm cursor-pointer group flex-shrink-0' 
-                            onClick={() => setSelected(video)}
-                        >
-                            <img 
-                                src={`https://img.youtube.com/vi/${video.id}/0.jpg`} 
-                                alt={video.title}
-                                className='h-40 aspect-video rounded-lg object-cover' 
+        <div className="w-full max-w-[1024px] relative mt-8">
+            <div className="flex items-center justify-center relative">
+                <div className="absolute h-[2px] w-full top-1/2 -translate-y-1/2">
+                    {videos.map((_, index) => {
+                        if (index === videos.length - 1) return null;
+                        const isWatched = index < videos.findIndex(v => v.id === selected.id);
+                        return (
+                            <div
+                                key={`line-${index}`}
+                                className={cn(
+                                    "absolute h-full",
+                                    isWatched ? "bg-blue-500" : "bg-orange-500",
+                                    "transition-all duration-300"
+                                )}
+                                style={{
+                                    left: `${(index / (videos.length - 1)) * 100}%`,
+                                    width: `${100 / (videos.length - 1)}%`
+                                }}
                             />
-                            <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center p-4'>
-                                <p className='text-white text-center text-sm'>{video.title}</p>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
+                </div>
+
+                <div className="flex justify-between w-full relative">
+                    {videos.map((video, index) => {
+                        const isWatched = index < videos.findIndex(v => v.id === selected.id);
+                        const isCurrent = video.id === selected.id;
+                        
+                        return (
+                            <button
+                                key={video.id}
+                                onClick={() => setSelected(video)}
+                                className={cn(
+                                    "w-8 h-8 rounded-full flex items-center justify-center",
+                                    "transition-all duration-300 relative",
+                                    "hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2",
+                                    isWatched ? "bg-blue-500 text-white" : "bg-orange-500 text-white",
+                                    isCurrent && "ring-2 ring-offset-2 ring-black scale-110"
+                                )}
+                                aria-label={`Go to video ${index + 1}: ${video.title}`}
+                            >
+                                <span className="text-sm font-medium">
+                                    {index + 1}
+                                </span>
+                                
+                                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                    <div className="bg-foreground text-background text-xs rounded px-2 py-1">
+                                        {video.title}
+                                    </div>
+                                </div>
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
-
-            <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full shadow-md absolute -right-12 top-1/2 -translate-y-1/2 z-10"
-                onClick={() => emblaApi?.scrollNext()}
-            >
-                <ArrowLeft className="h-4 w-4 rotate-180" />
-            </Button>
         </div>
 
     </motion.div>
