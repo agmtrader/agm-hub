@@ -7,14 +7,25 @@ import { ReadNotifications } from '@/utils/entities/notification'
 import { Notification, TicketNotification, AccountApplicationNotification, RiskProfileNotification } from '@/lib/entities/notification'
 import { formatDateFromTimestamp } from '@/utils/dates'
 import LoadingCard from '@/components/misc/LoadingCard'
+import { useToast } from '@/hooks/use-toast'
 
 const Notifications = () => {
+
+    const { toast } = useToast()
     const [notifications, setNotifications] = useState<Notification[] | null>(null)
 
     useEffect(() => {
         const fetchNotifications = async () => {
-            const notifications = await ReadNotifications()
-            setNotifications(notifications)
+            try {
+                const notifications = await ReadNotifications()
+                setNotifications(notifications)
+            } catch (error) {
+                toast({
+                    title: 'Error fetching notifications',
+                    description: error instanceof Error ? error.message : 'An unknown error occurred',
+                    variant: 'destructive'
+                })
+            }
         }
         fetchNotifications()
     }, [])

@@ -53,7 +53,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     } catch (error) {
       toast({
         title: "Error",
-        description: `Error fetching data...`,
+        description: error instanceof Error ? error.message : 'An unknown error occurred',
         variant: "destructive",
       })
     }
