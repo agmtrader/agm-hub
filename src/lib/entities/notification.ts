@@ -18,10 +18,3 @@ export interface AccountApplicationNotification extends Notification {
 export interface RiskProfileNotification extends Notification {
     RiskType: string
 }
-
-
-export const notification_types = [
-    'account_applications',
-    'risk_profiles',
-    'tickets'
-]

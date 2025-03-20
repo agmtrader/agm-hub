@@ -82,7 +82,6 @@ const Notifications = () => {
                 <CardContent>
                     <div className="flex flex-col gap-4 max-h-[300px] overflow-y-auto">
                         {notifications.slice(0, 10)
-                            .sort((a, b) => b.NotificationID.localeCompare(a.NotificationID))
                             .map((notification, index) => (
                                 <div key={notification.NotificationID} className="text-foreground bg-muted p-2 rounded-md">
                                     {renderNotificationContent(notification)}

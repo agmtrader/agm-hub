@@ -7,9 +7,9 @@ declare module "next-auth" {
     emailVerified: boolean
     username: string | null
     country: string | null
-    role: string,
     accessToken?: string;
     refreshToken?: string;
+    scopes: string;
   }
 }
 
@@ -32,5 +32,6 @@ declare module "next-auth/jwt" {
     role: User["role"]
     accessToken: User["accessToken"]
     refreshToken: User["refreshToken"]
+    scopes: User["scopes"]
   }
 }

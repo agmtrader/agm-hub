@@ -14,13 +14,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useState } from 'react'
+import { UpdateUserByID } from '@/utils/entities/user'
 
 const page = () => {
-  const {data:session} = useSession()
+  const {data:session, update} = useSession()
 
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false)
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
+  const [isNameDialogOpen, setIsNameDialogOpen] = useState(false)
   const [newEmail, setNewEmail] = useState('')
+  const [newName, setNewName] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -43,7 +46,14 @@ const page = () => {
     }
   }
 
-  console.log(session)
+  async function handleNameChange() {
+    if (session && newName) {
+      await UpdateUserByID(session.user.id, {name: newName})
+      setIsNameDialogOpen(false)
+      setNewName('')
+      update({user: {name: newName}})
+    }
+  }
 
   return (
     <div className='w-full h-full gap-y-5 flex flex-col justify-center items-center'>
@@ -56,8 +66,33 @@ const page = () => {
         <p className='text-7xl font-bold'>{session?.user.name ? session?.user.name : 'No name'}</p>
       </div>
       
+      <Dialog open={isNameDialogOpen} onOpenChange={setIsNameDialogOpen}>
+        <DialogTrigger asChild>
+          <Button>{session?.user.name ? 'Change name' : 'Add name'}</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Name</DialogTitle>
+            <DialogDescription>
+              Enter your new name below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">New Name</label>
+              <Input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+            </div>
+            <Button onClick={handleNameChange}>Save Changes</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <p className='text-xl font-semibold'>{session?.user.email ? session?.user.email : 'No email'}</p>
-      <p className='text-xl'>{session?.user.role === 'admin' ? 'Admin' : 'User'}</p>
+      <p className='text-xl'>{session?.user.scopes?.includes('all') ? 'Admin' : 'User'}</p>
 
       <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
         <DialogTrigger asChild>

@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/anims';
 import Image from 'next/image';
-import { GetUserPassword, UpdateUser } from '@/utils/entities/user';
+import { ReadUserPassword, UpdateUserByID } from '@/utils/entities/user';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 
 interface UserWithPassword extends User {
@@ -37,9 +37,9 @@ const Onboarding = () => {
 
     // Check for password existence when session is available
     useEffect(() => {
-        if (session?.user?.email) {
-            GetUserPassword({ email: session.user.email })
-                .then(password => {
+        if (session?.user?.id) {
+            ReadUserPassword(session.user.id)
+                .then((password: string) => {
                     setHasPassword(!!password);
                 })
                 .catch(error => {
@@ -137,11 +137,7 @@ const Onboarding = () => {
         delete user.accessToken;
         delete user.refreshToken;
 
-        const query = {
-            email: session.user.email
-        }
-
-        await UpdateUser(user, query)
+        await UpdateUserByID(user.id, user)
         setSaving(false);
 
         toast({

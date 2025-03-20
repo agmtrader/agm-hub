@@ -67,7 +67,7 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
               </NavigationMenuItem>
             ))}
 
-            {session?.user?.role === 'admin' && (
+            {session?.user?.scopes?.includes('all') && (
               <NavigationMenuItem className="w-full text-end">
                 <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
                   <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-end")}>
@@ -75,16 +75,6 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
-            )}
-
-            {session?.user?.role === 'trader' && (
-               <NavigationMenuItem className="w-full text-end">
-               <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
-                 <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-end")}>
-                   Dashboard
-                 </NavigationMenuLink>
-               </Link>
-             </NavigationMenuItem>
             )}
             
           </NavigationMenuList>

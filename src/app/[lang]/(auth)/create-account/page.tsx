@@ -27,7 +27,7 @@ import { ArrowLeft } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { CreateUser, ReadUserByEmail, ReadUserByUsername } from '@/lib/entities/user'
+import { CreateUser } from '@/utils/api'
 
 type UserPayload = User & {
   password: string
@@ -72,14 +72,6 @@ const CreateAccount = () => {
 
     try {
 
-      let existingUser:User = await ReadUserByEmail(values.email)
-      if (existingUser) throw new Error('User with that email already exists')
-
-      existingUser = await ReadUserByUsername(values.username)
-      if (existingUser) throw new Error('User with that username already exists')
-
-      if (values.password !== values.confirmPassword) throw new Error('Passwords do not match')
-
       const timestamp = formatTimestamp(new Date())
 
       const user:UserPayload = {
@@ -91,7 +83,7 @@ const CreateAccount = () => {
         'username': values.username,
         'password': values.password,
         'country': values.country,
-        'role': 'user'
+        'scopes': 'users/read users/update tickets/create tickets/update tickets/read'
       }
 
       await CreateUser(user)

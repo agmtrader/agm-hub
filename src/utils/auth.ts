@@ -1,9 +1,9 @@
 import { adminAuth, firestoreAdmin } from "@/utils/firebase/firebase-admin"
 import { FirestoreAdapter } from "@next-auth/firebase-adapter"
-import { NextAuthOptions, User } from "next-auth"
+import { NextAuthOptions } from "next-auth"
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from "next-auth/providers/credentials"
-import { accessAPI } from "@/utils/api"
+import { LoginUserWithCredentials } from "./api"
 
 export const authOptions: NextAuthOptions = {
 
@@ -35,21 +35,11 @@ export const authOptions: NextAuthOptions = {
               // Fetch user profile manually from database
               // When logging in with Google, the user profile is fetched from Firebase Authentication
               // that uses the same database as this, /users
-              
-              const users = await accessAPI('/database/read', 'POST', {
-                path: 'users',
-                query: {
-                  'username': credentials.username,
-                  'password': credentials.password
-                }
-              })
-              
-              if (users.length !== 1) {
-                throw new Error('Invalid username or password')
-              }
 
-              const user:User = users[0]
+              const user = await LoginUserWithCredentials(credentials.username, credentials.password)
+              if (!user) return null
               return user
+              
 
             } catch (error) {
 
@@ -77,10 +67,10 @@ export const authOptions: NextAuthOptions = {
           token.name = user.name || null
           token.image = user.image || null
 
-          token.role = user.role || 'user'
           token.emailVerified = user.emailVerified || false
           token.country = user.country || null
           token.username = user.username || null
+          token.scopes = user.scopes || ""
 
           if (account?.provider === 'google') {
             token.accessToken = account.access_token || null
@@ -106,17 +96,13 @@ export const authOptions: NextAuthOptions = {
             session.user.emailVerified = token.emailVerified || false
             session.user.username = token.username || null
             session.user.country = token.country || null
-            session.user.role = token.role || 'user'
+            session.user.scopes = token.scopes || ""
 
             if (token.accessToken) {
               session.user.accessToken = token.accessToken
             }
             if (token.refreshToken) {
               session.user.refreshToken = token.refreshToken
-            }
-        
-            if (session.user.email?.split('@')[1] == 'agmtechnology.com') {
-              session.user.role = 'admin'
             }
 
             // Sync Firebase Authentication profile with login information
@@ -129,9 +115,8 @@ export const authOptions: NextAuthOptions = {
               })
             }
 
-            if (!currentUser) {
-              throw new Error('Failed to create or fetch user in Firebase Authentication')
-            }
+            if (!currentUser) throw new Error('Failed to create or fetch user in Firebase Authentication')
+          
 
             if (!currentUser.email && session.user.email) {
               await adminAuth.updateUser(token.sub, { email: session.user.email })
@@ -148,8 +133,12 @@ export const authOptions: NextAuthOptions = {
             // Create Firebase Authentication token for all users
             // This is used to authenticate all users for forms
             // Options grant admin access to the dashboard and other admin features
+            let role = 'user'
+            if (session.user.scopes?.includes('all') && session.user.email?.includes('@agmtechnology.com')) {
+              role = 'admin'
+            }
 
-            const firebaseToken = await adminAuth.createCustomToken(token.sub, { role: session.user.role })
+            const firebaseToken = await adminAuth.createCustomToken(token.sub, { role: role })
             session.firebaseToken = firebaseToken
 
           }
