@@ -1,4 +1,3 @@
-import { FirestoreAdapter } from "@next-auth/firebase-adapter"
 import { NextAuthOptions } from "next-auth"
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -53,8 +52,6 @@ export const authOptions: NextAuthOptions = {
         }
       }),
     ],
-    // Might want to remove...
-    //adapter: FirestoreAdapter(firestore),
     callbacks: {
 
       async jwt({ token, user }) {
@@ -74,11 +71,6 @@ export const authOptions: NextAuthOptions = {
           token.country = user.country || null
           token.username = user.username || null
           token.scopes = user.scopes || ""
-
-          //if (account?.provider === 'google') {
-          //  token.accessToken = account.access_token || null
-          //  token.refreshToken = account.refresh_token || null
-          //}
 
         }
         
@@ -100,13 +92,6 @@ export const authOptions: NextAuthOptions = {
             session.user.username = token.username || null
             session.user.country = token.country || null
             session.user.scopes = token.scopes || ""
-
-            //if (token.accessToken) {
-            //  session.user.accessToken = token.accessToken
-            //}
-            //if (token.refreshToken) {
-            //  session.user.refreshToken = token.refreshToken
-            //}
 
             // Sync Firebase Authentication Profile with session data
             let currentUser = null
@@ -131,17 +116,6 @@ export const authOptions: NextAuthOptions = {
             if (!currentUser.photoURL && session.user.image) {
               await firebaseAdminAuth.updateUser(token.sub, { photoURL: session.user.image })
             }
-          
-            // Create Firebase Authentication token for all users
-            // This is used to authenticate all users for different endpoints using the Firebase Auth Provider
-
-            //let role = 'user'
-            //if (session.user.scopes?.includes('all') && session.user.email?.includes('@agmtechnology.com')) {
-            //  role = 'admin'
-            //}
-
-            //const firebaseToken = await adminAuth.createCustomToken(token.sub, { role: role })
-            //session.firebaseToken = ''
 
           }
           

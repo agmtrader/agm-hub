@@ -134,9 +134,6 @@ const Onboarding = () => {
             user.password = values.password;
         }
 
-        delete user.accessToken;
-        delete user.refreshToken;
-
         await UpdateUserByID(user.id, user)
         setSaving(false);
 

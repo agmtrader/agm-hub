@@ -1,12 +1,6 @@
 // Authentication for Firebase Admin SDK with NextAuth
 import admin from "firebase-admin"
 import { initFirestore } from "@next-auth/firebase-adapter"
-import { getSecret } from "../secret-manager"
-
-const getCredentials = async () => {
-    const credentials = await getSecret('FIREBASE_SERVICE_ACCOUNT')
-    return JSON.parse(credentials)
-}
 
 const secret = {
         projectId: "agm-datalake",
@@ -15,7 +9,7 @@ const secret = {
 }
 
 // This is used to sync Firebase services with our backend manually
-// AdminAuth can create login tokens and get user information from Firebase Authentication service
+// AdminAuth can create login tokens and sync user information from/to Firebase Authentication service
 let firebase
 if (!admin.apps.length) {
     firebase = admin.initializeApp({

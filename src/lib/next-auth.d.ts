@@ -7,8 +7,6 @@ declare module "next-auth" {
     emailVerified: boolean
     username: string | null
     country: string | null
-    accessToken?: string;
-    refreshToken?: string;
     scopes: string;
   }
 }
