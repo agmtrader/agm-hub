@@ -118,7 +118,7 @@ const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
         State: ticket ? 'Updated' : 'Created',
         UserID: session?.user?.id
       }
-      //await CreateNotification(notification, 'tickets');
+      await CreateNotification(notification, 'tickets');
 
       stepForward();
 
