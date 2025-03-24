@@ -115,24 +115,26 @@ function SignIn() {
               <p className='text-subtitle text-sm'>{t('signin.or')}</p>
               <Separator className='my-4 w-[40%]' />
             </div>
-            <Button
-              variant='ghost'
-              onClick={handleGoogleSignIn}
-              className="w-full mt-4"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t('signin.signingIn')}
-                </>
-              ) : (
-                <div className='flex items-center gap-2'>
-                  <FaGoogle className='h-4 w-4' />
-                  {t('signin.google')}
-                </div>
-              )}
-            </Button>
+            { process.env.DEV_MODE === 'true' && (
+              <Button
+                variant='ghost'
+                onClick={handleGoogleSignIn}
+                className="w-full mt-4"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('signin.signingIn')}
+                  </>
+                ) : (
+                  <div className='flex items-center gap-2'>
+                    <FaGoogle className='h-4 w-4' />
+                    {t('signin.google')}
+                  </div>
+                )}
+              </Button>
+            )}
           </CardContent>
         </motion.div>
       </Card>
