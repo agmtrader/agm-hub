@@ -1,4 +1,3 @@
-// Authentication for Firebase Admin SDK with NextAuth
 import admin from "firebase-admin"
 import { initFirestore } from "@next-auth/firebase-adapter"
 
@@ -19,7 +18,7 @@ if (!admin.apps.length) {
 const firebaseAdminAuth = admin.auth(firebase)
 
 // Firestore admin gives admin access to Firestore database
-// This is used to sync Firestore Admin Authentication with NextAuth using the FirestoreAdapter
+// This is used to sync user data with our database and NextAuth using the FirestoreAdapter
 const firestore = initFirestore({
     credential: admin.credential.cert(secret)
 })

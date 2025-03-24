@@ -27,6 +27,7 @@ interface UserWithPassword extends User {
 }
 
 const Onboarding = () => {
+
     const { data: session } = useSession();
     const router = useRouter();
     const { lang } = useTranslationProvider();

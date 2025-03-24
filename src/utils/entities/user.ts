@@ -43,3 +43,8 @@ export async function UpdateUserByID(id:string, data:any) {
     await accessAPI('/users/update', 'POST', {'data': data, 'query': {'id': id}})
     return 'Updated'
 }
+
+export async function UpdateUserByEmail(email:string, data:any) {
+    await accessAPI('/users/update', 'POST', {'data': data, 'query': {'email': email}})
+    return 'Updated'
+}

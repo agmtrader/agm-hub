@@ -3,12 +3,12 @@ import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from "next-auth/providers/credentials"
 import { LoginUserWithCredentials } from "./api"
 
-import { firebaseAdminAuth } from "@/utils/firebase/firebase-admin"
+import { FirestoreAdapter } from "@next-auth/firebase-adapter"
+import { firestore } from "@/utils/firebase/firebase-admin"
 
 export const authOptions: NextAuthOptions = {
 
     providers: [
-      // Review wtf happens here lol
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID!,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -52,13 +52,13 @@ export const authOptions: NextAuthOptions = {
         }
       }),
     ],
+    adapter: FirestoreAdapter(firestore),
     callbacks: {
 
       async jwt({ token, user }) {
 
         // Build token from user profile
         // This can be Google Response or Credentials Response
-        // Both are queried from the same database, /users
         
         if (user) {
 
@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
           token.emailVerified = user.emailVerified || false
           token.country = user.country || null
           token.username = user.username || null
-          token.scopes = user.scopes || ""
+          token.scopes = user.scopes || "users/read users/update tickets/create tickets/update tickets/read"
 
         }
         
@@ -91,9 +91,10 @@ export const authOptions: NextAuthOptions = {
             session.user.emailVerified = token.emailVerified || false
             session.user.username = token.username || null
             session.user.country = token.country || null
-            session.user.scopes = token.scopes || ""
+            session.user.scopes = token.scopes || "users/read users/update tickets/create tickets/update tickets/read"
 
-            // Sync Firebase Authentication Profile with session data
+            /*
+            // Sync Firebase Authentication Profile with session data (maybe remove this)
             let currentUser = null
             try {
               currentUser = await firebaseAdminAuth.getUser(token.sub)
@@ -116,6 +117,7 @@ export const authOptions: NextAuthOptions = {
             if (!currentUser.photoURL && session.user.image) {
               await firebaseAdminAuth.updateUser(token.sub, { photoURL: session.user.image })
             }
+            */
 
           }
           
