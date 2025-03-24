@@ -16,7 +16,7 @@ const AutoTrader = () => {
   const [accountSummary, setAccountSummary] = useState<any>(null);
   const [strategy, setStrategy] = useState<any>(null);
 
-  const socketURL = process.env.DEV_MODE === 'true' ? 'ws://127.0.0.1:4444' : 'NULL';
+  const socketURL = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:3333' : 'NULL';
 
   useEffect(() => {
 
