@@ -47,11 +47,10 @@ interface Props {
   stepForward: () => void,
   stepBackwards: () => void,
   ticket: Ticket,
-  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
   syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const Regulatory = ({stepBackwards, ticket, setTicket, stepForward, syncTicketData}:Props) => {
+const Regulatory = ({stepBackwards, ticket, stepForward, syncTicketData}:Props) => {
   
   const { toast } = useToast()
 

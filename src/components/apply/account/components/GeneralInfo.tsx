@@ -44,17 +44,16 @@ import {
 } from "@/components/ui/popover"
 import { useSession } from "next-auth/react"
 import { CreateTicket } from "@/utils/entities/ticket"
-import { Notification, TicketNotification } from "@/lib/entities/notification"
+import { TicketNotification } from "@/lib/entities/notification"
 import { CreateNotification } from "@/utils/entities/notification"
 
 interface Props {
   stepForward: () => void,
-  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
   ticket: Ticket | null,
   syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const GeneralInfo = ({ stepForward, setTicket, ticket, syncTicketData }: Props) => {
+const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
 
   const {data:session} = useSession()
   const userID = session?.user.id
@@ -119,7 +118,7 @@ const GeneralInfo = ({ stepForward, setTicket, ticket, syncTicketData }: Props) 
         State: ticket ? 'Updated' : 'Created',
         UserID: session?.user?.id
       }
-      await CreateNotification(notification, 'tickets');
+      //await CreateNotification(notification, 'tickets');
 
       stepForward();
 

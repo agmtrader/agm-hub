@@ -27,7 +27,7 @@ const ApplicationEnd = ({ticket}:{ticket:Ticket}) => {
             State: 'Completed',
             UserID: session?.user?.id
           }
-          await CreateNotification(notification, 'tickets')
+          //await CreateNotification(notification, 'tickets')
         }
         CreateEndNotification()
     }, [])

@@ -50,11 +50,10 @@ interface Props {
   stepForward: () => void,
   stepBackward: () => void,
   ticket: Ticket,
-  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
   syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const AboutOrganization = ({stepForward, ticket, setTicket, stepBackward, syncTicketData}:Props) => {
+const AboutOrganization = ({stepForward, ticket, stepBackward, syncTicketData}:Props) => {
 
   const backdoor = process.env.DEV_MODE === 'true'
 
@@ -71,7 +70,17 @@ const AboutOrganization = ({stepForward, ticket, setTicket, stepBackward, syncTi
 
   formSchema = about_organization_schema(t)
   let initialFormValues:any;
-  initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema);
+  if (ticket?.ApplicationInfo) {
+    // Extract fields with 'organization_' prefix
+    initialFormValues = {};
+    for (const [key, value] of Object.entries(ticket.ApplicationInfo)) {
+      if (key.startsWith('organization_')) {
+        initialFormValues[key.replace('organization_', '')] = value;
+      }
+    }
+  } else {
+    initialFormValues = getDefaults(formSchema);
+  }
   
   // Ensure source_of_wealth is always an array
   if (initialFormValues.source_of_wealth && !Array.isArray(initialFormValues.source_of_wealth)) {
@@ -112,8 +121,9 @@ const AboutOrganization = ({stepForward, ticket, setTicket, stepBackward, syncTi
 
       const updatedApplicationInfo = { ...ticket.ApplicationInfo };
 
+      // Add organization_ prefix to all fields when saving
       for (const [key, value] of Object.entries(values)) {
-        updatedApplicationInfo[key] = value;
+        updatedApplicationInfo[`organization_${key}`] = value;
       }
 
       const updatedTicket: Ticket = {

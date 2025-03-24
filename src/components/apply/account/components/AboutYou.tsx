@@ -42,11 +42,10 @@ interface Props {
   stepForward: () => void,
   stepBackward: () => void,
   ticket: Ticket,
-  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
   syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const AboutYou = ({primary, stepForward, stepBackward, ticket, setTicket, syncTicketData}:Props) => {
+const AboutYou = ({primary, stepForward, stepBackward, ticket, syncTicketData}:Props) => {
 
   let formSchema:any;
 

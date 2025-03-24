@@ -133,7 +133,6 @@ const ClientForm = ({ticketProp}: Props) => {
           <GeneralInfo 
             ticket={ticket}
             stepForward={stepForward} 
-            setTicket={setTicket}
             syncTicketData={syncTicketData}
           />
         );
@@ -148,7 +147,6 @@ const ClientForm = ({ticketProp}: Props) => {
             <GeneralInfo 
               ticket={ticket}
               stepForward={stepForward} 
-              setTicket={setTicket}
               syncTicketData={syncTicketData}
             />
           );
@@ -157,7 +155,6 @@ const ClientForm = ({ticketProp}: Props) => {
             <AboutYou 
               primary 
               ticket={ticket} 
-              setTicket={setTicket} 
               stepForward={stepForward} 
               stepBackward={stepBackward}
               syncTicketData={syncTicketData}
@@ -167,7 +164,6 @@ const ClientForm = ({ticketProp}: Props) => {
           return (
             <Regulatory 
               ticket={ticket} 
-              setTicket={setTicket} 
               stepForward={stepForward} 
               stepBackwards={stepBackward}
               syncTicketData={syncTicketData}
@@ -187,7 +183,6 @@ const ClientForm = ({ticketProp}: Props) => {
             <GeneralInfo 
               ticket={ticket}
               stepForward={stepForward} 
-              setTicket={setTicket}
               syncTicketData={syncTicketData}
             />
           );
@@ -196,7 +191,6 @@ const ClientForm = ({ticketProp}: Props) => {
             <AboutYou 
               primary 
               ticket={ticket} 
-              setTicket={setTicket} 
               stepForward={stepForward} 
               stepBackward={stepBackward}
               syncTicketData={syncTicketData}
@@ -207,7 +201,6 @@ const ClientForm = ({ticketProp}: Props) => {
             <AboutYou 
               primary={false} 
               ticket={ticket} 
-              setTicket={setTicket} 
               stepForward={stepForward} 
               stepBackward={stepBackward}
               syncTicketData={syncTicketData}
@@ -217,7 +210,6 @@ const ClientForm = ({ticketProp}: Props) => {
           return (
             <Regulatory 
               ticket={ticket} 
-              setTicket={setTicket} 
               stepForward={stepForward} 
               stepBackwards={stepBackward}
               syncTicketData={syncTicketData}
@@ -237,7 +229,6 @@ const ClientForm = ({ticketProp}: Props) => {
             <GeneralInfo 
               ticket={ticket}
               stepForward={stepForward} 
-              setTicket={setTicket}
               syncTicketData={syncTicketData}
             />
           );
@@ -246,7 +237,6 @@ const ClientForm = ({ticketProp}: Props) => {
             <AboutOrganization
               stepBackward={stepBackward}
               ticket={ticket}
-              setTicket={setTicket}
               stepForward={stepForward}
               syncTicketData={syncTicketData}
             />
@@ -256,7 +246,6 @@ const ClientForm = ({ticketProp}: Props) => {
             <AuthorizedPerson
               stepBackward={stepBackward}
               ticket={ticket}
-              setTicket={setTicket}
               stepForward={stepForward}
               syncTicketData={syncTicketData}
             />
@@ -265,7 +254,6 @@ const ClientForm = ({ticketProp}: Props) => {
           return (
             <Regulatory
               ticket={ticket}
-              setTicket={setTicket}
               stepForward={stepForward}
               stepBackwards={stepBackward}
               syncTicketData={syncTicketData}

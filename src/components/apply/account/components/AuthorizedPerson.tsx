@@ -43,17 +43,15 @@ import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
-import { UpdateTicketByID } from "@/utils/entities/ticket"
 
 interface Props {
   stepForward: () => void,
   stepBackward: () => void,
   ticket: Ticket,
-  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
   syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
 }
 
-const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward, syncTicketData}:Props) => {
+const AuthorizedPerson = ({stepForward, ticket, stepBackward, syncTicketData}:Props) => {
 
   let formSchema:any;
 
@@ -68,7 +66,13 @@ const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward, syncTic
 
   formSchema = authorized_person_schema(t)
 
-  const initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema)
+  let initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema);
+  
+  if (initialFormValues.position && !Array.isArray(initialFormValues.position)) {
+    initialFormValues.position = [initialFormValues.position];
+  } else if (!initialFormValues.position) {
+    initialFormValues.position = [];
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -284,10 +288,10 @@ const AuthorizedPerson = ({stepForward, ticket, setTicket, stepBackward, syncTic
                               checked={field.value?.includes(pos)}
                               onCheckedChange={(checked) => {
                                 return checked
-                                  ? field.onChange([...field.value, pos])
+                                  ? field.onChange([...(field.value || []), pos])
                                   : field.onChange(
                                       field.value?.filter(
-                                        (value:string) => value !== pos
+                                        (value: string) => value !== pos
                                       )
                                     )
                               }}
