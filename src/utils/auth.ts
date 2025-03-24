@@ -6,6 +6,8 @@ import { LoginUserWithCredentials } from "./api"
 import { FirestoreAdapter } from "@next-auth/firebase-adapter"
 import { firestore } from "@/utils/firebase/firebase-admin"
 
+const defaultScopes = "users/read users/update tickets/create tickets/update tickets/read notifications/create"
+
 export const authOptions: NextAuthOptions = {
 
     providers: [
@@ -70,7 +72,7 @@ export const authOptions: NextAuthOptions = {
           token.emailVerified = user.emailVerified || false
           token.country = user.country || null
           token.username = user.username || null
-          token.scopes = user.scopes || "users/read users/update tickets/create tickets/update tickets/read"
+          token.scopes = user.scopes || defaultScopes
 
         }
         
@@ -91,7 +93,7 @@ export const authOptions: NextAuthOptions = {
             session.user.emailVerified = token.emailVerified || false
             session.user.username = token.username || null
             session.user.country = token.country || null
-            session.user.scopes = token.scopes || "users/read users/update tickets/create tickets/update tickets/read"
+            session.user.scopes = token.scopes || defaultScopes
 
             /*
             // Sync Firebase Authentication Profile with session data (maybe remove this)
