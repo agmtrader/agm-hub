@@ -110,12 +110,13 @@ function SignIn() {
                 {t('signin.register.message')} <Link href={formatURL('/create-account', lang)} className='underline text-primary font-bold'>{t('signin.register.link')}</Link>
               </p>
             </form>
-            <div className='flex items-center gap-4 justify-center'>
-              <Separator className='my-4 w-[40%]' />
-              <p className='text-subtitle text-sm'>{t('signin.or')}</p>
-              <Separator className='my-4 w-[40%]' />
-            </div>
             { process.env.DEV_MODE === 'true' && (
+              <>
+              <div className='flex items-center gap-4 justify-center'>
+                <Separator className='my-4 w-[40%]' />
+                <p className='text-subtitle text-sm'>{t('signin.or')}</p>
+                <Separator className='my-4 w-[40%]' />
+              </div>
               <Button
                 variant='ghost'
                 onClick={handleGoogleSignIn}
@@ -134,6 +135,7 @@ function SignIn() {
                   </div>
                 )}
               </Button>
+              </>
             )}
           </CardContent>
         </motion.div>
