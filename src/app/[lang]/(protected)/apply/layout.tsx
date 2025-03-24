@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "../../../globals.css";
-import FirebaseAuthProvider from "../../../../utils/providers/FirebaseAuthProvider";
 
 export const metadata: Metadata = {
   title: "AGM Account Application",
@@ -14,10 +13,8 @@ export default function Layout({
 }>) {
 
   return (
-    <FirebaseAuthProvider>
-      <div className="flex flex-col h-full w-full scroll-smooth">
-        {children}
-      </div>
-    </FirebaseAuthProvider>
+    <div className="flex flex-col h-full w-full scroll-smooth">
+      {children}
+    </div>
   );
 }

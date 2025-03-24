@@ -1,11 +1,11 @@
 'use server'
-import { firestoreAdmin } from '@/utils/firebase/firebase-admin'
+import { firestore } from '@/utils/firebase/firebase-admin'
 
 export async function getRecoveryData() {
     try {
-        const userRef = firestoreAdmin.collection('users').doc('20250123124721')
+        const userRef = firestore.collection('users').doc('20250123124721')
         
-        const result = await firestoreAdmin.runTransaction(async (transaction) => {
+        const result = await firestore.runTransaction(async (transaction) => {
             const doc = await transaction.get(userRef)
             if (!doc.exists) {
                 throw new Error('User document does not exist!')

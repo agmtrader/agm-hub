@@ -1,44 +1,28 @@
 'use server'
 
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
+import { cache } from 'react';
 
 // Initialize the client
 const client = new SecretManagerServiceClient();
 
-// Declare global cache type
-declare global {
-  var secretsCache: { [key: string]: { value: string; timestamp: number } };
-}
+// Cache duration in milliseconds (30 minutes)
+const CACHE_DURATION = 30 * 60 * 1000;
 
-// Initialize global cache if it doesn't exist
-if (!global.secretsCache) {
-  global.secretsCache = {};
-}
-
-const CACHE_TTL = 1000 * 60 * 60; // 1 hour in milliseconds
-
-
-/// TODO PASS THIS TO PYTHON OF COURSE
+// Define valid secret names for type safety
+export type SecretName = 'FIREBASE_SERVICE_ACCOUNT' | 'GOOGLE_CLIENT_ID' | 'GOOGLE_CLIENT_SECRET'; // Add your valid secret names
 
 /**
- * Fetch a secret from Google Secret Manager with caching
+ * Fetch a secret from Google Secret Manager with React cache
  * Server-side only function
- * @param {string} secretId - The ID of the secret (e.g., "my-api-key")
+ * @param {SecretName} secretId - The ID of the secret
  * @returns {Promise<string>} - The secret value
  */
-export async function getSecret(secretId: string) {
+export const getSecret = cache(async (secretId: SecretName): Promise<string> => {
   console.log('Fetching secret:', secretId);
   
   const projectId = 'agm-datalake';
-  const cacheKey = `${projectId}/${secretId}`;
-  const now = Date.now();
-
-  // Check cache first
-  if (global.secretsCache[cacheKey] && now - global.secretsCache[cacheKey].timestamp < CACHE_TTL) {
-    console.log('Secret found in cache');
-    return global.secretsCache[cacheKey].value;
-  }
-
+  
   try {
     const name = `projects/${projectId}/secrets/${secretId}/versions/latest`;
     const [version] = await client.accessSecretVersion({ name });
@@ -47,28 +31,9 @@ export async function getSecret(secretId: string) {
       throw new Error('Invalid secret version response');
     }
 
-    const secretValue = version.payload.data.toString();
-    
-    // Update cache
-    global.secretsCache[cacheKey] = {
-      value: secretValue,
-      timestamp: now
-    };
-
-    console.log('Successfully fetched secret and decoded secret');
-
-    return secretValue;
+    return version.payload.data.toString();
   } catch (error) {
     console.error('Error fetching secret:', error);
     throw error;
   }
-}
-
-/**
- * Clear the secrets cache
- * Server-side only function
- */
-export async function clearSecretsCache() {
-  Object.keys(global.secretsCache).forEach(key => delete global.secretsCache[key]);
-}
-
+});

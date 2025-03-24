@@ -83,7 +83,7 @@ const CreateAccount = () => {
         'username': values.username,
         'password': values.password,
         'country': values.country,
-        'scopes': 'users/read users/update tickets/create tickets/update tickets/read'
+        'scopes': 'users/read users/update tickets/create tickets/update tickets/read risk_profiles/create'
       }
 
       await CreateUser(user)

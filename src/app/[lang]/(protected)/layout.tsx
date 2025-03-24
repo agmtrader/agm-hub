@@ -3,7 +3,6 @@ import React from 'react';
 import { useSession } from 'next-auth/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import LoadingComponent from '@/components/misc/LoadingComponent';
-import FirebaseAuthProvider from '@/utils/providers/FirebaseAuthProvider';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { formatURL, getCallbackUrl } from '@/utils/language/lang';
 import { useRouter, usePathname } from 'next/navigation';
@@ -33,7 +32,7 @@ export default function Layout({
   }
 
   return (
-    <FirebaseAuthProvider>
+    <>
       {session?.user &&
         <AnimatePresence>
           <motion.div 
@@ -45,6 +44,6 @@ export default function Layout({
           </motion.div>
         </AnimatePresence>
       }
-    </FirebaseAuthProvider>
+    </>
   )
 }

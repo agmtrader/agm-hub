@@ -53,6 +53,7 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
     { accessorKey: 'last_name', header: 'Last Name' },
     { accessorKey: 'Advisor', header: 'Advisor' },
     { accessorKey: 'country', header: 'Country' },
+    { accessorKey: 'account_type', header: 'Account Type' }
   ]
 
   const accountColumns = [
