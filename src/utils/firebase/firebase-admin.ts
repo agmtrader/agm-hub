@@ -1,11 +1,11 @@
-import admin from "firebase-admin"
+import admin, { ServiceAccount } from "firebase-admin"
 import { initFirestore } from "@next-auth/firebase-adapter"
 
 const secret = {
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY,
-}
+        project_id: process.env.FIREBASE_PROJECT_ID,
+        client_email: process.env.FIREBASE_CLIENT_EMAIL,
+        private_key: process.env.FIREBASE_PRIVATE_KEY,
+} as ServiceAccount
 
 // This is used to sync Firebase services with our backend manually
 // AdminAuth can create login tokens and sync user information from/to Firebase Authentication service
