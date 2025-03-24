@@ -12,7 +12,7 @@ const DownloadsPage = () => {
   const mobileDownloads = downloads.slice(3);
 
   return (
-    <div className="min-h-screen w-full relative bg-primary">
+    <div className="min-h-screen w-full relative bg-background">
 
       {/* Content with higher z-index */}
       <div className="container py-8 my-2 relative z-10">
