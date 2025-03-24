@@ -10,7 +10,7 @@ const client = new SecretManagerServiceClient();
 const CACHE_DURATION = 30 * 60 * 1000;
 
 // Define valid secret names for type safety
-export type SecretName = 'FIREBASE_SERVICE_ACCOUNT' | 'GOOGLE_CLIENT_ID' | 'GOOGLE_CLIENT_SECRET'; // Add your valid secret names
+export type SecretName = 'FIREBASE_SERVICE_ACCOUNT' | 'AGM_AUTHENTICATION_TOKEN'; // Add your valid secret names
 
 /**
  * Fetch a secret from Google Secret Manager with React cache

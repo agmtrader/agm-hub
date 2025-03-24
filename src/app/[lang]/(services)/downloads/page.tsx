@@ -3,7 +3,6 @@ import { cn } from '@/lib/utils';
 import { formatURL } from '@/utils/language/lang';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { downloads } from '@/lib/downloads';
-import Particles from '@/components/ui/particles';
 
 const DownloadsPage = () => {
     const {lang} = useTranslationProvider();
@@ -14,10 +13,6 @@ const DownloadsPage = () => {
 
   return (
     <div className="min-h-screen w-full relative bg-primary">
-      {/* Particles container with explicit height */}
-      <div className="absolute inset-0 h-full w-full">
-        <Particles />
-      </div>
 
       {/* Content with higher z-index */}
       <div className="container py-8 my-2 relative z-10">
