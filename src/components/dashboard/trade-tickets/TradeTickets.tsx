@@ -24,6 +24,8 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
     const [clientMessage, setClientMessage] = useState<string | null>(null)
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
+    const [sending, setSending] = useState(false)
+
     const { toast } = useToast()
 
     const columns: ColumnDefinition<any>[] = [
@@ -84,9 +86,17 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
 
     async function handleSendToClient() {
       if (!clientMessage) return;
-      let email = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
+      setSending(true)
+      //let email = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
+      let email = "aa@agmtechnology.com"
       await SendToClient(clientMessage, email)
+      setSending(false)
       setConfirmDialogOpen(false)
+      toast({
+        title: 'Trade ticket sent to client',
+        description: 'The client will receive an email with the trade ticket shortly.',
+        variant: 'success',
+      })
     }
 
 
@@ -151,7 +161,7 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
-            <Button onClick={() => handleSendToClient()}>Confirm</Button>
+            <Button className={sending ? 'bg-green-500' : ''} onClick={() => handleSendToClient()} disabled={sending}>{sending ? 'Sending...' : 'Confirm'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
