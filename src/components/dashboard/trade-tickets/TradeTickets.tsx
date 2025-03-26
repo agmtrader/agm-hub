@@ -8,9 +8,7 @@ import { Trade, tradeTickets } from '@/lib/entities/trade-ticket'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
 import DashboardPage from '@/components/misc/DashboardPage'
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { FetchTrades, GenerateTradeTicket, SendToClient } from '@/utils/entities/trade-tickets'
-import LoadingComponent from '@/components/misc/LoadingComponent'
 
 interface Params {
   flexQueryIdParam?: string
@@ -20,7 +18,6 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
 
     const [flexQueryId, setFlexQueryId] = useState<string | null>(flexQueryIdParam || null)
     const [trades, setTrades] = useState<Trade[] | null>(null)
-    const [fetchingTrades, setFetchingTrades] = useState(false)
     const [generatingMessage, setGeneratingMessage] = useState(false)
 
     const [selectedTrades, setSelectedTrades] = useState<Trade[]>([])
@@ -71,18 +68,14 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
     async function handleFetchTrades() {
       try {
         if (!flexQueryId) return;
-        setFetchingTrades(true)
         const trades = await FetchTrades(flexQueryId)
         setTrades(trades)
-        setFetchingTrades(false)
       } catch (error: any) {
         toast({
           title: 'Error fetching trades',
           description: error.message,
           variant: 'destructive',
         })
-      } finally {
-        setFetchingTrades(false)
       }
     }
 

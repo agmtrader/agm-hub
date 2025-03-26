@@ -16,7 +16,7 @@ interface ChartProps {
   indicators: number[][]
   decisionHistory: Array<{
     id: number
-    decision: 'BUY' | 'SELL'
+    decision: 'BUY' | 'SELL' | 'STAY' | 'SELLSHORT'
     created: string
     updated: string
   }>
@@ -35,7 +35,7 @@ const SingleChart = ({
   indicator?: number[]
   decisions?: Array<{
     id: number
-    decision: 'BUY' | 'SELL'
+    decision: 'BUY' | 'SELL' | 'STAY' | 'SELLSHORT'
     created: string
   }>
 }) => {
@@ -124,50 +124,91 @@ const SingleChart = ({
 
     // Add decision markers
     if (decisions) {
-      const markerSeries = chart.addSeries(LineSeries, {
-        color: '#22c55e', // Green color for BUY decisions
-        lineWidth: 1,
-        pointMarkersVisible: true,
-        lineVisible: false,
-        pointMarkersRadius: 4,
-        lastValueVisible: false,
-      })
-
       // Sort decisions by date first
       const sortedDecisions = [...decisions].sort((a, b) => 
         new Date(a.created).getTime() - new Date(b.created).getTime()
       )
 
-      const decisionPoints = sortedDecisions
-        .filter(d => d.decision === 'BUY')
-        .map(decision => {
-          const date = decision.created.split(' ')[0]
-          const dataPoint = data.find(d => d.time === date)
-          
-          console.log('Processing decision:', {
-            created: decision.created,
-            date,
-            foundDataPoint: !!dataPoint,
-            dataPointTime: dataPoint?.time,
-            existingValue: dataPoint?.high
-          })
-          
-          return dataPoint ? {
-            time: date,
-            value: dataPoint.high * 1.01 // Place marker slightly above the candle
-          } : null
+      // Create series for each decision type
+      const decisionSeries = {
+        BUY: chart.addSeries(LineSeries, {
+          color: '#22c55e', // Green color for BUY decisions
+          lineWidth: 1,
+          pointMarkersVisible: true,
+          lineVisible: false,
+          pointMarkersRadius: 4,
+          lastValueVisible: false,
+        }),
+        SELL: chart.addSeries(LineSeries, {
+          color: '#ef4444', // Red color for SELL decisions
+          lineWidth: 1,
+          pointMarkersVisible: true,
+          lineVisible: false,
+          pointMarkersRadius: 4,
+          lastValueVisible: false,
+        }),
+        STAY: chart.addSeries(LineSeries, {
+          color: '#3b82f6', // Blue color for STAY decisions
+          lineWidth: 1,
+          pointMarkersVisible: true,
+          lineVisible: false,
+          pointMarkersRadius: 4,
+          lastValueVisible: false,
+        }),
+        SELLSHORT: chart.addSeries(LineSeries, {
+          color: '#f97316', // Orange color for SELLSHORT decisions
+          lineWidth: 1,
+          pointMarkersVisible: true,
+          lineVisible: false,
+          pointMarkersRadius: 4,
+          lastValueVisible: false,
         })
-        .filter((point): point is { time: string, value: number } => point !== null)
-        // Ensure unique timestamps by keeping only the first occurrence
-        .filter((point, index, self) => 
-          index === self.findIndex(p => p.time === point.time)
-        )
-
-      console.log('Final decision points:', decisionPoints)
-
-      if (decisionPoints.length > 0) {
-        markerSeries.setData(decisionPoints)
       }
+
+      // Process each decision type
+      Object.entries(decisionSeries).forEach(([decisionType, series]) => {
+        const decisionPoints = sortedDecisions
+          .filter(d => d.decision === decisionType)
+          .map(decision => {
+            const date = decision.created.split(' ')[0]
+            const dataPoint = data.find(d => d.time === date)
+            
+            if (!dataPoint) return null
+
+            // Position markers based on decision type
+            let value: number
+            switch (decisionType) {
+              case 'BUY':
+                value = dataPoint.high * 1.01 // Above the candle
+                break
+              case 'SELL':
+                value = dataPoint.low * 0.99 // Below the candle
+                break
+              case 'STAY':
+                value = dataPoint.close // At the close price
+                break
+              case 'SELLSHORT':
+                value = dataPoint.low * 0.99 // Below the candle
+                break
+              default:
+                value = dataPoint.close
+            }
+            
+            return {
+              time: date,
+              value
+            }
+          })
+          .filter((point): point is { time: string, value: number } => point !== null)
+          // Ensure unique timestamps by keeping only the first occurrence
+          .filter((point, index, self) => 
+            index === self.findIndex(p => p.time === point.time)
+          )
+
+        if (decisionPoints.length > 0) {
+          series.setData(decisionPoints)
+        }
+      })
     }
 
     chart.timeScale().fitContent()

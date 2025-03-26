@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowUpCircle, ArrowDownCircle, MinusCircle, DollarSign, BarChart3, TrendingUp, Briefcase } from 'lucide-react';
 import Chart from './Chart'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Backtest from './Backtest';
 
 const AutoTrader = () => {
   
@@ -110,8 +111,8 @@ const AutoTrader = () => {
 
   if (strategyStarted) {
     return (
-      <div className='w-full h-full p-4'>
-        <Card className="w-full h-full p-6 bg-background">
+      <div className='w-full h-full p-4 '>
+        <Card className="w-full h-fit p-6 bg-background">
           <div className='space-y-4'>
 
             <div className='rounded-lg p-4 bg-background'>
@@ -132,9 +133,10 @@ const AutoTrader = () => {
             </div>
 
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsList className="grid w-full grid-cols-3 mb-4">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="chart">Chart Analysis</TabsTrigger>
+                <TabsTrigger value="backtest">Backtest</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="mt-0">
@@ -158,12 +160,6 @@ const AutoTrader = () => {
                                 <span key={contract.symbol} className='font-bold text-foreground'>{contract.symbol}</span>
                               ))}
                             </div>
-                          </div>
-                          <div className='flex justify-between items-center p-3 bg-muted rounded-lg'>
-                            <span className='text-muted-foreground'>Current Position</span>
-                            <span className={`font-bold ${strategy.params.position > 0 ? 'text-green-500' : strategy.params.position < 0 ? 'text-red-500' : 'text-foreground'}`}>
-                              {strategy.params.position}
-                            </span>
                           </div>
                           <div className='flex justify-between items-center p-3 bg-muted rounded-lg'>
                             <span className='text-muted-foreground'>Tenkan</span>
@@ -307,14 +303,33 @@ const AutoTrader = () => {
                   </div>
 
                   {/* Open Orders */}
-                  <div className='col-span-12 md:col-span-6'>
-                    <div className='h-full rounded-lg p-4 bg-background'>
+                  <div className='col-span-12'>
+                    <div className='rounded-lg p-4 bg-background'>
                       <div className="flex items-center mb-4">
                         <Briefcase className="h-5 w-5 mr-2 text-primary" />
                         <h2 className="text-lg font-semibold text-foreground">Open Orders</h2>
                       </div>
                       {strategy && strategy.params && strategy.params.open_orders ? (
-                        <DataTable data={strategy.params.open_orders || []}/>
+                        <div className="overflow-x-auto w-full">
+                          <DataTable data={strategy.params.open_orders || []} />
+                        </div>
+                      ) : (
+                        <LoadingComponent className='w-full h-full'/>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Positions */}
+                  <div className='col-span-12'>
+                    <div className='rounded-lg p-4 bg-background'>
+                      <div className="flex items-center mb-4">
+                        <TrendingUp className="h-5 w-5 mr-2 text-primary" />
+                        <h2 className="text-lg font-semibold text-foreground">Positions</h2>
+                      </div>
+                      {strategy && strategy.params && strategy.params.positions ? (
+                        <div className="overflow-x-auto w-full">
+                          <DataTable data={strategy.params.positions || []} />
+                        </div>
                       ) : (
                         <LoadingComponent className='w-full h-full'/>
                       )}
@@ -322,18 +337,20 @@ const AutoTrader = () => {
                   </div>
 
                   {/* Recently Executed Orders */}
-                  <div className='col-span-12 md:col-span-6'>
+                  <div className='col-span-12'>
                     <div className="rounded-lg p-4 bg-background">
                       <div className="flex items-center mb-4">
                         <ArrowDownCircle className="h-5 w-5 mr-2 text-primary" />
                         <h2 className="text-lg font-semibold text-foreground">Recently Executed Orders</h2>
                       </div>
                       {strategy && strategy.params && strategy.params.executed_orders ? (
+                        <div className="overflow-x-auto w-full">
                           <DataTable 
                             data={strategy.params.executed_orders || []} 
                             enablePagination 
-                            pageSize={5} 
+                            pageSize={5}
                           />
+                        </div>
                       ) : (
                         <LoadingComponent className='w-full h-full'/>
                       )}
@@ -358,6 +375,12 @@ const AutoTrader = () => {
                 ) : (
                   <LoadingComponent className='w-full h-[600px]'/>
                 )}
+              </TabsContent>
+
+              <TabsContent value="backtest" className="mt-0">
+                <div className="rounded-lg p-4 bg-background">
+                  <Backtest />
+                </div>
               </TabsContent>
             </Tabs>
           </div>
