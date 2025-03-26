@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast'
 import DashboardPage from '@/components/misc/DashboardPage'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { FetchTrades, GenerateTradeTicket, SendToClient } from '@/utils/entities/trade-tickets'
+import LoadingComponent from '@/components/misc/LoadingComponent'
 
 interface Params {
   flexQueryIdParam?: string
@@ -19,11 +20,13 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
 
     const [flexQueryId, setFlexQueryId] = useState<string | null>(flexQueryIdParam || null)
     const [trades, setTrades] = useState<Trade[] | null>(null)
+    const [fetchingTrades, setFetchingTrades] = useState(false)
+    const [generatingMessage, setGeneratingMessage] = useState(false)
 
     const [selectedTrades, setSelectedTrades] = useState<Trade[]>([])
+
     const [clientMessage, setClientMessage] = useState<string | null>(null)
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
-
     const [sending, setSending] = useState(false)
 
     const { toast } = useToast()
@@ -66,36 +69,63 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
     }, [selectedTrades])
 
     async function handleFetchTrades() {
-      if (!flexQueryId) return;
-      const trades = await FetchTrades(flexQueryId)
-      setTrades(trades)
+      try {
+        if (!flexQueryId) return;
+        setFetchingTrades(true)
+        const trades = await FetchTrades(flexQueryId)
+        setTrades(trades)
+        setFetchingTrades(false)
+      } catch (error: any) {
+        toast({
+          title: 'Error fetching trades',
+          description: error.message,
+          variant: 'destructive',
+        })
+      } finally {
+        setFetchingTrades(false)
+      }
     }
 
     async function handleGenerateTradeTicket() {
       if (!trades || !selectedTrades) return;
+      setGeneratingMessage(true)
       try {
         const message = await GenerateTradeTicket(trades, selectedTrades)
         setClientMessage(message)
+        setConfirmDialogOpen(true)
       } catch (error: any) {
         toast({
           title: 'Error generating trade ticket',
           description: error.message,
+          variant: 'destructive',
         })
+      } finally {
+        setGeneratingMessage(false)
       }
     }
 
     async function handleSendToClient() {
       if (!clientMessage) return;
       setSending(true)
-      let email = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
-      await SendToClient(clientMessage, email)
-      setSending(false)
-      setConfirmDialogOpen(false)
-      toast({
-        title: 'Trade ticket sent to client',
-        description: 'The client will receive an email with the trade ticket shortly.',
-        variant: 'success',
-      })
+      try {
+        // let email = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
+        let email = 'aa@agmtechnology.com'
+        await SendToClient(clientMessage, email)
+        toast({
+          title: 'Trade ticket sent to client',
+          description: 'The client will receive an email with the trade ticket shortly.',
+          variant: 'success',
+        })
+        setConfirmDialogOpen(false)
+      } catch (error: any) {
+        toast({
+          title: 'Error sending trade ticket',
+          description: error.message,
+          variant: 'destructive',
+        })
+      } finally {
+        setSending(false)
+      }
     }
 
 
@@ -106,7 +136,7 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
         {!flexQueryIdParam && 
           <Select onValueChange={(value) => setFlexQueryId(value)}>
             <SelectTrigger className="w-fit gap-2">
-              <SelectValue placeholder="Select Account" />
+              <SelectValue placeholder="Select Report" />
             </SelectTrigger>
             <SelectContent>
               {tradeTickets.map((tradeTicket) => (
@@ -116,51 +146,72 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
           </Select>
         }
 
-        <ResizablePanelGroup direction="horizontal" className="gap-2 w-full h-full">
-          <ResizablePanel defaultSize={50} className='flex flex-col gap-5 w-full h-full justify-start items-start'>
-            <div className='w-full h-full flex flex-col gap-5 justify-start items-start'>
-              <DataTable 
-                data={trades || []}
-                columns={columns}
-                enableSelection 
-                setSelection={setSelectedTrades} 
-                infiniteScroll
-                enableFiltering
-                filterColumns={['Description']}
-              />
-              <Button disabled={selectedTrades.length === 0} className='w-fit' onClick={() => handleGenerateTradeTicket()}>
-                Generate Trade Ticket
-              </Button>
-            </div>
-          </ResizablePanel>
-          <ResizableHandle className='w-0.5 h-full bg-muted'/>
-          <ResizablePanel defaultSize={50}>
-            <div className='w-full text-foreground h-full flex flex-col gap-y-5 justify-start items-start'>
-              <Textarea 
-                value={clientMessage || ''} 
-                readOnly 
-                placeholder="Generated report will appear here..."
-                className="h-full w-full text-md"
-              />
-              <Button className='w-fit' disabled={!clientMessage} onClick={() => setConfirmDialogOpen(true)}>
-                Send to Client
-              </Button>
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+      <div className='w-full h-full flex flex-col gap-5 justify-start items-start'>
+        {!trades ? (
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+            Waiting for trades to be selected...
+          </div>
+        ) : (
+          <>
+            <DataTable 
+              data={trades}
+              columns={columns}
+              enableSelection 
+              setSelection={setSelectedTrades} 
+              infiniteScroll
+              enableFiltering
+              filterColumns={['Description']}
+            />
+            <Button 
+              disabled={selectedTrades.length === 0 || generatingMessage} 
+              className='w-fit' 
+              onClick={() => handleGenerateTradeTicket()}
+            >
+              {generatingMessage ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Generating...
+                </div>
+              ) : (
+                'Generate Trade Ticket'
+              )}
+            </Button>
+          </>
+        )}
+      </div>
       </div>
       
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Confirm Send to Client</DialogTitle>
+            <DialogTitle>Review and Send Trade Ticket</DialogTitle>
             <DialogDescription>
-              Make sure you have reviewed the trade ticket before sending it to the client.
+              Please review the trade ticket before sending it to the client.
             </DialogDescription>
           </DialogHeader>
+          <div className="w-full max-h-[60vh] overflow-y-auto">
+            <Textarea 
+              value={clientMessage || ''} 
+              readOnly 
+              className="w-full text-md h-[55vh]"
+            />
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
-            <Button className={sending ? 'bg-green-500' : ''} onClick={() => handleSendToClient()} disabled={sending}>{sending ? 'Sending...' : 'Confirm'}</Button>
+            <Button 
+              className={sending ? 'bg-green-500' : ''} 
+              onClick={() => handleSendToClient()} 
+              disabled={sending || !clientMessage}
+            >
+              {sending ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Sending...
+                </div>
+              ) : (
+                'Send to Client'
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
