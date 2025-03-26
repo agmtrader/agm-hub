@@ -1,10 +1,9 @@
+import AutoTrader from '@/components/dashboard/auto-trader/AutoTrader'
 import React from 'react'
 
-type Props = {}
-
-const AutoTraderPage = (props: Props) => {
+const AutoTraderPage = () => {
   return (
-    <div>AutoTraderPage</div>
+    <AutoTrader/>
   )
 }
 

@@ -2,19 +2,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import TicketManager from '@/components/dashboard/open_account/TicketManager';
-import BackupDocuments from '@/components/dashboard/open_account/BackupDocuments';
-import FillApplicationForm from '@/components/dashboard/open_account/FillApplicationForm';
-import OpenAccount from '@/components/dashboard/open_account/OpenAccount';
+import TicketManager from '@/components/dashboard/open-account/TicketManager';
+import BackupDocuments from '@/components/dashboard/open-account/BackupDocuments';
+import FillApplicationForm from '@/components/dashboard/open-account/FillApplicationForm';
+import OpenAccount from '@/components/dashboard/open-account/OpenAccount';
 import { Account } from '@/lib/entities/account';
 import { Ticket } from '@/lib/entities/ticket';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogTitle, DialogHeader, DialogContent, DialogFooter } from '@/components/ui/dialog';
-import { UpdateTicketByID } from '@/utils/entities/ticket';
 import FinalPage from './FinalPage';
 import { CreateNotification } from '@/utils/entities/notification';
 import { formatTimestamp } from '@/utils/dates';
-import { AccountApplicationNotification, Notification } from '@/lib/entities/notification';
+import { AccountApplicationNotification } from '@/lib/entities/notification';
 import { useSession } from 'next-auth/react';
 
 const AccountOpeningPage = () => {

@@ -15,10 +15,16 @@ export const chapters = [
       image: '/assets/resource-center/chapters/3.jpeg'
     },
     {
-      title: 'Coming soon...',
+      title: 'Introduction to Technical Analysis',
       id: '4',
+      image: '/assets/resource-center/chapters/4.jpeg'
+    },
+    {
+      title: 'Coming soon...',
+      id: '5',
       image: '/assets/resource-center/chapters/coming-soon.jpeg'
     },
+    
 ]
 
 export const videosDictionary = [
@@ -30,6 +36,11 @@ export const videosDictionary = [
     {
         title: 'Introducción a conceptos básicos de los Mercados Internacionales',
         id: 'nxrwD3qRmbM',
+        chapter: '1'
+    },
+    {
+        title: 'Introducción al Ciclo de Negocio',
+        id: 'fp1T1wgo9yo',
         chapter: '1'
     },
     {
@@ -53,9 +64,19 @@ export const videosDictionary = [
         chapter: '1'
     },
     {
-        title: 'Introducción al Ciclo de Negocio',
-        id: 'fp1T1wgo9yo',
-        chapter: '1'
+        title: 'Análisis de Ganancias',
+        id: 'fMBOvNz3gpM',
+        chapter: '2'
+    },
+    {
+        title: 'Analisis Fundamental - Estado de Resultados',
+        id: 'dx3N9ew6OJA',
+        chapter: '2'
+    },
+    {
+        title: 'Bonos y su Análisis Fundamental',
+        id: 'VVM2ql-Dfl8',
+        chapter: '2'
     },
     {
         title: 'Introducción al Balance General',
@@ -73,19 +94,14 @@ export const videosDictionary = [
         chapter: '2'
     },
     {
-        title: 'Análisis de Ganancias',
-        id: 'fMBOvNz3gpM',
-        chapter: '2'
-    },
-    {
-        title: 'Bonos y su Análisis Fundamental',
-        id: 'VVM2ql-Dfl8',
-        chapter: '2'
-    },
-    {
         title: 'Tipos Diferentes de Bonos',
         id: '17pef4ulZWU',
         chapter: '2'
+    },
+    {
+        title: 'Calculo del Rendimiento Corriente',
+        id: 'hnRvL_8ex84',
+        chapter: '3'
     },
     {
         title: 'Cálculo del Rendimiento para Bonos con Opción de Pago',
@@ -102,5 +118,24 @@ export const videosDictionary = [
         id: 'PNAq1APG3ug',
         chapter: '3'
     },
-
+    {
+        title: 'Margen por Calidad Crediticia y Duracion de Bonos',
+        id: 'HLKmqxWJ_RE',
+        chapter: '3'
+    },
+    {
+        title: 'Análisis Técnico - Observacion',
+        id: 'wuYxugDCo7M',
+        chapter: '4'
+    },
+    {
+        title: 'Análisis Técnico vs Análisis Fundamental',
+        id: 'YRkE_s-qEZs',
+        chapter: '4'
+    },
+    {
+        title: 'Indicadores de Tendencia',
+        id: '6cpe_yujLig',
+        chapter: '4'
+    },
 ]

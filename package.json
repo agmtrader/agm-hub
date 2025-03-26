@@ -1,5 +1,5 @@
 {
-  "name": "agm-technology",
+  "name": "agm-hub",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -76,7 +76,7 @@
     "lightweight-charts": "^5.0.4",
     "lucide-react": "^0.321.0",
     "mime": "^4.0.3",
-    "next": "^15.2.2",
+    "next": "^15.2.3",
     "next-auth": "^4.24.7",
     "next-translate": "^2.6.2",
     "papaparse": "^5.4.1",

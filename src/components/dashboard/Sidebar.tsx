@@ -5,17 +5,22 @@ import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
 import { formatURL } from '@/utils/language/lang'
-import { AlarmClockPlusIcon, ArrowLeft, Bell, BellIcon, ChevronLeft, ChevronRight, Database, FileText, Plus, RefreshCcw, Table, Ticket, Users } from 'lucide-react'
+import { AlarmClockPlusIcon, BellIcon, Bot, ChevronLeft, ChevronRight, Cross, FileText, Plus, RefreshCcw, Ticket, Users } from 'lucide-react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 import { cn } from '@/lib/utils'
 import { Separator } from '../ui/separator'
 
-const client_tools = [
+const tools = [
   {
     name: 'Account Applications',
     url: '/dashboard/open-account',
     icon: Plus,
+  },
+  {
+    name: 'Account Management',
+    url: '/dashboard/account-management',
+    icon: Cross,
   },
   {
     name: 'Risk Profiles',
@@ -32,9 +37,6 @@ const client_tools = [
     url: '/dashboard/investment-proposals',
     icon: FileText,
   },
-]
-
-const admin_tools = [
   {
     name: 'Reporting Center',
     url: '/dashboard/reporting',
@@ -49,6 +51,11 @@ const admin_tools = [
     name: 'Advisor Center',
     url: '/dashboard/advisors',
     icon: Users,
+  },
+  {
+    name: 'Auto Trader',
+    url: '/dashboard/auto-trader',
+    icon: Bot,
   },
 ]
 
@@ -78,24 +85,13 @@ const Sidebar = () => {
             </Link>
           </NavigationMenuItem>
           <Separator />
-          {client_tools.map((item, index) => (
+          {tools.map((item, index) => (
             <NavigationMenuItem key={index} className="flex w-full h-fit">
               <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
                 <NavigationMenuLink className={cn(
                   navigationMenuTriggerStyle(),
                   "justify-start text-start w-full whitespace-nowrap",
                 )}>
-                  <item.icon className="h-4 w-4" />
-                  {!isCollapsed && <span className="ml-2">{item.name}</span>}
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-          ))}
-          <Separator />
-          {admin_tools.map((item, index) => (
-            <NavigationMenuItem key={index} className="flex w-full h-fit">
-              <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
-                <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-start text-start w-full whitespace-nowrap")}>
                   <item.icon className="h-4 w-4" />
                   {!isCollapsed && <span className="ml-2">{item.name}</span>}
                 </NavigationMenuLink>
