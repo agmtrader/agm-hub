@@ -4,25 +4,25 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Trade, tradeTickets } from '@/lib/entities/trade-ticket'
+import { Trade, TradeTicket } from '@/lib/entities/trade-ticket'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
 import DashboardPage from '@/components/misc/DashboardPage'
-import { FetchTrades, GenerateTradeTicket, SendToClient } from '@/utils/entities/trade-tickets'
+import { FetchTrades, GenerateTradeTicket, SendToClient, ListTradeTickets, GetTradeTicketDetails } from '@/utils/entities/trade-tickets'
 
-interface Params {
-  flexQueryIdParam?: string
-}
+export default function TradeTickets() {
 
-export default function TradeTickets({flexQueryIdParam}: Params) {
+    const [tradeTickets, setTradeTickets] = useState<TradeTicket[]>([])
+    const [isLoadingTickets, setIsLoadingTickets] = useState(true)
 
-    const [flexQueryId, setFlexQueryId] = useState<string | null>(flexQueryIdParam || null)
+    const [selectedTradeTicketID, setSelectedTradeTicketID] = useState<string | null>(null)
+
     const [trades, setTrades] = useState<Trade[] | null>(null)
-    const [generatingMessage, setGeneratingMessage] = useState(false)
-
     const [selectedTrades, setSelectedTrades] = useState<Trade[]>([])
 
+    const [generatingMessage, setGeneratingMessage] = useState(false)
     const [clientMessage, setClientMessage] = useState<string | null>(null)
+    
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
     const [sending, setSending] = useState(false)
 
@@ -51,24 +51,45 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
       }
     ]
 
+    // Fetch trade tickets list and their details
+    useEffect(() => {
+      async function fetchTradeTicketsAndDetails() {
+        try {
+          setIsLoadingTickets(true)
+          const tradeTickets = await ListTradeTickets()
+          setTradeTickets(tradeTickets)
+        } catch (error: any) {
+          toast({
+            title: 'Error fetching trade tickets',
+            description: error.message,
+            variant: 'destructive',
+          })
+        } finally {
+          setIsLoadingTickets(false)
+        }
+      }
+      fetchTradeTicketsAndDetails()
+    }, [])
+
     // Fetch flex queries
     useEffect(() => {
       handleFetchTrades()
-    }, [flexQueryId])
+    }, [selectedTradeTicketID])
 
     // Let the user know that we are creating a consolidated trade ticket
     useEffect(() => {
       if (selectedTrades.length > 1) {
         toast({
           title: 'Creating Consolidated Trade Ticket',
+          variant: 'warning',
         })
       }
     }, [selectedTrades])
 
     async function handleFetchTrades() {
       try {
-        if (!flexQueryId) return;
-        const trades = await FetchTrades(flexQueryId)
+        if (!selectedTradeTicketID) return;
+        const trades = await FetchTrades(selectedTradeTicketID)
         setTrades(trades)
       } catch (error: any) {
         toast({
@@ -121,23 +142,26 @@ export default function TradeTickets({flexQueryIdParam}: Params) {
       }
     }
 
-
   return (
     <DashboardPage title='Trade Tickets' description='Generate trade tickets for clients'>
-      
+
       <div className='w-full h-full flex flex-col gap-5'>
-        {!flexQueryIdParam && 
-          <Select onValueChange={(value) => setFlexQueryId(value)}>
-            <SelectTrigger className="w-fit gap-2">
-              <SelectValue placeholder="Select Report" />
-            </SelectTrigger>
-            <SelectContent>
-              {tradeTickets.map((tradeTicket) => (
-                <SelectItem className='p-2' key={tradeTicket.id} value={tradeTicket.id}>{tradeTicket.name} - {tradeTicket.user_id}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        }
+        <Select onValueChange={(value) => setSelectedTradeTicketID(value)}>
+          <SelectTrigger className="w-fit gap-2">
+            <SelectValue placeholder={isLoadingTickets ? "Loading..." : "Select Report"} />
+          </SelectTrigger>
+          <SelectContent>
+            {tradeTickets.map((tradeTicket) => (
+              <SelectItem 
+                className='p-2' 
+                key={tradeTicket.TradeTicketID} 
+                value={tradeTicket.TradeTicketID}
+              >
+                {tradeTicket.Name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
       <div className='w-full h-full flex flex-col gap-5 justify-start items-start'>
         {!trades ? (

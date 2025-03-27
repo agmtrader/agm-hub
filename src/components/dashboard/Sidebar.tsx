@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
@@ -10,59 +10,92 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 import { cn } from '@/lib/utils'
 import { Separator } from '../ui/separator'
+import { useSession } from 'next-auth/react'
 
 const tools = [
   {
     name: 'Account Applications',
     url: '/dashboard/open-account',
     icon: Plus,
+    id: 'open_account',
   },
   {
-    name: 'Account Management',
-    url: '/dashboard/account-management',
+    name: 'Accounts',
+    url: '/dashboard/accounts',
     icon: Cross,
+    id: 'accounts',
   },
   {
     name: 'Risk Profiles',
-    url: '/dashboard/risk',
+    url: '/dashboard/risk-profiles',
     icon: AlarmClockPlusIcon,
+    id: 'risk_profiles',
   },
   {
     name: 'Trade Tickets',
     url: '/dashboard/trade-tickets',
     icon: Ticket,
-  }, 
-  {
-    name: 'Investment Proposals',
-    url: '/dashboard/investment-proposals',
-    icon: FileText,
+    id: 'trade_tickets',
   },
   {
-    name: 'Reporting Center',
+    name: 'Reporting',
     url: '/dashboard/reporting',
     icon: RefreshCcw,
+    id: 'reporting_center',
   }, 
+  {
+    name: 'Advisors',
+    url: '/dashboard/advisors',
+    icon: Users,
+    id: 'advisor_center',
+  },
   {
     name: 'Document Center',
     url: '/dashboard/document-center',
     icon: FileText,
+    id: 'document_center',
   },
   {
-    name: 'Advisor Center',
-    url: '/dashboard/advisors',
-    icon: Users,
+    name: 'Investment Proposals',
+    url: '/dashboard/investment-proposals',
+    icon: FileText,
+    id: 'investment_proposals',
   },
   {
     name: 'Auto Trader',
     url: '/dashboard/auto-trader',
     icon: Bot,
+    id: 'auto_trader',
   },
 ]
 
 const Sidebar = () => {
-
   const [isCollapsed, setIsCollapsed] = useState(false)
   const { lang } = useTranslationProvider()
+  const { data: session } = useSession()
+
+  const userScopes = useMemo(() => {
+    if (!session?.user?.scopes) return new Set<string>()
+    
+    // Split scopes by space and extract unique categories (before the /)
+    const scopes = session.user.scopes.split(' ')
+    
+    // If user has "all" scope, return all tools
+    if (scopes.includes('all')) return new Set(['all'])
+    
+    const categories = new Set(
+      scopes.map(scope => scope.split('/')[0])
+    )
+    
+    return categories
+  }, [session?.user?.scopes])
+
+  const filteredTools = useMemo(() => {
+    // If user has "all" scope, return all tools
+    if (userScopes.has('all')) return tools
+    
+    return tools.filter(tool => userScopes.has(tool.id))
+  }, [userScopes])
 
   return (
     <NavigationMenu className="px-3 py-8 h-full flex flex-col gap-10 justify-between items-start">
@@ -85,7 +118,7 @@ const Sidebar = () => {
             </Link>
           </NavigationMenuItem>
           <Separator />
-          {tools.map((item, index) => (
+          {filteredTools.map((item, index) => (
             <NavigationMenuItem key={index} className="flex w-full h-fit">
               <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
                 <NavigationMenuLink className={cn(
@@ -108,7 +141,7 @@ const Sidebar = () => {
         >
           {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </Button>
-  </NavigationMenu>
+    </NavigationMenu>
   )
 }
 

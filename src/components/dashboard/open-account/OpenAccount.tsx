@@ -134,8 +134,9 @@ const OpenAccount = ({ticket, setCanContinue, setAccount, account}:Props) => {
         'AccountNumber':values.account_number,
         'IBKRUsername':values.ibkr_username,
         'IBKRPassword':values.ibkr_password,
-        'Advisor':ticket['Advisor'],
-        'MasterAccount':ticket['MasterAccount']
+        'Advisor':ticket['Advisor'] || '',
+        'MasterAccount':ticket['MasterAccount'] || '',
+        'UserID':ticket['UserID'] || ''
       }
 
       await CreateAccount(account_details)

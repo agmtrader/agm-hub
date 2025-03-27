@@ -41,7 +41,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
         const tickets = await ReadTickets()
         const sortedTickets = tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString())))
         const expandedSortedTickets = await addColumnsFromJSON(sortedTickets)
-        setTickets(showAll ? expandedSortedTickets : expandedSortedTickets.filter((ticket) => ticket.Status !== "Started"))
+        setTickets(showAll ? expandedSortedTickets : expandedSortedTickets.filter((ticket) => ticket.Status !== "Started" && ticket.Status !== "Opened"))
         
     }
     fetchData()

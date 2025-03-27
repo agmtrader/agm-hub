@@ -1,7 +1,17 @@
-import { Trade } from "@/lib/entities/trade-ticket"
+import { Trade, TradeTicket } from "@/lib/entities/trade-ticket"
 import { accessAPI } from "../api"
 import { FetchFlexQuery } from "./flex-query"
 import { sendEmail } from "./email"
+
+export async function ListTradeTickets() {
+    const availableTradeTickets:any[] = await accessAPI('/trade_tickets/list', 'POST', {})
+    return availableTradeTickets
+}
+
+export async function GetTradeTicketDetails(tradeTicketId: string) {
+    const tradeTicket:TradeTicket = await accessAPI('/trade_tickets/details', 'POST', {'id': tradeTicketId})
+    return tradeTicket
+}
 
 export async function FetchTrades(tradeTicketId: string) {
     const trades:Trade[] = await FetchFlexQuery(tradeTicketId)

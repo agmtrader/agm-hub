@@ -286,8 +286,6 @@
             "title": {
                 "ready": "Ready to make money?",
                 "description": "Unlock the world of financial opportunities with your AGM account.",
-                "signIn": "Sign in or register now.",
-                "createAccount": "Create Account",
                 "startApplication": "Start Application",
                 "previous_applications": {
                     "title": "Previous Applications",
@@ -676,6 +674,7 @@
         "country": "Country",
         "confirmPassword": "Confirm Password",
         "createAccount": "Create Account",
+        "creating": "Creating account...",
         "goBack": "Go back",
         "goBackHome": "Go back home"
     },

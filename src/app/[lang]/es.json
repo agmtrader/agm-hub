@@ -283,8 +283,6 @@
             "title": {
                 "ready": "¿Listo para ganar dinero?",
                 "description": "Desbloquea el mundo de oportunidades financieras con tu cuenta AGM.",
-                "signIn": "Inicia sesión o regístrate ahora.",
-                "createAccount": "Crear Cuenta",
                 "startApplication": "Iniciar Solicitud",
                 "previous_applications": {
                     "title": "Solicitudes Anteriores",
@@ -670,6 +668,7 @@
         "country": "País",
         "confirmPassword": "Confirmar contraseña",
         "createAccount": "Crear cuenta",
+        "creating": "Creando cuenta...",
         "goBack": "Volver",
         "goBackHome": "Volver a la página principal"
     },

@@ -1,10 +1,8 @@
-export const tradeTickets = [
-    {
-      name: 'ACOBO',
-      user_id: 'U1213465',
-      id: '986431'
-    }
-]
+export interface TradeTicket {
+    "TradeTicketID": string;
+    "Name": string;
+    "UserID": string;
+}
 
 export interface Trade {
     "AccountAlias": string;

@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import { useForm } from "react-hook-form"
@@ -68,10 +68,12 @@ const CreateAccount = () => {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
 
+  const [creating, setCreating] = useState(false)
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
     try {
-
+      setCreating(true)
       const timestamp = formatTimestamp(new Date())
 
       const user:UserPayload = {
@@ -110,6 +112,8 @@ const CreateAccount = () => {
         description: error instanceof Error ? error.message : 'An unknown error occurred',
         variant: 'destructive'
       })
+    } finally {
+      setCreating(false)
     }
 
   }
@@ -212,8 +216,8 @@ const CreateAccount = () => {
                 />
 
                 <div className="flex flex-col gap-2">
-                  <Button type="submit" className="w-full">
-                    {t('createAccount.createAccount')}
+                  <Button type="submit" className={creating ? 'bg-success hover:bg-success' : ''}>
+                    {creating ? t('createAccount.creating') : t('createAccount.createAccount')}
                   </Button>
                   <Button variant="ghost" className="w-full" asChild>
                     <Link href={formatURL('/', lang)}>{t('createAccount.goBackHome')}</Link>

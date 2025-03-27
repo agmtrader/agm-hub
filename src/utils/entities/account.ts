@@ -1,9 +1,17 @@
 import { accessAPI } from "../api"
 import { Account } from "@/lib/entities/account"
 
+export async function CreateAccount(account: Account) {
+    if (!account['AccountID']) throw new Error('Account ID is required')
+    const response = await accessAPI('/accounts/create', 'POST', {
+        'data': account,
+        'id': account['AccountID']
+    })
+    return response
+}
 
 export async function ReadAccounts(): Promise<Account[]> {
-    const accounts = await accessAPI('/accounts/read', 'GET')
+    const accounts = await accessAPI('/accounts/read', 'POST', {})
     return accounts
 }
 
@@ -24,13 +32,4 @@ export async function ReadAccountByTicketID(ticketID:string):Promise<Account | n
     } else {
         return null
     }
-}
-
-export async function CreateAccount(account: Account) {
-    if (!account['AccountID']) throw new Error('Account ID is required')
-    const response = await accessAPI('/accounts/create', 'POST', {
-        'data': account,
-        'id': account['AccountID']
-    })
-    return response
 }

@@ -1,9 +1,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, Ticket, AlarmClockPlusIcon, Bell, User } from 'lucide-react'
+import { Users, Ticket, AlarmClockPlusIcon } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/anims'
-import Notifications from './Notifications'
 
 const Overview = () => {
     
@@ -52,8 +51,6 @@ const Overview = () => {
             </CardContent>
             </Card>
         </motion.div>
-
-        <Notifications />
 
     </motion.div>
   )

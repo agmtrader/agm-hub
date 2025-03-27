@@ -31,8 +31,21 @@ const RiskCenter = () => {
 
     async function fetchData () {
 
-      const riskProfiles = await ReadRiskProfiles()
-      setRiskProfiles(riskProfiles)
+      try {
+
+        const riskProfiles = await ReadRiskProfiles()
+        setRiskProfiles(riskProfiles)
+
+      } catch (error:any) {
+
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        })
+
+      }
+
     }
 
     fetchData()

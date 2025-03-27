@@ -67,9 +67,12 @@ async function GetData(url: string, token: string) {
             },
         });
 
-        if (!response.ok) {
-            throw new Error(`Request failed: ${response.status} ${response.statusText}`);
-        }
+        if (response.status === 400) throw new Error('Bad Request');
+        if (response.status === 401) throw new Error('Unauthorized');
+        if (response.status === 403) throw new Error('You do not have permission to access this resource');
+        if (response.status === 404) throw new Error('Resource not found');
+        if (response.status === 500) throw new Error('Internal Server Error');
+        if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`);
 
         const contentType = response.headers.get('content-type');
         if (contentType?.includes('application/json')) {
@@ -79,10 +82,7 @@ async function GetData(url: string, token: string) {
         }
 
     } catch (error) {
-        if (error instanceof Error) {
-            throw new Error(`Failed to fetch data: ${error.message}`);
-        }
-        throw new Error('Failed to fetch data');
+        throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
 }
 
@@ -97,17 +97,17 @@ async function PostData(url: string, params: Map | undefined, token: string) {
             body: JSON.stringify(params),
         });
 
-        if (!response.ok) {
-            throw new Error(`Request failed: ${response.status} ${response.statusText}`);
-        }
+        if (response.status === 400) throw new Error('Bad Request');
+        if (response.status === 401) throw new Error('Unauthorized');
+        if (response.status === 403) throw new Error('You do not have permission to access this resource');
+        if (response.status === 404) throw new Error('Resource not found');
+        if (response.status === 500) throw new Error('Internal Server Error');
+        if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`);
 
         return await response.json();
 
     } catch (error) {
-        if (error instanceof Error) {
-            throw new Error(`Failed to post data: ${error.message}`);
-        }
-        throw new Error('Failed to post data');
+        throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
 }
 
@@ -121,18 +121,13 @@ export async function LoginUserWithCredentials(username:string, password:string)
             body: JSON.stringify({'username': username, 'password': password}),
         });
   
-        if (!response.ok) {
-            throw new Error(`Request failed: ${response.status} ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`);
   
         const user = await response.json()
         return user
   
     } catch (error) {
-        if (error instanceof Error) {
-            throw new Error(`Failed to post data: ${error.message}`);
-        }
-        throw new Error('Failed to post data');
+        throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
 }
 
@@ -146,17 +141,12 @@ export async function CreateUser(userData:User) {
             body: JSON.stringify({'data': userData, 'id': userData.id}),
         });
   
-        if (!response.ok) {
-            throw new Error(`Request failed: ${response.status} ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`);
   
         const user = await response.json()
         return user
   
     } catch (error) {
-        if (error instanceof Error) {
-            throw new Error(`Failed to post data: ${error.message}`);
-        }
-        throw new Error('Failed to post data');
+        throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
 }

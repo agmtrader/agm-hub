@@ -1,11 +1,12 @@
 export interface Account {
-    'AccountID':string
-    'TicketID':string
-    'TemporalEmail':string
-    'TemporalPassword':string
     'AccountNumber':string
-    'IBKRUsername':string, 
-    'IBKRPassword':string, 
-    'Advisor':string | null,
+    'AccountID':string
+    'Advisor':string
+    'IBKRPassword':string 
+    'IBKRUsername':string
+    'TemporalEmail':string
+    'TemporalPassword':string 
+    'TicketID':string
     'MasterAccount':string
+    'UserID':string
 }
