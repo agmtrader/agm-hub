@@ -5,7 +5,7 @@ import { User, Bell } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSession } from 'next-auth/react'
-import Overview from './components/Overview'  
+import Operational from './components/Operational'
 
 export function Dashboard() {
   
@@ -25,15 +25,14 @@ export function Dashboard() {
           </div>
         </header>
         <main className="flex-grow p-6">
-          <Tabs defaultValue="overview">
+          <Tabs defaultValue="operational">
             <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="operational">Operational</TabsTrigger>
+              <TabsTrigger value="accounting">Accounting</TabsTrigger>
+              <TabsTrigger value="management">Management</TabsTrigger>
             </TabsList>
-            <TabsContent value={"overview"}>
-              <Overview />
+            <TabsContent value={"operational"}>
+              <Operational />
             </TabsContent>
           </Tabs>
         </main>

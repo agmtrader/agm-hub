@@ -8,7 +8,7 @@ import { Trade, TradeTicket } from '@/lib/entities/trade-ticket'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
 import DashboardPage from '@/components/misc/DashboardPage'
-import { FetchTrades, GenerateTradeTicket, SendToClient, ListTradeTickets, GetTradeTicketDetails } from '@/utils/entities/trade-tickets'
+import { FetchTrades, GenerateTradeTicket, SendToClient, ListTradeTickets } from '@/utils/entities/trade-tickets'
 
 export default function TradeTickets() {
 

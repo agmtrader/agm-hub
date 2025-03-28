@@ -20,31 +20,6 @@ html {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 14%;
-
-    --muted: 210 40% 96%; 
-    --subtitle: 215 16% 47%;
-
-    --radius: 0.5rem;
-
-    --color-1: 0 100% 63%;
-
-    --color-2: 270 100% 63%;
-
-    --color-3: 210 100% 63%;
-
-    --color-4: 195 100% 63%;
-
-    --color-5: 90 100% 63%;
-  }
-  .dark {
-    
-    --background: 0 0% 14%;
-    --foreground:  0 0% 100%;
-
-    --muted: 0 0% 20%;
-    --subtitle: 215 16% 80%;
 
     --radius: 0.5rem;
 

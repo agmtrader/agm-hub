@@ -21,7 +21,7 @@ module.exports = {
   			'120': '120deg'
   		},
   		colors: {
-  			background: 'hsl(var(--background))',
+  			background: '#FFFFFF',
   			foreground: '#062D47',
   			primary: {
   				light: '#fac49e',
@@ -34,10 +34,10 @@ module.exports = {
   				dark: '#062D47'
   			},
   			muted: {
-  				DEFAULT: 'hsl(var(--muted))'
+  				DEFAULT: '#F1F5F9'
   			},
   			subtitle: {
-  				DEFAULT: 'hsl(var(--subtitle))'
+  				DEFAULT: '#646C77'
   			},
 			success: {
 			DEFAULT: '#22C55E',
