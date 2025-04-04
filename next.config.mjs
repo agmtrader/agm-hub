@@ -21,6 +21,7 @@ const nextConfig = {
             },
         ],
     },
+    output: 'standalone',
     webpack(config, { isServer }) {
         if (!isServer) {
           config.module.rules.push({
@@ -44,7 +45,7 @@ const nextConfig = {
           });
         }
         return config;
-      },
+    },
 };
 
 export default nextConfig;

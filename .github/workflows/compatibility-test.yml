@@ -1,0 +1,49 @@
+name: Compatibility Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+
+      # Set up Node.js
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Match your Node version
+          cache: 'yarn'
+
+      # Install dependencies
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      # Build Next.js app
+      - name: Build
+        run: yarn build
+
+      # Start Next.js app in the background
+      - name: Start Server
+        run: yarn start &
+
+      # Install Playwright browsers
+      - name: Install Playwright Browsers
+        run: yarn playwright install --with-deps
+
+      # Run Playwright tests
+      - name: Run Compatibility Tests
+        run: yarn playwright test
+
+      # Upload test report if tests fail
+      - name: Upload Test Report
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report/
