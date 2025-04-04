@@ -54,17 +54,15 @@ const Account = ({}: Props) => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.2 }}
-                  className='w-fit h-full flex text-agm-dark-blue justify-center items-center'
+                  className='w-fit h-full flex text-foreground gap-5 justify-center items-center'
                 >
-                  <Button onClick={() => signOut({callbackUrl: callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang)})} className="flex">
-                      <p className="text-sm">{t('shared.account.sign_out')}</p>
-                  </Button>
-                  <Link href="/profile" legacyBehavior passHref>
-                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), '')}>
-                      <div className="flex">
-                          <p className="text-sm">{t('shared.account.settings')}</p>
-                      </div>
-                  </NavigationMenuLink>
+                <Button onClick={() => signOut({callbackUrl: callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang)})} className="flex">
+                    <p className="text-sm">{t('shared.account.sign_out')}</p>
+                </Button>
+                <Link href="/profile" legacyBehavior passHref>
+                  <div className="flex">
+                      <p className="text-sm">{t('shared.account.settings')}</p>
+                  </div>
                 </Link>
                 </motion.div>
               </PopoverContent>

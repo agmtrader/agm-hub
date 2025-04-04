@@ -1,24 +1,25 @@
 'use client'
 
 import React from 'react'
-import { User, Bell } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSession } from 'next-auth/react'
 import Operational from './components/Operational'
+import Account from '../auth/Account'
 
 export function Dashboard() {
   
   const {data:session} = useSession();
 
+  if (process.env.DEV_MODE === 'true') {
+    console.log(session)
+  }
   return (
     <div className="flex w-full h-full">
       <div className="flex-1">
         <header className="flex items-center justify-between p-4 border-b border-muted">
-          <div className="flex items-center text-foreground space-x-4">
-            <User className="w-8 h-8" />
-            <h2 className="text-xl font-semibold">{session?.user?.name}</h2>
-          </div>
+          <Account />
           <div className="flex items-center space-x-4">
             <Input type="search" placeholder="Search..." className="w-64" />
             <Bell className="w-6 h-6" />

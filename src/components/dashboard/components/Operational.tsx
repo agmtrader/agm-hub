@@ -7,8 +7,6 @@ import Link from 'next/link'
 
 type CardData = {
   title: string
-  value: number
-  change: number
   Icon: LucideIcon
   url?: string
 }
@@ -16,35 +14,25 @@ type CardData = {
 const operationalData: CardData[] = [
   {
     title: 'Leads',
-    value: 1248,
-    change: 12,
     Icon: Users,
     url: '/dashboard/leads'
   },
   {
     title: 'Tickets',
-    value: 42,
-    change: -15,
     Icon: Ticket,
     url: '/dashboard/open-account'
   },
   {
     title: 'Approved Accounts',
-    value: 873,
-    change: 24,
     Icon: ShieldCheck,
     url: '/dashboard/accounts'
   },
   {
     title: 'Communications',
-    value: 156,
-    change: 8,
     Icon: MessageSquare
   },
   {
     title: 'Support',
-    value: 24,
-    change: -5,
     Icon: HeadphonesIcon
   }
 ]
@@ -67,19 +55,11 @@ const Operational = () => {
               href={card.url || ''}
               className="block h-full transition-transform hover:scale-[1.02] hover:cursor-pointer"
             >
-              <Card className="h-full">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-lg font-medium">{card.title}</CardTitle>
-                  <card.Icon className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-5xl font-bold">
-                    {card.value.toLocaleString()}
-                  </div>
-                  <p className="text-md text-muted-foreground">
-                    {card.change > 0 ? '+' : ''}{card.change}% from last month
-                  </p>
-                </CardContent>
+              <Card className="h-full aspect-square flex flex-col items-center justify-center p-6">
+                <div className="flex-1 flex flex-col items-center justify-center gap-4">
+                  <card.Icon className="h-16 w-16 text-muted-foreground" />
+                  <CardTitle className="text-lg font-medium text-center">{card.title}</CardTitle>
+                </div>
               </Card>
             </Link>
         </motion.div>

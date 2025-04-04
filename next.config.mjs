@@ -21,7 +21,30 @@ const nextConfig = {
             },
         ],
     },
-    output: 'standalone',
+    webpack(config, { isServer }) {
+        if (!isServer) {
+          config.module.rules.push({
+            test: /\.js$/,
+            exclude: /node_modules/,
+            use: {
+              loader: 'babel-loader',
+              options: {
+                presets: [
+                  [
+                    '@babel/preset-env',
+                    {
+                      targets: 'safari >= 15', // Targets Safari 15 and up
+                      useBuiltIns: 'usage', // Adds polyfills only for used features
+                      corejs: 3, // Use core-js version 3
+                    },
+                  ],
+                ],
+              },
+            },
+          });
+        }
+        return config;
+      },
 };
 
 export default nextConfig;
