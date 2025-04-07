@@ -59,7 +59,7 @@ export const downloads: DownloadOption[] = [
     versions: [
       {
         arch: 'App Store',
-        url: '#', // Placeholder for iOS App Store link
+        url: 'https://apps.apple.com/cr/app/agm-trader/id1550920894', // Placeholder for iOS App Store link
         recommended: true,
       },
     ],
@@ -70,7 +70,7 @@ export const downloads: DownloadOption[] = [
     versions: [
       {
         arch: 'Play Store',
-        url: '#', // Placeholder for Play Store link
+        url: 'https://play.google.com/store/apps/details?id=com.clientam.agm.app&hl=en&pli=1', // Placeholder for Play Store link
         recommended: true,
       },
     ],

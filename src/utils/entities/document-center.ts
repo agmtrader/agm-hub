@@ -1,6 +1,12 @@
-import { Document, DocumentCenter } from "@/lib/entities/document-center";
+import { Document, DocumentCenter, FolderDictionary } from "@/lib/entities/document-center";
 import { accessAPI } from "../api";
 import { Map } from "@/lib/types";
+
+export async function GetFolderDictionary():Promise<FolderDictionary[]> {
+
+    let folderDictionary = await accessAPI('/document_center/get_folder_dictionary', 'GET')
+    return folderDictionary
+}
 
 export async function ReadFolders(query?: Map):Promise<DocumentCenter> {
 
@@ -19,9 +25,7 @@ export async function DeleteFile(document: Document, parentFolderId: string) {
     return deletedFile
 }
 
-
-// TODO: Change params
-export async function UploadFile(file: File, file_name: string, mime_type: string, parent_folder_id: string, document_info: any, uploader: string) {
+export async function UploadFile(file: File, file_name: string, mime_type: string, parent_folder_id: string, document_info: any, uploader: string, bucketId: string) {
     // Convert File object to base64
     const fileData = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -36,7 +40,8 @@ export async function UploadFile(file: File, file_name: string, mime_type: strin
         'file_data': fileData,
         'parent_folder_id': parent_folder_id,
         'document_info': document_info,
-        'uploader': uploader
+        'uploader': uploader,
+        'bucket_id': bucketId
     })
     console.log(uploadedFile)
     return uploadedFile

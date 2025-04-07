@@ -16,8 +16,8 @@ import LoadingComponent from '@/components/misc/LoadingComponent'
 import DocumentViewer from './DocumentViewer'
 import DocumentUploader from './DocumentUploader'
 
-import { FolderDictionary, defaultFolderDictionary, Document as CustomDocument, DocumentCenter as DocumentCenterType } from '@/lib/entities/document-center'
-import { DeleteFile, ReadFolders } from '@/utils/entities/document-center'
+import { FolderDictionary, Document as CustomDocument, DocumentCenter as DocumentCenterType } from '@/lib/entities/document-center'
+import { DeleteFile, ReadFolders, GetFolderDictionary } from '@/utils/entities/document-center'
 
 interface DocumentCenterProps {
   folderDictionary?: FolderDictionary[];
@@ -27,13 +27,31 @@ interface DocumentCenterProps {
 export default function DocumentCenter({ folderDictionary: propsFolderDictionary, query }: DocumentCenterProps) {
 
   const [documentCenter, setDocumentCenter] = useState<DocumentCenterType>({})
-  const [currentFolderID, setCurrentFolderID] = useState<string | null>(null)
+  const [currentBucketId, setCurrentBucketId] = useState<string | null>(null)
+  const [defaultFolders, setDefaultFolders] = useState<FolderDictionary[] | null>(null)
 
   const [loading, setLoading] = useState<boolean>(true)
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null)
 
-  const activeFolderDictionary = propsFolderDictionary || defaultFolderDictionary
+  const fetchDefaultFolderDictionary = async () => {
+    try {
+      const folderDict = await GetFolderDictionary()
+      setDefaultFolders(folderDict)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : 'An error occurred fetching folder dictionary',
+        variant: "destructive",
+      })
+    }
+  }
+
+  useEffect(() => {
+    fetchDefaultFolderDictionary()
+  }, [query])
+
+  const activeFolderDictionary = propsFolderDictionary || defaultFolders
 
   const columns = [
     { accessorKey: 'FileInfo.name', header: 'Name' },
@@ -48,7 +66,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     try {
       let documentCenter:DocumentCenterType = await ReadFolders(query)
       setDocumentCenter(documentCenter)
-      setCurrentFolderID(Object.keys(documentCenter)[0] || null)
+      setCurrentBucketId(Object.keys(documentCenter)[0] || null)
       setLoading(false)
     } catch (error) {
       toast({
@@ -93,13 +111,13 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
   const handleDelete = async (row: any) => {
 
     try {
-      if (!currentFolderID) throw new Error('No folder selected')
+      if (!currentBucketId) throw new Error('No bucket selected')
 
       toast({
         title: "Deleting",
         description: `Deleting ${row.FileInfo.name || ''}...`,
       })
-      await DeleteFile(row, currentFolderID)
+      await DeleteFile(row, currentBucketId)
       handleFetchData()
     } catch (error) {
       toast({
@@ -131,7 +149,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
     },
   ]
 
-  if (loading) return <LoadingComponent className='w-full h-full'/>
+  if (loading || !activeFolderDictionary) return <LoadingComponent className='w-full h-full'/>
 
   return (
     <motion.div
@@ -154,8 +172,8 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentFolderID(folder.id)}
-              className={cn(currentFolderID === folder.id && 'font-bold text-foreground', 'text-foreground')}
+              onClick={() => setCurrentBucketId(folder.id)}
+              className={cn(currentBucketId === folder.id && 'font-bold text-foreground', 'text-foreground')}
             >
               {folder.label}
             </Button>
@@ -170,10 +188,10 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
         className="flex w-full flex-col justify-center items-center gap-5"
       >
         <AnimatePresence mode="wait">
-          {documentCenter && currentFolderID && documentCenter[currentFolderID] && documentCenter[currentFolderID].length > 0 && (
+          {documentCenter && currentBucketId && documentCenter[currentBucketId] && documentCenter[currentBucketId].length > 0 && (
             <motion.div
               className="w-full"
-              key={currentFolderID}
+              key={currentBucketId}
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
@@ -182,7 +200,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
               <DataTable 
                 enableRowActions 
                 columns={columns}
-                data={documentCenter[currentFolderID].sort((a,b) => new Date(b.FileInfo.modifiedTime).getTime() - new Date(a.FileInfo.modifiedTime).getTime())} 
+                data={documentCenter[currentBucketId].sort((a,b) => new Date(b.FileInfo.modifiedTime).getTime() - new Date(a.FileInfo.modifiedTime).getTime())} 
                 rowActions={rowActions}
                 infiniteScroll={true}
                 enableFiltering
@@ -197,7 +215,7 @@ export default function DocumentCenter({ folderDictionary: propsFolderDictionary
           transition={{ duration: 0.2 }}
           className='flex gap-2'
         >
-          <Link href={`https://drive.google.com/drive/folders/${activeFolderDictionary.find(folder => folder.id === currentFolderID)?.drive_id}`} target='_blank'>
+          <Link href={`https://drive.google.com/drive/folders/${activeFolderDictionary.find(folder => folder.id === currentBucketId)?.drive_id}`} target='_blank'>
             <Button variant="outline" size="sm">View in Drive</Button>
           </Link>
           <DocumentUploader 

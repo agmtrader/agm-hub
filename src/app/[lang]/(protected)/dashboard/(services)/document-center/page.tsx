@@ -6,7 +6,7 @@ import DashboardPage from '@/components/misc/DashboardPage';
 const page = () => {
 
   return (
-    <DashboardPage title='Document Center' description='Upload, download and manage documents from the database.'>
+    <DashboardPage title='Document Center' description='Manage documents connected to your account.'>
       <DocumentCenter />
     </DashboardPage>
   )

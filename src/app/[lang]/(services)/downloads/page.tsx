@@ -47,6 +47,8 @@ const DownloadsPage = () => {
                           <div key={version.arch}>
                             <a
                               href={version.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className={cn(
                                 "block w-full text-center py-2.5 px-3 rounded-md transition-colors duration-200",
                                 "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
@@ -98,6 +100,8 @@ const DownloadsPage = () => {
                               role="button"
                               tabIndex={0}
                               aria-label={`Download ${option.os} from ${version.arch}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
                             >
                               Download from {version.arch}
                             </a>

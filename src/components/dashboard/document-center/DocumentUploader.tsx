@@ -36,13 +36,13 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
     const { data: session } = useSession()
     const { toast } = useToast()
 
-    const [selectedType, setSelectedType] = useState<string>(folderDictionary[0].id)
+    const [selectedBucketId, setSelectedBucketId] = useState<string>(folderDictionary[0].id)
     const [uploading, setUploading] = useState<boolean>(false)
     const [files, setFiles] = useState<File[] | null>(null)
-    const [open, setOpen] = useState(false)
+    const [dialogOpen, setDialogOpen] = useState(false)
 
     const renderForm = () => {
-        switch(selectedType) {
+        switch(selectedBucketId) {
             case 'poa':
                 return <POAForm onSubmit={(values) => handleSubmit(values)} accountNumber={accountNumber} uploading={uploading} />
             case 'identity':
@@ -61,9 +61,9 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
             if (!files || files.length === 0) throw new Error("Please select a file to upload")
             
             const file = files[0]
-            const parent_folder_id = folderDictionary.find((folder) => folder.id === selectedType)?.drive_id || ''
+            const parent_folder_id = folderDictionary.find((folder) => folder.id === selectedBucketId)?.drive_id || ''
             
-            await UploadFile(file, file.name, file.type, parent_folder_id, values, session.user.email)
+            await UploadFile(file, file.name, file.type, parent_folder_id, values, session.user.email, selectedBucketId)
 
             toast({
                 title: "Success",
@@ -72,9 +72,9 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
             })
         
             setFiles(null)
-            setSelectedType(folderDictionary[0].id)
-            setOpen(false)
-            setUploading(false)
+            setSelectedBucketId(folderDictionary[0].id)
+
+            setDialogOpen(false)
             onUploadSuccess?.()
 
         } catch (error) {
@@ -83,12 +83,13 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
                 description: error instanceof Error ? error.message : "An unknown error occurred",
                 variant: "destructive",
             })
+        } finally {
             setUploading(false)
         }
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
                 <Button className='w-fit h-fit flex gap-x-5'>
                     <Upload className='h-4 w-4' />
@@ -103,8 +104,8 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
                     </DialogDescription>
                 </DialogHeader>
                 <Select 
-                    onValueChange={(value) => setSelectedType(value)}
-                    defaultValue={selectedType}
+                    onValueChange={(value) => setSelectedBucketId(value)}
+                    defaultValue={selectedBucketId}
                 >
                     <SelectTrigger className="w-[200px]">
                         <SelectValue placeholder="Select document type" />

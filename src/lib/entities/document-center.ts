@@ -15,7 +15,6 @@ export interface Document {
     'DocumentInfo':Map
     'FileInfo':FileInfo
     'Uploader':string
-    'Category':string
 }
 
 export interface FileInfo {
