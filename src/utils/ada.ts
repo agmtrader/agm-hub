@@ -1,11 +1,7 @@
 'use server'
 
 import { Map } from "../lib/types"
-import { getSecret } from "./secret-manager";
-
-interface AuthenticationResponse {
-    access_token: string
-}
+import { getToken } from "./api";
 
 interface ChatMessage {
     role: 'user' | 'assistant';
@@ -17,92 +13,42 @@ interface ChatResponse {
     message: ChatMessage;
 }
 
-// Add token caching
-let cachedToken: string | null = null;
-let tokenExpirationTime: number | null = null;
 const api_url = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:3333' : 'https://ada-api-571127175324.us-central1.run.app/';
 
-async function getToken(): Promise<string | null> {
-
-    if (cachedToken && tokenExpirationTime && Date.now() < tokenExpirationTime) {
-        return cachedToken;
-    }
-
-    // Fetch authentication token from secret manager
-    const authToken = await getSecret('AGM_AUTHENTICATION_TOKEN');
-
-    const response = await fetch(`${api_url}/login`, {
-        method: 'POST',
-        headers: {
-            'Cache-Control': 'no-cache',
-        },
-        body: JSON.stringify({token: authToken}),
-    });
-
-    if (!response.ok) return null
-
-    const auth_response: AuthenticationResponse = await response.json();
-
-    // Cache the token and set expiration time (1 hour)
-    cachedToken = auth_response.access_token;
-    tokenExpirationTime = Date.now() + 3600000; // 1 hour in milliseconds
-    return auth_response.access_token;
-}
-
-async function accessAPI(url: string, type: string, params?: Map) {
+export async function accessAda(url: string, params?: Map) {
 
     const token = await getToken();
     if (!token) throw new Error('Failed to get authentication token');
+    return await PostData(url, params, token);
 
+}
+
+async function PostData(url: string, params: Map | undefined, token: string) {
     try {
-        if (type === 'GET') {
-            return await GetData(url, token);
-        } else {
-            return await PostData(url, params, token);
-        }
+        const response = await fetch(`${api_url}${url}`, {
+            method: 'POST',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(params),
+        });
+
+        if (response.status === 400) throw new Error('Bad Request');
+        if (response.status === 401) throw new Error('Unauthorized');
+        if (response.status === 403) throw new Error('You do not have permission to access this resource');
+        if (response.status === 404) throw new Error('Resource not found');
+        if (response.status === 500) throw new Error('Internal Server Error');
+        if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+
+        return await response.json();
+
     } catch (error) {
-        console.error('API request error:', error);
-        throw error;
+        throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
 }
 
 export async function chat(messages: ChatMessage[]): Promise<ChatResponse> {
-    return await accessAPI('/chat', 'POST', { messages });
-}
-
-async function GetData(url: string, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`
-        },
-    });
-
-    if (!response.ok) throw new Error('API request failed');
-
-    const contentType = response.headers.get('content-type');
-    if (contentType?.includes('application/json')) {
-        return await response.json();
-    }
-    return await response.blob();
-}
-
-async function PostData(url: string, params: Map | undefined, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        method: 'POST',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(params),
-    });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API Error Response:', errorText);
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-    }
-
-    return await response.json();
+    return await accessAda('/ada/chat', { messages });
 }

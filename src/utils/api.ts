@@ -10,8 +10,6 @@ interface AuthenticationResponse {
 }
 
 // Add token caching
-let cachedToken: string | null = null;
-let tokenExpirationTime: number | null = null;
 const api_url = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:5000' : 'https://api.agmtechnology.com';
 
 export async function accessAPI(url: string, type: string, params?: Map) {
@@ -25,15 +23,10 @@ export async function accessAPI(url: string, type: string, params?: Map) {
     }
 }
 
-async function getToken(): Promise<string | null> {
+export async function getToken(): Promise<string | null> {
     
     const session = await getServerSession(authOptions);
     if (!session || !session?.user) throw new Error('No session found');
-
-    if (cachedToken && tokenExpirationTime && Date.now() < tokenExpirationTime) {
-        //console.log('Using cached token')
-        //return cachedToken;
-    }
 
     try {
         const response = await fetch(`${api_url}/token`, {
@@ -47,10 +40,6 @@ async function getToken(): Promise<string | null> {
         if (!response.ok) return null;
 
         const auth_response: AuthenticationResponse = await response.json();
-
-        // Cache the token using server-provided expiration time
-        //cachedToken = auth_response.access_token
-        //tokenExpirationTime = Date.now() + (auth_response.expires_in * 1000) // Convert seconds to milliseconds
         return auth_response.access_token
 
     } catch (error) {
