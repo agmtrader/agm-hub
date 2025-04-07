@@ -3,8 +3,7 @@ import React, { useState } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { faker } from '@faker-js/faker';
-import { Building, ChevronDown, Fingerprint, Loader2, User } from "lucide-react"
+import { Building, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 

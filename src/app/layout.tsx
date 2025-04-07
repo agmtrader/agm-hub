@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { redirect, usePathname } from "next/navigation"
 import { changeLang } from "@/utils/language/lang"
+import 'core-js/features/regexp'
 
 const inter = Inter({ subsets: ['latin'] })
 
