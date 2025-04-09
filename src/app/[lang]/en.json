@@ -442,6 +442,7 @@
                     "trust": "Trust Account",
                     "institutional": "Institutional Account"
                 },
+                "referrer": "Who referred you?",
                 "disclaimer": {
                     "title": "DISCLAIMER",
                     "content": "If you wish to open an Individual Account, we advise that for inheritance and tax purposes, it is better to open a Joint Account. An Individual Account does not allow the option to name Beneficiaries at the time of opening or subsequently and may be subject to Estate taxes. Please consider the option of opening a joint account instead of an individual account.",

@@ -29,6 +29,8 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
     { accessorKey: 'Status', header: 'Status' },
     { accessorKey: 'first_name', header: 'First Name' },
     { accessorKey: 'last_name', header: 'Last Name' },
+    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'referrer', header: 'Referrer' },
     { accessorKey: 'Advisor', header: 'Advisor' },
     { accessorKey: 'MasterAccount', header: 'Master Account' },
   ]

@@ -14,6 +14,7 @@ export const general_info_schema = (t: (key: string) => string) => z.object({
     account_type: z.string({
       required_error: t('forms.errors.select_required'),
     }),
+    referrer: z.string().optional(),
 })
 const base_about_you_schema = z.object({
     salutation: z.string().min(1, {

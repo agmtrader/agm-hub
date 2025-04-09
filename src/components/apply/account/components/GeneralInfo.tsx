@@ -243,6 +243,20 @@ const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="referrer"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('apply.account.general_info.referrer')}</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder=''/>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            
+
             <Button type="submit" disabled={generating}>
               {generating ? (
                 <>
