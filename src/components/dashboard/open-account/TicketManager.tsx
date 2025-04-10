@@ -32,7 +32,7 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
     { accessorKey: 'email', header: 'Email' },
     { accessorKey: 'referrer', header: 'Referrer' },
     { accessorKey: 'Advisor', header: 'Advisor' },
-    { accessorKey: 'MasterAccount', header: 'Master Account' },
+    { accessorKey: 'MasterAccount', header: 'Master Account' }
   ]
 
   useEffect(() => {

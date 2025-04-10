@@ -588,6 +588,135 @@
                 "title": "Tu Perfil de Riesgo",
                 "warning": "¡Por favor toma una foto de esto, ya que será muy difícil verlo de nuevo!"
             }
+        },
+        "requirements": {
+            "title": "Requisitos para una cuenta AGM",
+            "description": "Por favor asegurarse de cumplir con los siguientes requisitos para aplicar para una cuenta",
+            "personal": {
+                "title": "Requisitos para cuentas Individuales",
+                "identity": {
+                    "title": "Documentos oficiales de Identidad",
+                    "description": "Uno de los siguientes documentos",
+                    "documents": {
+                        "passport": {
+                            "title": "Pasaporte",
+                            "description": "Debe estar al día, debidamente firmado. Debe incluir fotografía, nombre completo, fecha de nacimiento y fecha de expiración."
+                        },
+                        "id_card": {
+                            "title": "Documento de identificación",
+                            "description": "Documento de identificación del país de residencia al día y firmado y debe incluir fotografía, nombre completo, fecha de nacimiento, fecha de expiración y país de emisión."
+                        },
+                        "driver_license": {
+                            "title": "Licencia de conducir",
+                            "description": "Debe estar al día, debidamente firmada. Debe incluir fotografía, nombre completo, fecha de nacimiento, fecha de expiración y lugar de emisión del documento."
+                        }
+                    }
+                },
+                "proof_of_address": {
+                    "title": "Documentos de dirección",
+                    "description": "Uno de los siguientes documentos",
+                    "documents": {
+                        "utility_bill": {
+                            "title": "Recibo de servicios públicos",
+                            "description": "Por ejemplo, recibos por servicios de electricidad, agua, teléfono ó gas. Recibos por servicios de telefonía móvil no son aceptados. Los recibos deben de ser claros, indicar el nombre completo de la persona, dirección completa y que tengan menos de un año de antigüedad."
+                        }
+                    }
+                },
+                "source_of_wealth": {
+                    "title": "Fuente de Ingresos",
+                    "description": "Uno de los siguientes documentos de acuerdo con el Tipo de Ingreso",
+                    "documents": {
+                        "salary": "Salarios (Copia de la Orden Patronal mas reciente o Certificación por parte de un CPA)",
+                        "investments": "Ingresos producto de ganancias sobre Inversiones (Estado de Cuenta Bursátil donde aparezcan dichas ganancias)",
+                        "property": "Venta de Propiedad (Contrato de compra/Venta de la Propiedad)",
+                        "inheritance": "Herencia (Copia del Documento Legal: Fideicomiso, Testamento, etc.)",
+                        "shares": "Venta de Participaciones (Acciones) en una o varias compañías (Estado de Cuenta Bursátil donde aparezcan dichas ventas)",
+                        "dividends": "Dividendos recibidos (Copia del Acta de Accionistas autorizando la distribución de Dividendos)",
+                        "other": "Otro"
+                    }
+                }
+            },
+            "institutional": {
+                "title": "Requisitos para cuentas Institucionales",
+                "company_documents": {
+                    "title": "Documentos que prueben la existencia de la compañía",
+                    "description": "Dos de los siguientes documentos",
+                    "documents": {
+                        "incorporation": {
+                            "title": "Acta Constitutiva o de incorporación",
+                            "description": "El documento deberá de especificar claramente el nombre de la empresa tal y como aparece en los documentos de apertura, además deberá de ser certificado y notariado."
+                        },
+                        "legal_id": {
+                            "title": "Cédula jurídica",
+                            "description": "El documento deberá ser emitido por una autoridad de Gobierno, donde especifique el número de inscripción y además debe especificar claramente el nombre de la empresa tal y como aparece en los documentos de apertura"
+                        },
+                        "legal_status": {
+                            "title": "Personería jurídica",
+                            "description": "El documento deberá de especificar claramente el nombre de la empresa tal y como aparece en los documentos de apertura, además deberá de ser certificado y notariado. Vigencia: menos de 6 meses."
+                        }
+                    }
+                },
+                "address_verification": {
+                    "title": "Verificación de Dirección",
+                    "description": "Uno de los siguientes documentos",
+                    "documents": {
+                        "utility_bill": {
+                            "title": "Recibo de servicios públicos",
+                            "description": "Por ejemplo, recibos de servicios de internet, TV por cable, electricidad, agua, gas, teléfono fijo (recibos de teléfonos móviles no se aceptan). El recibo debe describir de forma clara el nombre completo de la empresa y la dirección física. No debe ser mayor a seis meses."
+                        }
+                    }
+                },
+                "director_identification": {
+                    "title": "Documentos de identificación de los directores",
+                    "description": "Presidente - Secretario y las personas firmantes (Uno de los siguientes documentos)",
+                    "documents": {
+                        "passport": {
+                            "title": "Pasaporte",
+                            "description": "Debe de estar vigente, firmado e incluir fotografía de la persona, nombre completo, fecha de nacimiento y expiración."
+                        },
+                        "id_card": {
+                            "title": "Documento de identificación",
+                            "description": "Documento de identidad del país de residencia, que incluya la firma, fecha de nacimiento, fotografía de la persona, nombre completo, fecha de nacimiento, fecha de expiración y país de emisión del documento."
+                        },
+                        "driver_license": {
+                            "title": "Licencia de conducir",
+                            "description": "Debe de estar vigente, firmado e incluir fotografía de la persona, nombre completo, fecha de nacimiento, de expiración, fecha y lugar de emisión."
+                        }
+                    }
+                },
+                "director_address": {
+                    "title": "Documentos que indiquen la dirección física de los directores",
+                    "description": "Presidente - Secretario y las personas firmantes (Uno de los siguientes documentos)",
+                    "documents": {
+                        "utility_bill": {
+                            "title": "Recibo de servicios públicos",
+                            "description": "Por ejemplo, recibo de servicios de internet, TV por Cable, electricidad, agua, Teléfono fijo o gas (no se aceptan recibos de teléfono móvil) Los recibos deben especificar claramente el nombre y la dirección de residencia de la persona y tener menos de un año de emitidos"
+                        }
+                    }
+                },
+                "capital_ownership": {
+                    "title": "Documento que demuestre la propiedad del Capital de la Sociedad",
+                    "documents": {
+                        "share_certificate": "Copia certificada del Certificado(s) de Acciones de la Sociedad",
+                        "notarial_certification": "Certificación notarial de la Distribución Accionaria de la Sociedad"
+                    },
+                    "note": "De existir varios accionistas, los que tengan más del 10% deben aportar Documentos de identificación y Documentos que indiquen su dirección física."
+                },
+                "source_of_wealth": {
+                    "title": "Fuente de Ingresos",
+                    "description": "Uno de los siguientes documentos de acuerdo con el Tipo de Ingreso",
+                    "documents": {
+                        "investments": "Ingresos producto de ganancias sobre Inversiones: (Estado de Cuenta Bursátil donde aparezcan dichas ganancias)",
+                        "property": "Venta de Propiedad: (Contrato de compra/Venta de la Propiedad)",
+                        "inheritance": "Herencia: (Copia del Documento Legal: Fideicomiso, Testamento, etc.)",
+                        "shares": "Venta de Participaciones (Acciones) en una o varias compañías: (Estado de Cuenta Bursátil donde aparezcan dichas ventas)",
+                        "profits": "Ingresos por Utilidades recibidas: (Copia de los Estados Financieros de la Compañía que muestren dichas Utilidades)",
+                        "business": "Ingresos producto de Negocios: (Copia de los Estados Financieros de la Compañía que muestren dichos Ingresos)",
+                        "dividends": "Dividendos recibidos: (Copia del Acta de Accionistas autorizando la distribución de Dividendos)"
+                    }
+                },
+                "submit": "Enviar"
+            }
         }
     },
     "dashboard": {
@@ -652,11 +781,10 @@
         "username": "Nombre de usuario",
         "password": "Contraseña",
         "register": {
-            "message": "¿No tiene una cuenta? ",
+            "message": "¿No tiene una cuenta?",
             "link": "Registrarse"
         },
-        "or": "O",
-        "google": "Iniciar sesión con Google"
+        "no_account_warning": "Para usar nuestros servicios web necesita crear una cuenta."
     },
     "createAccount": {
         "title": "Crear una cuenta AGM",

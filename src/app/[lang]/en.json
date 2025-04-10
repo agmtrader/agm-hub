@@ -468,7 +468,7 @@
                     "title": "Purpose",
                     "operating_business": "An operating business formed to offer goods or services to customers that was not formed for the purpose of trading or holding financial assets. Please select this option only for actual businesses, such as manufacturers, restaurants, oil companies, etc.",
                     "family_investment": "A personal or family investment vehicle beneficially owned by a single person or by a group of close family members who created the organization for the purpose of making financial investments for the owner and/or the owners close family.",
-                    "proprietary_trading": "A closely-held proprietary trading company (or corporation or similar vehicle) created for the purpose of trading the company’s proprietary capital. This includes any corporation or LLC where the members contribute their own capital to the LLC and the profits belong to the company.",
+                    "proprietary_trading": "A closely-held proprietary trading company (or corporation or similar vehicle) created for the purpose of trading the company's proprietary capital. This includes any corporation or LLC where the members contribute their own capital to the LLC and the profits belong to the company.",
                     "financial_institution": "A financial institution (bank, broker-dealer, etc.) that will be trading for its own account."
                 },
                 "proprietary_assets": {
@@ -543,7 +543,6 @@
                 "security_question": "Security Question",
                 "security_answer": "Security Answer"
             }
-
         },
         "risk": {
             "title": "Risk Assessment Questionnaire",
@@ -594,6 +593,57 @@
             "result": {
                 "title": "Your Risk Profile",
                 "warning": "Please take a picture of this, as it will be very difficult to see it again!"
+            }
+        },
+        "requirements": {
+            "title": "Requirements for an AGM Account",
+            "description": "Please ensure you meet the following requirements to apply for an account",
+            "personal": {
+                "title": "Requirements for Individual Accounts",
+                "identity": {
+                    "title": "Official Identity Documents",
+                    "description": "One of the following documents",
+                    "documents": {
+                        "passport": {
+                            "title": "Passport",
+                            "description": "Must be current, properly signed. Must include photograph, full name, date of birth, and expiration date."
+                        },
+                        "id_card": {
+                            "title": "Identification Document",
+                            "description": "Current and signed identification document from the country of residence and must include photograph, full name, date of birth, expiration date, and country of issuance."
+                        },
+                        "driver_license": {
+                            "title": "Driver's License",
+                            "description": "Must be current, properly signed. Must include photograph, full name, date of birth, expiration date, and place of issuance of the document."
+                        }
+                    }
+                },
+                "proof_of_address": {
+                    "title": "Address Documents",
+                    "description": "One of the following documents",
+                    "documents": {
+                        "utility_bill": {
+                            "title": "Utility Bill",
+                            "description": "For example, bills for electricity, water, telephone, or gas services. Mobile phone service bills are not accepted. Bills must be clear, show the person's full name, complete address, and be less than one year old."
+                        }
+                    }
+                },
+                "source_of_wealth": {
+                    "title": "Source of Income",
+                    "description": "One of the following documents according to the Type of Income",
+                    "documents": {
+                        "salary": "Salaries (Copy of the most recent Employer Order or Certification by a CPA)",
+                        "investments": "Income from Investment Gains (Brokerage Account Statement showing such gains)",
+                        "property": "Property Sale (Property Purchase/Sale Contract)",
+                        "inheritance": "Inheritance (Copy of Legal Document: Trust, Will, etc.)",
+                        "shares": "Sale of Shares in one or more companies (Brokerage Account Statement showing such sales)",
+                        "dividends": "Dividends received (Copy of Shareholders' Minutes authorizing Dividend distribution)",
+                        "other": "Other"
+                    }
+                }
+            },
+            "institutional": {
+                "title": "Requirements for Institutional Accounts"
             }
         }
     },
@@ -662,8 +712,7 @@
             "message": "Don't have an account? ",
             "link": "Register"
         },
-        "or": "OR",
-        "google": "Sign in with Google"
+        "no_account_warning": "To use our web services you need to create an account."
     },
     "createAccount": {
         "title": "Create an AGM Account",

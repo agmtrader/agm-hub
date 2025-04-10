@@ -75,10 +75,13 @@ function SignIn() {
                 <p className='text-sm text-subtitle text-center'>{t('signin.apply.message')}</p>
               </div>
             )}
+            <p className='text-subtitle text-lg text-center'>
+              {t('signin.register.message')} <Link href={formatURL('/create-account', lang)} className='underline text-primary font-bold'>{t('signin.register.link')}</Link>
+            </p>
           </CardHeader>
         </motion.div>
         <motion.div variants={itemVariants} className='w-full'>
-          <CardContent className='w-full'>
+          <CardContent className='w-full flex flex-col gap-5'>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-full'>
               <Input
                 type="text"
@@ -106,37 +109,8 @@ function SignIn() {
                   t('signin.signin')
                 )}
               </Button>
-              <p className='text-subtitle text-lg text-center'>
-                {t('signin.register.message')} <Link href={formatURL('/create-account', lang)} className='underline text-primary font-bold'>{t('signin.register.link')}</Link>
-              </p>
             </form>
-            { process.env.DEV_MODE === 'true' && (
-              <>
-              <div className='flex items-center gap-4 justify-center'>
-                <Separator className='my-4 w-[40%]' />
-                <p className='text-subtitle text-sm'>{t('signin.or')}</p>
-                <Separator className='my-4 w-[40%]' />
-              </div>
-              <Button
-                variant='ghost'
-                onClick={handleGoogleSignIn}
-                className="w-full mt-4"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('signin.signingIn')}
-                  </>
-                ) : (
-                  <div className='flex items-center gap-2'>
-                    <FaGoogle className='h-4 w-4' />
-                    {t('signin.google')}
-                  </div>
-                )}
-              </Button>
-              </>
-            )}
+            <p className='text-sm text-muted-foreground text-center text-red-500'>{t('signin.no_account_warning')}</p>
           </CardContent>
         </motion.div>
       </Card>
