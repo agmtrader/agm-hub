@@ -20,9 +20,15 @@ import {
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { formatTimestamp } from '@/utils/dates'
 import { Lead } from '@/lib/entities/lead'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
+interface LeadFormProps {
+  isDialogOpen: boolean
+  setIsDialogOpen: (isDialogOpen: boolean) => void
+  onSuccess?: () => void
+}
 
-const LeadForm = () => {
+const LeadForm = ({ isDialogOpen, setIsDialogOpen, onSuccess }: LeadFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
@@ -63,7 +69,8 @@ const LeadForm = () => {
         variant: "success"
         })
 
-      form.reset()
+        onSuccess?.()
+        form.reset()
     } catch (error) {
       toast({
         title: "Error",
@@ -73,111 +80,119 @@ const LeadForm = () => {
       console.error(error)
     } finally {
       setIsSubmitting(false)
+      setIsDialogOpen(false)
     }
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="Name"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex gap-2">
-                <FormLabel>Name</FormLabel>
-                <FormMessage />
-              </div>
-              <FormControl>
-                <Input placeholder="" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Create New Lead</DialogTitle>
+      </DialogHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="Name"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex gap-2">
+                  <FormLabel>Name</FormLabel>
+                  <FormMessage />
+                </div>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="Email"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex gap-2">
-                <FormLabel>Email</FormLabel>
-                <FormMessage />
-              </div>
-              <FormControl>
-                <Input placeholder="" type="email" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="Email"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex gap-2">
+                  <FormLabel>Email</FormLabel>
+                  <FormMessage />
+                </div>
+                <FormControl>
+                  <Input placeholder="" type="email" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="Phone"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex gap-2">
-                <FormLabel>Phone</FormLabel>
-                <FormMessage />
-              </div>
-              <FormControl>
-                <Input placeholder="" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="Phone"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex gap-2">
+                  <FormLabel>Phone</FormLabel>
+                  <FormMessage />
+                </div>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="Description"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex gap-2">
-                <FormLabel>Description</FormLabel>
-                <FormMessage />
-              </div>
-              <FormControl>
-                <Textarea 
-                  placeholder="" 
-                  className="min-h-[100px]" 
-                  {...field} 
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="Description"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex gap-2">
+                  <FormLabel>Description</FormLabel>
+                  <FormMessage />
+                </div>
+                <FormControl>
+                  <Textarea 
+                    placeholder="" 
+                    className="min-h-[100px]" 
+                    {...field} 
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="FollowupDate"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <div className="flex gap-2">
-                <FormLabel>Follow-up Date</FormLabel>
-                <FormMessage />
-              </div>
-              <DateTimePicker {...field} granularity="minute" />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="FollowupDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <div className="flex gap-2">
+                  <FormLabel>Follow-up Date</FormLabel>
+                  <FormMessage />
+                </div>
+                <DateTimePicker {...field} granularity="minute" />
+              </FormItem>
+            )}
+          />
 
-        <Button 
-          type="submit" 
-          className="w-full bg-primary text-background hover:bg-primary/90"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating...
-            </>
-          ) : (
-            "Create Lead"
-          )}
-        </Button>
-    
-      </form>
-    </Form>
+          <Button 
+            type="submit" 
+            className="w-full bg-primary text-background hover:bg-primary/90"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "Create Lead"
+            )}
+          </Button>
+      
+        </form>
+      </Form>
+    </DialogContent>
+  </Dialog>
   )
 }
 

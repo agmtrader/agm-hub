@@ -5,6 +5,5 @@ export const lead_schema = z.object({
   Email: z.string().email({ message: "Invalid email address" }),
   Phone: z.string().min(1, { message: "Phone number is required" }),
   Description: z.string().min(1, { message: "Description is required" }),
-  FollowupDate: z.date({ message: "Follow-up date is required" }),
-  Status: z.string().min(1, { message: "Status is required" })
+  FollowupDate: z.date({ message: "Follow-up date is required" })
 }) 
