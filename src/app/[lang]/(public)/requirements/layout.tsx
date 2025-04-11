@@ -4,8 +4,8 @@ import { StaticHeader } from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "AGM Downloads",
-  description: "Download the latest AGM software and documentation.",
+  title: "AGM Requirements",
+  description: "Requirements for opening an AGM account.",
 };
 
 export default function Layout(

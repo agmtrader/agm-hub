@@ -1,5 +1,4 @@
 'use client'
-
 import DashboardPage from '@/components/misc/DashboardPage'
 import React, { useEffect, useState } from 'react'
 import LeadForm from './LeadForm'

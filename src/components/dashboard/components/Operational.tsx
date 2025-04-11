@@ -43,13 +43,13 @@ const Operational = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-full"
+      className="flex flex-wrap justify-start items-center gap-4 max-w-full mx-auto p-4"
     >
       {operationalData.map((card) => (
         <motion.div 
           key={card.title}
           variants={itemVariants} 
-          className="h-full"
+          className="w-[280px]"
         >
             <Link 
               href={card.url || ''}
