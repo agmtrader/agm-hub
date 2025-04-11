@@ -714,9 +714,9 @@
                         "business": "Ingresos producto de Negocios: (Copia de los Estados Financieros de la Compañía que muestren dichos Ingresos)",
                         "dividends": "Dividendos recibidos: (Copia del Acta de Accionistas autorizando la distribución de Dividendos)"
                     }
-                },
-                "submit": "Enviar"
-            }
+                }
+            },
+            "submit": "Aplicar a una cuenta"
         }
     },
     "dashboard": {

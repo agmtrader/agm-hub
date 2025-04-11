@@ -643,8 +643,86 @@
                 }
             },
             "institutional": {
-                "title": "Requirements for Institutional Accounts"
-            }
+                "title": "Requirements for Institutional Accounts",
+                "company_documents": {
+                    "title": "Documents that prove the existence of the company",
+                    "description": "Two of the following documents",
+                    "documents": {
+                        "incorporation": {
+                            "title": "Incorporation Act or Incorporation",
+                            "description": "The document should clearly specify the name of the company as it appears in the opening documents, and should be certified and notarized."
+                        },
+                        "legal_id": {
+                            "title": "Legal ID",
+                            "description": "The document should be issued by a Government authority, where it specifies the registration number, and also clearly specifies the name of the company as it appears in the opening documents"
+                        },
+                        "legal_status": {
+                            "title": "Legal ID",
+                            "description": "The document should clearly specify the name of the company as it appears in the opening documents, and should be certified and notarized. Valid: less than 6 months."
+                        }
+                    }
+                },
+                "address_verification": {
+                    "title": "Address Verification",
+                    "description": "One of the following documents",
+                    "documents": {
+                        "utility_bill": {
+                            "title": "Utility Bill",
+                            "description": "For example, utility bills for internet, cable TV, electricity, water, gas, fixed telephone (mobile phone service bills are not accepted). The bill must clearly describe the full name of the company and the physical address. Must not be older than six months."
+                        }
+                    }
+                },
+                "director_identification": {
+                    "title": "Identification Documents of Directors",
+                    "description": "President - Secretary and signatories (One of the following documents)",
+                    "documents": {
+                        "passport": {
+                            "title": "Passport",
+                            "description": "Must be current, properly signed. Must include photograph, full name, date of birth, and expiration date."
+                        },
+                        "id_card": {
+                            "title": "Identification Document",
+                            "description": "Identification document from the country of residence, that includes the signature, date of birth, photograph of the person, full name, date of birth, expiration date, and country of issuance of the document."
+                        },
+                        "driver_license": {
+                            "title": "Driver's License",
+                            "description": "Must be current, properly signed. Must include photograph, full name, date of birth, expiration date, date and place of issuance."
+                        }
+                    }
+                },
+                "director_address": {
+                    "title": "Documents that indicate the physical address of the directors",
+                    "description": "President - Secretary and signatories (One of the following documents)",
+                    "documents": {
+                        "utility_bill": {
+                            "title": "Utility Bill",
+                            "description": "For example, utility bills for internet, cable TV, electricity, water, fixed telephone (mobile phone service bills are not accepted). The bill must clearly describe the full name and address of the person and must be less than one year old."
+                        }
+                    }
+                },
+                "capital_ownership": {
+                    "title": "Document that proves the ownership of the Capital of the Company",
+                    "documents": {
+                        "share_certificate": "Certified copy of the Share Certificate(s) of the Company",
+                        "notarial_certification": "Notarial certification of the Share Distribution of the Company"
+                    },
+                    "note": "If there are multiple shareholders, those with more than 10% must provide identification documents and documents that indicate their physical address."
+                },
+                "source_of_wealth": {
+                    "title": "Source of Income",
+                    "description": "One of the following documents according to the Type of Income",
+                    "documents": {
+                        "investments": "Income from Investment Gains: (Stock Exchange Account Statement showing such gains)",
+                        "property": "Property Sale: (Property Purchase/Sale Contract)",
+                        "inheritance": "Inheritance: (Copy of Legal Document: Trust, Will, etc.)",
+                        "shares": "Sale of Shares in one or more companies: (Stock Exchange Account Statement showing such sales)",
+                        "profits": "Income from Profits: (Copy of Financial Statements of the Company showing such income)",
+                        "business": "Income from Business: (Copy of Financial Statements of the Company showing such income)",
+                        "dividends": "Dividends received: (Copy of Shareholders' Minutes authorizing Dividend distribution)"
+                    }
+                }
+            },
+            "submit": "Apply for an account"
         }
     },
     "dashboard": {
