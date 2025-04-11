@@ -11,6 +11,7 @@ import { ReadTickets } from '@/utils/entities/ticket';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { addColumnsFromJSON } from '@/utils/table';
+import { formatDateFromTimestamp } from '@/utils/dates';
 
 interface Props {
   setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>,
@@ -25,14 +26,15 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
   const [showAll, setShowAll] = useState(false)
 
   const columns = [
-    { accessorKey: 'TicketID', header: 'Ticket ID' },
+    { accessorKey: 'Created', header: 'Ticket ID' },
     { accessorKey: 'Status', header: 'Status' },
     { accessorKey: 'first_name', header: 'First Name' },
     { accessorKey: 'last_name', header: 'Last Name' },
     { accessorKey: 'email', header: 'Email' },
     { accessorKey: 'referrer', header: 'Referrer' },
     { accessorKey: 'Advisor', header: 'Advisor' },
-    { accessorKey: 'MasterAccount', header: 'Master Account' }
+    { accessorKey: 'MasterAccount', header: 'Master Account' },
+    { accessorKey: 'account_type', header: 'Account Type' }
   ]
 
   useEffect(() => {
@@ -43,7 +45,11 @@ const TicketManager = ({setTicket, ticket, setCanContinue}:Props) => {
         const tickets = await ReadTickets()
         const sortedTickets = tickets.sort((a, b) => (b.TicketID.toString().localeCompare(a.TicketID.toString())))
         const expandedSortedTickets = await addColumnsFromJSON(sortedTickets)
-        setTickets(showAll ? expandedSortedTickets : expandedSortedTickets.filter((ticket) => ticket.Status !== "Started" && ticket.Status !== "Opened"))
+        const formattedTickets = expandedSortedTickets.map(ticket => ({
+          ...ticket,
+          Created: formatDateFromTimestamp(ticket.TicketID.toString())
+        }))
+        setTickets(showAll ? formattedTickets : formattedTickets.filter((ticket) => ticket.Status !== "Started" && ticket.Status !== "Opened"))
         
     }
     fetchData()

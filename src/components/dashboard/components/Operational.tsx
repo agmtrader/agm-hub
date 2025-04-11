@@ -23,17 +23,9 @@ const operationalData: CardData[] = [
     url: '/dashboard/open-account'
   },
   {
-    title: 'Approved Accounts',
+    title: 'Accounts',
     Icon: ShieldCheck,
     url: '/dashboard/accounts'
-  },
-  {
-    title: 'Communications',
-    Icon: MessageSquare
-  },
-  {
-    title: 'Support',
-    Icon: HeadphonesIcon
   }
 ]
 

@@ -25,3 +25,8 @@ export async function UpdateLeadByID(leadID:string, data:any) {
     await accessAPI('/leads/update', 'POST', {'query': {'LeadID': leadID}, 'data': data})
     return 'Updated'
 }
+
+export async function DeleteLeadByID(leadID:string) {
+    await accessAPI('/leads/delete', 'POST', {'query': {'LeadID': leadID}})
+    return 'Deleted'
+}
