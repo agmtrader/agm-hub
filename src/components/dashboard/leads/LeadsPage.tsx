@@ -1,8 +1,9 @@
 'use client'
 import DashboardPage from '@/components/misc/DashboardPage'
 import React, { useEffect, useState } from 'react'
-import LeadForm from './LeadForm'
+import LeadForm from './CreateLead'
 import LeadView from './LeadView'
+import EditLead from './EditLead'
 import { Lead, FollowUp } from '@/lib/entities/lead'
 import { DeleteLeadByID, ReadLeads } from '@/utils/entities/lead'
 import { DataTable, ColumnDefinition } from '@/components/misc/DataTable'
@@ -18,6 +19,7 @@ const LeadsPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   async function handleDeleteLead(leadID: string) {
     try {
@@ -88,7 +90,7 @@ const LeadsPage = () => {
     },
     {
       header: 'Next Follow-up',
-      accessorKey: 'FollowUps',
+      accessorKey: 'NextFollowUp',
       cell: ({ row }: any) => {
         const followUps = row.original.FollowUps as FollowUp[]
         if (!followUps?.length) return '-'
@@ -119,7 +121,7 @@ const LeadsPage = () => {
     },
     {
       header: 'Progress',
-      accessorKey: 'FollowUps',
+      accessorKey: 'FollowUpProgress',
       cell: ({ row }: any) => {
         const followUps = row.original.FollowUps as FollowUp[]
         if (!followUps?.length) return '-'
@@ -164,6 +166,13 @@ const LeadsPage = () => {
                 }
               },
               {
+                label: 'Edit',
+                onClick: (row: Lead) => {
+                  setSelectedLead(row)
+                  setIsEditDialogOpen(true)
+                }
+              },
+              {
                 label: 'Delete',
                 onClick: (row: any) => {
                   handleDeleteLead(row.LeadID)
@@ -176,6 +185,12 @@ const LeadsPage = () => {
 
       <LeadForm isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} onSuccess={handleFetchLeads} />
       <LeadView lead={selectedLead} isOpen={isViewDialogOpen} onOpenChange={setIsViewDialogOpen} />
+      <EditLead 
+        isDialogOpen={isEditDialogOpen} 
+        setIsDialogOpen={setIsEditDialogOpen} 
+        lead={selectedLead}
+        onSuccess={handleFetchLeads}
+      />
     </DashboardPage>
   )
 }

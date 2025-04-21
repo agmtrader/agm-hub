@@ -123,7 +123,7 @@ const LeadView = ({ lead, isOpen, onOpenChange }: LeadViewProps) => {
                 {lead.FollowUps
                   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                   .map((followUp, index) => (
-                    <div className="space-y-2">
+                    <div key={followUp.date} className="space-y-2">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
                           <p className="text-sm text-muted-foreground">Follow-up Date</p>

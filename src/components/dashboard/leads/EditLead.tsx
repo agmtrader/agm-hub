@@ -1,12 +1,12 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { lead_schema } from "@/lib/schemas/lead"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { CreateLead } from '@/utils/entities/lead'
+import { UpdateLeadByID } from '@/utils/entities/lead'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2, Plus, Trash2 } from 'lucide-react'
 import {
@@ -26,13 +26,14 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { countries } from "@/lib/form"
 
-interface LeadFormProps {
+interface Props {
   isDialogOpen: boolean
   setIsDialogOpen: (isDialogOpen: boolean) => void
+  lead: Lead | null
   onSuccess?: () => void
 }
 
-const LeadForm = ({ isDialogOpen, setIsDialogOpen, onSuccess }: LeadFormProps) => {
+const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
@@ -53,18 +54,41 @@ const LeadForm = ({ isDialogOpen, setIsDialogOpen, onSuccess }: LeadFormProps) =
     }
   })
 
+  // Reset form when lead changes
+  useEffect(() => {
+    if (lead) {
+      const followUps = lead.FollowUps.map(followUp => {
+        // Parse the date string (format: yyyyMMddHHmmss) into a Date object
+        const year = parseInt(followUp.date.slice(0, 4))
+        const month = parseInt(followUp.date.slice(4, 6)) - 1 // Months are 0-indexed
+        const day = parseInt(followUp.date.slice(6, 8))
+        const hour = parseInt(followUp.date.slice(8, 10))
+        const minute = parseInt(followUp.date.slice(10, 12))
+        
+        return {
+          ...followUp,
+          date: new Date(year, month, day, hour, minute)
+        }
+      })
+
+      form.reset({
+        ...lead,
+        FollowUps: followUps
+      })
+    }
+  }, [lead, form])
+
   const { fields, append, remove } = useFieldArray({
     name: "FollowUps",
     control: form.control
   })
 
   const handleSubmit = async (values: any) => {
+    if (!lead) return
+
     setIsSubmitting(true)
 
     try {
-      const LeadID = formatTimestamp(new Date())
-      const ContactDate = formatTimestamp(new Date())
-      
       const formattedFollowUps: FollowUp[] = values.FollowUps.map((followUp: any) => ({
         date: formatTimestamp(followUp.date),
         description: followUp.description,
@@ -73,27 +97,26 @@ const LeadForm = ({ isDialogOpen, setIsDialogOpen, onSuccess }: LeadFormProps) =
 
       const leadData: Lead = {
         ...values,
-        ContactDate: ContactDate,
-        LeadID: LeadID,
+        LeadID: lead.LeadID,
+        ContactDate: lead.ContactDate,
         FollowUps: formattedFollowUps,
-        Completed: false
+        Completed: values.FollowUps.every((f: any) => f.completed)
       }
       
-      await CreateLead(leadData, LeadID)
+      await UpdateLeadByID(lead.LeadID, leadData)
       
       toast({
         title: "Success",
-        description: "Lead created successfully",
+        description: "Lead updated successfully",
         variant: "success"
       })
 
       onSuccess?.()
-      form.reset()
       setIsDialogOpen(false)
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create lead",
+        description: "Failed to update lead",
         variant: "destructive"
       })
       console.error(error)
@@ -106,7 +129,7 @@ const LeadForm = ({ isDialogOpen, setIsDialogOpen, onSuccess }: LeadFormProps) =
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Lead</DialogTitle>
+          <DialogTitle>Edit Lead</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -159,13 +182,13 @@ const LeadForm = ({ isDialogOpen, setIsDialogOpen, onSuccess }: LeadFormProps) =
             />
 
             <div className="grid grid-cols-2 gap-4">
-            <FormField
+              <FormField
                 control={form.control}
                 name="PhoneCountry"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Country</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select country" />
@@ -317,10 +340,10 @@ const LeadForm = ({ isDialogOpen, setIsDialogOpen, onSuccess }: LeadFormProps) =
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
+                  Updating...
                 </>
               ) : (
-                "Create Lead"
+                "Update Lead"
               )}
             </Button>
           </form>
@@ -330,4 +353,4 @@ const LeadForm = ({ isDialogOpen, setIsDialogOpen, onSuccess }: LeadFormProps) =
   )
 }
 
-export default LeadForm 
+export default EditLead 
