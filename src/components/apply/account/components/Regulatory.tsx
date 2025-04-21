@@ -407,7 +407,7 @@ const Regulatory = ({stepBackwards, ticket, stepForward, syncTicketData}:Props) 
                   {t('forms.submitting')}
                 </>
               ) : (
-                t('forms.submit')
+                t('forms.finish')
               )}
             </Button>
           </div>

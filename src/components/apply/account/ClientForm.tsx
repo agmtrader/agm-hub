@@ -14,7 +14,6 @@ import AboutOrganization from './components/AboutOrganization';
 import { UpdateTicketByID } from '@/utils/entities/ticket';
 import { Loader2 } from 'lucide-react';
 import { pageTransition, pageVariants } from '@/lib/anims';
-import UploadDocuments from './components/UploadDocuments';
 
 interface Props {
   ticketProp: Ticket | null
@@ -171,8 +170,6 @@ const ClientForm = ({ticketProp}: Props) => {
             />
           );
         case 4:
-          return <UploadDocuments ticket={ticket}/>;
-        case 5:
           return <ApplicationEnd ticket={ticket}/>;
         default:
           return null;
@@ -219,15 +216,13 @@ const ClientForm = ({ticketProp}: Props) => {
             />
           );
         case 5:
-          return <UploadDocuments ticket={ticket}/>;
-        case 6:
           return <ApplicationEnd ticket={ticket}/>;
         default:
           return null;
       }
     }
 
-    if (ticket.ApplicationInfo.account_type === 'Institutional') {
+    if (['Institutional'].includes(ticket.ApplicationInfo.account_type)) {
       switch (step) {
         case 1:
           return (
@@ -265,8 +260,6 @@ const ClientForm = ({ticketProp}: Props) => {
             />
           );
         case 5:
-          return <UploadDocuments ticket={ticket}/>;
-        case 6:
           return <ApplicationEnd ticket={ticket}/>;
         default:
           return null;
