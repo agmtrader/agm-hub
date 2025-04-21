@@ -20,19 +20,19 @@ import {
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { formatTimestamp } from '@/utils/dates'
 import { Lead, FollowUp } from '@/lib/entities/lead'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { countries } from "@/lib/form"
 
 interface Props {
-  isDialogOpen: boolean
-  setIsDialogOpen: (isDialogOpen: boolean) => void
   onSuccess?: () => void
 }
 
-const CreateLead = ({ isDialogOpen, setIsDialogOpen, onSuccess }: Props) => {
+const CreateLead = ({ onSuccess }: Props) => {
+
+  const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
@@ -89,7 +89,7 @@ const CreateLead = ({ isDialogOpen, setIsDialogOpen, onSuccess }: Props) => {
 
       onSuccess?.()
       form.reset()
-      setIsDialogOpen(false)
+      setIsOpen(false)
     } catch (error) {
       toast({
         title: "Error",
@@ -103,7 +103,15 @@ const CreateLead = ({ isDialogOpen, setIsDialogOpen, onSuccess }: Props) => {
   }
 
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button 
+            className="bg-primary text-background hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Lead
+          </Button>
+      </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Lead</DialogTitle>

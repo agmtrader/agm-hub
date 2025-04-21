@@ -11,10 +11,9 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Card, CardContent, CardTitle, CardHeader } from '@/components/ui/card';
 import Image from 'next/image';
-import { Separator } from '@/components/ui/separator';
-import { FaGoogle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/anims';
+import { useSession } from 'next-auth/react';
 
 function SignIn() {
 
@@ -29,6 +28,11 @@ function SignIn() {
   const callbackUrl = searchParams.get('callbackUrl');
 
   const {toast} = useToast()
+
+  const { data: session } = useSession()
+  if (session) {
+    router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,13 +53,6 @@ function SignIn() {
       })
     }
     setIsLoading(false);
-  }
-
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    await signIn('google', {
-      callbackUrl: callbackUrl ? formatURL(`/onboarding?callbackUrl=${encodeURIComponent(callbackUrl)}`, lang) : formatURL('/onboarding', lang),
-    });
   }
 
   return (

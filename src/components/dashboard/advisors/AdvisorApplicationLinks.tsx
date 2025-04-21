@@ -9,7 +9,7 @@ type Props = {
     advisor: Advisor | null
 }
 
-const ApplicationLinksDialog = ({ advisor }: Props) => {
+const AdvisorApplicationLinks = ({ advisor }: Props) => {
     const { lang } = useTranslationProvider()
 
     async function handleStartBrokerAccount() {
@@ -63,4 +63,4 @@ const ApplicationLinksDialog = ({ advisor }: Props) => {
   )
 }
 
-export default ApplicationLinksDialog
+export default AdvisorApplicationLinks

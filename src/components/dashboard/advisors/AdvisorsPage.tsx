@@ -7,7 +7,7 @@ import { formatURL } from '@/utils/language/lang'
 import { toast } from '@/hooks/use-toast'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { DataTable } from '@/components/misc/DataTable'
-import ApplicationLinksDialog from '@/components/dashboard/advisors/ApplicationLinksDialog'
+import AdvisorApplicationLinks from './AdvisorApplicationLinks'
 import { ReadAdvisors } from '@/utils/entities/advisor'
 
 type Props = {}
@@ -77,7 +77,7 @@ const AdvisorsPage = (props: Props) => {
             : 
             <LoadingComponent className='h-full w-full'/>
         }
-        <ApplicationLinksDialog
+        <AdvisorApplicationLinks
             advisor={selectedAdvisorForLink}
         />
     </div>
