@@ -326,7 +326,7 @@ export const DataTable = <TData,>({
             ))}
           </TableHeader>
           <TableBody>
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="sync">
               {getVisibleRows()?.length ? (
                 getVisibleRows().map((row, index) => (
                   <motion.tr

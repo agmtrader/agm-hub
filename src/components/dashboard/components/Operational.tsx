@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, Ticket, ShieldCheck, MessageSquare, HeadphonesIcon, LucideIcon } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import Link from 'next/link'
+import { formatURL } from '@/utils/language/lang'
 
 type CardData = {
   title: string
@@ -44,7 +45,7 @@ const Operational = () => {
           className="w-[280px]"
         >
             <Link 
-              href={card.url || ''}
+              href={formatURL(card.url || '', 'en')}
               className="block h-full transition-transform hover:scale-[1.02] hover:cursor-pointer"
             >
               <Card className="h-full aspect-square flex flex-col items-center justify-center p-6">
