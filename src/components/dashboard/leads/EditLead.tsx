@@ -25,6 +25,7 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { countries } from "@/lib/form"
+import CountriesFormField from '@/components/ui/CountriesFormField'
 
 interface Props {
   isDialogOpen: boolean
@@ -138,7 +139,7 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
               name="Name"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <FormLabel>Name</FormLabel>
                     <FormMessage />
                   </div>
@@ -154,7 +155,7 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
               name="Email"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <FormLabel>Email</FormLabel>
                     <FormMessage />
                   </div>
@@ -170,7 +171,7 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
               name="Referrer"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <FormLabel>Referrer</FormLabel>
                     <FormMessage />
                   </div>
@@ -182,29 +183,12 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="PhoneCountry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Country</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select country" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {countries.map((country) => (
-                          <SelectItem key={country.value} value={country.value}>
-                            {country.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            <CountriesFormField
+                form={form} 
+                element={{ 
+                  name: "PhoneCountry", 
+                  title: "Phone Country" 
+                }} 
               />
               
               <FormField
@@ -212,7 +196,7 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
                 name="Phone"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                       <FormLabel>Phone</FormLabel>
                       <FormMessage />
                     </div>
@@ -229,7 +213,7 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
               name="Description"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <FormLabel>Description</FormLabel>
                     <FormMessage />
                   </div>

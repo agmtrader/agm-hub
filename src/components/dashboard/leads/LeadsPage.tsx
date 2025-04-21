@@ -13,6 +13,7 @@ import { toast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
 import { countries } from '@/lib/form'
 import GenerateApplicationLink from './GenerateApplicationLink'
+import { formatDateFromTimestamp } from '@/utils/dates'
 
 const LeadsPage = () => {
 
@@ -90,6 +91,9 @@ const LeadsPage = () => {
     {
       header: 'Contact Date',
       accessorKey: 'Contact_Date',
+      cell: ({ row }: any) => {
+        return formatDateFromTimestamp(row.original.Contact_Date)
+      }
     },
     {
       header: 'Next Follow-up',
@@ -114,7 +118,7 @@ const LeadsPage = () => {
         const nextFollowUp = sortedFollowUps[0]
         return (
           <div className="flex items-center gap-2">
-            <span>{nextFollowUp.date}</span>
+            <span>{formatDateFromTimestamp(nextFollowUp.date)}</span>
             {nextFollowUp.completed && (
               <Badge variant="secondary">Completed</Badge>
             )}

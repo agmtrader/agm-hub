@@ -25,6 +25,7 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { countries } from "@/lib/form"
+import CountriesFormField from '@/components/ui/CountriesFormField'
 
 interface Props {
   onSuccess?: () => void
@@ -123,7 +124,7 @@ const CreateLead = ({ onSuccess }: Props) => {
               name="Name"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <FormLabel>Name</FormLabel>
                     <FormMessage />
                   </div>
@@ -139,7 +140,7 @@ const CreateLead = ({ onSuccess }: Props) => {
               name="Email"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <FormLabel>Email</FormLabel>
                     <FormMessage />
                   </div>
@@ -155,7 +156,7 @@ const CreateLead = ({ onSuccess }: Props) => {
               name="Referrer"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <FormLabel>Referrer</FormLabel>
                     <FormMessage />
                   </div>
@@ -167,29 +168,12 @@ const CreateLead = ({ onSuccess }: Props) => {
             />
 
             <div className="grid grid-cols-2 gap-4">
-            <FormField
-                control={form.control}
-                name="PhoneCountry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Country</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select country" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {countries.map((country) => (
-                          <SelectItem key={country.value} value={country.value}>
-                            {country.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <CountriesFormField
+                form={form} 
+                element={{ 
+                  name: "PhoneCountry", 
+                  title: "Phone Country" 
+                }} 
               />
               
               <FormField
@@ -197,7 +181,7 @@ const CreateLead = ({ onSuccess }: Props) => {
                 name="Phone"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                       <FormLabel>Phone</FormLabel>
                       <FormMessage />
                     </div>
@@ -214,7 +198,7 @@ const CreateLead = ({ onSuccess }: Props) => {
               name="Description"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <FormLabel>Description</FormLabel>
                     <FormMessage />
                   </div>
@@ -252,7 +236,10 @@ const CreateLead = ({ onSuccess }: Props) => {
                         name={`FollowUps.${index}.date`}
                         render={({ field: dateField }) => (
                           <FormItem>
-                            <FormLabel>Follow-up Date</FormLabel>
+                            <div className="flex gap-2 items-center">
+                              <FormLabel>Follow-up Date</FormLabel>
+                              <FormMessage />
+                            </div>
                             <FormControl>
                               <DateTimePicker 
                                 value={dateField.value} 
@@ -260,7 +247,6 @@ const CreateLead = ({ onSuccess }: Props) => {
                                 granularity="minute"
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -270,14 +256,16 @@ const CreateLead = ({ onSuccess }: Props) => {
                         name={`FollowUps.${index}.description`}
                         render={({ field: descField }) => (
                           <FormItem>
-                            <FormLabel>Follow-up Description</FormLabel>
+                            <div className="flex gap-2 items-center">
+                              <FormLabel>Follow-up Description</FormLabel>
+                              <FormMessage />
+                            </div>
                             <FormControl>
                               <Textarea 
                                 placeholder="What needs to be done in this follow-up?"
                                 {...descField}
                               />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />

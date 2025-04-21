@@ -18,6 +18,7 @@ import { countries } from "@/lib/form"
 import { UpdateLeadByID } from '@/utils/entities/lead'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface LeadViewProps {
   lead: Lead | null
@@ -68,7 +69,7 @@ const LeadView = ({ lead, isOpen, onOpenChange }: LeadViewProps) => {
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Lead Details</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">Lead Overview</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[60vh] w-full rounded-md">
           <div className="space-y-6 p-4">
@@ -84,28 +85,28 @@ const LeadView = ({ lead, isOpen, onOpenChange }: LeadViewProps) => {
               <h3 className="text-lg font-semibold">Basic Information</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-muted-foreground">Name</p>
-                  <p className="font-medium">{lead.Name}</p>
+                  <p className="text-foreground font-medium text-md">Name</p>
+                  <p className="text-subtitle text-sm">{lead.Name}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Contact Date</p>
-                  <p className="font-medium">{formatDateFromTimestamp(lead.ContactDate || '')}</p>
+                  <p className="text-foreground font-medium text-md">Contact Date</p>
+                  <p className="text-subtitle text-sm">{formatDateFromTimestamp(lead.ContactDate || '')}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Email</p>
-                  <p className="font-medium">{lead.Email}</p>
+                  <p className="text-foreground font-medium text-md">Email</p>
+                  <p className="text-subtitle text-sm">{lead.Email}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Phone</p>
-                  <p className="font-medium">{lead.Phone}</p>
+                  <p className="text-foreground font-medium text-md">Phone</p>
+                  <p className="text-subtitle text-sm">{lead.Phone}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Phone Country</p>
-                  <p className="font-medium">{getCountryLabel(lead.PhoneCountry)}</p>
+                  <p className="text-foreground font-medium text-md">Phone Country</p>
+                  <p className="text-subtitle text-sm">{getCountryLabel(lead.PhoneCountry)}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Referrer</p>
-                  <p className="font-medium">{lead.Referrer}</p>
+                  <p className="text-foreground font-medium text-md">Referrer</p>
+                  <p className="text-subtitle text-sm">{lead.Referrer}</p>
                 </div>
               </div>
             </Card>
@@ -113,7 +114,7 @@ const LeadView = ({ lead, isOpen, onOpenChange }: LeadViewProps) => {
             {/* Description */}
             <Card className="p-6 space-y-4">
               <h3 className="text-lg font-semibold">Description</h3>
-              <p className="text-muted-foreground whitespace-pre-wrap">{lead.Description}</p>
+              <p className="text-subtitle text-sm whitespace-pre-wrap">{lead.Description}</p>
             </Card>
 
             {/* Follow-ups */}
@@ -125,19 +126,12 @@ const LeadView = ({ lead, isOpen, onOpenChange }: LeadViewProps) => {
                   .map((followUp, index) => (
                     <div key={followUp.date} className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm text-muted-foreground">Follow-up Date</p>
-                        </div>
+                        <p className="text-sm font-medium text-foreground">{formatDateFromTimestamp(followUp.date)}</p>
                         <div className="flex flex-col items-end gap-2">
-                          <p className="text-sm font-medium">{followUp.date}</p>
-                          <Button variant="ghost" asChild onClick={() => handleCompleteFollowUp(followUp)}>
-                            <Badge variant={followUp.completed ? "success" : "outline"}>
-                              {followUp.completed ? "Completed" : "Pending"}
-                            </Badge>
-                          </Button>
+                          <Checkbox checked={followUp.completed} onCheckedChange={() => handleCompleteFollowUp(followUp)} />
                         </div>
                       </div>
-                      <p className="text-sm whitespace-pre-wrap">{followUp.description}</p>
+                      <p className="text-sm text-subtitle whitespace-pre-wrap">{followUp.description}</p>
                       <Separator className="w-full" orientation="horizontal" />
                     </div>
                   ))}
