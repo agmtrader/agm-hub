@@ -44,8 +44,11 @@ export default function CreateContact({ onContactCreated }: CreateContactProps) 
         try {
             const ContactID = formatTimestamp(new Date())
             const contactData:Contact = {
-                ...values,
                 ContactID: ContactID,
+                ContactName: values.ContactName,
+                ContactEmail: values.ContactEmail || null,
+                ContactPhone: values.ContactPhone || null,
+                ContactCountry: values.ContactCountry || null
             }
             await CreateContactAPI(contactData)
             toast({

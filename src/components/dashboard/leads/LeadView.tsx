@@ -18,6 +18,8 @@ import { toast } from '@/hooks/use-toast'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Contact } from '@/lib/entities/contact'
 import { ReadContacts } from '@/utils/entities/contact'
+import GenerateApplicationLink from './GenerateApplicationLink'
+import { countries } from '@/lib/form'
 
 interface LeadViewProps {
   lead: Lead | null
@@ -69,7 +71,19 @@ const LeadView = ({ lead, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
           FollowUps: lead.FollowUps.map(f => f.date === followUp.date ? { ...f, completed: true } : f)
         })
       }
+
+      if (!lead.FollowUps.every(f => f.completed)) {
+        await UpdateLeadByID(lead.LeadID, {
+          Status: 'Waiting for Application'
+        })
+      } else {
+        await UpdateLeadByID(lead.LeadID, {
+          Status: 'Started'
+        })
+      }
+
       onSuccess?.()
+
     } catch (error) {
       toast({
         title: 'Error',
@@ -92,6 +106,7 @@ const LeadView = ({ lead, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
               <Badge variant={completedFollowUps === totalFollowUps ? "success" : "outline"} className="text-sm">
                 {completedFollowUps}/{totalFollowUps} follow-ups completed
               </Badge>
+              <Badge variant={lead.Status === 'Applied' ? 'success' : 'outline'} className="text-sm"> {lead.Status} </Badge>
             </div>
 
             {/* Basic Information */}
@@ -116,7 +131,7 @@ const LeadView = ({ lead, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
                 </div>
                 <div>
                   <p className="text-foreground font-medium text-md">Country</p>
-                  <p className="text-subtitle text-sm">{contact?.ContactCountry || '-'}</p>
+                  <p className="text-subtitle text-sm">{countries.find(c => c.value === contact?.ContactCountry)?.label || '-'}</p>
                 </div>
                 <div>
                   <p className="text-foreground font-medium text-md">Referrer</p>
@@ -151,6 +166,7 @@ const LeadView = ({ lead, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
                   ))}
               </div>
             </Card>
+            {lead && <GenerateApplicationLink lead={lead} />}
           </div>
         </ScrollArea>
       </DialogContent>

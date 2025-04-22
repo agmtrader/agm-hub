@@ -31,11 +31,11 @@ export async function UpdateContact(contact: Contact) {
 }
 
 export async function DeleteContact(id: string) {
-    let contact_response = await accessAPI('/contacts/delete', 'POST', {'data': {'id': id}})
+    let contact_response = await accessAPI('/contacts/delete', 'POST', {'id': id})
     return contact_response
 }
 
-export async function UpdateContactByID(contactID: string, data: any) {
-    await accessAPI('/contacts/update', 'POST', {'query': {'ContactID': contactID}, 'data': data})
+export async function UpdateContactByID(contact: Contact) {
+    await accessAPI('/contacts/update', 'POST', {'query': {'ContactID': contact.ContactID}, 'data': contact})
     return 'Updated'
 }

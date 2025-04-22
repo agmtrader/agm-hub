@@ -7,5 +7,6 @@ export interface Ticket {
     'Advisor':string | null
     'UserID':string
     'MasterAccount':string
+    'LeadID':string
   }
   

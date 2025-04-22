@@ -12,4 +12,5 @@ export interface Lead {
     'Description': string;
     'FollowUps': FollowUp[];
     'Completed': boolean;
+    'Status': string;
 }

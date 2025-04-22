@@ -106,6 +106,10 @@ const LeadsPage = () => {
       }
     },
     {
+      header: 'Status',
+      accessorKey: 'Status',
+    },
+    {
       header: 'Contact Date',
       accessorKey: 'Contact_Date',
       cell: ({ row }: any) => {
@@ -166,7 +170,6 @@ const LeadsPage = () => {
     <DashboardPage title="Leads" description="Manage and create new leads">
       <div className="flex flex-col gap-6">
         <div className="flex justify-end gap-2">
-          <GenerateApplicationLink />
           <CreateLead onSuccess={handleFetchLeads} />
         </div>
         <div className="w-full">

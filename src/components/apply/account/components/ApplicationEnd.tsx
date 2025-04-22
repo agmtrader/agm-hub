@@ -15,23 +15,7 @@ import { Ticket } from "@/lib/entities/ticket"
 const ApplicationEnd = ({ticket}:{ticket:Ticket}) => {
     const {t, lang} = useTranslationProvider()
     const {data:session} = useSession()
-
-    useEffect(() => {
-        async function CreateEndNotification() {
-          if (!session?.user?.id || !session?.user?.name) throw new Error('Fatal error: No user ID or name')
-          const timestamp = new Date()
-          let notification:TicketNotification = {
-            Title: session?.user?.name,
-            NotificationID: formatTimestamp(timestamp),
-            TicketID: ticket['TicketID'],
-            State: 'Completed',
-            UserID: session?.user?.id
-          }
-          await CreateNotification(notification, 'tickets')
-        }
-        CreateEndNotification()
-    }, [])
-
+    
     return (
       <div className='relative h-full w-full flex flex-col justify-center items-center gap-y-8 py-16'>
         <Confetti

@@ -4,9 +4,8 @@ import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { lead_schema } from "@/lib/schemas/lead"
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { CreateLead as CreateLeadFunction } from '@/utils/entities/lead'
+import { CreateLead as CreateLeadAPI } from '@/utils/entities/lead'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2, Plus, Trash2 } from 'lucide-react'
 import {
@@ -92,10 +91,11 @@ const CreateLead = ({ onSuccess }: Props) => {
         ContactDate: ContactDate,
         LeadID: LeadID,
         FollowUps: formattedFollowUps,
-        Completed: false
+        Completed: false,
+        Status: 'Started'
       }
       
-      await CreateLeadFunction(leadData)
+      await CreateLeadAPI(leadData)
       
       toast({
         title: "Success",

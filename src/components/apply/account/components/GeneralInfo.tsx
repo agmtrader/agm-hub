@@ -86,6 +86,7 @@ const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
       const timestamp = new Date();
       const advisor = searchParams.get('ad') || '';
       const master_account = searchParams.get('ma') || '';
+      const leadID = searchParams.get('ld') || '';
 
       if (!userID) throw new Error('Critical Error: User ID not found. Cannot continue with application.');
 
@@ -97,7 +98,8 @@ const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
         'ApplicationInfo': ticket ? { ...ticket.ApplicationInfo, ...values } : values,
         'Advisor': advisor,
         'UserID': userID,
-        'MasterAccount': master_account
+        'MasterAccount': master_account,
+        'LeadID': leadID
       };
 
       // Only create a new ticket if we don't have an existing one
@@ -109,16 +111,7 @@ const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
       const success = await syncTicketData(newTicket);
       if (!success) throw new Error('Failed to sync ticket data');
 
-      // Send notification to database
-      // using clients name
-      let notification: TicketNotification = {
-        Title: session?.user?.name,
-        NotificationID: formatTimestamp(timestamp),
-        TicketID: ticketID,
-        State: ticket ? 'Updated' : 'Created',
-        UserID: session?.user?.id
-      }
-      await CreateNotification(notification, 'tickets');
+      // Update lead status to "Applied"
 
       stepForward();
 

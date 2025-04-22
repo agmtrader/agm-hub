@@ -50,11 +50,14 @@ const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Prop
 
     try {
       const contactData: Contact = {
-        ...values,
+        ContactName: values.ContactName,
+        ContactEmail: values.ContactEmail || null,
+        ContactPhone: values.ContactPhone || null,
+        ContactCountry: values.ContactCountry || null,
         ContactID: contact.ContactID
       }
       
-      await UpdateContactByID(contact.ContactID, contactData)
+      await UpdateContactByID(contactData)
       
       toast({
         title: "Success",

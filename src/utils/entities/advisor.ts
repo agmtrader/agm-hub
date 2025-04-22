@@ -1,7 +1,7 @@
 import { accessAPI } from "../api"
 
-export async function ReadAdvisors(query: any) {
-    const advisors = await accessAPI('/advisors/read', 'POST', {'query': query})
+export async function ReadAdvisors() {
+    const advisors = await accessAPI('/advisors/read', 'POST', {'query': {}})
     return advisors
 }
 
