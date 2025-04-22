@@ -57,9 +57,7 @@ const AccountsPage = () => {
     if (!accounts) return <LoadingComponent className='w-full h-full'/>
     
   return (
-    <DashboardPage title="Accounts" description="Manage accounts related to AGM">
-      <DataTable data={accounts} infiniteScroll columns={columns} rowActions={rowActions} enableRowActions filterColumns={['AccountNumber', 'IBKRUsername', 'Advisor', 'MasterAccount']} enableFiltering/>
-    </DashboardPage>
+    <DataTable data={accounts} infiniteScroll columns={columns} rowActions={rowActions} enableRowActions filterColumns={['AccountNumber', 'IBKRUsername', 'Advisor', 'MasterAccount']} enableFiltering/>
   )
 }
 

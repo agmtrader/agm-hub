@@ -20,12 +20,6 @@ const tools = [
     id: 'open_account',
   },
   {
-    name: 'Accounts',
-    url: '/dashboard/accounts',
-    icon: Cross,
-    id: 'accounts',
-  },
-  {
     name: 'Risk Profiles',
     url: '/dashboard/risk-profiles',
     icon: AlarmClockPlusIcon,
@@ -43,12 +37,6 @@ const tools = [
     icon: RefreshCcw,
     id: 'reporting_center',
   }, 
-  {
-    name: 'Advisors',
-    url: '/dashboard/advisors',
-    icon: Users,
-    id: 'advisor_center',
-  },
   {
     name: 'Document Center',
     url: '/dashboard/document-center',

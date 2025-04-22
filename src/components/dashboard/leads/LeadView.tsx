@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FollowUp, Lead } from '@/lib/entities/lead'
 import {
   Dialog,
@@ -12,32 +12,50 @@ import { Card } from '@/components/ui/card'
 import { formatDateFromTimestamp } from '@/utils/dates'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { CheckCircle2, Circle } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { countries } from "@/lib/form"
 import { UpdateLeadByID } from '@/utils/entities/lead'
 import { toast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Contact } from '@/lib/entities/contact'
+import { ReadContacts } from '@/utils/entities/contact'
 
 interface LeadViewProps {
   lead: Lead | null
   isOpen: boolean
   onOpenChange: (open: boolean) => void
+  onSuccess?: () => void
 }
 
-const LeadView = ({ lead, isOpen, onOpenChange }: LeadViewProps) => {
+const LeadView = ({ lead, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
+  const [contact, setContact] = useState<Contact | null>(null)
+  const [referrer, setReferrer] = useState<Contact | null>(null)
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      if (!lead) return
+      try {
+        const contacts = await ReadContacts()
+        const foundContact = contacts.find(c => c.ContactID === lead.ContactID)
+        const foundReferrer = contacts.find(c => c.ContactID === lead.ReferrerID)
+        setContact(foundContact || null)
+        setReferrer(foundReferrer || null)
+      } catch (error) {
+        console.error('Failed to fetch contacts:', error)
+        toast({
+          title: "Error",
+          description: "Failed to fetch contact information",
+          variant: "destructive"
+        })
+      }
+    }
+    fetchContacts()
+  }, [lead])
+
   if (!lead) return null
 
   // Calculate follow-up progress
   const completedFollowUps = lead.FollowUps.filter(f => f.completed).length
   const totalFollowUps = lead.FollowUps.length
-
-  // Find country label
-  const getCountryLabel = (value: string) => {
-    const country = countries.find(c => c.value === value)
-    return country ? country.label : value
-  }
 
   async function handleCompleteFollowUp(followUp: FollowUp) {
     if (!lead) return
@@ -51,11 +69,7 @@ const LeadView = ({ lead, isOpen, onOpenChange }: LeadViewProps) => {
           FollowUps: lead.FollowUps.map(f => f.date === followUp.date ? { ...f, completed: true } : f)
         })
       }
-      toast({
-        title: 'Follow-up updated',
-        description: 'The follow-up has been updated',
-        variant: 'success'
-      })
+      onSuccess?.()
     } catch (error) {
       toast({
         title: 'Error',
@@ -85,8 +99,8 @@ const LeadView = ({ lead, isOpen, onOpenChange }: LeadViewProps) => {
               <h3 className="text-lg font-semibold">Basic Information</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-foreground font-medium text-md">Name</p>
-                  <p className="text-subtitle text-sm">{lead.Name}</p>
+                  <p className="text-foreground font-medium text-md">Contact</p>
+                  <p className="text-subtitle text-sm">{contact?.ContactName || 'Loading...'}</p>
                 </div>
                 <div>
                   <p className="text-foreground font-medium text-md">Contact Date</p>
@@ -94,19 +108,19 @@ const LeadView = ({ lead, isOpen, onOpenChange }: LeadViewProps) => {
                 </div>
                 <div>
                   <p className="text-foreground font-medium text-md">Email</p>
-                  <p className="text-subtitle text-sm">{lead.Email}</p>
+                  <p className="text-subtitle text-sm">{contact?.ContactEmail || '-'}</p>
                 </div>
                 <div>
                   <p className="text-foreground font-medium text-md">Phone</p>
-                  <p className="text-subtitle text-sm">{lead.Phone}</p>
+                  <p className="text-subtitle text-sm">{contact?.ContactPhone || '-'}</p>
                 </div>
                 <div>
-                  <p className="text-foreground font-medium text-md">Phone Country</p>
-                  <p className="text-subtitle text-sm">{getCountryLabel(lead.PhoneCountry)}</p>
+                  <p className="text-foreground font-medium text-md">Country</p>
+                  <p className="text-subtitle text-sm">{contact?.ContactCountry || '-'}</p>
                 </div>
                 <div>
                   <p className="text-foreground font-medium text-md">Referrer</p>
-                  <p className="text-subtitle text-sm">{lead.Referrer}</p>
+                  <p className="text-subtitle text-sm">{referrer?.ContactName || 'Loading...'}</p>
                 </div>
               </div>
             </Card>

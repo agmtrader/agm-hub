@@ -15,11 +15,6 @@ const RequirementsPage = () => {
 
   return (
     <div className="container flex-col flex py-6 gap-6 justify-center items-center">
-        <div className='flex w-full'> 
-            <Link href={formatURL('/', lang)}>
-                <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[50px] object-contain" width={150} height={50} />
-            </Link>
-        </div>
         <div className='flex flex-col gap-2'>
             <h1 className="text-4xl font-bold p-5 text-center">{t('apply.requirements.title')}</h1>
             <p className="text-muted-foreground text-center">{t('apply.requirements.description')}</p>

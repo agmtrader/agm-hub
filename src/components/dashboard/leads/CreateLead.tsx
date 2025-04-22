@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { lead_schema } from "@/lib/schemas/lead"
@@ -23,28 +23,26 @@ import { Lead, FollowUp } from '@/lib/entities/lead'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { countries } from "@/lib/form"
-import CountriesFormField from '@/components/ui/CountriesFormField'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Contact } from '@/lib/entities/contact'
+import { ReadContacts } from '@/utils/entities/contact'
 
 interface Props {
   onSuccess?: () => void
 }
 
 const CreateLead = ({ onSuccess }: Props) => {
-
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [contacts, setContacts] = useState<Contact[]>([])
   const { toast } = useToast()
 
   const form = useForm({
     resolver: zodResolver(lead_schema),
     defaultValues: {
-      Name: "",
-      Email: "",
-      Phone: "",
-      PhoneCountry: "",
-      Referrer: "",
+      ContactID: "",
+      ReferrerID: "",
       Description: "",
       FollowUps: [{
         date: new Date(),
@@ -53,6 +51,23 @@ const CreateLead = ({ onSuccess }: Props) => {
       }]
     }
   })
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const fetchedContacts = await ReadContacts()
+        setContacts(fetchedContacts)
+      } catch (error) {
+        console.error('Failed to fetch contacts:', error)
+        toast({
+          title: "Error",
+          description: "Failed to fetch contacts",
+          variant: "destructive"
+        })
+      }
+    }
+    fetchContacts()
+  }, [])
 
   const { fields, append, remove } = useFieldArray({
     name: "FollowUps",
@@ -80,7 +95,7 @@ const CreateLead = ({ onSuccess }: Props) => {
         Completed: false
       }
       
-      await CreateLeadFunction(leadData, LeadID)
+      await CreateLeadFunction(leadData)
       
       toast({
         title: "Success",
@@ -91,6 +106,7 @@ const CreateLead = ({ onSuccess }: Props) => {
       onSuccess?.()
       form.reset()
       setIsOpen(false)
+      
     } catch (error) {
       toast({
         title: "Error",
@@ -121,77 +137,105 @@ const CreateLead = ({ onSuccess }: Props) => {
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="Name"
+              name="ContactID"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2 items-center">
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Contact</FormLabel>
                     <FormMessage />
                   </div>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="w-full justify-between"
+                        >
+                          {field.value
+                            ? contacts.find(
+                                (contact) => contact.ContactID === field.value
+                              )?.ContactName
+                            : "Select a contact"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput placeholder="Search contacts..." />
+                        <CommandList>
+                          <CommandEmpty>No contacts found.</CommandEmpty>
+                          <CommandGroup>
+                            {contacts.map((contact) => (
+                              <CommandItem
+                                value={contact.ContactName}
+                                key={contact.ContactID}
+                                onSelect={() => {
+                                  field.onChange(contact.ContactID)
+                                }}
+                              >
+                                {contact.ContactName}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </FormItem>
               )}
             />
 
             <FormField
               control={form.control}
-              name="Email"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-2 items-center">
-                    <FormLabel>Email</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <FormControl>
-                    <Input placeholder="" type="email" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="Referrer"
+              name="ReferrerID"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2 items-center">
                     <FormLabel>Referrer</FormLabel>
                     <FormMessage />
                   </div>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="w-full justify-between"
+                        >
+                          {field.value
+                            ? contacts.find(
+                                (contact) => contact.ContactID === field.value
+                              )?.ContactName
+                            : "Select a referrer"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput placeholder="Search referrers..." />
+                        <CommandList>
+                          <CommandEmpty>No referrers found.</CommandEmpty>
+                          <CommandGroup>
+                            {contacts.map((contact) => (
+                              <CommandItem
+                                value={contact.ContactName}
+                                key={contact.ContactID}
+                                onSelect={() => {
+                                  field.onChange(contact.ContactID)
+                                }}
+                              >
+                                {contact.ContactName}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </FormItem>
               )}
             />
-
-            <div className="grid grid-cols-2 gap-4">
-              <CountriesFormField
-                form={form} 
-                element={{ 
-                  name: "PhoneCountry", 
-                  title: "Phone Country" 
-                }} 
-              />
-              
-              <FormField
-                control={form.control}
-                name="Phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex gap-2 items-center">
-                      <FormLabel>Phone</FormLabel>
-                      <FormMessage />
-                    </div>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
 
             <FormField
               control={form.control}
@@ -244,7 +288,7 @@ const CreateLead = ({ onSuccess }: Props) => {
                               <DateTimePicker 
                                 value={dateField.value} 
                                 onChange={dateField.onChange}
-                                granularity="minute"
+                                granularity="day"
                               />
                             </FormControl>
                           </FormItem>

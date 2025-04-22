@@ -24,8 +24,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { countries } from "@/lib/form"
-import CountriesFormField from '@/components/ui/CountriesFormField'
+import { Contact } from '@/lib/entities/contact'
+import { ReadContacts } from '@/utils/entities/contact'
 
 interface Props {
   isDialogOpen: boolean
@@ -36,16 +36,14 @@ interface Props {
 
 const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [contacts, setContacts] = useState<Contact[]>([])
   const { toast } = useToast()
 
   const form = useForm({
     resolver: zodResolver(lead_schema),
     defaultValues: {
-      Name: "",
-      Email: "",
-      Phone: "",
-      PhoneCountry: "",
-      Referrer: "",
+      ContactID: "",
+      ReferrerID: "",
       Description: "",
       FollowUps: [{
         date: new Date(),
@@ -54,6 +52,23 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
       }]
     }
   })
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const fetchedContacts = await ReadContacts()
+        setContacts(fetchedContacts)
+      } catch (error) {
+        console.error('Failed to fetch contacts:', error)
+        toast({
+          title: "Error",
+          description: "Failed to fetch contacts",
+          variant: "destructive"
+        })
+      }
+    }
+    fetchContacts()
+  }, [])
 
   // Reset form when lead changes
   useEffect(() => {
@@ -114,6 +129,7 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
 
       onSuccess?.()
       setIsDialogOpen(false)
+      
     } catch (error) {
       toast({
         title: "Error",
@@ -136,77 +152,57 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="Name"
+              name="ContactID"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2 items-center">
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Contact</FormLabel>
                     <FormMessage />
                   </div>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a contact" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {contacts.map((contact) => (
+                        <SelectItem key={contact.ContactID} value={contact.ContactID}>
+                          {contact.ContactName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
 
             <FormField
               control={form.control}
-              name="Email"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-2 items-center">
-                    <FormLabel>Email</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <FormControl>
-                    <Input placeholder="" type="email" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="Referrer"
+              name="ReferrerID"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2 items-center">
                     <FormLabel>Referrer</FormLabel>
                     <FormMessage />
                   </div>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a referrer" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {contacts.map((contact) => (
+                        <SelectItem key={contact.ContactID} value={contact.ContactID}>
+                          {contact.ContactName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
-
-            <div className="grid grid-cols-2 gap-4">
-            <CountriesFormField
-                form={form} 
-                element={{ 
-                  name: "PhoneCountry", 
-                  title: "Phone Country" 
-                }} 
-              />
-              
-              <FormField
-                control={form.control}
-                name="Phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex gap-2 items-center">
-                      <FormLabel>Phone</FormLabel>
-                      <FormMessage />
-                    </div>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
 
             <FormField
               control={form.control}
@@ -256,7 +252,7 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => 
                               <DateTimePicker 
                                 value={dateField.value} 
                                 onChange={dateField.onChange}
-                                granularity="minute"
+                                granularity="day"
                               />
                             </FormControl>
                             <FormMessage />

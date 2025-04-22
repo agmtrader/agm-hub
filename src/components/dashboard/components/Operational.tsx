@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, Ticket, ShieldCheck, MessageSquare, HeadphonesIcon, LucideIcon } from 'lucide-react'
+import { Users, Ticket, ShieldCheck, MessageSquare, HeadphonesIcon, LucideIcon, Lightbulb } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import Link from 'next/link'
 import { formatURL } from '@/utils/language/lang'
@@ -14,8 +14,13 @@ type CardData = {
 
 const operationalData: CardData[] = [
   {
-    title: 'Leads',
+    title: 'Contacts',
     Icon: Users,
+    url: '/dashboard/contacts'
+  },
+  {
+    title: 'Leads',
+    Icon: Lightbulb,
     url: '/dashboard/leads'
   },
   {
@@ -27,7 +32,12 @@ const operationalData: CardData[] = [
     title: 'Accounts',
     Icon: ShieldCheck,
     url: '/dashboard/accounts'
-  }
+  },
+  {
+    title: 'Advisors',
+    Icon: Users,
+    url: '/dashboard/advisors',
+  },
 ]
 
 const Operational = () => {

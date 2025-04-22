@@ -7,11 +7,8 @@ const followUp_schema = z.object({
 })
 
 export const lead_schema = z.object({
-  Name: z.string().min(1, { message: "Name is required" }),
-  Email: z.string().optional().or(z.string().email({ message: "Invalid email address" })),
-  PhoneCountry: z.string().optional().or(z.string().min(1, { message: "Phone country is required" })),
-  Phone: z.string().optional().or(z.string().min(1, { message: "Phone number is required" })),
-  Referrer: z.string().optional().or(z.string().min(1, { message: "Referrer is required" })),
+  ContactID: z.string().min(1, { message: "Contact is required" }),
+  ReferrerID: z.string().min(1, { message: "Referrer is required" }),
   Description: z.string().min(1, { message: "Description is required" }),
   FollowUps: z.array(followUp_schema).min(1, { message: "At least one follow-up is required" })
 }) 

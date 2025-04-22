@@ -1,8 +1,8 @@
 import { Lead } from "@/lib/entities/lead"
 import { accessAPI } from "../api"
 
-export async function CreateLead(lead:Lead, id:string) {
-    let lead_response = await accessAPI('/leads/create', 'POST', {'data': lead, 'id': id})
+export async function CreateLead(lead:Lead) {
+    let lead_response = await accessAPI('/leads/create', 'POST', {'data': lead, 'id': lead.LeadID})
     return lead_response
 }
 

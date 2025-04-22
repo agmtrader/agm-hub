@@ -11,13 +11,14 @@ import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
-import { countries } from '@/lib/form'
-import GenerateApplicationLink from './GenerateApplicationLink'
 import { formatDateFromTimestamp } from '@/utils/dates'
+import { Contact } from '@/lib/entities/contact'
+import { ReadContacts } from '@/utils/entities/contact'
+import GenerateApplicationLink from './GenerateApplicationLink'
 
 const LeadsPage = () => {
-
   const [leads, setLeads] = useState<Lead[]>([])
+  const [contacts, setContacts] = useState<Contact[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
 
@@ -57,7 +58,31 @@ const LeadsPage = () => {
       new Date(a.Contact_Date).getTime() - new Date(b.Contact_Date).getTime()
     )
     setLeads(sortedLeads)
+    
+    if (selectedLead) {
+      const updatedSelectedLead = sortedLeads.find(lead => lead.LeadID === selectedLead.LeadID)
+      if (updatedSelectedLead) {
+        setSelectedLead(updatedSelectedLead)
+      }
+    }
   }
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const fetchedContacts = await ReadContacts()
+        setContacts(fetchedContacts)
+      } catch (error) {
+        console.error('Failed to fetch contacts:', error)
+        toast({
+          title: "Error",
+          description: "Failed to fetch contacts",
+          variant: "destructive"
+        })
+      }
+    }
+    fetchContacts()
+  }, [])
 
   useEffect(() => {
     handleFetchLeads()
@@ -65,27 +90,19 @@ const LeadsPage = () => {
   
   const columns = [
     {
-      header: 'Name',
-      accessorKey: 'Name',
+      header: 'Contact',
+      accessorKey: 'ContactID',
+      cell: ({ row }: any) => {
+        const contact = contacts.find(c => c.ContactID === row.original.ContactID)
+        return contact ? contact.ContactName : row.original.ContactID
+      }
     },
     {
       header: 'Referrer',
       accessorKey: 'Referrer',
-    },
-    {
-      header: 'Email',
-      accessorKey: 'Email',
-    },
-    {
-      header: 'Phone',
-      accessorKey: 'Phone',
-    },
-    {
-      header: 'Phone Country',
-      accessorKey: 'PhoneCountry',
       cell: ({ row }: any) => {
-        const country = countries.find(c => c.value === row.original.PhoneCountry)
-        return country ? country.label : row.original.PhoneCountry
+        const contact = contacts.find(c => c.ContactID === row.original.ReferrerID)
+        return contact ? contact.ContactName : row.original.ReferrerID
       }
     },
     {
@@ -149,16 +166,14 @@ const LeadsPage = () => {
     <DashboardPage title="Leads" description="Manage and create new leads">
       <div className="flex flex-col gap-6">
         <div className="flex justify-end gap-2">
-
           <GenerateApplicationLink />
           <CreateLead onSuccess={handleFetchLeads} />
-
         </div>
         <div className="w-full">
           <DataTable 
             data={leads} 
             columns={columns} 
-            filterColumns={['Name', 'Email']} 
+            filterColumns={['ContactID']} 
             enableFiltering
             enableRowActions
             rowActions={[
@@ -187,14 +202,18 @@ const LeadsPage = () => {
         </div>
       </div>
 
-      <LeadView lead={selectedLead} isOpen={isViewDialogOpen} onOpenChange={setIsViewDialogOpen} />
+      <LeadView 
+        lead={selectedLead} 
+        isOpen={isViewDialogOpen} 
+        onOpenChange={setIsViewDialogOpen} 
+        onSuccess={handleFetchLeads}
+      />
       <EditLead 
         isDialogOpen={isEditDialogOpen} 
         setIsDialogOpen={setIsEditDialogOpen} 
         lead={selectedLead}
         onSuccess={handleFetchLeads}
       />
-
     </DashboardPage>
   )
 }

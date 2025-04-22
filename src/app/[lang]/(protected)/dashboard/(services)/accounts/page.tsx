@@ -1,10 +1,13 @@
 'use client'
 import AccountsPage from '@/components/dashboard/account_management/AccountsPage'
+import DashboardPage from '@/components/misc/DashboardPage'
 import React from 'react'
 
 const page = () => {
   return (
-    <AccountsPage />
+    <DashboardPage title="Accounts" description="Manage accounts related to AGM">
+          <AccountsPage />
+    </DashboardPage>
   )
 }
 

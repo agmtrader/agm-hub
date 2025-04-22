@@ -6,12 +6,8 @@ export interface FollowUp {
 
 export interface Lead {
     'LeadID': string;
-    'Name': string;
-    'Referrer': string;
-    'Email': string;
-    'EmailCountry': string;
-    'Phone': string;
-    'PhoneCountry': string;
+    'ContactID': string;
+    'ReferrerID': string;
     'ContactDate': string;
     'Description': string;
     'FollowUps': FollowUp[];

@@ -7,6 +7,8 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import { Ticket } from '@/lib/entities/ticket'
 import PreviousApplications from './PreviousApplications'
+import Link from 'next/link'
+import { formatURL } from '@/utils/language/lang'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -15,7 +17,7 @@ interface Props {
 
 const Title = ({setStarted, setTicket}:Props) => {
 
-  const {t} = useTranslationProvider()
+  const { t, lang } = useTranslationProvider()
 
   async function handleStartApplication() {
     setStarted(true)
@@ -38,6 +40,11 @@ const Title = ({setStarted, setTicket}:Props) => {
           <motion.p variants={itemVariants} className='text-2xl md:text-3xl text-background max-w-2xl'>
             {t('apply.account.title.description')}
           </motion.p>
+          <motion.div variants={itemVariants}>
+            <p className='text-md text-background'>
+              Dont know how to get started? Check the requirements <Link href={formatURL('/requirements', lang)} className='text-primary'>here</Link>.
+            </p>
+          </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

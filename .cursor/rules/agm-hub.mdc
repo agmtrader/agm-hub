@@ -46,15 +46,1139 @@ Always use tailwind, and the following colors which work in dark and light mode:
 - Foreground for titles and dark colored text
 - Muted for elements inside cards, blocks, list items, etc.
 - Subtitle for light colored text
-- Primary is the main color of the app, laser (focus) red, used for buttons, links, etc.
-- Secondary, athenablue, complements the primary color pretty nicely, light blue color
-- Terciary, amber, immitates gold, used for highlights and incredible elements
+- Primary is the main color of the app, orange, used for buttons, links, etc.
+- Secondary complements the primary color pretty nicely, blue color
 
-### Variants used for toasts, where the text is normal and the background is light:
-- Success, emerald green, used for success states
-- Error, red, used for error states
-- Warning, yellow, used for warning states
+### Variants used for toasts:
+- Success used for success states
+- Error used for error states
+- Warning used for warning states
 
-### Variants used for buttons, where the text is light and the background is dark:
-- Primary, red, used for primary actions
-- Ghost, transparent, used for secondary actions
+### Variants used for buttons:
+- Default used for primary actions
+- Ghost used for secondary actions
+
+### How to build entities
+Example entity, a Lead:
+
+Lead interface:
+```typescript
+export interface FollowUp {
+    date: string;
+    description: string;
+    completed: boolean;
+}
+
+export interface Lead {
+    'LeadID': string;
+    'Name': string;
+    'Referrer': string;
+    'Email': string;
+    'EmailCountry': string;
+    'Phone': string;
+    'PhoneCountry': string;
+    'ContactDate': string;
+    'Description': string;
+    'FollowUps': FollowUp[];
+    'Completed': boolean;
+}
+```
+
+Lead functions:
+```typescript
+import { Lead } from "@/lib/entities/lead"
+import { accessAPI } from "../api"
+
+export async function CreateLead(lead:Lead, id:string) {
+    let lead_response = await accessAPI('/leads/create', 'POST', {'data': lead, 'id': id})
+    return lead_response
+}
+
+export async function ReadLeads() {
+    let leads:Lead[] = await accessAPI('/leads/read', 'POST', {'query': {}})
+    return leads.sort((a, b) => (b.LeadID.toString().localeCompare(a.LeadID.toString())))   
+}
+
+export async function ReadLeadByID(leadID:string) {
+    let leads:Lead[] = await accessAPI('/leads/read', 'POST', {'query': {'LeadID': leadID}})
+    return leads.sort((a, b) => (b.LeadID.toString().localeCompare(a.LeadID.toString())))
+}
+
+export async function ReadLeadByUserID(userID:string) {
+    let leads:Lead[] = await accessAPI('/leads/read', 'POST', {'query': {'UserID': userID}})
+    return leads.sort((a, b) => (b.LeadID.toString().localeCompare(a.LeadID.toString())))
+}
+
+export async function UpdateLeadByID(leadID:string, data:any) {
+    await accessAPI('/leads/update', 'POST', {'query': {'LeadID': leadID}, 'data': data})
+    return 'Updated'
+}
+
+export async function DeleteLeadByID(leadID:string) {
+    await accessAPI('/leads/delete', 'POST', {'query': {'LeadID': leadID}})
+    return 'Deleted'
+}
+```
+
+Lead schema:
+```typescript
+import { z } from "zod"
+
+const followUp_schema = z.object({
+  date: z.date({ message: "Follow-up date is required" }),
+  description: z.string().min(1, { message: "Follow-up description is required" }),
+  completed: z.boolean().default(false)
+})
+
+export const lead_schema = z.object({
+  Name: z.string().min(1, { message: "Name is required" }),
+  Email: z.string().optional().or(z.string().email({ message: "Invalid email address" })),
+  PhoneCountry: z.string().optional().or(z.string().min(1, { message: "Phone country is required" })),
+  Phone: z.string().optional().or(z.string().min(1, { message: "Phone number is required" })),
+  Referrer: z.string().optional().or(z.string().min(1, { message: "Referrer is required" })),
+  Description: z.string().min(1, { message: "Description is required" }),
+  FollowUps: z.array(followUp_schema).min(1, { message: "At least one follow-up is required" })
+}) 
+```
+
+Leads page:
+```tsx
+'use client'
+import DashboardPage from '@/components/misc/DashboardPage'
+import React, { useEffect, useState } from 'react'
+import CreateLead from './CreateLead'
+import LeadView from './LeadView'
+import EditLead from './EditLead'
+import { Lead, FollowUp } from '@/lib/entities/lead'
+import { DeleteLeadByID, ReadLeads } from '@/utils/entities/lead'
+import { DataTable, ColumnDefinition } from '@/components/misc/DataTable'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
+import { toast } from '@/hooks/use-toast'
+import { Badge } from '@/components/ui/badge'
+import { countries } from '@/lib/form'
+import GenerateApplicationLink from './GenerateApplicationLink'
+import { formatDateFromTimestamp } from '@/utils/dates'
+
+const LeadsPage = () => {
+
+  const [leads, setLeads] = useState<Lead[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
+
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isGenerateApplicationLinkOpen, setIsGenerateApplicationLinkOpen] = useState(false)
+
+  async function handleDeleteLead(leadID: string) {
+    try {
+      await DeleteLeadByID(leadID)
+      handleFetchLeads()
+      toast({
+        title: 'Lead deleted',
+        description: 'The lead has been deleted successfully',
+        variant: 'success'
+      })
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'The lead could not be deleted',
+        variant: 'destructive'
+      })
+    }
+  }
+
+  async function handleFetchLeads() {
+    const leads = await ReadLeads()
+    const formattedLeads = leads.map(lead => ({
+      ...lead,
+      Contact_Date: lead.ContactDate ? lead.ContactDate : '',
+      FollowUps: lead.FollowUps.map(followUp => ({
+        ...followUp,
+        date: followUp.date
+      }))
+    }))
+    const sortedLeads = formattedLeads.sort((a, b) => 
+      new Date(a.Contact_Date).getTime() - new Date(b.Contact_Date).getTime()
+    )
+    setLeads(sortedLeads)
+    
+    if (selectedLead) {
+      const updatedSelectedLead = sortedLeads.find(lead => lead.LeadID === selectedLead.LeadID)
+      if (updatedSelectedLead) {
+        setSelectedLead(updatedSelectedLead)
+      }
+    }
+  }
+
+  useEffect(() => {
+    handleFetchLeads()
+  }, [])
+  
+  const columns = [
+    {
+      header: 'Name',
+      accessorKey: 'Name',
+    },
+    {
+      header: 'Referrer',
+      accessorKey: 'Referrer',
+    },
+    {
+      header: 'Email',
+      accessorKey: 'Email',
+    },
+    {
+      header: 'Phone',
+      accessorKey: 'Phone',
+    },
+    {
+      header: 'Phone Country',
+      accessorKey: 'PhoneCountry',
+      cell: ({ row }: any) => {
+        const country = countries.find(c => c.value === row.original.PhoneCountry)
+        return country ? country.label : row.original.PhoneCountry
+      }
+    },
+    {
+      header: 'Contact Date',
+      accessorKey: 'Contact_Date',
+      cell: ({ row }: any) => {
+        return formatDateFromTimestamp(row.original.Contact_Date)
+      }
+    },
+    {
+      header: 'Next Follow-up',
+      accessorKey: 'NextFollowUp',
+      cell: ({ row }: any) => {
+        const followUps = row.original.FollowUps as FollowUp[]
+        if (!followUps?.length) return '-'
+        
+        // Sort follow-ups by date and get the next incomplete one
+        const sortedFollowUps = [...followUps]
+          .filter(followUp => !followUp.completed)
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+        if (sortedFollowUps.length === 0) {
+          return (
+            <Badge className="bg-success">
+              All completed
+            </Badge>
+          )
+        }
+
+        const nextFollowUp = sortedFollowUps[0]
+        return (
+          <div className="flex items-center gap-2">
+            <span>{formatDateFromTimestamp(nextFollowUp.date)}</span>
+            {nextFollowUp.completed && (
+              <Badge variant="secondary">Completed</Badge>
+            )}
+          </div>
+        )
+      }
+    },
+    {
+      header: 'Progress',
+      accessorKey: 'FollowUpProgress',
+      cell: ({ row }: any) => {
+        const followUps = row.original.FollowUps as FollowUp[]
+        if (!followUps?.length) return '-'
+        
+        const completed = followUps.filter(f => f.completed).length
+        const total = followUps.length
+        
+        return (
+          <Badge variant={completed === total ? "success" : "outline"}>
+            {completed}/{total}
+          </Badge>
+        )
+      }
+    }
+  ] as ColumnDefinition<Lead>[]
+
+  return (
+    <DashboardPage title="Leads" description="Manage and create new leads">
+      <div className="flex flex-col gap-6">
+        <div className="flex justify-end gap-2">
+
+          <GenerateApplicationLink />
+          <CreateLead onSuccess={handleFetchLeads} />
+
+        </div>
+        <div className="w-full">
+          <DataTable 
+            data={leads} 
+            columns={columns} 
+            filterColumns={['Name', 'Email']} 
+            enableFiltering
+            enableRowActions
+            rowActions={[
+              {
+                label: 'View',
+                onClick: (row: Lead) => {
+                  setSelectedLead(row)
+                  setIsViewDialogOpen(true)
+                }
+              },
+              {
+                label: 'Edit',
+                onClick: (row: Lead) => {
+                  setSelectedLead(row)
+                  setIsEditDialogOpen(true)
+                }
+              },
+              {
+                label: 'Delete',
+                onClick: (row: any) => {
+                  handleDeleteLead(row.LeadID)
+                },
+              }
+            ]}
+          />
+        </div>
+      </div>
+
+      <LeadView 
+        lead={selectedLead} 
+        isOpen={isViewDialogOpen} 
+        onOpenChange={setIsViewDialogOpen} 
+        onSuccess={handleFetchLeads}
+      />
+      <EditLead 
+        isDialogOpen={isEditDialogOpen} 
+        setIsDialogOpen={setIsEditDialogOpen} 
+        lead={selectedLead}
+        onSuccess={handleFetchLeads}
+      />
+
+    </DashboardPage>
+  )
+}
+
+export default LeadsPage
+```
+
+Lead view:
+```tsx
+'use client'
+
+import React from 'react'
+import { FollowUp, Lead } from '@/lib/entities/lead'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Card } from '@/components/ui/card'
+import { formatDateFromTimestamp } from '@/utils/dates'
+import { Badge } from '@/components/ui/badge'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+import { countries } from "@/lib/form"
+import { UpdateLeadByID } from '@/utils/entities/lead'
+import { toast } from '@/hooks/use-toast'
+import { Checkbox } from '@/components/ui/checkbox'
+
+interface LeadViewProps {
+  lead: Lead | null
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  onSuccess?: () => void
+}
+
+const LeadView = ({ lead, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
+  if (!lead) return null
+
+  // Calculate follow-up progress
+  const completedFollowUps = lead.FollowUps.filter(f => f.completed).length
+  const totalFollowUps = lead.FollowUps.length
+
+  // Find country label
+  const getCountryLabel = (value: string) => {
+    const country = countries.find(c => c.value === value)
+    return country ? country.label : value
+  }
+
+  async function handleCompleteFollowUp(followUp: FollowUp) {
+    if (!lead) return
+    try {
+      if (followUp.completed) {
+        await UpdateLeadByID(lead.LeadID, {
+          FollowUps: lead.FollowUps.map(f => f.date === followUp.date ? { ...f, completed: false } : f)
+        })
+      } else {
+        await UpdateLeadByID(lead.LeadID, {
+          FollowUps: lead.FollowUps.map(f => f.date === followUp.date ? { ...f, completed: true } : f)
+        })
+      }
+      onSuccess?.()
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to complete follow-up',
+        variant: 'destructive'
+      })
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">Lead Overview</DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh] w-full rounded-md">
+          <div className="space-y-6 p-4">
+            {/* Lead Status */}
+            <div className="flex justify-between items-center">
+              <Badge variant={completedFollowUps === totalFollowUps ? "success" : "outline"} className="text-sm">
+                {completedFollowUps}/{totalFollowUps} follow-ups completed
+              </Badge>
+            </div>
+
+            {/* Basic Information */}
+            <Card className="p-6 space-y-4">
+              <h3 className="text-lg font-semibold">Basic Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-foreground font-medium text-md">Name</p>
+                  <p className="text-subtitle text-sm">{lead.Name}</p>
+                </div>
+                <div>
+                  <p className="text-foreground font-medium text-md">Contact Date</p>
+                  <p className="text-subtitle text-sm">{formatDateFromTimestamp(lead.ContactDate || '')}</p>
+                </div>
+                <div>
+                  <p className="text-foreground font-medium text-md">Email</p>
+                  <p className="text-subtitle text-sm">{lead.Email}</p>
+                </div>
+                <div>
+                  <p className="text-foreground font-medium text-md">Phone</p>
+                  <p className="text-subtitle text-sm">{lead.Phone}</p>
+                </div>
+                <div>
+                  <p className="text-foreground font-medium text-md">Phone Country</p>
+                  <p className="text-subtitle text-sm">{getCountryLabel(lead.PhoneCountry)}</p>
+                </div>
+                <div>
+                  <p className="text-foreground font-medium text-md">Referrer</p>
+                  <p className="text-subtitle text-sm">{lead.Referrer}</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Description */}
+            <Card className="p-6 space-y-4">
+              <h3 className="text-lg font-semibold">Description</h3>
+              <p className="text-subtitle text-sm whitespace-pre-wrap">{lead.Description}</p>
+            </Card>
+
+            {/* Follow-ups */}
+            <Card className="p-6 space-y-4">
+              <h3 className="text-lg font-semibold">Follow-ups</h3>
+              <div className="space-y-4">
+                {lead.FollowUps
+                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                  .map((followUp, index) => (
+                    <div key={followUp.date} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <p className="text-sm font-medium text-foreground">{formatDateFromTimestamp(followUp.date)}</p>
+                        <div className="flex flex-col items-end gap-2">
+                          <Checkbox checked={followUp.completed} onCheckedChange={() => handleCompleteFollowUp(followUp)} />
+                        </div>
+                      </div>
+                      <p className="text-sm text-subtitle whitespace-pre-wrap">{followUp.description}</p>
+                      <Separator className="w-full" orientation="horizontal" />
+                    </div>
+                  ))}
+              </div>
+            </Card>
+          </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export default LeadView 
+```
+
+Edit lead:
+```tsx
+'use client'
+import React, { useState, useEffect } from 'react'
+import { useForm, useFieldArray } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { lead_schema } from "@/lib/schemas/lead"
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { UpdateLeadByID } from '@/utils/entities/lead'
+import { useToast } from '@/hooks/use-toast'
+import { Loader2, Plus, Trash2 } from 'lucide-react'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { DateTimePicker } from '@/components/ui/datetime-picker'
+import { formatTimestamp } from '@/utils/dates'
+import { Lead, FollowUp } from '@/lib/entities/lead'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import CountriesFormField from '@/components/ui/CountriesFormField'
+
+interface Props {
+  isDialogOpen: boolean
+  setIsDialogOpen: (isDialogOpen: boolean) => void
+  lead: Lead | null
+  onSuccess?: () => void
+}
+
+const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
+
+  const form = useForm({
+    resolver: zodResolver(lead_schema),
+    defaultValues: {
+      Name: "",
+      Email: "",
+      Phone: "",
+      PhoneCountry: "",
+      Referrer: "",
+      Description: "",
+      FollowUps: [{
+        date: new Date(),
+        description: "",
+        completed: false
+      }]
+    }
+  })
+
+  // Reset form when lead changes
+  useEffect(() => {
+    if (lead) {
+      const followUps = lead.FollowUps.map(followUp => {
+        // Parse the date string (format: yyyyMMddHHmmss) into a Date object
+        const year = parseInt(followUp.date.slice(0, 4))
+        const month = parseInt(followUp.date.slice(4, 6)) - 1 // Months are 0-indexed
+        const day = parseInt(followUp.date.slice(6, 8))
+        const hour = parseInt(followUp.date.slice(8, 10))
+        const minute = parseInt(followUp.date.slice(10, 12))
+        
+        return {
+          ...followUp,
+          date: new Date(year, month, day, hour, minute)
+        }
+      })
+
+      form.reset({
+        ...lead,
+        FollowUps: followUps
+      })
+    }
+  }, [lead, form])
+
+  const { fields, append, remove } = useFieldArray({
+    name: "FollowUps",
+    control: form.control
+  })
+
+  const handleSubmit = async (values: any) => {
+    if (!lead) return
+
+    setIsSubmitting(true)
+
+    try {
+      const formattedFollowUps: FollowUp[] = values.FollowUps.map((followUp: any) => ({
+        date: formatTimestamp(followUp.date),
+        description: followUp.description,
+        completed: followUp.completed
+      }))
+
+      const leadData: Lead = {
+        ...values,
+        LeadID: lead.LeadID,
+        ContactDate: lead.ContactDate,
+        FollowUps: formattedFollowUps,
+        Completed: values.FollowUps.every((f: any) => f.completed)
+      }
+      
+      await UpdateLeadByID(lead.LeadID, leadData)
+      
+      toast({
+        title: "Success",
+        description: "Lead updated successfully",
+        variant: "success"
+      })
+
+      onSuccess?.()
+      setIsDialogOpen(false)
+      
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update lead",
+        variant: "destructive"
+      })
+      console.error(error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit Lead</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="Name"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2 items-center">
+                    <FormLabel>Name</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="Email"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2 items-center">
+                    <FormLabel>Email</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <FormControl>
+                    <Input placeholder="" type="email" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="Referrer"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2 items-center">
+                    <FormLabel>Referrer</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+            <CountriesFormField
+                form={form} 
+                element={{ 
+                  name: "PhoneCountry", 
+                  title: "Phone Country" 
+                }} 
+              />
+              
+              <FormField
+                control={form.control}
+                name="Phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex gap-2 items-center">
+                      <FormLabel>Phone</FormLabel>
+                      <FormMessage />
+                    </div>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="Description"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2 items-center">
+                    <FormLabel>Description</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="" 
+                      className="min-h-[100px]" 
+                      {...field} 
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <FormLabel>Follow-ups</FormLabel>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => append({ date: new Date(), description: "", completed: false })}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Follow-up
+                </Button>
+              </div>
+              
+              {fields.map((field, index) => (
+                <Card key={field.id} className="p-4">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1 space-y-4">
+                      <FormField
+                        control={form.control}
+                        name={`FollowUps.${index}.date`}
+                        render={({ field: dateField }) => (
+                          <FormItem>
+                            <FormLabel>Follow-up Date</FormLabel>
+                            <FormControl>
+                              <DateTimePicker 
+                                value={dateField.value} 
+                                onChange={dateField.onChange}
+                                granularity="minute"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name={`FollowUps.${index}.description`}
+                        render={({ field: descField }) => (
+                          <FormItem>
+                            <FormLabel>Follow-up Description</FormLabel>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="What needs to be done in this follow-up?"
+                                {...descField}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`FollowUps.${index}.completed`}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal">
+                              Mark as completed
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    {fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            <Button 
+              type="submit" 
+              className="w-full bg-primary text-background hover:bg-primary/90"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                "Update Lead"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export default EditLead 
+```
+
+Create lead:
+```tsx
+'use client'
+import React, { useState } from 'react'
+import { useForm, useFieldArray } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { lead_schema } from "@/lib/schemas/lead"
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { CreateLead as CreateLeadFunction } from '@/utils/entities/lead'
+import { useToast } from '@/hooks/use-toast'
+import { Loader2, Plus, Trash2 } from 'lucide-react'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { DateTimePicker } from '@/components/ui/datetime-picker'
+import { formatTimestamp } from '@/utils/dates'
+import { Lead, FollowUp } from '@/lib/entities/lead'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { countries } from "@/lib/form"
+import CountriesFormField from '@/components/ui/CountriesFormField'
+
+interface Props {
+  onSuccess?: () => void
+}
+
+const CreateLead = ({ onSuccess }: Props) => {
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
+
+  const form = useForm({
+    resolver: zodResolver(lead_schema),
+    defaultValues: {
+      Name: "",
+      Email: "",
+      Phone: "",
+      PhoneCountry: "",
+      Referrer: "",
+      Description: "",
+      FollowUps: [{
+        date: new Date(),
+        description: "",
+        completed: false
+      }]
+    }
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    name: "FollowUps",
+    control: form.control
+  })
+
+  const handleSubmit = async (values: any) => {
+    setIsSubmitting(true)
+
+    try {
+      const LeadID = formatTimestamp(new Date())
+      const ContactDate = formatTimestamp(new Date())
+      
+      const formattedFollowUps: FollowUp[] = values.FollowUps.map((followUp: any) => ({
+        date: formatTimestamp(followUp.date),
+        description: followUp.description,
+        completed: followUp.completed
+      }))
+
+      const leadData: Lead = {
+        ...values,
+        ContactDate: ContactDate,
+        LeadID: LeadID,
+        FollowUps: formattedFollowUps,
+        Completed: false
+      }
+      
+      await CreateLeadFunction(leadData, LeadID)
+      
+      toast({
+        title: "Success",
+        description: "Lead created successfully",
+        variant: "success"
+      })
+
+      onSuccess?.()
+      form.reset()
+      setIsOpen(false)
+      
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create lead",
+        variant: "destructive"
+      })
+      console.error(error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button 
+            className="bg-primary text-background hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Lead
+          </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Create New Lead</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="Name"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2 items-center">
+                    <FormLabel>Name</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="Email"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2 items-center">
+                    <FormLabel>Email</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <FormControl>
+                    <Input placeholder="" type="email" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="Referrer"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2 items-center">
+                    <FormLabel>Referrer</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <CountriesFormField
+                form={form} 
+                element={{ 
+                  name: "PhoneCountry", 
+                  title: "Phone Country" 
+                }} 
+              />
+              
+              <FormField
+                control={form.control}
+                name="Phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex gap-2 items-center">
+                      <FormLabel>Phone</FormLabel>
+                      <FormMessage />
+                    </div>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="Description"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2 items-center">
+                    <FormLabel>Description</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="" 
+                      className="min-h-[100px]" 
+                      {...field} 
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <FormLabel>Follow-ups</FormLabel>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => append({ date: new Date(), description: "", completed: false })}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Follow-up
+                </Button>
+              </div>
+              
+              {fields.map((field, index) => (
+                <Card key={field.id} className="p-4">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1 space-y-4">
+                      <FormField
+                        control={form.control}
+                        name={`FollowUps.${index}.date`}
+                        render={({ field: dateField }) => (
+                          <FormItem>
+                            <div className="flex gap-2 items-center">
+                              <FormLabel>Follow-up Date</FormLabel>
+                              <FormMessage />
+                            </div>
+                            <FormControl>
+                              <DateTimePicker 
+                                value={dateField.value} 
+                                onChange={dateField.onChange}
+                                granularity="minute"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name={`FollowUps.${index}.description`}
+                        render={({ field: descField }) => (
+                          <FormItem>
+                            <div className="flex gap-2 items-center">
+                              <FormLabel>Follow-up Description</FormLabel>
+                              <FormMessage />
+                            </div>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="What needs to be done in this follow-up?"
+                                {...descField}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`FollowUps.${index}.completed`}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal">
+                              Mark as completed
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    {fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            <Button 
+              type="submit" 
+              className="w-full bg-primary text-background hover:bg-primary/90"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create Lead"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export default CreateLead
+```
+

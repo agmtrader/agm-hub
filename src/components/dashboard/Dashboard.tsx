@@ -15,6 +15,7 @@ export function Dashboard() {
   if (process.env.DEV_MODE === 'true') {
     console.log(session)
   }
+  
   return (
     <div className="flex w-full h-full">
       <div className="flex-1">
