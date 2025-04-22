@@ -22,7 +22,7 @@ const AdvisorsPage = (props: Props) => {
     useEffect(() => {
         async function handleReadAdvisors() {
             try {
-                const advisors = await ReadAdvisors(null)
+                const advisors = await ReadAdvisors()
                 setAdvisors(advisors)
             } catch (error: any) {
                 toast({

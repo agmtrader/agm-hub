@@ -44,8 +44,7 @@ import {
 } from "@/components/ui/popover"
 import { useSession } from "next-auth/react"
 import { CreateTicket } from "@/utils/entities/ticket"
-import { TicketNotification } from "@/lib/entities/notification"
-import { CreateNotification } from "@/utils/entities/notification"
+import { UpdateLeadByID } from "@/utils/entities/lead"
 
 interface Props {
   stepForward: () => void,
@@ -112,6 +111,11 @@ const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
       if (!success) throw new Error('Failed to sync ticket data');
 
       // Update lead status to "Applied"
+      if (leadID) {
+        await UpdateLeadByID(leadID, {
+          Status: 'Applied'
+        })
+      }
 
       stepForward();
 
