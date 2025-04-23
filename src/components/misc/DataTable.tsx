@@ -341,7 +341,7 @@ export const DataTable = <TData,>({
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="select-all">
+                      <TableCell key={cell.id} className="select-all whitespace-normal break-words max-w-[50ch]">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}

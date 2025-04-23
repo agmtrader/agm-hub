@@ -27,10 +27,10 @@ import { Plus } from 'lucide-react'
 
 interface CreateContactProps {
     onSuccess?: () => void
-    size?: 'sm' | 'md' | 'lg'
+    variant?: 'primary' | 'ghost'
 }
 
-export default function CreateContact({ onSuccess, size = 'md' }: CreateContactProps) {
+export default function CreateContact({ onSuccess, variant = 'primary' }: CreateContactProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { toast } = useToast()
@@ -76,9 +76,9 @@ export default function CreateContact({ onSuccess, size = 'md' }: CreateContactP
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button type="button">
+                <Button type="button" className="flex gap-2" variant={variant}>
                     <Plus className="h-4 w-4" />
-                    {size === 'md' && 'Create Contact'}
+                    {variant === 'primary' && 'Create Contact'}
                 </Button>
             </DialogTrigger>
             <DialogContent>

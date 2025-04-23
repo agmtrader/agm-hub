@@ -6,12 +6,15 @@ import LeadView from './LeadView'
 import EditLead from './EditLead'
 import { Lead, FollowUp } from '@/lib/entities/lead'
 import { DeleteLeadByID, ReadLeads } from '@/utils/entities/lead'
-import { DataTable, ColumnDefinition } from '@/components/misc/DataTable'
+import { ColumnDefinition } from '@/components/misc/DataTable'
 import { toast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
 import { formatDateFromTimestamp } from '@/utils/dates'
 import { Contact } from '@/lib/entities/contact'
 import { ReadContacts } from '@/utils/entities/contact'
+import ContactsLeadsView from './ContactsLeadsView'
+import FollowUpsLeadsView from './FollowUpsLeadsView'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const LeadsPage = () => {
 
@@ -67,7 +70,6 @@ const LeadsPage = () => {
       const fetchedContacts = await ReadContacts()
       setContacts(fetchedContacts)
     } catch (error) {
-      console.error('Failed to fetch contacts:', error)
       toast({
         title: "Error",
         description: "Failed to fetch contacts",
@@ -170,40 +172,31 @@ const LeadsPage = () => {
   return (
     <DashboardPage title="Leads" description="Manage and create new leads">
       <div className="flex flex-col gap-6">
-        <div className="flex justify-end gap-2">
+        <Tabs defaultValue="contacts" className="w-full">
+          <div className="flex justify-between gap-2">
+          <TabsList>
+            <TabsTrigger value="contacts">Contacts View</TabsTrigger>
+            <TabsTrigger value="followups">Follow-ups View</TabsTrigger>
+          </TabsList>
           <CreateLead contacts={contacts} refreshLeads={handleRefreshData} refreshContacts={fetchContacts} />
-        </div>
-        <div className="w-full">
-          <DataTable 
-            data={leads} 
-            columns={columns} 
-            filterColumns={['ContactID']} 
-            enableFiltering
-            enableRowActions
-            rowActions={[
-              {
-                label: 'View',
-                onClick: (row: Lead) => {
-                  setSelectedLead(row)
-                  setIsViewDialogOpen(true)
-                }
-              },
-              {
-                label: 'Edit',
-                onClick: (row: Lead) => {
-                  setSelectedLead(row)
-                  setIsEditDialogOpen(true)
-                }
-              },
-              {
-                label: 'Delete',
-                onClick: (row: any) => {
-                  handleDeleteLead(row.LeadID)
-                },
-              }
-            ]}
-          />
-        </div>
+          </div>
+          <TabsContent value="contacts">
+            <ContactsLeadsView
+              leads={leads} 
+              columns={columns} 
+              setSelectedLead={setSelectedLead} 
+              setIsViewDialogOpen={setIsViewDialogOpen} 
+              setIsEditDialogOpen={setIsEditDialogOpen} 
+              handleDeleteLead={handleDeleteLead} 
+            />
+          </TabsContent>
+          <TabsContent value="followups">
+            <FollowUpsLeadsView
+              leads={leads}
+              contacts={contacts}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
 
       <LeadView 

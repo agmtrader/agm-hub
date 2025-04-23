@@ -92,7 +92,6 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
         description: "Failed to create lead",
         variant: "destructive"
       })
-      console.error(error)
     } finally {
       setIsSubmitting(false)
     }
@@ -142,10 +141,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
                       <Command>
-                        <div className="flex justify-between">
-                          <CommandInput placeholder="Search contacts..." />
-                          <CreateContact size="sm" onSuccess={refreshContacts} />
-                        </div>
+                        <CommandInput placeholder="Search contacts..." />
                         <CommandList>
                           <CommandEmpty>
                             <div className="flex flex-col gap-2 p-2">
@@ -166,6 +162,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                             ))}
                           </CommandGroup>
                         </CommandList>
+                        <CreateContact variant="ghost" onSuccess={refreshContacts} />
                       </Command>
                     </PopoverContent>
                   </Popover>
@@ -200,10 +197,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
                       <Command>
-                        <div className="flex justify-between">  
-                          <CommandInput placeholder="Search referrers..." />
-                          <CreateContact size="sm" onSuccess={refreshContacts} />
-                        </div>
+                        <CommandInput placeholder="Search referrers..." />
                         <CommandList>
                           <CommandEmpty>No referrers found.</CommandEmpty>
                           <CommandGroup>
@@ -220,6 +214,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                             ))}
                           </CommandGroup>
                         </CommandList>
+                        <CreateContact variant="ghost" onSuccess={refreshContacts} />
                       </Command>
                     </PopoverContent>
                   </Popover>

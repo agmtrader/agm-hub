@@ -43,7 +43,6 @@ const LeadView = ({ lead, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
         setContact(foundContact || null)
         setReferrer(foundReferrer || null)
       } catch (error) {
-        console.error('Failed to fetch contacts:', error)
         toast({
           title: "Error",
           description: "Failed to fetch contact information",

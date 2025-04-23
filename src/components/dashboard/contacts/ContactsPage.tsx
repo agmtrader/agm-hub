@@ -82,11 +82,14 @@ const ContactsPage = () => {
     return (
         <div className="space-y-4">
 
-            <CreateContact onSuccess={handleFetchContacts}/>
+            <div className="flex justify-end gap-2">
+                <CreateContact onSuccess={handleFetchContacts}/>
+            </div>
             <DataTable 
                 data={contacts} 
                 columns={columns} 
                 enableRowActions
+                infiniteScroll
                 rowActions={[
                         {
                             label: 'View',

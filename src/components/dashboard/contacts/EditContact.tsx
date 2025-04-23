@@ -75,7 +75,6 @@ const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Prop
         description: "Failed to update contact",
         variant: "destructive"
       })
-      console.error(error)
     } finally {
       setIsSubmitting(false)
     }

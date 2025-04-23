@@ -30,7 +30,6 @@ const GenerateApplicationLink = ({ lead }: Props) => {
             try {
                 setIsLoading(true)
                 const advisors = await ReadAdvisors()
-                console.log(advisors)
                 setAdvisors(advisors)
             } catch (error) {
                 toast({

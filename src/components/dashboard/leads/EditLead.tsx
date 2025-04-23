@@ -25,7 +25,6 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Contact } from '@/lib/entities/contact'
-import { ReadContacts } from '@/utils/entities/contact'
 import { getDefaults } from '@/utils/form'
 
 interface Props {
@@ -111,7 +110,6 @@ const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess, contacts }: 
         description: "Failed to update lead",
         variant: "destructive"
       })
-      console.error(error)
     } finally {
       setIsSubmitting(false)
     }
