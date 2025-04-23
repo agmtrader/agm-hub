@@ -4,4 +4,5 @@ export interface Contact {
     'ContactEmail': string | null
     'ContactPhone': string | null
     'ContactCountry': string | null
+    'CompanyName': string | null
 }

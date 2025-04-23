@@ -25,55 +25,32 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Contact } from '@/lib/entities/contact'
-import { ReadContacts } from '@/utils/entities/contact'
+import CreateContact from '@/components/dashboard/contacts/CreateContact'
+import { getDefaults } from '@/utils/form'
 
 interface Props {
-  onSuccess?: () => void
+  contacts: Contact[]
+  refreshLeads?: () => void
+  refreshContacts?: () => void
 }
 
-const CreateLead = ({ onSuccess }: Props) => {
+const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
+
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [contacts, setContacts] = useState<Contact[]>([])
   const { toast } = useToast()
 
   const form = useForm({
     resolver: zodResolver(lead_schema),
-    defaultValues: {
-      ContactID: "",
-      ReferrerID: "",
-      Description: "",
-      FollowUps: [{
-        date: new Date(),
-        description: "",
-        completed: false
-      }]
-    }
+    defaultValues: getDefaults(lead_schema)
   })
-
-  useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        const fetchedContacts = await ReadContacts()
-        setContacts(fetchedContacts)
-      } catch (error) {
-        console.error('Failed to fetch contacts:', error)
-        toast({
-          title: "Error",
-          description: "Failed to fetch contacts",
-          variant: "destructive"
-        })
-      }
-    }
-    fetchContacts()
-  }, [])
 
   const { fields, append, remove } = useFieldArray({
     name: "FollowUps",
     control: form.control
   })
 
-  const handleSubmit = async (values: any) => {
+  const handleLeadSubmit = async (values: any) => {
     setIsSubmitting(true)
 
     try {
@@ -103,7 +80,9 @@ const CreateLead = ({ onSuccess }: Props) => {
         variant: "success"
       })
 
-      onSuccess?.()
+      refreshLeads?.()
+      refreshContacts?.()
+
       form.reset()
       setIsOpen(false)
       
@@ -134,7 +113,8 @@ const CreateLead = ({ onSuccess }: Props) => {
           <DialogTitle>Create New Lead</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleLeadSubmit)} className="space-y-4">
+            
             <FormField
               control={form.control}
               name="ContactID"
@@ -162,9 +142,16 @@ const CreateLead = ({ onSuccess }: Props) => {
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
                       <Command>
-                        <CommandInput placeholder="Search contacts..." />
+                        <div className="flex justify-between">
+                          <CommandInput placeholder="Search contacts..." />
+                          <CreateContact size="sm" onSuccess={refreshContacts} />
+                        </div>
                         <CommandList>
-                          <CommandEmpty>No contacts found.</CommandEmpty>
+                          <CommandEmpty>
+                            <div className="flex flex-col gap-2 p-2">
+                              <p>No contacts found.</p>
+                            </div>
+                          </CommandEmpty>
                           <CommandGroup>
                             {contacts.map((contact) => (
                               <CommandItem
@@ -213,7 +200,10 @@ const CreateLead = ({ onSuccess }: Props) => {
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
                       <Command>
-                        <CommandInput placeholder="Search referrers..." />
+                        <div className="flex justify-between">  
+                          <CommandInput placeholder="Search referrers..." />
+                          <CreateContact size="sm" onSuccess={refreshContacts} />
+                        </div>
                         <CommandList>
                           <CommandEmpty>No referrers found.</CommandEmpty>
                           <CommandGroup>

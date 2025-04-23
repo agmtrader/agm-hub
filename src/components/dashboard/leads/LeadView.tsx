@@ -20,6 +20,7 @@ import { Contact } from '@/lib/entities/contact'
 import { ReadContacts } from '@/utils/entities/contact'
 import GenerateApplicationLink from './GenerateApplicationLink'
 import { countries } from '@/lib/form'
+import ContactCard from '../contacts/ContactCard'
 
 interface LeadViewProps {
   lead: Lead | null
@@ -93,6 +94,8 @@ const LeadView = ({ lead, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
     }
   }
 
+  if (!contact || !referrer) return null
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh]">
@@ -110,39 +113,16 @@ const LeadView = ({ lead, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
             </div>
 
             {/* Basic Information */}
-            <Card className="p-6 space-y-4">
-              <h3 className="text-lg font-semibold">Basic Information</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-foreground font-medium text-md">Contact</p>
-                  <p className="text-subtitle text-sm">{contact?.ContactName || 'Loading...'}</p>
-                </div>
-                <div>
-                  <p className="text-foreground font-medium text-md">Contact Date</p>
-                  <p className="text-subtitle text-sm">{formatDateFromTimestamp(lead.ContactDate || '')}</p>
-                </div>
-                <div>
-                  <p className="text-foreground font-medium text-md">Email</p>
-                  <p className="text-subtitle text-sm">{contact?.ContactEmail || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-foreground font-medium text-md">Phone</p>
-                  <p className="text-subtitle text-sm">{contact?.ContactPhone || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-foreground font-medium text-md">Country</p>
-                  <p className="text-subtitle text-sm">{countries.find(c => c.value === contact?.ContactCountry)?.label || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-foreground font-medium text-md">Referrer</p>
-                  <p className="text-subtitle text-sm">{referrer?.ContactName || 'Loading...'}</p>
-                </div>
-              </div>
-            </Card>
+            <ContactCard contact={contact} />
+            <ContactCard contact={referrer} title="Referrer Information" />
 
             {/* Description */}
             <Card className="p-6 space-y-4">
               <h3 className="text-lg font-semibold">Description</h3>
+              <div>
+                <p className="text-foreground font-medium text-md">Contact Date</p>
+                <p className="text-subtitle text-sm">{formatDateFromTimestamp(lead.ContactDate || '')}</p>
+              </div>
               <p className="text-subtitle text-sm whitespace-pre-wrap">{lead.Description}</p>
             </Card>
 

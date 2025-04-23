@@ -4,8 +4,6 @@ import { Contact } from '@/lib/entities/contact'
 import { CreateContact as CreateContactAPI } from '@/utils/entities/contact'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { DialogTitle, DialogHeader, DialogTrigger } from '@/components/ui/dialog'
 import { Dialog } from '@/components/ui/dialog'
@@ -25,11 +23,14 @@ import {
 } from "@/components/ui/form"
 import { formatTimestamp } from '@/utils/dates'
 import { getDefaults } from '@/utils/form'
+import { Plus } from 'lucide-react'
+
 interface CreateContactProps {
-    onContactCreated: () => void
+    onSuccess?: () => void
+    size?: 'sm' | 'md' | 'lg'
 }
 
-export default function CreateContact({ onContactCreated }: CreateContactProps) {
+export default function CreateContact({ onSuccess, size = 'md' }: CreateContactProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { toast } = useToast()
@@ -43,12 +44,14 @@ export default function CreateContact({ onContactCreated }: CreateContactProps) 
         setIsSubmitting(true)
         try {
             const ContactID = formatTimestamp(new Date())
+            
             const contactData:Contact = {
                 ContactID: ContactID,
                 ContactName: values.ContactName,
                 ContactEmail: values.ContactEmail || null,
                 ContactPhone: values.ContactPhone || null,
-                ContactCountry: values.ContactCountry || null
+                ContactCountry: values.ContactCountry || null,
+                CompanyName: values.CompanyName || null
             }
             await CreateContactAPI(contactData)
             toast({
@@ -56,7 +59,7 @@ export default function CreateContact({ onContactCreated }: CreateContactProps) 
                 description: "Contact created successfully",
                 variant: "success"
             })
-            onContactCreated()
+            onSuccess?.()
             form.reset()
             setIsOpen(false)
         } catch (error) {
@@ -73,14 +76,21 @@ export default function CreateContact({ onContactCreated }: CreateContactProps) 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button>Create Contact</Button>
+                <Button type="button">
+                    <Plus className="h-4 w-4" />
+                    {size === 'md' && 'Create Contact'}
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Create Contact</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        form.handleSubmit(handleSubmit)(e);
+                    }} className="space-y-4">
                         <FormField
                             control={form.control}
                             name="ContactName"
@@ -127,6 +137,20 @@ export default function CreateContact({ onContactCreated }: CreateContactProps) 
                                 name: "ContactCountry", 
                                 title: "Country" 
                             }} 
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="CompanyName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Company Name</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
 
                         <Button type="submit" disabled={isSubmitting}>

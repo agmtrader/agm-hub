@@ -7,11 +7,14 @@ import { useToast } from '@/hooks/use-toast'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import EditContact from './EditContact'
 import { countries } from '@/lib/form'
+import ContactView from './ContactView'
 
 const ContactsPage = () => {
     const [contacts, setContacts] = useState<Contact[]>([])
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+    const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
 
     const { toast } = useToast()
 
@@ -38,6 +41,7 @@ const ContactsPage = () => {
             toast({
                 title: "Success",
                 description: "Contact deleted successfully",
+                variant: "success"
             })
             handleFetchContacts()
         } catch (error) {
@@ -68,35 +72,52 @@ const ContactsPage = () => {
             cell: ({ row }: any) => {
                 return <span className='capitalize'>{countries.find(c => c.value === row.original.ContactCountry)?.label}</span>
             }
+        },
+        {
+            header: 'Company',
+            accessorKey: 'CompanyName',
         }
     ]
 
     return (
         <div className="space-y-4">
 
-            <CreateContact onContactCreated={handleFetchContacts}/>
-
+            <CreateContact onSuccess={handleFetchContacts}/>
             <DataTable 
                 data={contacts} 
                 columns={columns} 
                 enableRowActions
                 rowActions={[
                         {
-                        label: 'Edit',
-                        onClick: (row: Contact) => {
-                            setSelectedContact(row)
-                            setIsEditDialogOpen(true)
-                        }
+                            label: 'View',
+                            onClick: (row: Contact) => {
+                                setSelectedContact(row)
+                                setIsViewDialogOpen(true)
+                            }
                         },
                         {
-                        label: 'Delete',
-                        onClick: (row: any) => {
-                            handleDelete(row.ContactID)
+                            label: 'Edit',
+                            onClick: (row: Contact) => {
+                                setSelectedContact(row)
+                                setIsEditDialogOpen(true)
+                            }
                         },
+                        {
+                            label: 'Delete',
+                            onClick: (row: any) => {
+                                handleDelete(row.ContactID)
+                            },
                         }
                     ]
                 } 
             />
+            {selectedContact && (
+                <ContactView
+                    contact={selectedContact}
+                    isOpen={isViewDialogOpen}
+                    onOpenChange={setIsViewDialogOpen}
+                />
+            )}
             <EditContact
                 isDialogOpen={isEditDialogOpen}
                 setIsDialogOpen={setIsEditDialogOpen}

@@ -54,6 +54,7 @@ const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Prop
         ContactEmail: values.ContactEmail || null,
         ContactPhone: values.ContactPhone || null,
         ContactCountry: values.ContactCountry || null,
+        CompanyName: values.CompanyName || null,
         ContactID: contact.ContactID
       }
       
@@ -138,6 +139,19 @@ const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Prop
                       <FormLabel>Phone</FormLabel>
                       <FormMessage />
                     </div>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="CompanyName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company Name</FormLabel> 
                     <FormControl>
                       <Input placeholder="" {...field} />
                     </FormControl>

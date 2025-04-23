@@ -26,49 +26,24 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Contact } from '@/lib/entities/contact'
 import { ReadContacts } from '@/utils/entities/contact'
+import { getDefaults } from '@/utils/form'
 
 interface Props {
   isDialogOpen: boolean
   setIsDialogOpen: (isDialogOpen: boolean) => void
   lead: Lead | null
   onSuccess?: () => void
+  contacts: Contact[]
 }
 
-const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess }: Props) => {
+const EditLead = ({ isDialogOpen, setIsDialogOpen, lead, onSuccess, contacts }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [contacts, setContacts] = useState<Contact[]>([])
   const { toast } = useToast()
 
   const form = useForm({
     resolver: zodResolver(lead_schema),
-    defaultValues: {
-      ContactID: "",
-      ReferrerID: "",
-      Description: "",
-      FollowUps: [{
-        date: new Date(),
-        description: "",
-        completed: false
-      }]
-    }
+    defaultValues: getDefaults(lead_schema)
   })
-
-  useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        const fetchedContacts = await ReadContacts()
-        setContacts(fetchedContacts)
-      } catch (error) {
-        console.error('Failed to fetch contacts:', error)
-        toast({
-          title: "Error",
-          description: "Failed to fetch contacts",
-          variant: "destructive"
-        })
-      }
-    }
-    fetchContacts()
-  }, [])
 
   // Reset form when lead changes
   useEffect(() => {

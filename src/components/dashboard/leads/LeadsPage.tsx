@@ -7,24 +7,19 @@ import EditLead from './EditLead'
 import { Lead, FollowUp } from '@/lib/entities/lead'
 import { DeleteLeadByID, ReadLeads } from '@/utils/entities/lead'
 import { DataTable, ColumnDefinition } from '@/components/misc/DataTable'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
 import { formatDateFromTimestamp } from '@/utils/dates'
 import { Contact } from '@/lib/entities/contact'
 import { ReadContacts } from '@/utils/entities/contact'
-import GenerateApplicationLink from './GenerateApplicationLink'
 
 const LeadsPage = () => {
+
   const [leads, setLeads] = useState<Lead[]>([])
   const [contacts, setContacts] = useState<Contact[]>([])
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
-
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [isGenerateApplicationLinkOpen, setIsGenerateApplicationLinkOpen] = useState(false)
 
   async function handleDeleteLead(leadID: string) {
     try {
@@ -67,20 +62,26 @@ const LeadsPage = () => {
     }
   }
 
-  useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        const fetchedContacts = await ReadContacts()
-        setContacts(fetchedContacts)
-      } catch (error) {
-        console.error('Failed to fetch contacts:', error)
-        toast({
-          title: "Error",
-          description: "Failed to fetch contacts",
-          variant: "destructive"
-        })
-      }
+  async function fetchContacts() {
+    try {
+      const fetchedContacts = await ReadContacts()
+      setContacts(fetchedContacts)
+    } catch (error) {
+      console.error('Failed to fetch contacts:', error)
+      toast({
+        title: "Error",
+        description: "Failed to fetch contacts",
+        variant: "destructive"
+      })
     }
+  }
+
+  async function handleRefreshData() {
+    await fetchContacts()
+    await handleFetchLeads()
+  }
+
+  useEffect(() => {
     fetchContacts()
   }, [])
 
@@ -170,7 +171,7 @@ const LeadsPage = () => {
     <DashboardPage title="Leads" description="Manage and create new leads">
       <div className="flex flex-col gap-6">
         <div className="flex justify-end gap-2">
-          <CreateLead onSuccess={handleFetchLeads} />
+          <CreateLead contacts={contacts} refreshLeads={handleRefreshData} refreshContacts={fetchContacts} />
         </div>
         <div className="w-full">
           <DataTable 
@@ -215,6 +216,7 @@ const LeadsPage = () => {
         isDialogOpen={isEditDialogOpen} 
         setIsDialogOpen={setIsEditDialogOpen} 
         lead={selectedLead}
+        contacts={contacts}
         onSuccess={handleFetchLeads}
       />
     </DashboardPage>

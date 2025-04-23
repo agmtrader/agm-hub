@@ -18,6 +18,13 @@ export async function ReadContactByID(id:string) {
     return contacts[0]
 }
 
+export async function ReadContactReferrerByID(id:string) {
+    let contacts:Contact[] = await accessAPI('/contacts/read', 'POST', {'query': {'id': id}})
+    if (contacts.length > 1) throw new Error('Multiple contacts found with same ID')
+    if (contacts.length === 0) return null
+    return contacts[0]
+}
+
 export async function ReadContactByEmail(email: string) {
     const contacts = await accessAPI('/contacts/read', 'POST', {'query': {'email': email}})
     if (contacts.length === 0) return null
