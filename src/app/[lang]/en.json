@@ -286,6 +286,8 @@
             "title": {
                 "ready": "Ready to make money?",
                 "description": "Unlock the world of financial opportunities with your AGM account.",
+                "get_started": "Dont know how to get started? Check the requirements",
+                "get_started_link": "here",
                 "startApplication": "Start Application",
                 "previous_applications": {
                     "title": "Previous Applications",

@@ -42,7 +42,7 @@ const Title = ({setStarted, setTicket}:Props) => {
           </motion.p>
           <motion.div variants={itemVariants}>
             <p className='text-md text-background'>
-              Dont know how to get started? Check the requirements <Link href={formatURL('/requirements', lang)} className='text-primary'>here</Link>.
+              {t('apply.account.title.get_started')} <Link href={formatURL('/requirements', lang)} className='text-primary'>{t('apply.account.title.get_started_link')}</Link>.
             </p>
           </motion.div>
           <motion.div

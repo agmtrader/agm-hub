@@ -283,6 +283,8 @@
             "title": {
                 "ready": "¿Listo para ganar dinero?",
                 "description": "Desbloquea el mundo de oportunidades financieras con tu cuenta AGM.",
+                "get_started": "¿No sabes cómo empezar? Revisa los requisitos",
+                "get_started_link": "aquí",
                 "startApplication": "Iniciar Solicitud",
                 "previous_applications": {
                     "title": "Solicitudes Anteriores",
