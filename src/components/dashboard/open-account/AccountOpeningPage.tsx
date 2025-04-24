@@ -15,6 +15,7 @@ import { CreateNotification } from '@/utils/entities/notification';
 import { formatTimestamp } from '@/utils/dates';
 import { AccountApplicationNotification } from '@/lib/entities/notification';
 import { useSession } from 'next-auth/react';
+import { UpdateTicketByID } from '@/utils/entities/ticket';
 
 const AccountOpeningPage = () => {
 
@@ -49,15 +50,7 @@ const AccountOpeningPage = () => {
       }
 
       if (step === 5) {
-        const notification: AccountApplicationNotification = {
-          Title: 'Account opened',
-          NotificationID: formatTimestamp(new Date()),
-          TicketID: ticket['TicketID'],
-          AGMUser: session?.user?.email,
-          TicketStatus: ticket['Status'],
-          UserID: session?.user?.id
-        }
-        await CreateNotification(notification, 'account_applications')
+        await UpdateTicketByID(ticket['TicketID'], {'Status': 'Opened'})
       }
       
 
