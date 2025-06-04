@@ -14,7 +14,7 @@ export async function GetTradeTicketDetails(tradeTicketId: string) {
 }
 
 export async function FetchTrades(tradeTicketId: string) {
-    const trades:Trade[] = await FetchFlexQuery(tradeTicketId)
+    const trades:Trade[] = await accessAPI('/trade_tickets/fetch', 'POST', {'query_id': tradeTicketId})
     trades.sort((a: any, b: any) => {
         const dateA = new Date(a['Date/Time']).getTime()
         const dateB = new Date(b['Date/Time']).getTime()
@@ -49,8 +49,7 @@ export async function GenerateTradeTicket(trades: Trade[], selectedTrades: Trade
 
     // Generate the plain text message
     const response:any = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': tradeTicket});
-    console.log(response)
-    return response;
+    return response['message'];
 }
 
 export async function SendToClient(clientMessage: string, email: string) {

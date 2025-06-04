@@ -4,9 +4,9 @@ import { JWT } from "next-auth/jwt"
 
 declare module "next-auth" {
   interface User extends DefaultUser {
-    emailVerified: boolean
-    username: string | null
-    country: string | null
+    created: string
+    updated: string
+    contact_id: string | null
     scopes: string;
   }
 }
@@ -24,10 +24,6 @@ declare module "next-auth/jwt" {
     name: User["name"]
     email: User["email"]
     image: User["image"]
-    emailVerified: User["emailVerified"]
-    username: User["username"]
-    country: User["country"]
-    role: User["role"]
     accessToken: User["accessToken"]
     refreshToken: User["refreshToken"]
     scopes: User["scopes"]

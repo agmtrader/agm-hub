@@ -16,7 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Contact } from '@/lib/entities/contact'
+import { Contact, ContactPayload } from '@/lib/entities/contact'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import CountriesFormField from '@/components/ui/CountriesFormField'
 import { getDefaults } from '@/utils/form'
@@ -29,6 +29,7 @@ interface Props {
 }
 
 const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Props) => {
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
@@ -44,21 +45,22 @@ const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Prop
   }, [contact, form])
 
   const handleSubmit = async (values: any) => {
-    if (!contact) return
+    
+    if (!contact || !contact.id) return
 
     setIsSubmitting(true)
 
     try {
-      const contactData: Contact = {
-        ContactName: values.ContactName,
-        ContactEmail: values.ContactEmail || null,
-        ContactPhone: values.ContactPhone || null,
-        ContactCountry: values.ContactCountry || null,
-        CompanyName: values.CompanyName || null,
-        ContactID: contact.ContactID
+
+      const contactData: ContactPayload = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        country: values.country,
+        company_name: values.company_name,
       }
       
-      await UpdateContactByID(contactData)
+      await UpdateContactByID(contact.id, contactData)
       
       toast({
         title: "Success",
@@ -90,7 +92,7 @@ const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Prop
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="ContactName"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2 items-center">
@@ -106,7 +108,7 @@ const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Prop
 
             <FormField
               control={form.control}
-              name="ContactEmail"
+              name="email"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2 items-center">
@@ -124,14 +126,14 @@ const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Prop
               <CountriesFormField
                 form={form} 
                 element={{ 
-                  name: "ContactCountry", 
+                  name: "country", 
                   title: "Country" 
                 }} 
               />
               
               <FormField
                 control={form.control}
-                name="ContactPhone"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex gap-2 items-center">
@@ -147,7 +149,7 @@ const EditContact = ({ isDialogOpen, setIsDialogOpen, contact, onSuccess }: Prop
 
               <FormField
                 control={form.control}
-                name="CompanyName"
+                name="company_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Company Name</FormLabel> 

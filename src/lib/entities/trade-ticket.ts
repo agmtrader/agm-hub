@@ -1,8 +1,8 @@
-export interface TradeTicket {
-    "TradeTicketID": string;
-    "Name": string;
-    "UserID": string;
-}
+import { Base } from "./base";
+
+export type TradeTicket = {
+    name: string;
+} & Base
 
 export interface Trade {
     "AccountAlias": string;

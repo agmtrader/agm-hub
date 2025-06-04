@@ -2,7 +2,7 @@ import { z } from "zod"
 
 // Form schema
 export const risk_assesment_schema = (t: (key: string) => string) => z.object({
-    account_number: z.string().optional(),
+    account_id: z.string().nullable(),
     client_name: z.string({
         required_error: t('forms.errors.input_required')
     }),

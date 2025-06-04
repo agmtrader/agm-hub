@@ -1,8 +1,6 @@
-export interface Contact {
-    'ContactID': string
-    'ContactName': string
-    'ContactEmail': string | null
-    'ContactPhone': string | null
-    'ContactCountry': string | null
-    'CompanyName': string | null
-}
+import { z } from "zod"
+import { contact_schema } from "../schemas/contact"
+import { Base } from "./base"
+
+export type ContactPayload = z.infer<typeof contact_schema>
+export type Contact = Base & ContactPayload

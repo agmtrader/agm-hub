@@ -46,8 +46,8 @@ const AdvisorPage = ({
     <DashboardPage title='Advisor Management Portal' description='Manage your advisor profile and more'>
       <div className='flex flex-col gap-4 w-full h-full p-4 text-foreground'>
         <div className='flex flex-col gap-2'>
-          <p className='text-lg font-bold'>{advisor?.AdvisorCode}</p>
-          <p className='text-sm'>Advisor Code</p>
+          <p className='text-lg font-bold'>{advisor?.id}</p>
+          <p className='text-sm'>Advisor ID</p>
         </div>
       </div>
     </DashboardPage>

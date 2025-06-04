@@ -14,7 +14,7 @@ const AdvisorApplicationLinks = ({ advisor }: Props) => {
 
     async function handleStartBrokerAccount() {
         try {
-            const brokerUrl = `https://agmtechnology.com/${lang}/apply?ad=${advisor?.AdvisorCode}&ma=br` // Replace with actual URL
+            const brokerUrl = `https://agmtechnology.com/${lang}/apply?ad=${advisor?.id}&ma=br` // Replace with actual URL
             await navigator.clipboard.writeText(brokerUrl)
             toast({
                 title: 'Broker account link copied to clipboard',
@@ -30,7 +30,7 @@ const AdvisorApplicationLinks = ({ advisor }: Props) => {
 
     async function handleStartAdvisorAccount() {
         try {
-            const advisorUrl = `https://agmtechnology.com/en/apply?ad=${advisor?.AdvisorCode}&ma=ad` // Replace with actual URL
+            const advisorUrl = `https://agmtechnology.com/en/apply?ad=${advisor?.id}&ma=ad` // Replace with actual URL
             await navigator.clipboard.writeText(advisorUrl)
             toast({
                 title: 'Advisor account link copied to clipboard',

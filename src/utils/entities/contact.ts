@@ -1,14 +1,14 @@
-import { Contact } from "@/lib/entities/contact"
+import { ContactPayload, Contact } from "@/lib/entities/contact"
 import { accessAPI } from "../api"
 
-export async function CreateContact(contact:Contact) {
-    let contact_response = await accessAPI('/contacts/create', 'POST', {'data': contact, 'id': contact.ContactID})
+export async function CreateContact(contact:ContactPayload) {
+    let contact_response = await accessAPI('/contacts/create', 'POST', {'contact': contact})
     return contact_response
 }
 
 export async function ReadContacts() {
-    let contacts:Contact[] = await accessAPI('/contacts/read', 'POST', {})
-    return contacts.sort((a, b) => (b.ContactID.toString().localeCompare(a.ContactID.toString())))   
+    let contacts:Contact[] = await accessAPI('/contacts/read', 'POST', {'query': {}})
+    return contacts  
 }
 
 export async function ReadContactByID(id:string) {
@@ -18,12 +18,6 @@ export async function ReadContactByID(id:string) {
     return contacts[0]
 }
 
-export async function ReadContactReferrerByID(id:string) {
-    let contacts:Contact[] = await accessAPI('/contacts/read', 'POST', {'query': {'id': id}})
-    if (contacts.length > 1) throw new Error('Multiple contacts found with same ID')
-    if (contacts.length === 0) return null
-    return contacts[0]
-}
 
 export async function ReadContactByEmail(email: string) {
     const contacts = await accessAPI('/contacts/read', 'POST', {'query': {'email': email}})
@@ -32,17 +26,20 @@ export async function ReadContactByEmail(email: string) {
     return contacts[0]
 }
 
-export async function UpdateContact(contact: Contact) {
-    let contact_response = await accessAPI('/contacts/update', 'POST', {'data': contact})
-    return contact_response
-}
-
-export async function DeleteContact(id: string) {
-    let contact_response = await accessAPI('/contacts/delete', 'POST', {'id': id})
-    return contact_response
-}
-
-export async function UpdateContactByID(contact: Contact) {
-    await accessAPI('/contacts/update', 'POST', {'query': {'ContactID': contact.ContactID}, 'data': contact})
+export async function UpdateContactByID(id: string, contact: ContactPayload) {
+    await accessAPI('/contacts/update', 'POST', {'query': {'id': id}, 'contact': contact})
     return 'Updated'
+}
+
+export async function DeleteContactByID(id: string) {
+    let contact_response = await accessAPI('/contacts/delete', 'POST', {'query': {'id': id}})
+    return contact_response
+}
+
+// ID functions
+export async function ReadContactReferrerByID(id:string) {
+    let contacts:Contact[] = await accessAPI('/contacts/read', 'POST', {'query': {'id': id}})
+    if (contacts.length > 1) throw new Error('Multiple contacts found with same ID')
+    if (contacts.length === 0) return null
+    return contacts[0]
 }

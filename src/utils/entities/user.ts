@@ -2,7 +2,7 @@ import { accessAPI } from "../api"
 import { User } from "next-auth"
 
 export async function CreateUser(user:User) {
-    let user_response = await accessAPI('/users/create', 'POST', {'data': user, 'id': user.id})
+    let user_response = await accessAPI('/users/create', 'POST', {'user': user})
     return user_response
 }
 

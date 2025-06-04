@@ -5,44 +5,62 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import GeneralInfo from './components/GeneralInfo';
 import Regulatory from './components/Regulatory';
-import { Ticket } from '@/lib/entities/ticket';
 import AboutYou from './components/AboutYou';
 import { StaticHeader } from '@/components/Header';
 import ApplicationEnd from './components/ApplicationEnd';
 import AuthorizedPerson from './components/AuthorizedPerson';
 import AboutOrganization from './components/AboutOrganization';
-import { UpdateTicketByID } from '@/utils/entities/ticket';
-import { Loader2 } from 'lucide-react';
 import { pageTransition, pageVariants } from '@/lib/anims';
+import { UpdateAccountInfoByID, CreateAccount, ReadAccountInfoByID, ReadAccountByAccountID } from '@/utils/entities/account';
+import { AccountPayload, IndividualAccountApplicationInfo } from '@/lib/entities/account';
+import UploadDocuments from './components/UploadDocuments';
+import { Account } from '@/lib/entities/account';
+import LoadingComponent from '@/components/misc/LoadingComponent';
+import { useSearchParams } from 'next/navigation';
 
 interface Props {
-  ticketProp: Ticket | null
+  accountProp: Account | null
 }
 
-const ClientForm = ({ticketProp}: Props) => {
+const ClientForm = ({ accountProp }: Props) => {
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { toast } = useToast();
   const [step, setStep] = useState<number>(1);
-  const [ticket, setTicket] = useState<Ticket | null>(ticketProp || null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  
+  const [account, setAccount] = useState<Account | null>(accountProp || null);
+  const [accountInfo, setAccountInfo] = useState<IndividualAccountApplicationInfo | null>(null);
+
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
+  // Load account and account info if provided
   useEffect(() => {
-    setTicket(ticketProp);
-    setStep(1);
-  }, [ticketProp]);
+    setLoading(true);
+    setAccount(accountProp);
 
-  // Cleanup effect
+    if (accountProp) {
+      ReadAccountInfoByID(accountProp.id).then((accountInfo: IndividualAccountApplicationInfo) => {
+        setAccountInfo(accountInfo);
+      });
+    }
+
+    setStep(1);
+    setLoading(false);
+  }, [accountProp]);
+
+  // Sync account data with database on mount
   useEffect(() => {
     return () => {
-      // Save any unsaved changes when component unmounts
-      if (ticket) {
-        syncTicketData(ticket).catch(console.error);
+      if (account && accountInfo) {
+        syncAccountData(account.id, accountInfo).catch(console.error);
       }
     };
   }, []);
 
-  // Prevent accidental navigation
+  console.log('accountInfo', accountInfo)
+
+  // Prevent unsaved changes from being lost on page refresh
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (isSaving) {
@@ -59,33 +77,71 @@ const ClientForm = ({ticketProp}: Props) => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isSaving]);
 
-  // Sync ticket data with database
-  async function syncTicketData(updatedTicket: Ticket) {
+  // Sync account data with database (for updates)
+  async function syncAccountData(accountID:string, accountInfo: IndividualAccountApplicationInfo) {
     try {
+      console.log('accountInfo func', accountInfo)
       setIsSaving(true);
-      await UpdateTicketByID(updatedTicket.TicketID, updatedTicket);
-      setTicket(updatedTicket);
+      await UpdateAccountInfoByID(accountID, accountInfo);
+      setAccountInfo(accountInfo);
+      toast({
+        title: 'Progress Saved',
+        description: 'Your application progress has been saved.',
+        variant: 'success',
+      });
     } catch (error) {
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to sync ticket data',
+        description: error instanceof Error ? error.message : 'Failed to sync account data',
         variant: 'destructive',
-      });
+      })
       return false;
     } finally {
       setIsSaving(false);
     }
     return true;
-  };
+  }
 
-  const stepForward = () => {
-    if (isSaving || isLoading) return;
-    
-    // Validate current step data before moving forward
-    if (!ticket && step !== 1) {
+  // Create new account and set state (for initial creation)
+  async function handleCreateAccount(payload: AccountPayload, infoData: IndividualAccountApplicationInfo): Promise<Account | null> {
+    try {
+
+      // First create the account to get IDs
+      const { accountID, infoID } = await CreateAccount(payload, infoData);
+      console.log('accountID', accountID)
+
+      const account = await ReadAccountByAccountID(accountID);
+      const accountInfo = await ReadAccountInfoByID(infoID);
+
+      setAccount(account);
+      setAccountInfo(accountInfo);
+      
+      toast({
+        title: 'Application Started',
+        description: 'Your application has been successfully started.',
+        variant: 'success',
+      });
+      
+      return account;
+      
+    } catch (error) {
       toast({
         title: 'Error',
-        description: 'No ticket data available',
+        description: error instanceof Error ? error.message : 'Failed to create account',
+        variant: 'destructive',
+      });
+      return null;
+    }
+  }
+
+  const stepForward = () => {
+    if (isSaving) return;
+    
+    // Validate current step data before moving forward
+    if (!account && step !== 1) {
+      toast({
+        title: 'Error',
+        description: 'No account data available',
         variant: 'destructive',
       });
       return;
@@ -96,7 +152,7 @@ const ClientForm = ({ticketProp}: Props) => {
   };
 
   const stepBackward = () => {
-    if (isSaving || isLoading || step < 2) return;
+    if (isSaving || step < 2) return;
     setStep(step - 1);
     scrollToTop();
   };
@@ -109,158 +165,197 @@ const ClientForm = ({ticketProp}: Props) => {
   };
 
   function handleRefresh() {
-    if (isSaving || isLoading) return;
+    if (isSaving) return;
     
-    const confirmRefresh = window.confirm("Are you sure you want to refresh? This will delete your current progress.");
+    const confirmRefresh = window.confirm("slkdgh;sng;ksdg;kj");
     if (confirmRefresh) {
       setStep(1);
-      setTicket(null);
+      setAccount(null);
     }
   };
 
   const renderFormStep = () => {
-    if (isLoading) {
-      return (
-        <div className="flex items-center justify-center w-full h-64">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-      );
-    }
 
-    if (!ticket) {
+    if (!account) {
       if (step === 1) {
         return (
           <GeneralInfo 
-            ticket={ticket}
+            account={account}
+            accountInfo={accountInfo}
             stepForward={stepForward} 
-            syncTicketData={syncTicketData}
+            syncAccountData={syncAccountData}
+            createAccount={handleCreateAccount}
           />
         );
       }
       return null;
     }
 
-    if (ticket.ApplicationInfo.account_type === 'Individual') {
+    if (account.account_type === 'Individual' && accountInfo) {
       switch (step) {
         case 1:
           return (
             <GeneralInfo 
-              ticket={ticket}
+              account={account}
+              accountInfo={accountInfo}
               stepForward={stepForward} 
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
+              createAccount={handleCreateAccount}
             />
           );
         case 2:
           return (
             <AboutYou 
               primary 
-              ticket={ticket} 
+              account={account} 
+              accountInfo={accountInfo}
               stepForward={stepForward} 
               stepBackward={stepBackward}
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
             />
           );
         case 3:
           return (
             <Regulatory 
-              ticket={ticket} 
+              account={account}
+              accountInfo={accountInfo}
               stepForward={stepForward} 
               stepBackwards={stepBackward}
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
             />
           );
         case 4:
-          return <ApplicationEnd ticket={ticket}/>;
+          return (
+            <UploadDocuments
+              account={account}
+              accountInfo={accountInfo}
+              stepForward={stepForward}
+              stepBackward={stepBackward}
+              syncAccountData={syncAccountData}
+            />
+          );
+        case 5:
+          return <ApplicationEnd />;
         default:
           return null;
       }
     }
 
-    if (ticket.ApplicationInfo.account_type === 'Joint') {
+    if (account.account_type === 'Joint' && accountInfo) {
       switch (step) {
         case 1:
           return (
             <GeneralInfo 
-              ticket={ticket}
+              account={account}
+              accountInfo={accountInfo}
               stepForward={stepForward} 
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
+              createAccount={handleCreateAccount}
             />
           );
         case 2:
           return (
             <AboutYou 
               primary 
-              ticket={ticket} 
+              account={account} 
+              accountInfo={accountInfo}
               stepForward={stepForward} 
               stepBackward={stepBackward}
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
             />
           );
         case 3:
           return (
             <AboutYou 
               primary={false} 
-              ticket={ticket} 
+              account={account} 
+              accountInfo={accountInfo}
               stepForward={stepForward} 
               stepBackward={stepBackward}
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
             />
           );
         case 4:
           return (
             <Regulatory 
-              ticket={ticket} 
+              account={account} 
+              accountInfo={accountInfo}
               stepForward={stepForward} 
               stepBackwards={stepBackward}
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
             />
           );
         case 5:
-          return <ApplicationEnd ticket={ticket}/>;
+          return (
+            <UploadDocuments 
+              account={account}
+              accountInfo={accountInfo}
+              stepForward={stepForward}
+              stepBackward={stepBackward}
+              syncAccountData={syncAccountData}
+            />
+          );
+        case 6:
+          return <ApplicationEnd />;
         default:
           return null;
       }
     }
 
-    if (['Institutional'].includes(ticket.ApplicationInfo.account_type)) {
+    if (account.account_type === 'Institutional' && accountInfo) {
       switch (step) {
         case 1:
           return (
             <GeneralInfo 
-              ticket={ticket}
+              account={account}
+              accountInfo={accountInfo}
               stepForward={stepForward} 
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
+              createAccount={handleCreateAccount}
             />
           );
         case 2:
           return (
             <AboutOrganization
               stepBackward={stepBackward}
-              ticket={ticket}
+              account={account}
+              accountInfo={accountInfo}
               stepForward={stepForward}
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
             />
           );
         case 3:
           return (
             <AuthorizedPerson
               stepBackward={stepBackward}
-              ticket={ticket}
+              account={account}
+              accountInfo={accountInfo}
               stepForward={stepForward}
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
             />
           );
         case 4:
           return (
             <Regulatory
-              ticket={ticket}
+              account={account}
+              accountInfo={accountInfo}
               stepForward={stepForward}
               stepBackwards={stepBackward}
-              syncTicketData={syncTicketData}
+              syncAccountData={syncAccountData}
             />
           );
         case 5:
-          return <ApplicationEnd ticket={ticket}/>;
+          return (
+            <UploadDocuments
+              account={account}
+              accountInfo={accountInfo}
+              stepForward={stepForward}
+              stepBackward={stepBackward}
+              syncAccountData={syncAccountData}
+            />
+          );
+        case 6:
+          return <ApplicationEnd />;
         default:
           return null;
       }
@@ -269,19 +364,18 @@ const ClientForm = ({ticketProp}: Props) => {
     return null;
   };
 
+  if (loading) {
+    return (
+      <div className='w-full h-full flex flex-col justify-center items-center'>
+        <LoadingComponent />
+      </div>
+    );
+  }
+
   return (
     <div className='w-full flex flex-col h-full'>
       <StaticHeader/>
       <div className='w-full h-fit flex flex-col justify-center items-center'>
-        {isSaving && (
-          <div className="fixed top-0 left-0 right-0 bg-primary/10 p-2 text-center">
-            <span className="text-sm text-primary flex items-center justify-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Saving changes...
-            </span>
-          </div>
-        )}
-
         <AnimatePresence mode="wait">
           <motion.div
             key={step}

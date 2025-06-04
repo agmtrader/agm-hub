@@ -15,23 +15,23 @@ const ContactCard = ({ contact, title }: Props) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <p className="text-foreground font-medium text-md">Contact</p>
-          <p className="text-subtitle text-sm">{contact?.ContactName || 'Loading...'}</p>
+          <p className="text-subtitle text-sm">{contact?.name || 'Loading...'}</p>
         </div>
         <div>
           <p className="text-foreground font-medium text-md">Email</p>
-          <p className="text-subtitle text-sm">{contact?.ContactEmail || '-'}</p>
+          <p className="text-subtitle text-sm">{contact?.email || '-'}</p>
         </div>
         <div>
           <p className="text-foreground font-medium text-md">Phone</p>
-          <p className="text-subtitle text-sm">{contact?.ContactPhone || '-'}</p>
+          <p className="text-subtitle text-sm">{contact?.phone || '-'}</p>
         </div>
         <div>
           <p className="text-foreground font-medium text-md">Country</p>
-          <p className="text-subtitle text-sm">{countries.find(c => c.value === contact?.ContactCountry)?.label || '-'}</p>
+          <p className="text-subtitle text-sm">{countries.find(c => c.value === contact?.country)?.label || '-'}</p>
         </div>
         <div>
           <p className="text-foreground font-medium text-md">Company</p>
-          <p className="text-subtitle text-sm">{contact?.CompanyName || '-'}</p>
+          <p className="text-subtitle text-sm">{contact?.company_name || '-'}</p>
         </div>
       </div>
     </Card>

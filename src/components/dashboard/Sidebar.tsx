@@ -5,7 +5,7 @@ import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
 import { formatURL } from '@/utils/language/lang'
-import { AlarmClockPlusIcon, BellIcon, Bot, ChevronLeft, ChevronRight, Cross, FileText, Plus, RefreshCcw, Ticket, Users } from 'lucide-react'
+import { BellIcon, Bot, ChevronLeft, ChevronRight, Contact, FileText, Plus, RefreshCcw, Ticket, TrendingUp, Users } from 'lucide-react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 import { cn } from '@/lib/utils'
@@ -14,17 +14,32 @@ import { useSession } from 'next-auth/react'
 
 const tools = [
   {
-    name: 'Account Applications',
-    url: '/dashboard/open-account',
-    icon: Plus,
-    id: 'open_account',
+    name: 'Contacts',
+    url: '/dashboard/contacts',
+    icon: Contact,
+    id: 'contacts',
   },
   {
-    name: 'Risk Profiles',
-    url: '/dashboard/risk-profiles',
-    icon: AlarmClockPlusIcon,
-    id: 'risk_profiles',
+    name: 'Leads',
+    url: '/dashboard/leads',
+    icon: TrendingUp,
+    id: 'leads',
   },
+  {
+    name: 'Applications',
+    url: '/dashboard/applications',
+    icon: Plus,
+    id: 'applications',
+  },
+  {
+    name: 'Accounts',
+    url: '/dashboard/accounts',
+    icon: Users,
+    id: 'accounts',
+  }
+]
+
+const user_tools = [
   {
     name: 'Trade Tickets',
     url: '/dashboard/trade-tickets',
@@ -36,12 +51,6 @@ const tools = [
     url: '/dashboard/reporting',
     icon: RefreshCcw,
     id: 'reporting_center',
-  }, 
-  {
-    name: 'Document Center',
-    url: '/dashboard/document-center',
-    icon: FileText,
-    id: 'document_center',
   },
   {
     name: 'Investment Proposals',
@@ -54,7 +63,7 @@ const tools = [
     url: '/dashboard/auto-trader',
     icon: Bot,
     id: 'auto_trader',
-  },
+  }
 ]
 
 const Sidebar = () => {
@@ -85,6 +94,13 @@ const Sidebar = () => {
     return tools.filter(tool => userScopes.has(tool.id))
   }, [userScopes])
 
+  const filteredUserTools = useMemo(() => {
+    // If user has "all" scope, return all tools
+    if (userScopes.has('all')) return user_tools
+    
+    return user_tools.filter(tool => userScopes.has(tool.id))
+  }, [userScopes])
+
   return (
     <NavigationMenu className="px-3 py-8 h-full flex flex-col gap-10 justify-between items-start">
       <div className='flex flex-col items-center justify-center gap-10'>
@@ -113,6 +129,17 @@ const Sidebar = () => {
                   navigationMenuTriggerStyle(),
                   "justify-start text-start w-full whitespace-nowrap",
                 )}>
+                  <item.icon className="h-4 w-4" />
+                  {!isCollapsed && <span className="ml-2">{item.name}</span>}
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          ))}
+          <Separator />
+          {filteredUserTools.map((item, index) => (
+            <NavigationMenuItem key={index} className="flex w-full h-fit">
+              <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
+                <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-start text-start w-full whitespace-nowrap")}>
                   <item.icon className="h-4 w-4" />
                   {!isCollapsed && <span className="ml-2">{item.name}</span>}
                 </NavigationMenuLink>

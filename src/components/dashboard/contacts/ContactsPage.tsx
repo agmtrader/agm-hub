@@ -1,16 +1,17 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { Contact } from '@/lib/entities/contact'
-import { ReadContacts, DeleteContact } from '@/utils/entities/contact'
+import { ReadContacts } from '@/utils/entities/contact'
 import CreateContact from '@/components/dashboard/contacts/CreateContact'
 import { useToast } from '@/hooks/use-toast'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import EditContact from './EditContact'
 import { countries } from '@/lib/form'
 import ContactView from './ContactView'
+import LoadingComponent from '@/components/misc/LoadingComponent'
 
 const ContactsPage = () => {
-    const [contacts, setContacts] = useState<Contact[]>([])
+    const [contacts, setContacts] = useState<Contact[] | null>(null)
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
 
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -35,54 +36,37 @@ const ContactsPage = () => {
         handleFetchContacts() 
     }, [])
 
-    const handleDelete = async (contactId: string) => {
-        try {
-            await DeleteContact(contactId)
-            toast({
-                title: "Success",
-                description: "Contact deleted successfully",
-                variant: "success"
-            })
-            handleFetchContacts()
-        } catch (error) {
-            toast({
-                title: "Error",
-                description: "Failed to delete contact",
-                variant: "destructive"
-            })
-        }
-    }
+    if (!contacts) return <LoadingComponent className='w-full h-full' />
 
     const columns: ColumnDefinition<Contact>[] = [
         {
             header: 'Name',
-            accessorKey: 'ContactName',
+            accessorKey: 'name',
         },
         {
             header: 'Email',
-            accessorKey: 'ContactEmail',
+            accessorKey: 'email',
         },
         {
             header: 'Phone',
-            accessorKey: 'ContactPhone',
+            accessorKey: 'phone',
         },
         {
             header: 'Country',
-            accessorKey: 'ContactCountry',
+            accessorKey: 'country',
             cell: ({ row }: any) => {
-                return <span className='capitalize'>{countries.find(c => c.value === row.original.ContactCountry)?.label}</span>
+                return <span className='capitalize'>{countries.find(c => c.value === row.original.country)?.label}</span>
             }
         },
         {
             header: 'Company',
-            accessorKey: 'CompanyName',
+            accessorKey: 'company_name',
         }
     ]
 
     return (
-        <div className="space-y-4">
-
-            <div className="flex justify-end gap-2">
+        <div className="flex flex-col gap-2 w-full h-full">
+            <div className="flex justify-end">
                 <CreateContact onSuccess={handleFetchContacts}/>
             </div>
             <DataTable 
@@ -104,12 +88,6 @@ const ContactsPage = () => {
                                 setSelectedContact(row)
                                 setIsEditDialogOpen(true)
                             }
-                        },
-                        {
-                            label: 'Delete',
-                            onClick: (row: any) => {
-                                handleDelete(row.ContactID)
-                            },
                         }
                     ]
                 } 

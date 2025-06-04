@@ -38,20 +38,21 @@ import { getDefaults } from '@/utils/form'
 import { authorized_person_schema } from "@/lib/schemas/ticket"
 
 import { Checkbox } from "@/components/ui/checkbox"
-import { Ticket } from "@/lib/entities/ticket"
+import { IndividualTicket, Ticket } from "@/lib/entities/ticket"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
-
+import { Account, IndividualAccountApplicationInfo } from "@/lib/entities/account"
 interface Props {
   stepForward: () => void,
   stepBackward: () => void,
-  ticket: Ticket,
-  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
+  account: Account,
+  accountInfo: IndividualAccountApplicationInfo,
+  syncAccountData: (accountID:string, accountInfo: IndividualAccountApplicationInfo) => Promise<boolean>
 }
 
-const AuthorizedPerson = ({stepForward, ticket, stepBackward, syncTicketData}:Props) => {
+const AuthorizedPerson = ({stepForward, account, accountInfo, stepBackward, syncAccountData}:Props) => {
 
   let formSchema:any;
 
@@ -66,14 +67,8 @@ const AuthorizedPerson = ({stepForward, ticket, stepBackward, syncTicketData}:Pr
 
   formSchema = authorized_person_schema(t)
 
-  let initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema);
+  let initialFormValues = accountInfo || getDefaults(formSchema);
   
-  if (initialFormValues.position && !Array.isArray(initialFormValues.position)) {
-    initialFormValues.position = [initialFormValues.position];
-  } else if (!initialFormValues.position) {
-    initialFormValues.position = [];
-  }
-
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       values: initialFormValues,
@@ -83,20 +78,10 @@ const AuthorizedPerson = ({stepForward, ticket, stepBackward, syncTicketData}:Pr
     setGenerating(true);
 
     try {
-      const updatedApplicationInfo = { ...ticket.ApplicationInfo };
-
-      for (const [key, value] of Object.entries(values)) {
-        updatedApplicationInfo[key] = value;
-      }
-
-      const updatedTicket: Ticket = {
-        ...ticket,
-        ApplicationInfo: updatedApplicationInfo,
-      };
-
-      const success = await syncTicketData(updatedTicket);
+      const updatedApplicationInfo = { ...accountInfo, ...values };
+      const success = await syncAccountData(account.id, updatedApplicationInfo);
       if (!success) {
-        throw new Error('Failed to sync ticket data');
+        throw new Error('Failed to sync account data');
       }
 
       stepForward();

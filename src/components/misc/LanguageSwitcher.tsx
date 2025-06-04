@@ -6,9 +6,7 @@ import { usePathname } from 'next/navigation'
 import { redirect } from 'next/navigation'
 import { ES, US } from 'country-flag-icons/react/3x2'
 
-type Props = {}
-
-const LanguageSwitcher = (props: Props) => {
+const LanguageSwitcher = () => {
 
   const path = usePathname()
   function handleChangeLang(lang: string) {

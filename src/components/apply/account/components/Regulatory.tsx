@@ -9,7 +9,7 @@ import { investment_objectives, products, worths } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
 
 import { regulatory_schema } from "@/lib/schemas/ticket"
-import { Ticket } from "@/lib/entities/ticket"
+import { IndividualTicket, Ticket } from "@/lib/entities/ticket"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 
 import { Button } from "@/components/ui/button"
@@ -41,16 +41,17 @@ import {
 } from "@/components/ui/popover"
 
 import { FileCheck2, Loader2 } from "lucide-react"
-import { UpdateTicketByID } from "@/utils/entities/ticket"
+import { Account, IndividualAccountApplicationInfo } from "@/lib/entities/account"
 
 interface Props {
   stepForward: () => void,
   stepBackwards: () => void,
-  ticket: Ticket,
-  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
+  account: Account,
+  accountInfo: IndividualAccountApplicationInfo,
+  syncAccountData: (accountID:string, accountInfo: IndividualAccountApplicationInfo) => Promise<boolean>
 }
 
-const Regulatory = ({stepBackwards, ticket, stepForward, syncTicketData}:Props) => {
+const Regulatory = ({stepBackwards, account, accountInfo, stepForward, syncAccountData}:Props) => {
   
   const { toast } = useToast()
 
@@ -64,7 +65,7 @@ const Regulatory = ({stepBackwards, ticket, stepForward, syncTicketData}:Props) 
   let initialFormValues:any;
 
   formSchema = regulatory_schema(t)
-  initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema)
+  initialFormValues = accountInfo || getDefaults(formSchema)
 
   // Ensure arrays are properly initialized
   if (!initialFormValues.investment_objectives) {
@@ -83,19 +84,62 @@ const Regulatory = ({stepBackwards, ticket, stepForward, syncTicketData}:Props) 
     setGenerating(true);
 
     try {
-      const updatedApplicationInfo = { ...ticket.ApplicationInfo, ...values };
+      
+      const individualAccount: IndividualAccountApplicationInfo = {
+        email: values.email || accountInfo?.email,
+        country: values.country || accountInfo?.country,
+        account_type: values.account_type || accountInfo?.account_type,
+        referrer: values.referrer || accountInfo?.referrer,
+        salutation: values.salutation || accountInfo?.salutation,
+        first_name: values.first_name || accountInfo?.first_name,
+        middle_name: values.middle_name || accountInfo?.middle_name,
+        last_name: values.last_name || accountInfo?.last_name,
+        address: values.address || accountInfo?.address,
+        city: values.city || accountInfo?.city,
+        state: values.state || accountInfo?.state,
+        zip: values.zip || accountInfo?.zip,
+        phone_type: values.phone_type || accountInfo?.phone_type,
+        phone_country: values.phone_country || accountInfo?.phone_country,
+        phone_number: values.phone_number || accountInfo?.phone_number,
+        citizenship: values.citizenship || accountInfo?.citizenship,
+        occupation: values.occupation || accountInfo?.occupation,
+        country_of_birth: values.country_of_birth || accountInfo?.country_of_birth,
+        date_of_birth: values.date_of_birth || accountInfo?.date_of_birth,
+        marital_status: values.marital_status || accountInfo?.marital_status,
+        number_of_dependents: values.number_of_dependents || accountInfo?.number_of_dependents,
+        source_of_wealth: values.source_of_wealth || accountInfo?.source_of_wealth,
+        country_of_residence: values.country_of_residence || accountInfo?.country_of_residence,
+        tax_id: values.tax_id || accountInfo?.tax_id,
+        id_country: values.id_country || accountInfo?.id_country,
+        id_type: values.id_type || accountInfo?.id_type,
+        id_number: values.id_number || accountInfo?.id_number,
+        id_expiration_date: values.id_expiration_date || accountInfo?.id_expiration_date,
+        employment_status: values.employment_status || accountInfo?.employment_status,
+        employer_name: values.employer_name || accountInfo?.employer_name,
+        employer_address: values.employer_address || accountInfo?.employer_address,
+        employer_city: values.employer_city || accountInfo?.employer_city,
+        employer_state: values.employer_state || accountInfo?.employer_state,
+        employer_country: values.employer_country || accountInfo?.employer_country,
+        employer_zip: values.employer_zip || accountInfo?.employer_zip,
+        nature_of_business: values.nature_of_business || accountInfo?.nature_of_business,
+        currency: values.currency || accountInfo?.currency,
+        security_q_1: values.security_q_1 || accountInfo?.security_q_1,   
+        security_a_1: values.security_a_1 || accountInfo?.security_a_1,
+        security_q_2: values.security_q_2 || accountInfo?.security_q_2,
+        security_a_2: values.security_a_2 || accountInfo?.security_a_2,
+        security_q_3: values.security_q_3 || accountInfo?.security_q_3,
+        security_a_3: values.security_a_3 || accountInfo?.security_a_3,
+        annual_net_income: values.annual_net_income || accountInfo?.annual_net_income,
+        net_worth: values.net_worth || accountInfo?.net_worth,
+        liquid_net_worth: values.liquid_net_worth || accountInfo?.liquid_net_worth,
+        investment_objectives: values.investment_objectives || accountInfo?.investment_objectives,
+        products: values.products || accountInfo?.products,
+        amount_to_invest: values.amount_to_invest || accountInfo?.amount_to_invest
+      }
 
-      const updatedTicket: Ticket = {
-        ...ticket,
-        ApplicationInfo: updatedApplicationInfo,
-        Status: 'Filled'
-      };
-
-      console.log(updatedTicket)
-
-      const success = await syncTicketData(updatedTicket);
+      const success = await syncAccountData(account.id, individualAccount);
       if (!success) {
-        throw new Error('Failed to sync ticket data');
+        throw new Error('Failed to sync account data');
       }
 
       stepForward();
@@ -407,7 +451,7 @@ const Regulatory = ({stepBackwards, ticket, stepForward, syncTicketData}:Props) 
                   {t('forms.submitting')}
                 </>
               ) : (
-                t('forms.finish')
+                t('forms.submit')
               )}
             </Button>
           </div>

@@ -38,11 +38,11 @@ const AdvisorsPage = (props: Props) => {
 
     const columns = [
         {
-            accessorKey: 'AdvisorCode',
-            header: 'Advisor Code',
+            accessorKey: 'id',
+            header: 'Advisor ID',
         },
         {
-            accessorKey: 'AdvisorName',
+            accessorKey: 'name',
             header: 'Advisor Name',
         },
     ] as ColumnDefinition<Advisor>[]
@@ -51,7 +51,7 @@ const AdvisorsPage = (props: Props) => {
         {
             label: 'View profile',
             onClick: (row: Advisor) => {
-                redirect(formatURL(`/dashboard/advisors/${row.AdvisorCode}`, lang))
+                redirect(formatURL(`/dashboard/advisors/${row.id}`, lang))
             }
         }, 
         {
@@ -69,7 +69,6 @@ const AdvisorsPage = (props: Props) => {
                 data={advisors}
                 infiniteScroll
                 enableFiltering
-                filterColumns={['AdvisorName']}
                 columns={columns}
                 enableRowActions
                 rowActions={rowActions}

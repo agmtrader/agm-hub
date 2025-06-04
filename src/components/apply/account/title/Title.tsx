@@ -5,17 +5,18 @@ import { motion } from 'framer-motion'
 import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { containerVariants, itemVariants } from '@/lib/anims'
-import { Ticket } from '@/lib/entities/ticket'
+import { Account } from '@/lib/entities/account'
 import PreviousApplications from './PreviousApplications'
 import Link from 'next/link'
 import { formatURL } from '@/utils/language/lang'
+import { useSearchParams } from 'next/navigation'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
-  setTicket: React.Dispatch<React.SetStateAction<Ticket | null>>
+  setAccount: React.Dispatch<React.SetStateAction<Account | null>>
 }
 
-const Title = ({setStarted, setTicket}:Props) => {
+const Title = ({setStarted, setAccount }:Props) => {
 
   const { t, lang } = useTranslationProvider()
 
@@ -63,7 +64,7 @@ const Title = ({setStarted, setTicket}:Props) => {
             </ShimmerButton>
           </motion.div>
           <motion.div variants={itemVariants}>
-            <PreviousApplications setTicket={setTicket} setStarted={setStarted}/>
+            <PreviousApplications setAccount={setAccount} setStarted={setStarted}/>
           </motion.div>
         </motion.div>
       </div>

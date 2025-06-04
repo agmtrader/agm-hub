@@ -3,6 +3,7 @@ import { z } from "zod"
 export const general_info_schema = (t: (key: string) => string) => z.object({
     email: z.string({
       required_error: t('forms.errors.email'),
+      invalid_type_error: t('forms.errors.email'),
     }).email({
       message: t('forms.errors.email'),
     }),
@@ -14,8 +15,9 @@ export const general_info_schema = (t: (key: string) => string) => z.object({
     account_type: z.string({
       required_error: t('forms.errors.select_required'),
     }),
-    referrer: z.string().optional(),
+    referrer: z.string().nullable(),
 })
+
 const base_about_you_schema = z.object({
     salutation: z.string().min(1, {
         message: "You must select a salutation.",
@@ -23,7 +25,7 @@ const base_about_you_schema = z.object({
     first_name: z.string().min(1, {
         message: "You must enter a first name.",
     }),
-    middle_name: z.string().optional(),
+    middle_name: z.string().nullable(),
     last_name: z.string().min(1, {
         message: "You must enter a last name.",
     }),
@@ -84,14 +86,14 @@ const base_about_you_schema = z.object({
     employment_status: z.string().min(1, {
         message: 'You must select an employment status.',
     }),
-    employer_name: z.string().optional(),
-    employer_address: z.string().optional(),
-    employer_city: z.string().optional(),
-    employer_state: z.string().optional(),
-    employer_country: z.string().optional(),
-    employer_zip: z.string().optional(),
-    nature_of_business: z.string().optional(),
-    occupation: z.string().optional(),
+    employer_name: z.string().nullable(),
+    employer_address: z.string().nullable(),
+    employer_city: z.string().nullable(),
+    employer_state: z.string().nullable(),
+    employer_country: z.string().nullable(),
+    employer_zip: z.string().nullable(),
+    nature_of_business: z.string().nullable(),
+    occupation: z.string().nullable(),
     source_of_wealth: z.array(z.string()).refine((value) => value.some((item) => item), {
         message: "You must select at least one source of wealth.",
     }).default([]),

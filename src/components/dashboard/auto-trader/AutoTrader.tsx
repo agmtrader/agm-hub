@@ -97,6 +97,8 @@ const AutoTrader = () => {
       case 'BUY': return <ArrowUpCircle className="h-10 w-10 text-green-500" />;
       case 'SELL': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
       case 'STAY': return <MinusCircle className="h-10 w-10 text-blue-500" />;
+      case 'EXITLONG': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
+      case 'EXITSHORT': return <ArrowUpCircle className="h-10 w-10 text-green-500" />;
       default: return null;
     }
   };

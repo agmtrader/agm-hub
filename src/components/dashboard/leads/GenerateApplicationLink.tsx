@@ -2,25 +2,27 @@ import React, { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
-import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card } from '@/components/ui/card'
 import { Plus } from 'lucide-react'
 import { ReadAdvisors } from '@/utils/entities/advisor'
 import { Advisor } from '@/lib/entities/advisor'
-import { Lead } from '@/lib/entities/lead'
+import { FollowUp, Lead } from '@/lib/entities/lead'
+import LoadingComponent from '@/components/misc/LoadingComponent'
 type AccountType = 'br' | 'ad'
 type Language = 'en' | 'es'
 
 interface Props {
     lead: Lead
+    followUps: FollowUp[]
 }
 
-const GenerateApplicationLink = ({ lead }: Props) => {
+const GenerateApplicationLink = ({ lead, followUps }: Props) => {
 
-    const [accountType, setAccountType] = React.useState<AccountType>('br')
-    const [advisorNumber, setAdvisorNumber] = React.useState('1')
-    const [language, setLanguage] = React.useState<Language>('en')
+    const [accountType, setAccountType] = useState<AccountType>('br')
+    const [advisorID, setAdvisorID] = useState<string | null>(null)
+    const [language, setLanguage] = useState<Language>('en')
+
     const [isOpen, setIsOpen] = useState(false)
     const [advisors, setAdvisors] = useState<Advisor[]>([])
     const [isLoading, setIsLoading] = useState(false)
@@ -50,7 +52,14 @@ const GenerateApplicationLink = ({ lead }: Props) => {
     const generateUrl = () => {
         const baseUrl = `https://agmtechnology.com/${language}/apply`
         const maParam = accountType === 'br' ? 'br' : 'ad'
-        return `${baseUrl}?ma=${maParam}&ad=${advisorNumber}&ld=${lead.LeadID}`
+
+        let string = `${baseUrl}?ma=${maParam}`
+        if (advisorID) {
+            string += `&ad=${advisorID}`
+        }
+        string += `&ld=${lead.id}`
+
+        return string
     }
 
     async function handleCopyLink() {
@@ -69,10 +78,12 @@ const GenerateApplicationLink = ({ lead }: Props) => {
         }
     }
 
+    if (!advisors) return <LoadingComponent />
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button disabled={lead.Status !== 'Waiting for Application'} className='bg-primary text-background hover:bg-primary/90'>
+                <Button disabled={followUps.some(followUp => followUp.completed === false)} className='bg-primary text-background hover:bg-primary/90'>
                     <Plus className='h-4 w-4 mr-2' />
                     Generate Application Link
                 </Button>
@@ -110,7 +121,7 @@ const GenerateApplicationLink = ({ lead }: Props) => {
 
                     <div className='flex flex-col gap-2'>
                         <label className='text-sm font-medium'>Advisor</label>
-                        <Select value={advisorNumber} onValueChange={setAdvisorNumber}>
+                        <Select value={advisorID || ''} onValueChange={setAdvisorID}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
@@ -119,8 +130,8 @@ const GenerateApplicationLink = ({ lead }: Props) => {
                                     <SelectItem value="loading" disabled>Loading advisors...</SelectItem>
                                 ) : (
                                     advisors.map((advisor) => (
-                                        <SelectItem key={advisor.AdvisorCode} value={advisor.AdvisorCode.toString()}>
-                                            {advisor.AdvisorName}
+                                        <SelectItem key={advisor.id} value={advisor.id.toString()}>
+                                            {advisor.name}
                                         </SelectItem>
                                     ))
                                 )}

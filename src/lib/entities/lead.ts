@@ -1,16 +1,15 @@
-export interface FollowUp {
-    date: string;
-    description: string;
-    completed: boolean;
-}
+import { lead_schema, follow_up_schema } from "@/lib/schemas/lead"
+import { z } from "zod"
+import { Base } from "./base"
 
-export interface Lead {
-    'LeadID': string;
-    'ContactID': string;
-    'ReferrerID': string;
-    'ContactDate': string;
-    'Description': string;
-    'FollowUps': FollowUp[];
-    'Completed': boolean;
-    'Status': string;
+export type LeadPayload = z.infer<typeof lead_schema> & {
+    status: string
+    completed: boolean
+    contact_date: string
 }
+export type Lead = Base & LeadPayload
+
+export type FollowUpPayload = z.infer<typeof follow_up_schema> & {
+    lead_id: string
+}
+export type FollowUp = Base & FollowUpPayload

@@ -3,6 +3,7 @@
 import { Map } from "../lib/types"
 import { getServerSession, User } from 'next-auth'
 import { authOptions } from "./auth";
+import { UserPayload } from "@/lib/entities/user";
 
 interface AuthenticationResponse {
     access_token: string,
@@ -100,14 +101,14 @@ async function PostData(url: string, params: Map | undefined, token: string) {
     }
 }
 
-export async function LoginUserWithCredentials(username:string, password:string) {
+export async function LoginUserWithCredentials(email:string, password:string) {
     try {
         const response = await fetch(`${api_url}/oauth/login`, {
             method: 'POST',
             headers: {
                 'Cache-Control': 'no-cache',
             },
-            body: JSON.stringify({'username': username, 'password': password}),
+            body: JSON.stringify({'email': email, 'password': password}),
         });
   
         if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`);
@@ -120,14 +121,14 @@ export async function LoginUserWithCredentials(username:string, password:string)
     }
 }
 
-export async function CreateUser(userData:User) {
+export async function CreateUser(userData:UserPayload) {
     try {
         const response = await fetch(`${api_url}/oauth/create`, {
             method: 'POST',
             headers: {
                 'Cache-Control': 'no-cache',
             },
-            body: JSON.stringify({'data': userData, 'id': userData.id}),
+            body: JSON.stringify({'user': userData}),
         });
   
         if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`);

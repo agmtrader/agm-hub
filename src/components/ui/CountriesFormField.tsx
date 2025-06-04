@@ -8,7 +8,7 @@ import { Command, CommandList, CommandInput, CommandEmpty, CommandGroup, Command
 import { countries } from '@/lib/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
-const CountriesFormField = ({ form, element }: { form: any, element: any }) => {
+const CountriesFormField = ({ form, element }: { form: any, element: { name: string, title: string } }) => {
 
   const { t, lang } = useTranslationProvider();
 

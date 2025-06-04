@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { Contact } from '@/lib/entities/contact'
+import { ContactPayload } from '@/lib/entities/contact'
 import { CreateContact as CreateContactAPI } from '@/utils/entities/contact'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,7 +21,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { formatTimestamp } from '@/utils/dates'
 import { getDefaults } from '@/utils/form'
 import { Plus } from 'lucide-react'
 
@@ -43,15 +42,12 @@ export default function CreateContact({ onSuccess, variant = 'primary' }: Create
     const handleSubmit = async (values: z.infer<typeof contact_schema>) => {
         setIsSubmitting(true)
         try {
-            const ContactID = formatTimestamp(new Date())
-            
-            const contactData:Contact = {
-                ContactID: ContactID,
-                ContactName: values.ContactName,
-                ContactEmail: values.ContactEmail || null,
-                ContactPhone: values.ContactPhone || null,
-                ContactCountry: values.ContactCountry || null,
-                CompanyName: values.CompanyName || null
+            const contactData:ContactPayload = {
+                name: values.name,
+                email: values.email || null,
+                phone: values.phone || null,
+                country: values.country || null,
+                company_name: values.company_name || null
             }
             await CreateContactAPI(contactData)
             toast({
@@ -76,7 +72,7 @@ export default function CreateContact({ onSuccess, variant = 'primary' }: Create
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button type="button" className="flex gap-2" variant={variant}>
+                <Button type="button" className="flex gap-2 w-fit" variant={variant}>
                     <Plus className="h-4 w-4" />
                     {variant === 'primary' && 'Create Contact'}
                 </Button>
@@ -93,7 +89,7 @@ export default function CreateContact({ onSuccess, variant = 'primary' }: Create
                     }} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="ContactName"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
@@ -107,12 +103,12 @@ export default function CreateContact({ onSuccess, variant = 'primary' }: Create
 
                         <FormField
                             control={form.control}
-                            name="ContactEmail"
+                            name="email"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
-                                        <Input type="email" {...field} />
+                                        <Input type="email" {...field} value={field.value ?? ''} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -120,12 +116,12 @@ export default function CreateContact({ onSuccess, variant = 'primary' }: Create
                         />
                         <FormField
                             control={form.control}
-                            name="ContactPhone"
+                            name="phone"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Phone</FormLabel>
                                     <FormControl>
-                                        <Input {...field} />
+                                        <Input {...field} value={field.value ?? ''} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -134,19 +130,19 @@ export default function CreateContact({ onSuccess, variant = 'primary' }: Create
                         <CountriesFormField
                             form={form}
                             element={{ 
-                                name: "ContactCountry", 
+                                name: "country", 
                                 title: "Country" 
                             }} 
                         />
 
                         <FormField
                             control={form.control}
-                            name="CompanyName"
+                            name="company_name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Company Name</FormLabel>
                                     <FormControl>
-                                        <Input {...field} />
+                                        <Input {...field} value={field.value ?? ''} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

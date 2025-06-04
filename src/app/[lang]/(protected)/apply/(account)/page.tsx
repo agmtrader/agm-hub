@@ -1,19 +1,54 @@
 'use client'
-import React, { useState } from 'react';
-import ClientForm from '@/components/apply/account/ClientForm';
+import React, { useEffect, useState } from 'react';
 import Title from '@/components/apply/account/title/Title';
-import { Ticket } from '@/lib/entities/ticket';
+import { Account } from '@/lib/entities/account';
+import { redirect, useSearchParams } from 'next/navigation';
+import { ReadAccountByLeadID } from '@/utils/entities/account';
+import { useToast } from '@/hooks/use-toast';
+import { formatURL } from '@/utils/language/lang';
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
+import IBKRApplicationForm from '@/components/dashboard/applications/IBKRApplicationForm';
 
 const page = () => {
 
+  const { toast } = useToast()
+
   const [started, setStarted] = useState(false)
-  const [ticket, setTicket] = useState<Ticket | null>(null)
+  const [account, setAccount] = useState<Account | null>(null)
+
+    const searchParams = useSearchParams()
+    const lead_id = searchParams.get('ld') || null;
+
+    const { lang } = useTranslationProvider()
+
+    useEffect(() => {
+      async function checkLead() {
+        if (lead_id) {
+          try {
+            const account = await ReadAccountByLeadID(lead_id)
+            if (!account) {
+              throw new Error('Account already exists for this Lead. Please contact support for more information.')
+            } else {
+              setStarted(true)
+            }
+          } catch (error) {
+            toast({
+              title: 'Error',
+              description: error instanceof Error ? error.message : 'Failed to load lead',
+              variant: 'destructive',
+            })
+            redirect(formatURL('/', lang))
+          }
+        }
+      }
+      checkLead()
+    }, [lead_id])
 
   if (started) {
-    return <ClientForm ticketProp={ticket}/>
+    return <IBKRApplicationForm />
   }
   else {
-    return <Title setStarted={setStarted} setTicket={setTicket}/>
+    return <Title setStarted={setStarted} setAccount={setAccount}/>
   }
 }
 

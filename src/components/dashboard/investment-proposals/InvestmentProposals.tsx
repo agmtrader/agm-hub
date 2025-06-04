@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { DataTable } from '@/components/misc/DataTable'
-import DocumentViewer from '@/components/dashboard/document-center/DocumentViewer'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { FetchInvestmentProposals } from '@/utils/entities/investment-proposal'
@@ -40,13 +39,7 @@ const InvestmentProposals = () => {
           enableRowActions 
           rowActions={rowActions} 
           enableFiltering
-          filterColumns={['ClientName']}
       />
-      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-          <DialogContent className="max-w-[80%] h-[80vh]">
-          {selectedFileId && <DocumentViewer fileId={selectedFileId} />}
-          </DialogContent>
-      </Dialog>
     </>
   )
 }

@@ -36,7 +36,7 @@ import { salutations, countries, id_type, employment_status, phone_types, securi
 import { getDefaults } from '@/utils/form'
 
 import { about_organization_schema } from "@/lib/schemas/ticket"
-import { Ticket } from "@/lib/entities/ticket"
+import { IndividualTicket, Ticket } from "@/lib/entities/ticket"
 
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -44,15 +44,16 @@ import { accessAPI } from "@/utils/api"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
-
+import { Account, IndividualAccountApplicationInfo } from "@/lib/entities/account"
 interface Props {
   stepForward: () => void,
   stepBackward: () => void,
-  ticket: Ticket,
-  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
+  account: Account,
+  accountInfo: IndividualAccountApplicationInfo,
+  syncAccountData: (accountID:string, accountInfo: IndividualAccountApplicationInfo) => Promise<boolean>
 }
 
-const AboutOrganization = ({stepForward, ticket, stepBackward, syncTicketData}:Props) => {
+const AboutOrganization = ({stepForward, account, accountInfo, stepBackward, syncAccountData}:Props) => {
 
   const backdoor = process.env.DEV_MODE === 'true'
 
@@ -69,10 +70,10 @@ const AboutOrganization = ({stepForward, ticket, stepBackward, syncTicketData}:P
 
   formSchema = about_organization_schema(t)
   let initialFormValues:any;
-  if (ticket?.ApplicationInfo) {
+  if (accountInfo) {
     // Extract fields with 'organization_' prefix
     initialFormValues = {};
-    for (const [key, value] of Object.entries(ticket.ApplicationInfo)) {
+    for (const [key, value] of Object.entries(accountInfo)) {
       if (key.startsWith('organization_')) {
         initialFormValues[key.replace('organization_', '')] = value;
       }
@@ -118,21 +119,16 @@ const AboutOrganization = ({stepForward, ticket, stepBackward, syncTicketData}:P
         throw new Error('Proprietary assets verification is required.');
       }
 
-      const updatedApplicationInfo = { ...ticket.ApplicationInfo };
+      const updatedApplicationInfo = { ...accountInfo, ...values };
 
       // Add organization_ prefix to all fields when saving
       for (const [key, value] of Object.entries(values)) {
         updatedApplicationInfo[`organization_${key}`] = value;
       }
 
-      const updatedTicket: Ticket = {
-        ...ticket,
-        ApplicationInfo: updatedApplicationInfo,
-      };
-
-      const success = await syncTicketData(updatedTicket);
+      const success = await syncAccountData(account.id, updatedApplicationInfo);
       if (!success) {
-        throw new Error('Failed to sync ticket data');
+        throw new Error('Failed to sync account data');
       }
 
       stepForward();

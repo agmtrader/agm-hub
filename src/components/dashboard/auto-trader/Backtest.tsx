@@ -146,7 +146,7 @@ const Backtest = () => {
       decision: d.decision as 'BUY' | 'SELL' | 'STAY' | 'SELLSHORT',
       created: formatDate(d.date),
       updated: formatDate(d.date)
-    }));
+  }));
 
   return (
     <div className="space-y-4">

@@ -1,0 +1,224 @@
+import { z } from 'zod';
+
+// Base Schemas
+export const name_schema = z.object({
+  first: z.string().min(1, { message: 'First name is required' }),
+  last: z.string().min(1, { message: 'Last name is required' }),
+  middle: z.string().optional(),
+  salutation: z.string().optional(), // e.g., Mr, Ms, Dr
+  suffix: z.string().optional(), // e.g., Jr, Sr, III
+});
+
+export const address_schema = z.object({
+  country: z.string().min(2, { message: 'Country is required (2 or 3 letter ISO code)' }), // ISO 3166-1 alpha-2 or alpha-3
+  street1: z.string().min(1, { message: 'Street address is required' }),
+  street2: z.string().optional(),
+  city: z.string().min(1, { message: 'City is required' }),
+  state: z.string().optional(), // Or province/region
+  postalCode: z.string().min(1, { message: 'Postal code is required' }),
+  compact: z.string().optional(), // Concatenated address
+  type: z.string().optional(), // e.g., RESIDENTIAL, BUSINESS, MAILING
+});
+
+export const phone_schema = z.object({
+  type: z.string().optional(), // e.g., Mobile, Home, Work
+  country: z.string().min(2, { message: 'Phone country code is required' }),
+  number: z.string().min(1, { message: 'Phone number is required' }),
+  verified: z.boolean().optional(),
+  primary: z.boolean().optional(),
+});
+
+export const identification_schema = z.object({
+  // Common fields, can be extended by specific ID types
+  passport: z.string().optional(),
+  nationalId: z.string().optional(),
+  taxId: z.string().optional(),
+  driversLicense: z.string().optional(),
+  issuingCountry: z.string().optional(),
+  issueDate: z.string().optional(), // YYYY-MM-DD
+  expirationDate: z.string().optional(), // YYYY-MM-DD
+  type: z.string().optional(), // e.g. PASSPORT, NATIONAL_ID
+});
+
+export const employment_details_schema = z.object({
+  employer: z.string().optional(),
+  occupation: z.string().optional(),
+  employerAddress: address_schema.optional(),
+  yearsWithEmployer: z.number().int().positive().optional(),
+  employerBusiness: z.string(),
+});
+
+export const investment_experience_schema = z.object({
+  assetClass: z.string().min(1, { message: 'Asset class is required' }), // e.g., STK, OPT, FUT, FX
+  yearsTrading: z.number().int().min(0, { message: 'Years trading must be non-negative' }),
+  tradesPerYear: z.number().int().min(0, { message: 'Trades per year must be non-negative' }),
+  knowledgeLevel: z.string().min(1, { message: 'Knowledge level is required' }), // e.g., None, Limited, Good, Extensive
+});
+
+export const source_of_wealth_schema = z.object({
+  sourceType: z.string().min(1, { message: 'Source type is required' }), // e.g., SOW-IND-Income, SOW-IND-Investments
+  percentage: z.number().int().min(0).max(100).optional(),
+  usedForFunds: z.boolean().optional(),
+  description: z.string().optional(),
+});
+
+export const regulatory_detail_schema = z.object({
+  code: z.string().min(1, { message: 'Regulatory code is required' }),
+  status: z.boolean(),
+  details: z.string().optional(),
+  detail: z.string().optional(), // IBKR seems to use both 'details' and 'detail'
+  externalIndividualId: z.string().optional(),
+});
+
+export const trading_permission_schema = z.object({
+  country: z.string().min(1, { message: 'Trading permission country is required' }),
+  product: z.string().min(1, { message: 'Trading permission product is required' }), // e.g., STOCKS, OPTIONS
+});
+
+// Base Schemas for Trading Limits and Privileges
+export const order_value_limits_schema = z.object({
+  maxOrderValue: z.number(),
+  maxGrossValue: z.number(),
+  maxNetValue: z.number(),
+  netContractLimit: z.number(),
+});
+
+export const efp_quantity_limits_schema = z.object({
+  maxNominalEfpPerOrder: z.number(),
+  maxNetEfpTrades: z.number(),
+  maxGrossEfpTrades: z.number(),
+});
+
+const asset_enum_values: [string, ...string[]] = ["BILL", "BOND", "CASH", "CFD", "COMB", "FOP", "FUND", "FUT", "OPT", "SSF", "STK", "WAR", "MRGN"];
+export const order_quantity_limit_schema = z.object({
+  asset: z.enum(asset_enum_values),
+  quantity: z.number(),
+});
+
+export const day_quantity_limit_schema = z.object({
+  asset: z.enum(asset_enum_values),
+  quantity: z.number(),
+});
+
+export const trading_limits_schema = z.object({
+  orderValueLimits: order_value_limits_schema,
+  efpQuantityLimits: efp_quantity_limits_schema,
+  orderQuantityLimits: z.array(order_quantity_limit_schema),
+  dayQuantityLimits: z.array(day_quantity_limit_schema),
+}).optional(); // Making optional as it's optional in Account schema based on original types
+
+const privilege_enum_values: [string, ...string[]] = ["OWNER", "TRADER", "CUSTOM", "NONE"];
+export const user_privilege_schema = z.object({
+  externalAccountId: z.string(),
+  privilege: z.enum(privilege_enum_values),
+}).optional(); // Making optional as it's optional in User schema
+
+// Nested Schemas for Application Structure
+export const account_holder_details_schema = z.object({
+  externalId: z.string().min(1, { message: 'External ID for account holder is required' }),
+  name: name_schema,
+  email: z.string().email({ message: 'Invalid email address' }),
+  residenceAddress: address_schema,
+  mailingAddress: address_schema.optional(),
+  sameMailAddress: z.boolean().optional(),
+  countryOfBirth: z.string().min(2, { message: 'Country of birth is required' }),
+  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date of birth must be YYYY-MM-DD' }),
+  gender: z.string().optional(), // e.g., MALE, FEMALE, OTHER
+  maritalStatus: z.string().optional(), // e.g., SINGLE, MARRIED, DIVORCED
+  numberOfDependents: z.number().int().min(0).optional(),
+  phones: z.array(phone_schema).min(1, { message: 'At least one phone number is required' }),
+  identification: identification_schema, // This might need to be more specific based on individual vs org
+  employmentDetails: employment_details_schema.optional(),
+  isPEP: z.boolean().optional(), // Politically Exposed Person
+  isControlPerson: z.boolean().optional(),
+  employmentType: z.string().min(1, { message: 'Employment type is required' }),
+});
+
+export const financial_information_schema = z.object({
+  investmentExperience: z.array(investment_experience_schema).min(1, { message: 'At least one investment experience is required' }),
+  investmentObjectives: z.array(z.string()).min(1, { message: 'At least one investment objective is required' }),
+  sourcesOfWealth: z.array(source_of_wealth_schema).min(1, { message: 'At least one source of wealth is required' }),
+  netWorth: z.number().int({ message: 'Net worth must be an integer' }),
+  liquidNetWorth: z.number().int({ message: 'Liquid net worth must be an integer' }),
+  annualNetIncome: z.number().int({ message: 'Annual net income must be an integer' }),
+  taxBracket: z.string().optional(),
+  accreditedInvestor: z.boolean().optional(),
+});
+
+export const regulatory_information_schema = z.object({
+  regulatoryDetails: z.array(regulatory_detail_schema).min(1, { message: 'At least one regulatory detail is required' }),
+  // other regulatory fields if any
+});
+
+export const individual_applicant_schema = z.object({
+  accountHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'Account holder details are required' }),
+  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }),
+  regulatoryInformation: z.array(regulatory_information_schema).min(1, { message: 'Regulatory information is required' }),
+});
+
+// Main Schemas
+export const customer_schema = z.object({
+  accountHolder: individual_applicant_schema, // Assuming INDIVIDUAL for now, can be a union for other types
+  externalId: z.string().min(1, { message: 'Customer external ID is required' }),
+  type: z.enum(['INDIVIDUAL', 'JOINT', 'TRUST', 'ORG']), // Add other types as needed
+  prefix: z.string().min(3, { message: 'Customer prefix is required and must be at least 3 characters' }).max(6, { message: 'Customer prefix must be at most 6 characters' }),
+  email: z.string().email({ message: 'Invalid customer email address' }),
+  mdStatusNonPro: z.boolean().optional().default(true),
+  meetAmlStandard: z.string().optional().default('true'), // IBKR uses string 'true'/'false'
+  directTradingAccess: z.boolean().optional().default(true),
+  legalResidenceCountry: z.string().min(2, { message: 'Legal residence country is required' }),
+});
+
+export const account_schema = z.object({
+  investmentObjectives: z.array(z.string()).min(1, { message: 'At least one account investment objective is required' }),
+  tradingPermissions: z.array(trading_permission_schema).min(1, { message: 'At least one trading permission is required' }),
+  externalId: z.string().min(1, { message: 'Account external ID is required' }),
+  baseCurrency: z.string().min(3, { message: 'Base currency is required (3-letter code)' }),
+  multiCurrency: z.boolean().optional().default(true),
+  margin: z.string().min(1, { message: 'Margin type is required' }), // e.g., Cash, Margin
+  tradingLimits: trading_limits_schema, // Added from new schema
+  // other account fields
+});
+
+export const user_schema = z.object({
+  userPrivileges: z.array(user_privilege_schema).optional(),
+  externalUserId: z.string().min(1, { message: 'External user ID is required' }),
+  externalIndividualId: z.string().min(1, { message: 'External individual ID for user is required' }),
+  prefix: z.string().min(1, { message: 'User prefix is required' }),
+  // other user fields
+});
+
+export const ibkr_document_schema = z.object({
+  signedBy: z.array(z.string()),
+  attachedFile: z.object({
+    fileName: z.string(),
+    fileLength: z.number(),
+    sha1Checksum: z.string(),
+  }),
+  formNumber: z.number(),
+  validAddress: z.boolean(),
+  execLoginTimestamp: z.number(),
+  execTimestamp: z.number(),
+  proofOfIdentityType: z.string().optional(),
+  payload: z.object({
+    mimeType: z.string(),
+    data: z.string(),
+  }),
+}).optional();
+
+export const add_additional_account_schema = z.object({
+  // Define if needed, similar to ibkr_document_schema
+}).optional();
+
+export const application_schema = z.object({
+  customer: customer_schema,
+  accounts: z.array(account_schema).min(1, { message: 'At least one account is required' }),
+  users: z.array(user_schema).min(1, { message: 'At least one user is required' }),
+  documents: z.array(ibkr_document_schema).optional(),
+  additionalAccounts: z.array(add_additional_account_schema).optional(),
+  masterAccountId: z.string().optional(),
+  id: z.string().optional(),
+  inputLanguage: z.enum(['en', 'zh-Hans', 'ja', 'ru', 'fr', 'pt', 'es', 'it', 'ar-AE', 'de', 'he-IL', 'hu']).optional(),
+  translation: z.boolean().optional(),
+  paperAccount: z.boolean().optional(),
+});

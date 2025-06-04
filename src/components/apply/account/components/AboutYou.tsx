@@ -31,21 +31,24 @@ import { marital_status, salutations, id_type, employment_status, currencies, so
 import { getDefaults } from '@/utils/form'
 import { about_you_primary_schema, about_you_secondary_schema } from "@/lib/schemas/ticket"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Ticket } from "@/lib/entities/ticket"
+import { IndividualTicket, Ticket } from "@/lib/entities/ticket"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
+import { formatDateFromTimestamp, getDateObjectFromTimestamp } from "@/utils/dates"
+import { Account, IndividualAccountApplicationInfo } from "@/lib/entities/account"
 
 interface Props {
   primary: boolean,
   stepForward: () => void,
   stepBackward: () => void,
-  ticket: Ticket,
-  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
+  account: Account,
+  accountInfo: IndividualAccountApplicationInfo,
+  syncAccountData: (accountID:string, accountInfo: IndividualAccountApplicationInfo) => Promise<boolean>
 }
 
-const AboutYou = ({primary, stepForward, stepBackward, ticket, syncTicketData}:Props) => {
+const AboutYou = ({primary, stepForward, stepBackward, account, accountInfo, syncAccountData}:Props) => {
 
   let formSchema:any;
 
@@ -60,36 +63,9 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, syncTicketData}:P
   const translatedEmploymentStatus = employment_status(t)
   const translatedPhoneTypes = phone_types(t)
 
-  if (primary) {
-    formSchema = about_you_primary_schema(t)
-  } else {
-    formSchema = about_you_secondary_schema(t)
-  }
+  formSchema = about_you_primary_schema(t)
+  let initialFormValues = accountInfo || getDefaults(formSchema);
 
-  let initialFormValues:any;
-  if (primary) {
-    initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema);
-  } else {
-    // For secondary user, extract fields with 'secondary_' prefix
-    initialFormValues = {};
-    const defaults = getDefaults(formSchema);
-    
-    if (ticket?.ApplicationInfo) {
-      for (const [key, value] of Object.entries(ticket.ApplicationInfo)) {
-        if (key.startsWith('secondary_')) {
-          initialFormValues[key.replace('secondary_', '')] = value;
-        }
-      }
-    }
-    
-    // Fill in any missing fields with defaults
-    for (const [key, value] of Object.entries(defaults)) {
-      if (!(key in initialFormValues)) {
-        initialFormValues[key] = value;
-      }
-    }
-  }
-  
   // Ensure source_of_wealth is always an array
   if (initialFormValues.source_of_wealth && !Array.isArray(initialFormValues.source_of_wealth)) {
     initialFormValues.source_of_wealth = [initialFormValues.source_of_wealth];
@@ -106,27 +82,63 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, syncTicketData}:P
     setGenerating(true);
 
     try {
-      const updatedApplicationInfo = { ...ticket.ApplicationInfo };
 
-      // This is a bit of a hack to get the values from the form
-      // from the secondary user if the account being applied for is a joint account
-      // Should make another form entirely for the secondary holder but this works
-      for (const [key, value] of Object.entries(values)) {
-        if (primary) {
-          updatedApplicationInfo[key] = value;
-        } else {
-          updatedApplicationInfo[`secondary_${key}`] = value;
-        }
+      const individualAccount: IndividualAccountApplicationInfo = {
+        email: values.email || accountInfo?.email,
+        country: values.country || accountInfo?.country,
+        account_type: values.account_type || accountInfo?.account_type,
+        referrer: values.referrer || accountInfo?.referrer,
+        salutation: values.salutation || accountInfo?.salutation,
+        first_name: values.first_name || accountInfo?.first_name,
+        middle_name: values.middle_name || accountInfo?.middle_name,
+        last_name: values.last_name || accountInfo?.last_name,
+        address: values.address || accountInfo?.address,
+        city: values.city || accountInfo?.city,
+        state: values.state || accountInfo?.state,
+        zip: values.zip || accountInfo?.zip,
+        phone_type: values.phone_type || accountInfo?.phone_type,
+        phone_country: values.phone_country || accountInfo?.phone_country,
+        phone_number: values.phone_number || accountInfo?.phone_number,
+        citizenship: values.citizenship || accountInfo?.citizenship,
+        occupation: values.occupation || accountInfo?.occupation,
+        country_of_birth: values.country_of_birth || accountInfo?.country_of_birth,
+        date_of_birth: values.date_of_birth || accountInfo?.date_of_birth,
+        marital_status: values.marital_status || accountInfo?.marital_status,
+        number_of_dependents: values.number_of_dependents || accountInfo?.number_of_dependents,
+        source_of_wealth: values.source_of_wealth || accountInfo?.source_of_wealth,
+        country_of_residence: values.country_of_residence || accountInfo?.country_of_residence,
+        tax_id: values.tax_id || accountInfo?.tax_id,
+        id_country: values.id_country || accountInfo?.id_country,
+        id_type: values.id_type || accountInfo?.id_type,
+        id_number: values.id_number || accountInfo?.id_number,
+        id_expiration_date: values.id_expiration_date || accountInfo?.id_expiration_date,
+        employment_status: values.employment_status || accountInfo?.employment_status,
+        employer_name: values.employer_name || accountInfo?.employer_name,
+        employer_address: values.employer_address || accountInfo?.employer_address,
+        employer_city: values.employer_city || accountInfo?.employer_city,
+        employer_state: values.employer_state || accountInfo?.employer_state,
+        employer_country: values.employer_country || accountInfo?.employer_country,
+        employer_zip: values.employer_zip || accountInfo?.employer_zip,
+        nature_of_business: values.nature_of_business || accountInfo?.nature_of_business,
+        currency: values.currency || accountInfo?.currency,
+        security_q_1: values.security_q_1 || accountInfo?.security_q_1,
+        security_a_1: values.security_a_1 || accountInfo?.security_a_1,
+        security_q_2: values.security_q_2 || accountInfo?.security_q_2,
+        security_a_2: values.security_a_2 || accountInfo?.security_a_2,
+        security_q_3: values.security_q_3 || accountInfo?.security_q_3,
+        security_a_3: values.security_a_3 || accountInfo?.security_a_3,
+        annual_net_income: values.annual_net_income || accountInfo?.annual_net_income,
+        net_worth: values.net_worth || accountInfo?.net_worth,
+        liquid_net_worth: values.liquid_net_worth || accountInfo?.liquid_net_worth,
+        investment_objectives: values.investment_objectives || accountInfo?.investment_objectives,
+        products: values.products || accountInfo?.products,
+        amount_to_invest: values.amount_to_invest || accountInfo?.amount_to_invest
       }
 
-      const updatedTicket: Ticket = {
-        ...ticket,
-        ApplicationInfo: updatedApplicationInfo,
-      };
-
-      const success = await syncTicketData(updatedTicket);
+      const success = await syncAccountData(account.id, individualAccount);
+      
       if (!success) {
-        throw new Error('Failed to sync ticket data');
+        throw new Error('Failed to sync account data');
       }
 
       stepForward();
@@ -140,6 +152,7 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, syncTicketData}:P
       setGenerating(false);
     }
   }
+  console.log(initialFormValues, form.formState.errors)
 
   return (
     <div className="h-full w-full flex flex-col justify-center gap-y-20 items-center">
@@ -418,7 +431,7 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, syncTicketData}:P
                   </div>
                   <FormControl>
                     <DateTimePicker
-                      value={field.value ? new Date(field.value) : undefined}
+                      value={field.value ? getDateObjectFromTimestamp(field.value) : undefined}
                       onChange={(date) => field.onChange(date?.toISOString())}
                       granularity="day"
                     />
@@ -603,7 +616,7 @@ const AboutYou = ({primary, stepForward, stepBackward, ticket, syncTicketData}:P
                   </div>
                   <FormControl>
                     <DateTimePicker
-                      value={field.value ? new Date(field.value) : undefined}
+                      value={field.value ? getDateObjectFromTimestamp(field.value) : undefined}
                       onChange={(date) => field.onChange(date?.toISOString())}
                       granularity="day"
                     />

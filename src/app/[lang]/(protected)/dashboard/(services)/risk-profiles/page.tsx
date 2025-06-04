@@ -1,4 +1,4 @@
-import RiskCenter from '@/components/dashboard/risk-assesment/RiskCenter'
+import RiskCenter from '@/components/dashboard/risk/RiskCenter'
 import React from 'react'
 
 const page = () => {

@@ -5,11 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useSearchParams } from 'next/navigation'
 
-import { Ticket } from "@/lib/entities/ticket"
+import { IndividualAccountApplicationInfo, Account, AccountPayload } from "@/lib/entities/account"
 import { formatTimestamp } from "../../../../utils/dates"
 import { account_types } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
-import { general_info_schema } from "@/lib/schemas/ticket"
+import { general_info_schema } from "@/lib/schemas/account"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 
 import { useToast } from "@/hooks/use-toast"
@@ -43,16 +43,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useSession } from "next-auth/react"
-import { CreateTicket } from "@/utils/entities/ticket"
-import { UpdateLeadByID } from "@/utils/entities/lead"
+
 
 interface Props {
   stepForward: () => void,
-  ticket: Ticket | null,
-  syncTicketData: (updatedTicket: Ticket) => Promise<boolean>
+  account: Account | null,
+  accountInfo: IndividualAccountApplicationInfo | null,
+  syncAccountData: (accountID:string, accountInfo: IndividualAccountApplicationInfo) => Promise<boolean>,
+  createAccount: (payload: AccountPayload, infoData: IndividualAccountApplicationInfo) => Promise<Account | null>;
 }
 
-const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
+const GeneralInfo = ({ stepForward, account, accountInfo, syncAccountData, createAccount }: Props) => {
 
   const {data:session} = useSession()
   const userID = session?.user.id
@@ -61,12 +62,13 @@ const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
   const [generating, setGenerating] = useState(false)
   const searchParams = useSearchParams()
 
+
   let formSchema: any;
   let initialFormValues: any;
 
   const {t} = useTranslationProvider()
   formSchema = general_info_schema(t)
-  initialFormValues = ticket?.ApplicationInfo || getDefaults(formSchema)
+  initialFormValues = accountInfo || getDefaults(formSchema)
 
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -79,46 +81,110 @@ const GeneralInfo = ({ stepForward, ticket, syncTicketData }: Props) => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setGenerating(true);
 
-    if (!session?.user?.name) throw new Error('Critical Error: User name not found')
+    if (!userID) {
+      toast({
+        title: 'Error',
+        description: 'Critical Error: User ID not found. Cannot continue with application.',
+        variant: 'destructive',
+      });
+      setGenerating(false);
+      return;
+    }
+    if (!session?.user?.name) {
+      toast({
+        title: 'Error',
+        description: 'Critical Error: User name not found. Cannot continue with application.',
+        variant: 'destructive',
+      });
+      setGenerating(false);
+      return;
+    }
 
     try {
-      const timestamp = new Date();
-      const advisor = searchParams.get('ad') || '';
-      const master_account = searchParams.get('ma') || '';
-      const leadID = searchParams.get('ld') || '';
+      const advisor_id = account?.advisor_id || searchParams.get('ad') || null;
+      const master_account_id = account?.master_account_id || searchParams.get('ma') || null;
+      const lead_id = account?.lead_id || searchParams.get('ld') || null;
 
-      if (!userID) throw new Error('Critical Error: User ID not found. Cannot continue with application.');
-
-      // If we have an existing ticket, use its ID, otherwise create a new one
-      const ticketID = ticket?.TicketID || formatTimestamp(timestamp);
-      const newTicket: Ticket = {
-        'TicketID': ticketID,
-        'Status': 'Started',
-        'ApplicationInfo': ticket ? { ...ticket.ApplicationInfo, ...values } : values,
-        'Advisor': advisor,
-        'UserID': userID,
-        'MasterAccount': master_account,
-        'LeadID': leadID
+      // Create minimal payload for initial account creation
+      const payload: AccountPayload = {
+        status: 'Started',
+        advisor_id: advisor_id,
+        user_id: userID,
+        master_account_id: master_account_id,
+        lead_id: lead_id,
+        account_type: values.account_type,
+        ibkr_account_number: null,
       };
 
-      // Only create a new ticket if we don't have an existing one
-      if (!ticket) {
-        await CreateTicket(newTicket, ticketID);
+      const individualAccountInfo: IndividualAccountApplicationInfo = {
+        email: values.email || accountInfo?.email,
+        country: values.country || accountInfo?.country,
+        account_type: values.account_type || accountInfo?.account_type,
+        referrer: values.referrer || accountInfo?.referrer,
+        salutation: values.salutation || accountInfo?.salutation,
+        first_name: values.first_name || accountInfo?.first_name,
+        middle_name: values.middle_name || accountInfo?.middle_name,
+        last_name: values.last_name || accountInfo?.last_name,
+        address: values.address || accountInfo?.address,
+        city: values.city || accountInfo?.city,
+        state: values.state || accountInfo?.state,
+        zip: values.zip || accountInfo?.zip,
+        phone_type: values.phone_type || accountInfo?.phone_type,
+        phone_country: values.phone_country || accountInfo?.phone_country,
+        phone_number: values.phone_number || accountInfo?.phone_number,
+        citizenship: values.citizenship || accountInfo?.citizenship,
+        occupation: values.occupation || accountInfo?.occupation,
+        country_of_birth: values.country_of_birth || accountInfo?.country_of_birth,
+        date_of_birth: values.date_of_birth || accountInfo?.date_of_birth,
+        marital_status: values.marital_status || accountInfo?.marital_status,
+        number_of_dependents: values.number_of_dependents || accountInfo?.number_of_dependents,
+        source_of_wealth: values.source_of_wealth || accountInfo?.source_of_wealth,
+        country_of_residence: values.country_of_residence || accountInfo?.country_of_residence,
+        tax_id: values.tax_id || accountInfo?.tax_id,
+        id_country: values.id_country || accountInfo?.id_country,
+        id_type: values.id_type || accountInfo?.id_type,
+        id_number: values.id_number || accountInfo?.id_number,
+        id_expiration_date: values.id_expiration_date || accountInfo?.id_expiration_date,
+        employment_status: values.employment_status || accountInfo?.employment_status,
+        employer_name: values.employer_name || accountInfo?.employer_name,
+        employer_address: values.employer_address || accountInfo?.employer_address,
+        employer_city: values.employer_city || accountInfo?.employer_city,
+        employer_state: values.employer_state || accountInfo?.employer_state,
+        employer_country: values.employer_country || accountInfo?.employer_country,
+        employer_zip: values.employer_zip || accountInfo?.employer_zip,
+        nature_of_business: values.nature_of_business || accountInfo?.nature_of_business,
+        currency: values.currency || accountInfo?.currency,
+        security_q_1: values.security_q_1 || accountInfo?.security_q_1,
+        security_a_1: values.security_a_1 || accountInfo?.security_a_1,
+        security_q_2: values.security_q_2 || accountInfo?.security_q_2,
+        security_a_2: values.security_a_2 || accountInfo?.security_a_2,
+        security_q_3: values.security_q_3 || accountInfo?.security_q_3,
+        security_a_3: values.security_a_3 || accountInfo?.security_a_3,
+        annual_net_income: values.annual_net_income || accountInfo?.annual_net_income,
+        net_worth: values.net_worth || accountInfo?.net_worth,
+        liquid_net_worth: values.liquid_net_worth || accountInfo?.liquid_net_worth,
+        investment_objectives: values.investment_objectives || accountInfo?.investment_objectives,
+        products: values.products || accountInfo?.products,
+        amount_to_invest: values.amount_to_invest || accountInfo?.amount_to_invest
       }
-      
-      // Then sync it to update state and handle any additional logic
-      const success = await syncTicketData(newTicket);
-      if (!success) throw new Error('Failed to sync ticket data');
 
-      // Update lead status to "Applied"
-      if (leadID) {
-        await UpdateLeadByID(leadID, {
-          Status: 'Applied'
-        })
+      console.log('individualAccountInfo', individualAccountInfo)
+
+      if (!account) {
+
+        const newAccount = await createAccount(payload, individualAccountInfo);
+        if (newAccount) {
+          stepForward();
+        }
+        
+      } else {
+        // For existing account, just sync the data
+        const success = await syncAccountData(account.id, individualAccountInfo);
+        if (success) {
+          stepForward();
+        }
+
       }
-
-      stepForward();
-
     } catch (error: any) {
       toast({
         title: 'Error',

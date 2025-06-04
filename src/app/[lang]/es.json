@@ -235,7 +235,7 @@
             "description": "Conoce a nuestro equipo de profesionales dedicados a brindar un servicio excepcional.",
             "contact_us": "Contactanos",
             "team_carousel": {
-                "hernan_title": "Director de Operaciones",
+                "hernan_title": "Director General",
                 "hernan_description": "El Sr. Castro también tiene más de 30 años de experiencia en los mercados de valores y es un socio fundador de AGM, y como tal ha ayudado a la firma a convertirse en un Broker/Dealer y Asesor Internacional. El Sr. Castro no solo es nuestro Director de Operaciones, sino que supervisa nuestra División de Asesoría de Inversiones. El Sr. Castro ha estado registrado en FINRA en EE. UU. como Series 7 y Serie 66 bajo el CRD # 4575350.",
                 "ramon_title": "Director de Operaciones",
                 "ramon_description": "El Sr. Castro también tiene más de 30 años de experiencia en los mercados de valores y es un socio fundador de AGM, y como tal ha ayudado a la firma a convertirse en un Broker/Dealer y Asesor Internacional. El Sr. Castro no solo es nuestro Director de Operaciones, sino que supervisa nuestra División de Asesoría de Inversiones. El Sr. Castro ha estado registrado en FINRA en EE. UU. como Series 7 y Serie 66 bajo el CRD # 4575350.",
@@ -544,7 +544,7 @@
             "title": "Cuestionario de Evaluación de Riesgo",
             "description": "Por favor, completa este formulario para ayudarnos a entender tu tolerancia al riesgo y preferencias de inversión.",
             "form": {
-                "account_number": "Número de cuenta",
+                "account_id": "Número de cuenta",
                 "client_name": "Nombre completo",
                 "type": {
                     "title": "¿Qué tipo de inversor te consideras?",
@@ -754,7 +754,7 @@
                         }
                     }
                 },
-                "average_yield": "Rendimiento promedio"
+                "average_yield": "Rendimiento estimado promedio anual"
             }
         }
     },

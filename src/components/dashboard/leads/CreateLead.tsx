@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react'
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { lead_schema } from "@/lib/schemas/lead"
+import { lead_schema, follow_up_schema } from "@/lib/schemas/lead"
+import { z } from "zod"
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { CreateLead as CreateLeadAPI } from '@/utils/entities/lead'
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/form"
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { formatTimestamp } from '@/utils/dates'
-import { Lead, FollowUp } from '@/lib/entities/lead'
+import { LeadPayload, FollowUpPayload } from '@/lib/entities/lead'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -40,13 +41,23 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
-  const form = useForm({
-    resolver: zodResolver(lead_schema),
-    defaultValues: getDefaults(lead_schema)
+  // Create a combined schema for the form that includes both lead and follow-ups
+  const formSchema = z.object({
+    ...lead_schema.shape,
+    follow_ups: z.array(follow_up_schema)
   })
 
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      ...getDefaults(lead_schema),
+      ...getDefaults(follow_up_schema)
+    }
+  })
+
+  // Use field array for follow-ups
   const { fields, append, remove } = useFieldArray({
-    name: "FollowUps",
+    name: "follow_ups",
     control: form.control
   })
 
@@ -54,25 +65,25 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
     setIsSubmitting(true)
 
     try {
-      const LeadID = formatTimestamp(new Date())
-      const ContactDate = formatTimestamp(new Date())
       
-      const formattedFollowUps: FollowUp[] = values.FollowUps.map((followUp: any) => ({
+      // Format the follow-ups for submission
+      const followUpsPayload: FollowUpPayload[] = values.follow_ups.map((followUp: any) => ({
         date: formatTimestamp(followUp.date),
         description: followUp.description,
-        completed: followUp.completed
+        completed: followUp.completed || false
       }))
 
-      const leadData: Lead = {
-        ...values,
-        ContactDate: ContactDate,
-        LeadID: LeadID,
-        FollowUps: formattedFollowUps,
-        Completed: false,
-        Status: 'Started'
+      // Prepare the lead data according to our schema
+      const leadPayload: LeadPayload = {
+        contact_id: values.contact_id,
+        referrer_id: values.referrer_id,
+        description: values.description,
+        status: 'Started',
+        completed: false,
+        contact_date: formatTimestamp(new Date()),
       }
-      
-      await CreateLeadAPI(leadData)
+
+      await CreateLeadAPI(leadPayload, followUpsPayload)
       
       toast({
         title: "Success",
@@ -89,7 +100,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create lead",
+        description: "Failed to create lead. " + error,
         variant: "destructive"
       })
     } finally {
@@ -116,7 +127,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
             
             <FormField
               control={form.control}
-              name="ContactID"
+              name="contact_id"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2 items-center">
@@ -133,8 +144,8 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                         >
                           {field.value
                             ? contacts.find(
-                                (contact) => contact.ContactID === field.value
-                              )?.ContactName
+                                (contact) => contact.id === field.value
+                              )?.name
                             : "Select a contact"}
                         </Button>
                       </FormControl>
@@ -149,15 +160,15 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                             </div>
                           </CommandEmpty>
                           <CommandGroup>
-                            {contacts.map((contact) => (
+                            {contacts.map((contact: Contact) => (
                               <CommandItem
-                                value={contact.ContactName}
-                                key={contact.ContactID}
+                                value={contact.name}
+                                key={contact.id}
                                 onSelect={() => {
-                                  field.onChange(contact.ContactID)
+                                  field.onChange(contact.id)
                                 }}
                               >
-                                {contact.ContactName}
+                                {contact.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -172,7 +183,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
 
             <FormField
               control={form.control}
-              name="ReferrerID"
+              name="referrer_id" // This is a valid field in our combined schema
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2 items-center">
@@ -189,8 +200,8 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                         >
                           {field.value
                             ? contacts.find(
-                                (contact) => contact.ContactID === field.value
-                              )?.ContactName
+                                (contact) => contact.id === field.value
+                              )?.name
                             : "Select a referrer"}
                         </Button>
                       </FormControl>
@@ -201,15 +212,15 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                         <CommandList>
                           <CommandEmpty>No referrers found.</CommandEmpty>
                           <CommandGroup>
-                            {contacts.map((contact) => (
+                            {contacts.map((contact: Contact) => (
                               <CommandItem
-                                value={contact.ContactName}
-                                key={contact.ContactID}
+                                value={contact.name}
+                                key={contact.id}
                                 onSelect={() => {
-                                  field.onChange(contact.ContactID)
+                                  field.onChange(contact.id)
                                 }}
                               >
-                                {contact.ContactName}
+                                {contact.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -224,7 +235,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
 
             <FormField
               control={form.control}
-              name="Description"
+              name="description" // This is a valid field in our combined schema
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2 items-center">
@@ -235,7 +246,8 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                     <Textarea 
                       placeholder="" 
                       className="min-h-[100px]" 
-                      {...field} 
+                      {...field}
+                      value={field.value?.toString() || ""} // Ensure value is a string
                     />
                   </FormControl>
                 </FormItem>
@@ -249,7 +261,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => append({ date: new Date(), description: "", completed: false })}
+                  onClick={() => append({date: new Date(), description: "", completed: false})}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Follow-up
@@ -262,7 +274,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                     <div className="flex-1 space-y-4">
                       <FormField
                         control={form.control}
-                        name={`FollowUps.${index}.date`}
+                        name={`follow_ups.${index}.date`}
                         render={({ field: dateField }) => (
                           <FormItem>
                             <div className="flex gap-2 items-center">
@@ -282,7 +294,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                       
                       <FormField
                         control={form.control}
-                        name={`FollowUps.${index}.description`}
+                        name={`follow_ups.${index}.description`}
                         render={({ field: descField }) => (
                           <FormItem>
                             <div className="flex gap-2 items-center">
@@ -301,7 +313,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
 
                       <FormField
                         control={form.control}
-                        name={`FollowUps.${index}.completed`}
+                        name={`follow_ups.${index}.completed`}
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-center space-x-2 space-y-0">
                             <FormControl>

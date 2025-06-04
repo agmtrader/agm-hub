@@ -28,7 +28,7 @@ export default function TradeTickets() {
 
     const { toast } = useToast()
 
-    const columns: ColumnDefinition<any>[] = [
+    const columns: ColumnDefinition<Trade>[] = [
       {
         header: 'Description',
         accessorKey: 'Description',
@@ -105,6 +105,7 @@ export default function TradeTickets() {
       setGeneratingMessage(true)
       try {
         const message = await GenerateTradeTicket(trades, selectedTrades)
+        console.log(message)
         setClientMessage(message)
         setConfirmDialogOpen(true)
       } catch (error: any) {
@@ -148,16 +149,16 @@ export default function TradeTickets() {
       <div className='w-full h-full flex flex-col gap-5'>
         <Select onValueChange={(value) => setSelectedTradeTicketID(value)}>
           <SelectTrigger className="w-fit gap-2">
-            <SelectValue placeholder={isLoadingTickets ? "Loading..." : "Select Report"} />
+            <SelectValue placeholder={isLoadingTickets ? "Loading..." : "Select ticket"} />
           </SelectTrigger>
           <SelectContent>
             {tradeTickets.map((tradeTicket) => (
               <SelectItem 
                 className='p-2' 
-                key={tradeTicket.TradeTicketID} 
-                value={tradeTicket.TradeTicketID}
+                key={tradeTicket.id} 
+                value={tradeTicket.id}
               >
-                {tradeTicket.Name}
+                {tradeTicket.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -166,7 +167,7 @@ export default function TradeTickets() {
       <div className='w-full h-full flex flex-col gap-5 justify-start items-start'>
         {!trades ? (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-            Waiting for trades to be selected...
+            Waiting for trade ticket to be generated...
           </div>
         ) : (
           <>
@@ -177,7 +178,6 @@ export default function TradeTickets() {
               setSelection={setSelectedTrades} 
               infiniteScroll
               enableFiltering
-              filterColumns={['Description']}
             />
             <Button 
               disabled={selectedTrades.length === 0 || generatingMessage} 

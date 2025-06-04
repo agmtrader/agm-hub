@@ -550,7 +550,7 @@
             "title": "Risk Assessment Questionnaire",
             "description": "Please complete this form to help us understand your risk tolerance and investment preferences.",
             "form": {
-                "account_number": "Account number",
+                "account_id": "Account number",
                 "client_name": "Full name",
                 "type": {
                     "title": "What type of investor do you consider yourself?",
@@ -760,7 +760,7 @@
                         }
                     }
                 },
-                "average_yield": "Average Yield"
+                "average_yield": "Estimated Average Annual Yield"
             }
         }
     },
@@ -786,7 +786,7 @@
         "title": "Sign In",
         "signin": "Sign in",
         "signingIn": "Signing in...",
-        "username": "Username",
+        "email": "Email",
         "password": "Password",
         "register": {
             "message": "Don't have an account? ",

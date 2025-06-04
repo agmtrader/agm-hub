@@ -17,21 +17,17 @@ import { Input } from "@/components/ui/input"
 import { getDefaults } from '@/utils/form'
 import { useToast } from '@/hooks/use-toast'
 import CountriesFormField from '@/components/ui/CountriesFormField'
-import { formatTimestamp } from '../../../../utils/dates'
 import { signIn } from 'next-auth/react'
 import { formatURL } from '@/utils/language/lang'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { User } from 'next-auth'
 import { ArrowLeft } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { CreateUser } from '@/utils/api'
-
-type UserPayload = User & {
-  password: string
-}
+import { UserPayload } from '@/lib/entities/user'
+import LoaderButton from '@/components/misc/LoaderButton'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -41,9 +37,6 @@ const formSchema = z.object({
     message: "Please enter a valid email address.",
   }),
   country: z.string(),
-  username: z.string().min(4, {
-    message: "Username must be at least 4 characters.",
-  }),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),
@@ -74,18 +67,13 @@ const CreateAccount = () => {
 
     try {
       setCreating(true)
-      const timestamp = formatTimestamp(new Date())
 
-      const user:UserPayload = {
-        'id': timestamp,
+      const user:any = {
         'name': values.name,
         'email': values.email,
-        'emailVerified': false,
         'image': '',
-        'username': values.username,
         'password': values.password,
-        'country': values.country,
-        'scopes': 'users/read users/update tickets/create tickets/update tickets/read notifications/create risk_profiles/create'
+        'scopes': ''
       }
 
       await CreateUser(user)
@@ -97,7 +85,7 @@ const CreateAccount = () => {
       })
 
       const result = await signIn('credentials', {
-        username: values.username,
+        email: values.email,
         password: values.password,
         redirect: false,
         callbackUrl: callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang)
@@ -177,19 +165,6 @@ const CreateAccount = () => {
 
                 <FormField
                   control={form.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('createAccount.username')}</FormLabel>
-                      <FormControl>
-                        <Input placeholder="" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
@@ -216,9 +191,7 @@ const CreateAccount = () => {
                 />
 
                 <div className="flex flex-col gap-2">
-                  <Button type="submit" className={creating ? 'bg-success hover:bg-success' : ''}>
-                    {creating ? t('createAccount.creating') : t('createAccount.createAccount')}
-                  </Button>
+                  <LoaderButton isLoading={creating} text={t('createAccount.createAccount')} />
                   <Button variant="ghost" className="w-full" asChild>
                     <Link href={formatURL('/', lang)}>{t('createAccount.goBackHome')}</Link>
                   </Button>

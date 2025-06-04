@@ -133,34 +133,42 @@ const SingleChart = ({
       const decisionSeries = {
         BUY: chart.addSeries(LineSeries, {
           color: '#22c55e', // Green color for BUY decisions
-          lineWidth: 1,
+          lineWidth: 2,
           pointMarkersVisible: true,
           lineVisible: false,
-          pointMarkersRadius: 4,
-          lastValueVisible: false,
-        }),
-        SELL: chart.addSeries(LineSeries, {
-          color: '#ef4444', // Red color for SELL decisions
-          lineWidth: 1,
-          pointMarkersVisible: true,
-          lineVisible: false,
-          pointMarkersRadius: 4,
+          pointMarkersRadius: 2,
           lastValueVisible: false,
         }),
         STAY: chart.addSeries(LineSeries, {
           color: '#3b82f6', // Blue color for STAY decisions
-          lineWidth: 1,
+          lineWidth: 2,
           pointMarkersVisible: true,
           lineVisible: false,
-          pointMarkersRadius: 4,
+          pointMarkersRadius: 2,
           lastValueVisible: false,
         }),
         SELLSHORT: chart.addSeries(LineSeries, {
-          color: '#f97316', // Orange color for SELLSHORT decisions
-          lineWidth: 1,
+          color: '#ef4444', // Red color for SELLSHORT decisions
+          lineWidth: 2,
           pointMarkersVisible: true,
           lineVisible: false,
-          pointMarkersRadius: 4,
+          pointMarkersRadius: 2,
+          lastValueVisible: false,
+        }),
+        EXITLONG: chart.addSeries(LineSeries, {
+          color: '#f97316', // Orange color for SELLSHORT decisions
+          lineWidth: 2,
+          pointMarkersVisible: true,
+          lineVisible: false,
+          pointMarkersRadius: 2,
+          lastValueVisible: false,
+        }),
+        EXITSHORT: chart.addSeries(LineSeries, {
+          color: '#f97316', // Orange color for SELLSHORT decisions
+          lineWidth: 2,
+          pointMarkersVisible: true,
+          lineVisible: false,
+          pointMarkersRadius: 2,
           lastValueVisible: false,
         })
       }
@@ -188,6 +196,12 @@ const SingleChart = ({
                 value = dataPoint.close // At the close price
                 break
               case 'SELLSHORT':
+                value = dataPoint.low * 0.99 // Below the candle
+                break
+              case 'EXITLONG':
+                value = dataPoint.high * 1.01 // Above the candle
+                break
+              case 'EXITSHORT':
                 value = dataPoint.low * 0.99 // Below the candle
                 break
               default:

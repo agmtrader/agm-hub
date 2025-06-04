@@ -1,6 +1,7 @@
-'use client'
-import React, { use } from 'react'
-import AccountPage from '@/components/dashboard/account_management/AccountPage'
+import React from 'react'
+import AccountPage from '@/components/dashboard/accounts/AccountPage'
+import LoadingComponent from '@/components/misc/LoadingComponent'
+import DashboardPage from '@/components/misc/DashboardPage'
 
 type Props = {
   params: Promise<{
@@ -8,11 +9,15 @@ type Props = {
   }>
 }
 
-const page = ({ params }: Props) => {
-  const { accountId } = use(params)
-  
+const page = async ({ params }: Props) => {
+
+  const { accountId } = await params
+  if (!accountId) return <LoadingComponent className="w-full h-full" />
+
   return (
-    <AccountPage accountId={accountId} />
+    <DashboardPage title="Account Details" description="">
+      <AccountPage accountId={accountId} />
+    </DashboardPage>
   )
 }
 

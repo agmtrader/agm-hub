@@ -5,14 +5,10 @@ import Link from "next/link"
 import { Check } from "lucide-react"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { formatURL } from "@/utils/language/lang"
-import { useEffect } from "react"
-import { CreateNotification } from "@/utils/entities/notification"
 import { useSession } from "next-auth/react"
-import { TicketNotification } from "@/lib/entities/notification"
-import { formatTimestamp } from "@/utils/dates"
-import { Ticket } from "@/lib/entities/ticket"
+import { Account } from "@/lib/entities/account"
 
-const ApplicationEnd = ({ticket}:{ticket:Ticket}) => {
+const ApplicationEnd = () => {
     const {t, lang} = useTranslationProvider()
     const {data:session} = useSession()
     

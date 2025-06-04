@@ -6,47 +6,30 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useState } from 'react'
 
-interface FollowUpsLeadsViewProps {
+interface Props {
   leads: Lead[]
+  followUps: FollowUp[]
   contacts: Contact[]
 }
 
-const FollowUpsLeadsView = ({
-  leads,
-  contacts,
-}: FollowUpsLeadsViewProps) => {
+const FollowUpsLeadsView = ({ leads, followUps, contacts}: Props) => {
   const [showCompleted, setShowCompleted] = useState(false)
-
-  const allFollowUps = leads.flatMap(lead => 
-    lead.FollowUps.map(followUp => ({
-      ...followUp,
-      leadID: lead.LeadID,
-      contactName: contacts.find(c => c.ContactID === lead.ContactID)?.ContactName || lead.ContactID,
-      status: lead.Status,
-    }))
-  )
-
-  // Sort follow-ups by date
-  const sortedFollowUps = [...allFollowUps]
-    .filter(followUp => showCompleted || !followUp.completed)
-    .sort(
-      (a, b) => new Date(formatDateFromTimestamp(a.date)).getTime() - new Date(formatDateFromTimestamp(b.date)).getTime()
-    )
 
   const columns = [
     {
-      header: 'Contact',
+      header: 'Contact Name',
       accessorKey: 'contactName',
-    },
-    {
-      header: 'Status',
-      accessorKey: 'status',
+      cell: ({ row }: any) => {
+        const lead = leads.find(l => l.id === row.original.lead_id)
+        const contact = contacts.find(c => c.id === lead?.contact_id)
+        return contact?.name || "Contact not found"
+      }
     },
     {
       header: 'Follow-up Date',
       accessorKey: 'date',
       cell: ({ row }: any) => {
-        const date = new Date(formatDateFromTimestamp(row.original.date))
+        const date = new Date(row.original.date)
         const isPast = date < new Date()
         return (
           <span className={isPast ? 'text-red-500' : ''}>
@@ -86,7 +69,7 @@ const FollowUpsLeadsView = ({
         </label>
       </div>
       <DataTable
-        data={sortedFollowUps}
+        data={followUps.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())}
         columns={columns}
         infiniteScroll
       />

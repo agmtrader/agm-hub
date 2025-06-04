@@ -3,9 +3,8 @@ import DashboardPage from '@/components/misc/DashboardPage'
 import React, { useEffect, useState } from 'react'
 import CreateLead from './CreateLead'
 import LeadView from './LeadView'
-import EditLead from './EditLead'
 import { Lead, FollowUp } from '@/lib/entities/lead'
-import { DeleteLeadByID, ReadLeads } from '@/utils/entities/lead'
+import { DeleteLeadByID, ReadLeads, ReadFollowUpsByLeadID } from '@/utils/entities/lead'
 import { ColumnDefinition } from '@/components/misc/DataTable'
 import { toast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
@@ -15,54 +14,23 @@ import { ReadContacts } from '@/utils/entities/contact'
 import ContactsLeadsView from './ContactsLeadsView'
 import FollowUpsLeadsView from './FollowUpsLeadsView'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import LoadingComponent from '@/components/misc/LoadingComponent'
 
 const LeadsPage = () => {
 
-  const [leads, setLeads] = useState<Lead[]>([])
-  const [contacts, setContacts] = useState<Contact[]>([])
+  const [leads, setLeads] = useState<Lead[] | null>(null)
+  const [followUps, setFollowUps] = useState<FollowUp[] | null>(null)
+  const [contacts, setContacts] = useState<Contact[] | null>(null)
+  
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-
-  async function handleDeleteLead(leadID: string) {
-    try {
-      await DeleteLeadByID(leadID)
-      handleFetchLeads()
-      toast({
-        title: 'Lead deleted',
-        description: 'The lead has been deleted successfully',
-        variant: 'success'
-      })
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'The lead could not be deleted',
-        variant: 'destructive'
-      })
-    }
-  }
 
   async function handleFetchLeads() {
-    const leads = await ReadLeads()
-    const formattedLeads = leads.map(lead => ({
-      ...lead,
-      Contact_Date: lead.ContactDate ? lead.ContactDate : '',
-      FollowUps: lead.FollowUps.map(followUp => ({
-        ...followUp,
-        date: followUp.date
-      }))
-    }))
-    const sortedLeads = formattedLeads.sort((a, b) => 
-      new Date(a.Contact_Date).getTime() - new Date(b.Contact_Date).getTime()
-    )
-    setLeads(sortedLeads)
-    
-    if (selectedLead) {
-      const updatedSelectedLead = sortedLeads.find(lead => lead.LeadID === selectedLead.LeadID)
-      if (updatedSelectedLead) {
-        setSelectedLead(updatedSelectedLead)
-      }
-    }
+
+    const leadsWithFollowUps = await ReadLeads()
+
+    setLeads(leadsWithFollowUps.leads)
+    setFollowUps(leadsWithFollowUps.follow_ups)
   }
 
   async function fetchContacts() {
@@ -90,44 +58,45 @@ const LeadsPage = () => {
   useEffect(() => {
     handleFetchLeads()
   }, [])
+
+  if (!leads || !followUps || !contacts) return <LoadingComponent className='w-full h-full' />
   
   const columns = [
     {
       header: 'Contact',
-      accessorKey: 'ContactID',
+      accessorKey: 'contact_id',
       cell: ({ row }: any) => {
-        const contact = contacts.find(c => c.ContactID === row.original.ContactID)
-        return contact ? contact.ContactName : row.original.ContactID
+        const contact = contacts.find(c => c.id === row.original.contact_id)
+        return contact ? contact.name : row.original.contact_id
       }
     },
     {
       header: 'Referrer',
-      accessorKey: 'Referrer',
+      accessorKey: 'referrer_id',
       cell: ({ row }: any) => {
-        const contact = contacts.find(c => c.ContactID === row.original.ReferrerID)
-        return contact ? contact.ContactName : row.original.ReferrerID
+        const contact = contacts.find(c => c.id === row.original.referrer_id)
+        return contact ? contact.name : row.original.referrer_id
       }
     },
     {
       header: 'Status',
-      accessorKey: 'Status',
+      accessorKey: 'status',
     },
     {
       header: 'Contact Date',
-      accessorKey: 'Contact_Date',
+      accessorKey: 'contact_date',
       cell: ({ row }: any) => {
-        return formatDateFromTimestamp(row.original.Contact_Date)
+        return formatDateFromTimestamp(row.original.contact_date)
       }
     },
     {
       header: 'Next Follow-up',
       accessorKey: 'NextFollowUp',
       cell: ({ row }: any) => {
-        const followUps = row.original.FollowUps as FollowUp[]
-        if (!followUps?.length) return '-'
+        const filteredFollowUps = followUps.filter(f => f.lead_id === row.original.id)
+        if (!filteredFollowUps?.length) return '-'
         
-        // Sort follow-ups by date and get the next incomplete one
-        const sortedFollowUps = [...followUps]
+        const sortedFollowUps = [...filteredFollowUps]
           .filter(followUp => !followUp.completed)
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
@@ -142,7 +111,7 @@ const LeadsPage = () => {
         const nextFollowUp = sortedFollowUps[0]
         return (
           <div className="flex items-center gap-2">
-            <span>{formatDateFromTimestamp(nextFollowUp.date)}</span>
+            <span>{formatDateFromTimestamp(nextFollowUp.date.toString())}</span>
             {nextFollowUp.completed && (
               <Badge variant="secondary">Completed</Badge>
             )}
@@ -154,11 +123,11 @@ const LeadsPage = () => {
       header: 'Progress',
       accessorKey: 'FollowUpProgress',
       cell: ({ row }: any) => {
-        const followUps = row.original.FollowUps as FollowUp[]
-        if (!followUps?.length) return '-'
+        const filteredFollowUps = followUps.filter(f => f.lead_id === row.original.id)
+        if (!filteredFollowUps?.length) return '-'
         
-        const completed = followUps.filter(f => f.completed).length
-        const total = followUps.length
+        const completed = filteredFollowUps.filter(f => f.completed).length
+        const total = filteredFollowUps.length
         
         return (
           <Badge variant={completed === total ? "success" : "outline"}>
@@ -170,7 +139,7 @@ const LeadsPage = () => {
   ] as ColumnDefinition<Lead>[]
 
   return (
-    <DashboardPage title="Leads" description="Manage and create new leads">
+    <div>
       <div className="flex flex-col gap-6">
         <Tabs defaultValue="contacts" className="w-full">
           <div className="flex justify-between gap-2">
@@ -186,33 +155,27 @@ const LeadsPage = () => {
               columns={columns} 
               setSelectedLead={setSelectedLead} 
               setIsViewDialogOpen={setIsViewDialogOpen} 
-              setIsEditDialogOpen={setIsEditDialogOpen} 
-              handleDeleteLead={handleDeleteLead} 
             />
           </TabsContent>
           <TabsContent value="followups">
             <FollowUpsLeadsView
               leads={leads}
+              followUps={followUps}
               contacts={contacts}
             />
           </TabsContent>
         </Tabs>
       </div>
 
-      <LeadView 
+      <LeadView
         lead={selectedLead} 
+        contacts={contacts}
+        followUps={followUps.filter(f => f.lead_id === selectedLead?.id)}
         isOpen={isViewDialogOpen} 
         onOpenChange={setIsViewDialogOpen} 
         onSuccess={handleFetchLeads}
       />
-      <EditLead 
-        isDialogOpen={isEditDialogOpen} 
-        setIsDialogOpen={setIsEditDialogOpen} 
-        lead={selectedLead}
-        contacts={contacts}
-        onSuccess={handleFetchLeads}
-      />
-    </DashboardPage>
+    </div>
   )
 }
 

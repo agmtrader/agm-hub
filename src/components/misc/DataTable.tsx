@@ -68,7 +68,6 @@ interface DataTableProps<TData> {
   enableRowActions?: boolean
   rowActions?: RowAction[]
   enableFiltering?: boolean
-  filterColumns?: string[]
   infiniteScroll?: boolean
 }
 
@@ -82,7 +81,6 @@ export const DataTable = <TData,>({
   enableRowActions = false,
   rowActions,
   enableFiltering = false,
-  filterColumns = [],
   infiniteScroll = false,
 }: DataTableProps<TData>) => {
   const observerTarget = useRef<HTMLDivElement>(null)
@@ -90,7 +88,7 @@ export const DataTable = <TData,>({
 
   const [rowSelection, setRowSelection] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [globalFilter, setGlobalFilter] = useState("")
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -218,7 +216,6 @@ export const DataTable = <TData,>({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: (updater) => {
@@ -228,7 +225,7 @@ export const DataTable = <TData,>({
     state: {
       sorting,
       rowSelection,
-      columnFilters,
+      globalFilter,
       columnVisibility,
       pagination: infiniteScroll ? undefined : pagination,
     },
@@ -236,7 +233,14 @@ export const DataTable = <TData,>({
       pagination: {
         pageSize: infiniteScroll ? data.length : pageSize,
       },
-    }
+    },
+    globalFilterFn: (row, columnId, filterValue) => {
+      const value = row.getValue(columnId)
+      if (value === null || value === undefined) return false
+      return String(value)
+        .toLowerCase()
+        .includes(String(filterValue).toLowerCase())
+    },
   })
 
   useEffect(() => {
@@ -292,19 +296,14 @@ export const DataTable = <TData,>({
 
   return (
     <div className="w-full rounded-md text-foreground relative border p-5">
-      {enableFiltering && filterColumns.length > 0 && (
+      {enableFiltering && (
         <div className="flex items-center gap-4 py-4">
-          {filterColumns.map((column) => (
-            <Input
-              key={column}
-              placeholder={`Filter ${column}...`}
-              value={(table.getColumn(column)?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn(column)?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-          ))}
+          <Input
+            placeholder="Search all columns..."
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            className="max-w-sm"
+          />
         </div>
       )}
       <div className={infiniteScroll ? "max-h-[600px] overflow-y-auto" : ""}>
