@@ -6,7 +6,6 @@ export const name_schema = z.object({
   last: z.string().min(1, { message: 'Last name is required' }),
   middle: z.string().optional(),
   salutation: z.string().optional(), // e.g., Mr, Ms, Dr
-  suffix: z.string().optional(), // e.g., Jr, Sr, III
 });
 
 export const address_schema = z.object({
@@ -38,6 +37,7 @@ export const identification_schema = z.object({
   issueDate: z.string().optional(), // YYYY-MM-DD
   expirationDate: z.string().optional(), // YYYY-MM-DD
   type: z.string().optional(), // e.g. PASSPORT, NATIONAL_ID
+  citizenship: z.string().optional(),
 });
 
 export const employment_details_schema = z.object({
@@ -113,6 +113,12 @@ export const user_privilege_schema = z.object({
   privilege: z.enum(privilege_enum_values),
 }).optional(); // Making optional as it's optional in User schema
 
+export const tax_residency_schema = z.object({
+  country: z.string().min(2, { message: 'Country code is required' }),
+  tin: z.string().min(1, { message: 'TIN is required' }),
+  tinType: z.enum(['SSN', 'EIN', 'NonUS_NationalId']),
+});
+
 // Nested Schemas for Application Structure
 export const account_holder_details_schema = z.object({
   externalId: z.string().min(1, { message: 'External ID for account holder is required' }),
@@ -125,13 +131,22 @@ export const account_holder_details_schema = z.object({
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date of birth must be YYYY-MM-DD' }),
   gender: z.string().optional(), // e.g., MALE, FEMALE, OTHER
   maritalStatus: z.string().optional(), // e.g., SINGLE, MARRIED, DIVORCED
-  numberOfDependents: z.number().int().min(0).optional(),
+  numDependents: z.number().int().min(0).optional(),
   phones: z.array(phone_schema).min(1, { message: 'At least one phone number is required' }),
   identification: identification_schema, // This might need to be more specific based on individual vs org
   employmentDetails: employment_details_schema.optional(),
   isPEP: z.boolean().optional(), // Politically Exposed Person
   isControlPerson: z.boolean().optional(),
   employmentType: z.string().min(1, { message: 'Employment type is required' }),
+  taxResidencies: z.array(tax_residency_schema).optional(),
+  authorizedToSignOnBehalfOfOwner: z.boolean().optional(),
+  authorizedTrader: z.boolean().optional(),
+  usTaxResident: z.boolean().optional(),
+  ownershipPercentage: z.number().int().min(0).max(100).optional(),
+  titles: z.array(z.object({
+    value: z.string(),
+    code: z.string()
+  })).optional(),
 });
 
 export const financial_information_schema = z.object({
@@ -177,7 +192,7 @@ export const account_schema = z.object({
   multiCurrency: z.boolean().optional().default(true),
   margin: z.string().min(1, { message: 'Margin type is required' }), // e.g., Cash, Margin
   tradingLimits: trading_limits_schema, // Added from new schema
-  // other account fields
+  alias: z.string().optional(),
 });
 
 export const user_schema = z.object({
@@ -194,21 +209,46 @@ export const ibkr_document_schema = z.object({
     fileName: z.string(),
     fileLength: z.number(),
     sha1Checksum: z.string(),
-  }),
+  }).optional(),
   formNumber: z.number(),
-  validAddress: z.boolean(),
+  validAddress: z.boolean().optional(),
   execLoginTimestamp: z.number(),
   execTimestamp: z.number(),
   proofOfIdentityType: z.string().optional(),
+  proofOfAddressType: z.string().optional(),
   payload: z.object({
     mimeType: z.string(),
     data: z.string(),
-  }),
+  }).optional(),
 }).optional();
 
 export const add_additional_account_schema = z.object({
   // Define if needed, similar to ibkr_document_schema
 }).optional();
+
+export const local_tax_form_schema = z.object({
+  taxAuthority: z.string(),
+  qualified: z.boolean(),
+  treatyCountry: z.string(),
+})
+
+export const w8ben_schema = z.object({
+  localTaxForms: z.array(local_tax_form_schema),
+  name: z.string(),
+  tin: z.string(),
+  foreignTaxId: z.string(),
+  tinOrExplanationRequired: z.boolean(),
+  explanation: z.string(),
+  referenceNumber: z.number(),
+  part29ACountry: z.string(),
+  cert: z.boolean(),
+  signatureType: z.string(),
+  blankForm: z.boolean(),
+  taxFormFile: z.string(),
+  proprietaryFormNumber: z.number(),
+  electronicFormat: z.boolean(),
+  submitDate: z.string(),
+})
 
 export const application_schema = z.object({
   customer: customer_schema,

@@ -18,29 +18,31 @@ import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import AccountHolderInfoStep from './AccountHolderInfoStep'
 import { CreateApplication } from '@/utils/entities/application'
+import DocumentsStep from './DocumentsStep'
+import { Button } from '@/components/ui/button'
+import LoaderButton from '@/components/misc/LoaderButton'
 
 enum FormStep {
   ACCOUNT_HOLDER_INFO = 0,
-  AGREEMENTS_DISCLOSURES = 1
+  DOCUMENTS = 1
 }
 
 const IBKRApplicationForm = () => {
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_HOLDER_INFO);
-  const [applicationState, setApplicationState] = useState<Application>(defaultApplicationValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: applicationState,
+    defaultValues: defaultApplicationValues,
     mode: 'onChange',
+    shouldUnregister: false,
   });
 
   const searchParams = useSearchParams();
 
-  const handleNextStep = async (data: Application) => {
-    setApplicationState(data);
-    setCurrentStep(currentStep + 1);
+  const handleNextStep = async () => { 
+    setCurrentStep(prevStep => prevStep + 1);
   };
 
   const handlePreviousStep = () => {
@@ -48,7 +50,13 @@ const IBKRApplicationForm = () => {
   };
 
   async function onSubmit(values: Application) {
+    console.log('[IBKRApplicationForm] onSubmit received values:', values);
     try {
+      if (currentStep !== FormStep.DOCUMENTS) {
+        setCurrentStep(currentStep + 1);
+        return;
+      }
+      
       setIsSubmitting(true);
       
       const advisor_id = searchParams.get('ad') || null;
@@ -85,7 +93,7 @@ const IBKRApplicationForm = () => {
   const renderProgress = () => {
     const steps = [
       { name: 'Account Holder Information', step: FormStep.ACCOUNT_HOLDER_INFO },
-      { name: 'Agreements & Disclosures', step: FormStep.AGREEMENTS_DISCLOSURES }
+      { name: 'Documents', step: FormStep.DOCUMENTS }
     ];
 
     return (
@@ -118,6 +126,7 @@ const IBKRApplicationForm = () => {
     <div className="flex flex-col justify-center items-center my-20 gap-5">
       <h1 className="text-3xl font-bold">IBKR Account Application Form</h1>
       <p className="text-lg">Please fill out the form below to apply for an IBKR account.</p>
+      {renderProgress()}
       <div className="w-[50%]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -125,6 +134,12 @@ const IBKRApplicationForm = () => {
               <AccountHolderInfoStep
                 form={form} 
               />
+            )}
+            {currentStep === FormStep.DOCUMENTS && (
+              <>
+                <DocumentsStep form={form} />
+                <LoaderButton onClick={form.handleSubmit(onSubmit)} isLoading={isSubmitting} text="Submit Application"/>
+              </>
             )}
           </form>
         </Form>

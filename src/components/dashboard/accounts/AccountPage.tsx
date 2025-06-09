@@ -398,7 +398,7 @@ const AccountPage = ({ accountId }: Props) => {
 
         {/* Pending Tasks Tab */}
         <TabsContent value="pendingTasks">
-          <AccountPendingTasks accountId={accountId} />
+          <AccountPendingTasks accountId={account.accountId} accountTitle={account.accountTitle} />
         </TabsContent>
 
       </Tabs>

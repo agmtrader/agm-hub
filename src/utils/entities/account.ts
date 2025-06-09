@@ -1,8 +1,10 @@
 import { Bucket, POADocumentInfo, POIDocumentInfo } from "@/lib/entities/document"
 import { accessAPI } from "../api"
 import { File as DocumentFile } from "@/lib/entities/document"
-import { IndividualAccountApplicationInfo, AccountPayload, Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest } from "@/lib/entities/account"
+import { IndividualAccountApplicationInfo, AccountPayload, Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, W8BenSubmissionRequest } from "@/lib/entities/account"
 import { Contact } from "@/lib/entities/contact"
+import { formatTimestamp } from "../dates"
+import { Name } from "@/lib/entities/application"
 
 export async function CreateAccount(account: AccountPayload): Promise<{id: string}> {
     let account_id = await accessAPI('/accounts/create', 'POST', {
@@ -81,42 +83,6 @@ export async function GetRegistrationTasksByAccountID(accountId: string): Promis
     }
 }
 
-/**
- * Builds the documentSubmission payload for PATCH /api/v1/accounts/ using the first required pending document task.
- * The payload will have an empty documents array or an empty document object (payload left empty).
- * Returns null if no required document task is found.
- */
-export function buildDocumentSubmissionRequest(pendingTasksData: PendingTasksResponse, accountId: string): DocumentSubmissionRequest | null {
-  if (!pendingTasksData?.pendingTasks?.length) return null;
-  const firstRequiredTask = pendingTasksData.pendingTasks.find((task) => task.requiredForApproval);
-  if (!firstRequiredTask) return null;
-  return {
-    documentSubmission: {
-      documents: [
-        {
-          signedBy: [],
-          attachedFile: {
-            fileName: '',
-            fileLength: 0,
-            sha1Checksum: ''
-          },
-          formNumber: firstRequiredTask.formNumber,
-          validAddress: false,
-          execLoginTimestamp: 0,
-          execTimestamp: 0,
-          payload: {
-            mimeType: '',
-            data: ''
-          }
-        }
-      ],
-      accountId,
-      inputLanguage: 'en',
-      translation: false,
-    },
-  };
-}
-
 export async function GetPendingTasksByAccountID(accountId: string): Promise<PendingTasksResponse | null> {
     try {
         const response: PendingTasksResponse = await accessAPI('/accounts/pending_tasks', 'POST', { 'account_id': accountId });
@@ -125,4 +91,36 @@ export async function GetPendingTasksByAccountID(accountId: string): Promise<Pen
         console.error('Error fetching pending tasks:', error);
         return null;
     }
+}
+
+export async function GetForms(forms: string[]): Promise<AllForms> {
+    const response: AllForms = await accessAPI('/accounts/forms', 'POST', { 'forms': forms })
+    return response
+}
+
+export async function CreateSSOSession(): Promise<{url: string}> {
+    const response = await accessAPI('/accounts/create_sso_browser_session', 'GET')
+    return response
+}
+
+export async function SubmitAccountDocument(accountID: string, documentSubmission: DocumentSubmissionRequest) {
+    const accountManagementRequests: AccountManagementRequests = {
+        accountManagementRequests: {
+            documentSubmission
+        }
+    }
+    console.log('accountManagementRequests:', accountManagementRequests)
+    const response = await accessAPI('/accounts/update', 'POST', { 'account_id': accountID, 'account_management_requests': accountManagementRequests })
+    return response
+}
+
+export async function SubmitAccountW8BenForm(accountID: string, updateW8Ben: W8BenSubmissionRequest) {
+    const accountManagementRequests: AccountManagementRequests = {
+        accountManagementRequests: {
+            updateW8Ben
+        }
+    }
+    console.log('accountManagementRequests:', accountManagementRequests)
+    const response = await accessAPI('/accounts/update', 'POST', { 'account_id': accountID, 'account_management_requests': accountManagementRequests })
+    return response
 }

@@ -40,44 +40,43 @@ export function AccountRegistrationTasks({ accountId }: Props) {
   if (isLoading) return <LoadingComponent />;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <ListChecks className="h-5 w-5 mr-2 text-primary"/>Registration Tasks
-        </CardTitle>
-        <CardDescription>Overview of account registration tasks.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {registrationTasksData ? (
+    <div className="relative">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <ListChecks className="h-5 w-5 mr-2 text-primary" />Registration Tasks
+          </CardTitle>
+          <CardDescription>Overview of account registration tasks.</CardDescription>
+        </CardHeader>
+        <CardContent>
           <div className="space-y-4">
-            <DetailItem label="Overall Status" value={registrationTasksData.description} />
-            <DetailItem label="Current State" value={registrationTasksData.state} />
-            <DetailItem label="Tasks Present" value={registrationTasksData.registrationTaskPresent ? "Yes" : "No"} />
-            
-            {registrationTasksData.registrationTaskPresent && registrationTasksData.registrationTasks?.length > 0 && (
+            <DetailItem label="Overall Status" value={registrationTasksData?.description ?? "-"} />
+            <DetailItem label="Current State" value={registrationTasksData?.state ?? "-"} />
+            <DetailItem label="Tasks Present" value={registrationTasksData?.registrationTaskPresent ? "Yes" : "No"} />
+            {registrationTasksData?.registrationTaskPresent && registrationTasksData.registrationTasks?.length > 0 && (
               <div className="space-y-3 pt-3">
                 <h4 className="text-md font-semibold text-muted-foreground">Individual Registration Tasks:</h4>
                 {registrationTasksData.registrationTasks.map((task: RegistrationTask, idx: number) => (
-                  <Card key={idx} className="p-3 bg-muted/20 border shadow-sm">
-                    <p className="text-sm font-semibold mb-1.5">{task.formName} (Form: {task.formName}, Task: {task.isCompleted ? "Completed" : "Not Completed"})</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                      <DetailItem label="Action Required" value={task.action} />
-                      <DetailItem label="Current Task State" value={task.state} />
-                      <DetailItem 
-                        label="Required for Approval"
-                        value={<Badge variant={task.isRequiredForApproval ? "destructive" : "outline"}>{task.isRequiredForApproval ? "Yes" : "No"}</Badge>}
-                      />
-                      {task.dateCompleted && <DetailItem label="Date Completed" value={new Date(task.dateCompleted).toLocaleDateString()} />}
+                  <Card key={idx} className="p-3 bg-muted/20 border shadow-sm flex items-center gap-3">
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold mb-1.5">{task.formName} (Form: {task.formName}, Task: {task.isCompleted ? "Completed" : "Not Completed"})</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                        <DetailItem label="Action Required" value={task.action} />
+                        <DetailItem label="Current Task State" value={task.state} />
+                        <p className="text-xs">{task.isRequiredForApproval ? "Required for Approval" : "Not Required for Approval"}</p>
+                        {task.dateCompleted && <DetailItem label="Date Completed" value={new Date(task.dateCompleted).toLocaleDateString()} />}
+                      </div>
                     </div>
                   </Card>
                 ))}
               </div>
             )}
           </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">Could not load registration tasks. Please try again later.</p>
-        )}
-      </CardContent>
-    </Card>
+          {!registrationTasksData && (
+            <p className="text-sm text-muted-foreground">Could not load registration tasks. Please try again later.</p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

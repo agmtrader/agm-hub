@@ -6,12 +6,13 @@ import LoadingComponent from "@/components/misc/LoadingComponent";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Mail, User, DollarSign, ShieldCheck, Info, Users, Briefcase } from 'lucide-react';
+import { Mail, User, DollarSign, ShieldCheck, Info, Users, Briefcase, FileText } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from "@/components/ui/button";
 import { CreateAccount } from "@/utils/entities/account";
 import { AccountPayload } from "@/lib/entities/account";
 import { useSession } from "next-auth/react";
+import LoaderButton from "@/components/misc/LoaderButton";
 
 interface Props {
   applicationId: string;
@@ -19,8 +20,19 @@ interface Props {
 
 const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
-  const [application, setApplication] = useState<InternalApplication | null>(null);
+  const DOCUMENT_TYPE_MAP: { [key: number]: string } = {
+    5001: 'Tax Form',
+    5002: 'W9 Form',
+    8001: 'Proof of Address',
+    8002: 'Proof of Income',
+  };
 
+  const getDocumentName = (formNumber: number) => {
+    return DOCUMENT_TYPE_MAP[formNumber] || 'Unknown Document';
+  };
+
+  const [application, setApplication] = useState<InternalApplication | null>(null);
+  const [submitting, setSubmitting] = useState(false)
   const {data:session} = useSession()
 
   useEffect(() => {
@@ -47,6 +59,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     if (!application) return;
 
     try {
+      setSubmitting(true)
 
       const account: AccountPayload = {
         advisor_id: application.advisor_id,
@@ -64,17 +77,19 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       console.log('accountResponse', accountResponse)
 
       toast({
-        title: "Account Created",
-        description: "Account created successfully.",
+        title: "Application Sent",
+        description: "Application sent to IBKR successfully.",
         variant: "success",
       });
 
     } catch (e) {
       toast({
         title: "Error",
-        description: e instanceof Error ? e.message : "Error creating account",
+        description: "Error creating account, please try again later.",
         variant: "destructive",
       });
+    } finally {
+      setSubmitting(false)
     }
 
   }
@@ -93,6 +108,15 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
   // --- Documents Section ---
   const documents = application.application.documents || [];
+
+  const formatFileSize = (bytes?: number) => {
+    if (bytes === undefined || bytes === null) return 'N/A';
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   return (
     <div className="flex flex-col"> 
@@ -250,11 +274,39 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       </div>
 
       <div className="mb-8">
+        {/* Documents Card */}
+        <Card className="col-span-1 md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/> Documents</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Document Name</TableHead>
+                  <TableHead>File Name</TableHead>
+                  <TableHead>File Size</TableHead>
+                  <TableHead>Type</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {documents.length === 0 && <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">No documents uploaded</TableCell></TableRow>}
+                {documents.map((doc: any, idx: number) => (
+                  <TableRow key={idx}>
+                    <TableCell>{getDocumentName(doc.formNumber)}</TableCell>
+                    <TableCell>{doc.attachedFile?.fileName || 'N/A'}</TableCell>
+                    <TableCell>{formatFileSize(doc.attachedFile?.fileLength)}</TableCell>
+                    <TableCell>{doc.payload?.mimeType || 'N/A'}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
 
-      <Button onClick={handleCreateAccount} className="w-fit">
-        Create Account with this Application Information
-      </Button>
+      <LoaderButton onClick={handleCreateAccount} isLoading={submitting} text="Send Application to IBKR" className="w-fit"/>
+
     </div>
   );
 };

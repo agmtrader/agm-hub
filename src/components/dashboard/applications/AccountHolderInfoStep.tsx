@@ -13,7 +13,6 @@ import {
 import CountriesFormField from "@/components/ui/CountriesFormField";
 import { Application } from "@/lib/entities/application";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { phone_types as getPhoneTypes, id_type as getIdTypes } from '@/lib/form';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 
@@ -21,7 +20,7 @@ interface AccountHolderInfoStepProps {
   form: UseFormReturn<Application>;
 }
 
-const AccountHolderInfoStep: React.FC<AccountHolderInfoStepProps> = ({ form }) => {
+const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   const { t } = useTranslationProvider();
   const phoneTypeOptions = getPhoneTypes(t);
   const idTypeOptions = getIdTypes(t);
@@ -313,7 +312,7 @@ const AccountHolderInfoStep: React.FC<AccountHolderInfoStepProps> = ({ form }) =
         )}
       />
       <Button type="submit" className="mt-8">
-        Submit
+        Next step
       </Button>
     </>
   );

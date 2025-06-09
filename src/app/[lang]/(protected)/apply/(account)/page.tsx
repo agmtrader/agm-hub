@@ -26,7 +26,7 @@ const page = () => {
         if (lead_id) {
           try {
             const account = await ReadAccountByLeadID(lead_id)
-            if (!account) {
+            if (account) {
               throw new Error('Account already exists for this Lead. Please contact support for more information.')
             } else {
               setStarted(true)

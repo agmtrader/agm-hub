@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const poa_schema = z.object({
-    type: z.enum(["Utility bill", "Bank Statement", "Tax Return"]),
+    type: z.enum(["Utility Bill", "Bank Statement", "Tax Return"]),
     issued_date: z.date(),
 })
 

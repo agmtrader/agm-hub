@@ -10,8 +10,6 @@ import Account from '../auth/Account'
 
 export function Dashboard() {
   
-  const {data:session} = useSession();
-  
   return (
     <div className="flex w-full h-full">
       <div className="flex-1">

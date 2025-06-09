@@ -101,6 +101,7 @@ const base_about_you_schema = z.object({
         message: 'You must select a currency.'
     }),
 })
+
 export const about_you_primary_schema = (t: (key: string) => string) => base_about_you_schema.extend({
     security_q_1: z.string({
         required_error: t('forms.errors.select_required'),

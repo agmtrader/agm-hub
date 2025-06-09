@@ -11,10 +11,6 @@ const page = () => {
   const { data:session } = useSession()
   const { lang } = useTranslationProvider()
 
-  if (!session?.user.scopes.includes('all')) {
-    return redirect(formatURL('/', lang))
-  }
-
   return (
     <Dashboard/> 
   )

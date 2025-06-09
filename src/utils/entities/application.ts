@@ -1,6 +1,6 @@
 import { accessAPI } from "../api"
-import { AllForms, Application, FormDetails, InternalApplication } from "../../lib/entities/application"
-import { PendingTasksResponse } from "@/lib/entities/account"
+import { Application, InternalApplication } from "../../lib/entities/application"
+import { DocumentFile, POADocumentInfo } from "../../lib/entities/document"
 
 export async function CreateApplication(application: InternalApplication): Promise<Application> {
     const response: Application = await accessAPI('/applications/create', 'POST', { 'application': application })
@@ -28,7 +28,7 @@ export async function SendApplicationToIBKR(application: Application) {
     return response
 }
 
-export async function GetFormsForApplication(forms: string[]): Promise<AllForms> {
-    const response: AllForms = await accessAPI('/applications/forms', 'POST', { 'forms': forms })
-    return response
+export async function UploadApplicationPOADocument(file: DocumentFile, documentInfo: POADocumentInfo, userID: string, applicationID: string) {
+    const poaID = await accessAPI('/applications/upload_poa', 'POST', {'f': file, 'document_info': documentInfo, 'user_id': userID, 'application_id': applicationID})
+    return poaID
 }

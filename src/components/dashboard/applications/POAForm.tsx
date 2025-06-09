@@ -3,7 +3,9 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getDefaults } from '@/utils/form'
 import { poa_schema } from "@/lib/schemas/document-center"
+import { POADocumentInfo } from '@/lib/entities/document'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
@@ -17,7 +19,7 @@ import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { Loader2 } from 'lucide-react'
 
 interface Props {
-  onSubmit: (values: any, files: File[] | null) => Promise<void>
+  onSubmit: (values: any) => void | Promise<void>
   uploading: boolean
 }
 
@@ -31,12 +33,19 @@ const POAForm = ({ onSubmit, uploading }:Props) => {
   })
 
   const handleSubmit = (documentInfo: any) => {
-    onSubmit(documentInfo, null)
+    onSubmit(documentInfo);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          e.stopPropagation(); // Prevent event from bubbling to parent forms
+          form.handleSubmit(handleSubmit)(e);
+        }}
+        className="space-y-4"
+      >
 
         <FormField
           control={form.control}
@@ -54,7 +63,7 @@ const POAForm = ({ onSubmit, uploading }:Props) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Utility bill">Utility bill</SelectItem>
+                  <SelectItem value="Utility Bill">Utility Bill</SelectItem>
                   <SelectItem value="Bank Statement">Bank Statement</SelectItem>
                   <SelectItem value="Tax Return">Tax Return</SelectItem>
                 </SelectContent>
