@@ -28,7 +28,6 @@ const ApplicationsPage = () => {
 
         const applications = await ReadApplications()
         setApplications(applications)
-        console.log(applications)
     }
 
     fetchData()

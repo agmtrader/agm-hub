@@ -70,6 +70,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         account_type: "",
         ibkr_account_number: null,
       }
+      console.log('account', account)
+      console.log('application', application)
 
       const accountResponse = await CreateAccount(account) 
       const applicationResponse = await SendApplicationToIBKR(application.application)

@@ -1,0 +1,25 @@
+{
+    "requestId": 284473766,
+    "dateSubmitted": "20250611183705 UTC",
+    "fileData": {
+        "data": {
+            "execution": {
+                "executedAt": "20250611183706 UTC",
+                "client": "AGM Technology ",
+                "clientMasterAccount": "I6413690",
+                "processFile": "AGMTechnology-FD-QA_2025-06-11_023705398_437843.json"
+            },
+            "application": {
+                "customer": "Andres Aguilar Carboni",
+                "externalId": "yieesly0ew",
+                "status": "Error",
+                "error": [
+                    {
+                        "value": "W8/W9 forms are missing."
+                    }
+                ]
+            }
+        },
+        "name": "AGMTechnology-FD-QA_20250611-143706085_144586.json.report"
+    }
+}
