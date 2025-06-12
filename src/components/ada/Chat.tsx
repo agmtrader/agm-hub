@@ -13,7 +13,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import { formatURL, getCallbackUrl } from '@/utils/language/lang'
 import { useSession } from 'next-auth/react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { chat } from '@/utils/ada'
+import { accessAPI } from '@/utils/api'
+import { ChatMessage, ChatResponse } from '@/lib/ada'
 
 const AdaChat = () => {
     const router = useRouter()
@@ -44,9 +45,9 @@ const AdaChat = () => {
         setIsTyping(true);
 
         try {
-            // Get response from Gemini API
-            const response = await chat([{ role: 'user', content: input }]);
-            
+            // Call Ada chat endpoint directly
+            const response: ChatResponse = await accessAPI('/ada/chat', 'POST', { messages: [{ role: 'user', content: input }] });
+            console.log(response)
             // Add assistant message
             const assistantMessage: Message = { 
                 role: 'assistant', 

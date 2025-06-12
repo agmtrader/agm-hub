@@ -10,11 +10,12 @@ import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
-import { chat } from '@/utils/ada'
+import { accessAPI } from '@/utils/api'
 import { useSession } from 'next-auth/react'
 import { Dash } from 'react-bootstrap-icons'
 import DashboardPage from '../misc/DashboardPage'
 import { useRouter } from 'next/navigation'
+import { ChatMessage, ChatResponse } from '@/lib/ada'
 
 const FullChat = () => {
     const router = useRouter()
@@ -41,9 +42,8 @@ const FullChat = () => {
         setIsTyping(true);
 
         try {
-            // Get response from Gemini API
-            const response = await chat([{ role: 'user', content: input }]);
-            
+            // Call Ada chat endpoint directly
+            const response: ChatResponse = await accessAPI('/ada/chat', 'POST', { messages: [{ role: 'user', content: input }] });
             // Add assistant message
             const assistantMessage: Message = { 
                 role: 'assistant', 
@@ -53,8 +53,6 @@ const FullChat = () => {
             setMessages(prevMessages => [...prevMessages, assistantMessage]);
             setId(prev => prev + 1);
         } catch (error) {
-            console.error('Error getting response:', error);
-            // Add error message to chat
             const errorMessage: Message = { 
                 role: 'assistant', 
                 content: 'Sorry, I encountered an error. Please try again.', 
