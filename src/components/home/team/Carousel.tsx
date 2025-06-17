@@ -33,46 +33,46 @@ export function TeamCarousel() {
 
   const team = [
     {
-      name: 'Hernan Castro',
+      name: 'Hernán Castro',
       title: t('shared.team.team_carousel.hernan_title'),
       description: t('shared.team.team_carousel.hernan_description'),
-      avatar: '/assets/team/hernan.jpg'
+      avatar: '/assets/team/vector/hernan.png'
     },
     {
-      name: 'Ramon Castro',
+      name: 'Ramón Castro',
       title: t('shared.team.team_carousel.ramon_title'),
       description: t('shared.team.team_carousel.ramon_description'),
-      avatar: '/assets/team/ramon.jpg'
+      avatar: '/assets/team/vector/ramon.png'
     },
     {
       name: 'Cristian Ramirez',
       title: t('shared.team.team_carousel.cristian_title'),
       description: t('shared.team.team_carousel.cristian_description'),
-      avatar: '/assets/team/cristian.jpg'
+      avatar: '/assets/team/vector/cristian.png'
     },
     {
       name: 'Javier Cordero',
       title: t('shared.team.team_carousel.javier_title'),
       description: t('shared.team.team_carousel.javier_description'),
-      avatar: '/assets/team/javier.jpg'
+      avatar: '/assets/team/vector/javier.png'
     },
     {
-      name: 'Maria Jose Castro',
+      name: 'María José Castro',
       title: t('shared.team.team_carousel.maria_jose_title'),
       description: t('shared.team.team_carousel.maria_jose_description'),
-      avatar: '/assets/team/maria_jose.jpg'
+      avatar: '/assets/team/vector/maria_jose.png'
     },
     {
-      name: 'Andres Aguilar',
+      name: 'Andrés Aguilar',
       title: t('shared.team.team_carousel.andres_title'),
       description: t('shared.team.team_carousel.andres_description'),
-      avatar: '/assets/team/andres.jpg'
+      avatar: '/assets/team/vector/andres.png'
     },
     {
-      name: 'Ramon Castro Jr',
+      name: 'Ramón Castro Jr',
       title: t('shared.team.team_carousel.ramon_jr_title'),
       description: t('shared.team.team_carousel.ramon_jr_description'),
-      avatar: '/assets/team/ramonjr.jpg'
+      avatar: '/assets/team/vector/ramonjr.png'
     }
   ]
 

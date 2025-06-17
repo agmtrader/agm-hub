@@ -3,11 +3,24 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { Card } from "@/components/ui/card";
 import LoadingComponent from '@/components/misc/LoadingComponent';
-import { DataTable } from '@/components/misc/DataTable';
+import { ColumnDefinition, DataTable } from '@/components/misc/DataTable';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpCircle, ArrowDownCircle, MinusCircle, DollarSign, BarChart3, TrendingUp, Briefcase } from 'lucide-react';
-import Chart from './Chart'
+import { ArrowUpCircle, ArrowDownCircle, MinusCircle, DollarSign, BarChart3, TrendingUp, Briefcase, Settings, Target, Activity, Hash, Zap } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import TraderChart from './TraderChart';
+import {
+  Strategy,
+  TradingDecision,
+  AccountSummaryItem,
+  ContractData,
+  OrderData,
+  PositionData,
+  BacktestSnapshot,
+  ExtendedTraderResponse,
+  DecisionHistory
+} from '@/lib/entities/trader';
+
+import { toast } from '@/hooks/use-toast';  
 import Backtest from './Backtest';
 
 const AutoTrader = () => {
@@ -15,29 +28,46 @@ const AutoTrader = () => {
   const [socket, setSocket] = useState<any>(null);
 
   const [strategyStarted, setStrategyStarted] = useState(false);
-  const [decision, setDecision] = useState<any>(null);
+  const [decision, setDecision] = useState<TradingDecision | null>(null);
 
-  const [decisionHistory, setDecisionHistory] = useState<any>([]);
-  const [accountSummary, setAccountSummary] = useState<any>(null);
-  const [strategy, setStrategy] = useState<any>(null);
+  const [accountSummary, setAccountSummary] = useState<AccountSummaryItem[] | null>(null);
+  const [strategy, setStrategy] = useState<Strategy | null>(null);
+  const [backtestData, setBacktestData] = useState<BacktestSnapshot[]>([]);
+  const [decisionHistory, setDecisionHistory] = useState<DecisionHistory[]>([]);
 
-  const socketURL = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:3333' : 'NULL';
+  const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
 
   useEffect(() => {
 
     const newSocket = io(socketURL);
     setSocket(newSocket)
 
-    newSocket.on('connected', (data: any) => {
-      console.log('Connected to Trader', data);
-      if (data['status'] !== 'success') {
-        throw new Error('Error connecting to Trader');
+    newSocket.on('connected', (data: ExtendedTraderResponse) => {
+      try {
+        console.log('Connected to Trader', data);
+        if (!data) throw new Error('Error connecting to Trader');
+        setStrategyStarted(true);
+        setDecision(data['decision'] as TradingDecision);
+        setStrategy(data['strategy']);
+        setAccountSummary(data['account_summary']);
+        if (data['backtest']) {
+          setBacktestData(data['backtest']);
+          // Build decision history from backtest data
+          const history = data['backtest'].map((snapshot, index) => ({
+            id: index,
+            decision: snapshot.decision,
+            created: snapshot.current_time,
+            updated: snapshot.current_time
+          }));
+          setDecisionHistory(history);
+        }
+      } catch (error) {
+        toast({
+          title: 'Error connecting to Trader',
+          description: 'Please check your connection and try again.',
+          variant: 'destructive',
+        });
       }
-      setStrategyStarted(true);
-      setDecision(data['content']['decision']);
-      setDecisionHistory(data['content']['decision_history']);
-      setStrategy(data['content']['strategy']);
-      setAccountSummary(data['content']['account_summary']);
     });
 
     newSocket.on('disconnected', () => {
@@ -54,11 +84,22 @@ const AutoTrader = () => {
       setStrategyStarted(false);
     });
 
-    newSocket.on('pong', (data: any) => {
+    newSocket.on('pong', (data: ExtendedTraderResponse) => {
       console.log('Pong', data);
-      setDecision(data['content']['decision']);
-      setStrategy(data['content']['strategy']);
-      setAccountSummary(data['content']['account_summary']);
+      setDecision(data['decision'] as TradingDecision);
+      setStrategy(data['strategy']);
+      setAccountSummary(data['account_summary']);
+      if (data['backtest']) {
+        setBacktestData(data['backtest']);
+        // Update decision history from backtest data
+        const history = data['backtest'].map((snapshot, index) => ({
+          id: index,
+          decision: snapshot.decision,
+          created: snapshot.current_time,
+          updated: snapshot.current_time
+        }));
+        setDecisionHistory(history);
+      }
     });
 
     return () => {
@@ -83,22 +124,22 @@ const AutoTrader = () => {
     };
   }, [socket, strategyStarted]);
 
-  const getDecisionColor = (decision: string) => {
+  const getDecisionColor = (decision: TradingDecision | null): string => {
     switch(decision) {
-      case 'BUY': return 'bg-green-100 hover:bg-green-200 text-green-800';
-      case 'SELL': return 'bg-red-100 hover:bg-red-200 text-red-800';
+      case 'LONG': return 'bg-green-100 hover:bg-green-200 text-green-800';
+      case 'SHORT': return 'bg-red-100 hover:bg-red-200 text-red-800';
       case 'STAY': return 'bg-blue-100 hover:bg-blue-200 text-blue-800';
+      case 'EXIT': return 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800';
       default: return 'bg-gray-100 hover:bg-gray-200 text-gray-800';
     }
   };
 
-  const getDecisionIcon = (decision: string) => {
+  const getDecisionIcon = (decision: TradingDecision | null) => {
     switch(decision) {
-      case 'BUY': return <ArrowUpCircle className="h-10 w-10 text-green-500" />;
-      case 'SELL': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
+      case 'LONG': return <ArrowUpCircle className="h-10 w-10 text-green-500" />;
+      case 'SHORT': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
       case 'STAY': return <MinusCircle className="h-10 w-10 text-blue-500" />;
-      case 'EXITLONG': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
-      case 'EXITSHORT': return <ArrowUpCircle className="h-10 w-10 text-green-500" />;
+      case 'EXIT': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
       default: return null;
     }
   };
@@ -110,6 +151,29 @@ const AutoTrader = () => {
       </div>
     )
   }
+
+  const executed_order_columns = [
+    {
+      header: 'Symbol',
+      accessorKey: 'contract.symbol',
+    },
+    {
+      header: 'Security Type',
+      accessorKey: 'contract.secType',
+    },
+    {
+      header: 'Currency',
+      accessorKey: 'contract.currency',
+    },
+    {
+      header: 'Order Status',
+      accessorKey: 'orderStatus.status',
+    },
+    {
+      header: 'Average Fill Price',
+      accessorKey: 'orderStatus.avgFillPrice',
+    }
+  ]
 
   if (strategyStarted) {
     return (
@@ -150,48 +214,92 @@ const AutoTrader = () => {
                         <h2 className="text-lg font-semibold text-foreground">Strategy Details</h2>
                       </div>
                       {strategy && strategy.params ? (
-                        <div className='space-y-4'>
-                          <div className='flex justify-between items-center p-3 bg-muted rounded-lg'>
-                            <span className='text-muted-foreground'>Strategy Name</span>
-                            <span className='font-bold text-primary'>{strategy.params.name || 'Ichimogu Base'}</span>
+                        <div className='gap-4 flex flex-col'>
+                          {/* Strategy Name */}
+                          <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                            <div className='flex items-center gap-2 text-muted-foreground'>
+                              <Settings className="h-4 w-4" />
+                              <span className='text-sm'>Strategy Name</span>
+                            </div>
+                            <span className='font-bold text-lg text-primary'>
+                              {strategy.name || 'Ichimoku Base'}
+                            </span>
                           </div>
-                          <div className='flex justify-between items-center p-3 bg-muted rounded-lg'>
-                            <span className='text-muted-foreground'>Contracts</span>
-                            <div className='flex gap-2'>
-                              {strategy.params.contracts.map((contract: any) => (
-                                <span key={contract.symbol} className='font-bold text-foreground'>{contract.symbol}</span>
+
+                          {/* Contracts */}
+                          <div className='space-y-3'>
+                            <div className='flex items-center gap-2 text-muted-foreground'>
+                              <Activity className="h-4 w-4" />
+                              <span className='text-sm font-medium'>Trading Contracts</span>
+                            </div>
+                            <div className='grid grid-cols-2 gap-3'>
+                              {strategy.params.contracts.map((contractData: ContractData) => (
+                                <div key={contractData.symbol} className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                  <div className='flex items-center gap-2 text-muted-foreground'>
+                                    <Target className="h-4 w-4" />
+                                    <span className='text-sm'>Contract</span>
+                                  </div>
+                                  <span className='font-bold text-lg text-foreground'>
+                                    {contractData.symbol}
+                                  </span>
+                                </div>
                               ))}
                             </div>
                           </div>
-                          <div className='flex justify-between items-center p-3 bg-muted rounded-lg'>
-                            <span className='text-muted-foreground'>Tenkan</span>
-                            <span className={`font-bold text-foreground`}>
-                              {strategy.params.tenkan}
-                            </span>
-                          </div>
-                          <div className='flex justify-between items-center p-3 bg-muted rounded-lg'>
-                            <span className='text-muted-foreground'>Kijun</span>
-                            <span className={`font-bold text-foreground`}>
-                              {strategy.params.kijun}
-                            </span>
-                          </div>
-                          <div className='flex justify-between items-center p-3 bg-muted rounded-lg'>
-                            <span className='text-muted-foreground'>PSAR MES</span>
-                            <span className={`font-bold text-foreground`}>
-                              {strategy.params.psar_mes.length > 0 ? strategy.params.psar_mes[strategy.params.psar_mes.length - 1].toFixed(2) : ''}
-                            </span>
-                          </div>
-                          <div className='flex justify-between items-center p-3 bg-muted rounded-lg'>
-                            <span className='text-muted-foreground'>PSAR MYM</span>
-                            <span className={`font-bold text-foreground`}>
-                              {strategy.params.psar_mym.length > 0 ? strategy.params.psar_mym[strategy.params.psar_mym.length - 1].toFixed(2) : ''}
-                            </span>
-                          </div>
-                          <div className='flex justify-between items-center p-3 bg-muted rounded-lg'>
-                            <span className='text-muted-foreground'>Number of Contracts</span>
-                            <span className={`font-bold text-foreground`}>
-                              {strategy.params.number_of_contracts}
-                            </span>
+
+                          {/* Strategy Parameters */}
+                          <div className='space-y-3'>
+                            <div className='flex items-center gap-2 text-muted-foreground'>
+                              <BarChart3 className="h-4 w-4" />
+                              <span className='text-sm font-medium'>Strategy Parameters</span>
+                            </div>
+                            <div className='grid grid-cols-2 gap-4'>
+                              <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                <div className='flex items-center gap-2 text-muted-foreground'>
+                                  <TrendingUp className="h-4 w-4" />
+                                  <span className='text-sm'>Tenkan</span>
+                                </div>
+                                <span className='font-bold text-lg text-foreground'>
+                                  {strategy.params.tenkan}
+                                </span>
+                              </div>
+                              <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                <div className='flex items-center gap-2 text-muted-foreground'>
+                                  <Activity className="h-4 w-4" />
+                                  <span className='text-sm'>Kijun</span>
+                                </div>
+                                <span className='font-bold text-lg text-foreground'>
+                                  {strategy.params.kijun}
+                                </span>
+                              </div>
+                              <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                <div className='flex items-center gap-2 text-muted-foreground'>
+                                  <Zap className="h-4 w-4" />
+                                  <span className='text-sm'>PSAR MES</span>
+                                </div>
+                                <span className='font-bold text-lg text-foreground'>
+                                  {strategy.params.psar_mes.length > 0 ? strategy.params.psar_mes[strategy.params.psar_mes.length - 1].toFixed(2) : 'N/A'}
+                                </span>
+                              </div>
+                              <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                <div className='flex items-center gap-2 text-muted-foreground'>
+                                  <Zap className="h-4 w-4" />
+                                  <span className='text-sm'>PSAR MYM</span>
+                                </div>
+                                <span className='font-bold text-lg text-foreground'>
+                                  {strategy.params.psar_mym.length > 0 ? strategy.params.psar_mym[strategy.params.psar_mym.length - 1].toFixed(2) : 'N/A'}
+                                </span>
+                              </div>
+                              <div className='flex w-full flex-col p-4 bg-muted rounded-lg col-span-2'>
+                                <div className='flex items-center gap-2 text-muted-foreground'>
+                                  <Hash className="h-4 w-4" />
+                                  <span className='text-sm'>Number of Contracts</span>
+                                </div>
+                                <span className='font-bold text-lg text-foreground'>
+                                  {strategy.params.number_of_contracts}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       ) : (
@@ -207,49 +315,73 @@ const AutoTrader = () => {
                         <TrendingUp className="h-5 w-5 mr-2 text-primary" />
                         <h2 className="text-lg font-semibold text-foreground">Last Market Data</h2>
                       </div>
-                      {strategy && strategy.params && strategy.params.historical_data ? (
+                      {strategy && strategy.params && strategy.params.contracts.length > 0 ? (
                         <div className='w-full flex flex-col gap-4'>
-                          {Object.entries(strategy.params.historical_data).map(([symbol, data]: [string, any]) => (
-                            <div key={symbol} className='w-full'>
-                              <span className='text-sm font-semibold text-foreground mb-2 block'>{symbol}</span>
+                          {strategy.params.contracts.map((contractData: ContractData) => (
+                            <div key={contractData.symbol} className='w-full'>
+                              <div className='flex items-center gap-2 mb-3'>
+                                <Activity className="h-4 w-4 text-primary" />
+                                <span className='text-sm font-semibold text-foreground'>{contractData.symbol}</span>
+                                <span className='text-xs text-muted-foreground'>
+                                  ({contractData.data_points} data points)
+                                </span>
+                              </div>
                               <div className='grid grid-cols-2 gap-4'>
-                                <div className='flex h-20 w-full flex-col p-4 bg-muted rounded-lg'>
-                                  <div className='flex items-center gap-2 mb-1 text-muted-foreground'>
+                                <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                  <div className='flex items-center gap-2 text-muted-foreground'>
                                     <ArrowUpCircle className="h-4 w-4" />
                                     <span className='text-sm'>Open</span>
                                   </div>
                                   <span className='font-bold text-lg text-foreground'>
-                                    {data.length > 0 ? data[data.length - 1].open : 'Data not available'}
+                                    {contractData.has_data && contractData.data.length > 0 
+                                      ? contractData.data[contractData.data.length - 1].open.toFixed(2) 
+                                      : 'No data'
+                                    }
                                   </span>
                                 </div>
-                                <div className='flex h-20 w-full flex-col p-4 bg-muted rounded-lg'>
-                                  <div className='flex items-center gap-2 mb-1 text-muted-foreground'>
+                                <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                  <div className='flex items-center gap-2 text-muted-foreground'>
                                     <TrendingUp className="h-4 w-4" />
                                     <span className='text-sm'>High</span>
                                   </div>
                                   <span className='font-bold text-lg text-green-500'>
-                                    {data.length > 0 ? data[data.length - 1].high : 'Data not available'}
+                                    {contractData.has_data && contractData.data.length > 0 
+                                      ? contractData.data[contractData.data.length - 1].high.toFixed(2) 
+                                      : 'No data'
+                                    }
                                   </span>
                                 </div>
-                                <div className='flex h-20 w-full flex-col p-4 bg-muted rounded-lg'>
-                                  <div className='flex items-center gap-2 mb-1 text-muted-foreground'>
+                                <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                  <div className='flex items-center gap-2 text-muted-foreground'>
                                     <ArrowDownCircle className="h-4 w-4" />
                                     <span className='text-sm'>Low</span>
                                   </div>
                                   <span className='font-bold text-lg text-red-500'>
-                                    {data.length > 0 ? data[data.length - 1].low : 'Data not available'}
+                                    {contractData.has_data && contractData.data.length > 0 
+                                      ? contractData.data[contractData.data.length - 1].low.toFixed(2) 
+                                      : 'No data'
+                                    }
                                   </span>
                                 </div>
-                                <div className='flex h-20 w-full flex-col p-4 bg-muted rounded-lg'>
-                                  <div className='flex items-center gap-2 mb-1 text-muted-foreground'>
+                                <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                  <div className='flex items-center gap-2 text-muted-foreground'>
                                     <MinusCircle className="h-4 w-4" />
                                     <span className='text-sm'>Close</span>
                                   </div>
                                   <span className='font-bold text-lg text-foreground'>
-                                    {data.length > 0 ? data[data.length - 1].close : 'Data not available'}
+                                    {contractData.has_data && contractData.data.length > 0 
+                                      ? contractData.data[contractData.data.length - 1].close.toFixed(2) 
+                                      : 'No data'
+                                    }
                                   </span>
                                 </div>
                               </div>
+                              {contractData.has_data && contractData.data.length > 0 && (
+                                <div className='mt-3 flex items-center gap-4 text-xs text-muted-foreground'>
+                                  <span>Volume: {contractData.data[contractData.data.length - 1].volume || 'N/A'}</span>
+                                  <span>Date: {contractData.data[contractData.data.length - 1].date}</span>
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -270,16 +402,16 @@ const AutoTrader = () => {
                         <div className='grid grid-cols-2 md:grid-cols-2 gap-4'>
                           {[
                             { tag: 'BuyingPower', icon: <DollarSign className="h-4 w-4" /> },
-                            { tag: 'BuyingPower', icon: <DollarSign className="h-4 w-4" /> },
-                            { tag: 'BuyingPower', icon: <DollarSign className="h-4 w-4" /> },
-                            { tag: 'BuyingPower', icon: <DollarSign className="h-4 w-4" /> },
+                            { tag: 'NetLiquidation', icon: <DollarSign className="h-4 w-4" /> },
+                            { tag: 'TotalCashValue', icon: <DollarSign className="h-4 w-4" /> },
+                            { tag: 'AvailableFunds', icon: <DollarSign className="h-4 w-4" /> },
                             { tag: 'UnrealizedPnL', icon: <TrendingUp className="h-4 w-4" /> },
                             { tag: 'RealizedPnL', icon: <TrendingUp className="h-4 w-4" /> },
                           ].map((item) => {
-                            const summary = accountSummary.find((s: any) => s.tag === item.tag);
+                            const summary = accountSummary.find((s: AccountSummaryItem) => s.tag === item.tag);
                             return summary ? (
                               <div key={item.tag} className='flex h-20 w-full flex-col p-4 bg-muted rounded-lg'>
-                                <div className='flex items-center gap-2 mb-1 text-muted-foreground'>
+                                <div className='flex items-center gap-2 text-muted-foreground'>
                                   {item.icon}
                                   <span className='text-sm'>{item.tag}</span>
                                 </div>
@@ -313,7 +445,7 @@ const AutoTrader = () => {
                       </div>
                       {strategy && strategy.params && strategy.params.open_orders ? (
                         <div className="overflow-x-auto w-full">
-                          <DataTable data={strategy.params.open_orders || []} />
+                          <DataTable<OrderData> data={strategy.params.open_orders || []} />
                         </div>
                       ) : (
                         <LoadingComponent className='w-full h-full'/>
@@ -330,7 +462,7 @@ const AutoTrader = () => {
                       </div>
                       {strategy && strategy.params && strategy.params.positions ? (
                         <div className="overflow-x-auto w-full">
-                          <DataTable data={strategy.params.positions || []} />
+                          <DataTable<PositionData> data={strategy.params.positions || []} />
                         </div>
                       ) : (
                         <LoadingComponent className='w-full h-full'/>
@@ -347,7 +479,8 @@ const AutoTrader = () => {
                       </div>
                       {strategy && strategy.params && strategy.params.executed_orders ? (
                         <div className="overflow-x-auto w-full">
-                          <DataTable 
+                          <DataTable<OrderData>
+                            columns={executed_order_columns as ColumnDefinition<OrderData>[]}
                             data={strategy.params.executed_orders || []} 
                             enablePagination 
                             pageSize={5}
@@ -362,17 +495,21 @@ const AutoTrader = () => {
               </TabsContent>
 
               <TabsContent value="chart" className="mt-0">
-                {strategy && strategy.params && strategy.params.historical_data ? (
-                  <div className="rounded-lg p-4 bg-background">
-                    <h2 className="text-lg font-semibold text-foreground mb-4">Historical Data Analysis</h2>
-                    <Chart 
-                      data={strategy.params.historical_data}
-                      indicators={[
-                        strategy.params.psar_mes,
-                        strategy.params.psar_mym
-                      ]}
-                      decisionHistory={decisionHistory}
-                    />
+                {strategy && strategy.params && strategy.params.contracts ? (
+                  <div className="rounded-lg p-4 bg-background space-y-6">
+                    <h2 className="text-lg font-semibold text-foreground">Historical Data Analysis</h2>
+                    {strategy.params.contracts.map((contract, index) => {
+                      const indicator = index === 0 ? strategy.params.psar_mes || [] : strategy.params.psar_mym || [];
+                      return (
+                        <TraderChart
+                          key={contract.symbol}
+                          contract={contract}
+                          indicator={indicator}
+                          decisions={decisionHistory}
+                          title={`${contract.symbol} Trading Chart`}
+                        />
+                      );
+                    })}
                   </div>
                 ) : (
                   <LoadingComponent className='w-full h-[600px]'/>
@@ -380,9 +517,11 @@ const AutoTrader = () => {
               </TabsContent>
 
               <TabsContent value="backtest" className="mt-0">
-                <div className="rounded-lg p-4 bg-background">
-                  <Backtest />
-                </div>
+                {strategy && strategy.params && strategy.params.contracts ? (
+                  <Backtest backtestData={backtestData} strategy={strategy} decisionHistory={decisionHistory} />
+                ) : (
+                  <LoadingComponent className='w-full h-[600px]'/>
+                )}
               </TabsContent>
             </Tabs>
           </div>
