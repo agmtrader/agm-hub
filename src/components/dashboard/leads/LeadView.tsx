@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { FollowUp, FollowUpPayload, Lead } from '@/lib/entities/lead'
 import {
   Dialog,
@@ -19,6 +20,8 @@ import { Contact } from '@/lib/entities/contact'
 import GenerateApplicationLink from './GenerateApplicationLink'
 import ContactCard from '../contacts/ContactCard'
 import { UpdateLeadFollowUpByID } from '@/utils/entities/lead'
+import { formatURL } from '@/utils/language/lang'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface LeadViewProps {
   lead: Lead |  null
@@ -33,6 +36,8 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
 
   const contact = contacts.find(c => c.id === lead?.contact_id)
   const referrer = contacts.find(c => c.id === lead?.referrer_id)
+
+  const { lang } = useTranslationProvider()
 
   async function handleCompleteFollowUp(followUp: FollowUpPayload) {
     if (!lead) return
@@ -73,6 +78,22 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
               </Badge>
               <Badge variant={lead.status === 'Applied' ? 'success' : 'outline'} className="text-sm"> {lead.status} </Badge>
             </div>
+
+            {/* Application Information */}
+            {lead.application_id && (
+              <Card className="p-6 space-y-4">
+                <h3 className="text-lg font-semibold">Application Information</h3>
+                <div>
+                  <p className="text-foreground font-medium text-md">Application ID</p>
+                  <Link 
+                    href={formatURL(`/dashboard/applications/${lead.application_id}`, lang)}
+                    className="text-primary hover:text-primary/80 underline text-sm transition-colors"
+                  >
+                    {lead.application_id}
+                  </Link>
+                </div>
+              </Card>
+            )}
 
             {/* Basic Information */}
             <ContactCard contact={contact} />

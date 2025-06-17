@@ -21,6 +21,8 @@ import { CreateApplication } from '@/utils/entities/application'
 import DocumentsStep from './DocumentsStep'
 import { Button } from '@/components/ui/button'
 import LoaderButton from '@/components/misc/LoaderButton'
+import { UpdateLeadByID } from '@/utils/entities/lead'
+import { formatTimestamp } from '@/utils/dates'
 
 enum FormStep {
   ACCOUNT_HOLDER_INFO = 0,
@@ -71,8 +73,12 @@ const IBKRApplicationForm = () => {
         id: ""
       }
 
-      const application = await CreateApplication(internalApplication);
-      console.log('Application created:', application);
+      const createResponse = await CreateApplication(internalApplication);
+      console.log('Application created:', createResponse);
+
+      if (lead_id) {
+        await UpdateLeadByID(lead_id, { application_id: createResponse.id, application_date: formatTimestamp(new Date()) });
+      }
       
       toast({
         title: "Application Submitted",

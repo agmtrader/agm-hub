@@ -135,6 +135,22 @@ const LeadsPage = () => {
           </Badge>
         )
       }
+    },
+    {
+      header: 'Application',
+      accessorKey: 'application_id',
+      cell: ({ row }: any) => {
+        if (!row.original.application_id) return '-'
+        return row.original.application_id ? 'Yes' : 'No'
+      }
+    },
+    {
+      header: 'Application Date',
+      accessorKey: 'application_date',
+      cell: ({ row }: any) => {
+        if (!row.original.application_date) return '-'
+        return formatDateFromTimestamp(row.original.application_date)
+      }
     }
   ] as ColumnDefinition<Lead>[]
 

@@ -2,9 +2,13 @@ import { accessAPI } from "../api"
 import { Application, InternalApplication } from "../../lib/entities/application"
 import { POADocumentInfo } from "../../lib/entities/document"
 
-export async function CreateApplication(application: InternalApplication): Promise<Application> {
-    const response: Application = await accessAPI('/applications/create', 'POST', { 'application': application })
-    return response
+export interface IDResponse {
+    id: string
+}
+
+export async function CreateApplication(application: InternalApplication): Promise<IDResponse> {
+    const createResponse: IDResponse = await accessAPI('/applications/create', 'POST', { 'application': application })
+    return createResponse
 }
 
 export async function ReadApplications(): Promise<InternalApplication[]> {
@@ -28,7 +32,7 @@ export async function SendApplicationToIBKR(application: Application) {
     return response
 }
 
-export async function UploadApplicationPOADocument(file: any, documentInfo: POADocumentInfo, userID: string, applicationID: string) {
-    const poaID = await accessAPI('/applications/upload_poa', 'POST', {'f': file, 'document_info': documentInfo, 'user_id': userID, 'application_id': applicationID})
+export async function UploadApplicationPOADocument(file: any, documentInfo: POADocumentInfo, userID: string, applicationID: string): Promise<IDResponse> {
+    const poaID: IDResponse = await accessAPI('/applications/upload_poa', 'POST', {'f': file, 'document_info': documentInfo, 'user_id': userID, 'application_id': applicationID})
     return poaID
 }

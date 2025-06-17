@@ -2,10 +2,11 @@ import { Lead, LeadPayload } from "@/lib/entities/lead"
 import { FollowUpPayload } from "@/lib/entities/lead"
 import { accessAPI } from "../api"
 import { FollowUp } from "@/lib/entities/lead"
+import { IDResponse } from "./application"
 
-export async function CreateLead(lead:LeadPayload, follow_ups:FollowUpPayload[]) {
-    let lead_id = await accessAPI('/leads/create', 'POST', {'lead': lead, 'follow_ups': follow_ups})
-    return lead_id
+export async function CreateLead(lead:LeadPayload, follow_ups:FollowUpPayload[]): Promise<IDResponse> {
+    const createResponse: IDResponse = await accessAPI('/leads/create', 'POST', {'lead': lead, 'follow_ups': follow_ups})
+    return createResponse
 }
 
 export async function ReadLeads() {
@@ -23,17 +24,17 @@ export async function ReadLeadByID(leadID:string) {
     return leadsWithFollowUps
 }
 
-export async function UpdateLeadByID(leadID:string, data:any) {
-    let lead_response = await accessAPI('/leads/update', 'POST', {'query': {'id': leadID}, 'data': data})
-    return lead_response
+export async function UpdateLeadByID(leadID:string, lead:any): Promise<IDResponse> {
+    let updateResponse: IDResponse = await accessAPI('/leads/update', 'POST', {'query': {'id': leadID}, 'lead': lead})
+    return updateResponse
 }
 
-export async function UpdateLeadFollowUpByID(leadID:string, followUp:FollowUpPayload) {
-    let lead_response = await accessAPI('/leads/update_follow_up', 'POST', {'lead_id': leadID, 'follow_up': followUp})
-    return lead_response
+export async function UpdateLeadFollowUpByID(leadID:string, followUp:FollowUpPayload): Promise<IDResponse> {
+    let updateResponse: IDResponse = await accessAPI('/leads/update_follow_up', 'POST', {'lead_id': leadID, 'follow_up': followUp})
+    return updateResponse
 }
 
-export async function DeleteLeadByID(leadID:string) {
-    let lead_response = await accessAPI('/leads/delete', 'POST', {'query': {'id': leadID}})
-    return lead_response
+export async function DeleteLeadByID(leadID:string): Promise<IDResponse> {
+    let deleteResponse: IDResponse = await accessAPI('/leads/delete', 'POST', {'query': {'id': leadID}})
+    return deleteResponse
 }
