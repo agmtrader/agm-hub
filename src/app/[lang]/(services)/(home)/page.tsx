@@ -60,9 +60,8 @@ export default function Home() {
         ]
       }
     ],
-    ctaText: t('agm-technology.introduction.action_text'),
-    ctaSubtext: t('agm-technology.introduction.action_subtext'),
-    ctaLink: '/apply'
+    actionText: t('agm-technology.introduction.action_text'),
+    ctaLink: '/requirements'
   };
 
   const services = [

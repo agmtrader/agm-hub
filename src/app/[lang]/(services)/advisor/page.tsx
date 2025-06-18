@@ -57,8 +57,7 @@ export default function Home() {
         ]
       }
     ],
-    ctaText: t('agm-advisor.introduction.cta_text'),
-    ctaSubtext: t('agm-advisor.introduction.cta_subtext'),
+    actionText: t('agm-advisor.introduction.action_text'),
     ctaLink: '/apply/risk'
   }
 

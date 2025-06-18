@@ -4,75 +4,33 @@ import { IoLogoApple } from "react-icons/io5";
 export type DownloadOption = {
   os: string;
   icon: typeof FaWindows;
-  versions: {
-    arch: string;
-    url: string;
-    recommended?: boolean;
-  }[];
+  download_url: string;
 };
 
-export const downloads: DownloadOption[] = [
+export const AGMTraderProDownloads: DownloadOption[] = [
   {
     os: 'Windows',
     icon: FaWindows,
-    versions: [
-      {
-        arch: '64-bit',
-        url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-windows-x64.exe',
-        recommended: true,
-      },
-      {
-        arch: '32-bit',
-        url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-windows-x86.exe',
-      },
-    ],
+    download_url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-windows-x64.exe',
   },
   {
     os: 'macOS',
     icon: FaApple,
-    versions: [
-      {
-        arch: '64-bit',
-        url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-macosx-x64.dmg',
-        recommended: true,
-      },
-    ],
+    download_url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-macosx-x64.dmg',
   },
   {
     os: 'Linux',
     icon: FaLinux,
-    versions: [
-      {
-        arch: '64-bit',
-        url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-linux-x64.sh',
-        recommended: true,
-      },
-      {
-        arch: '32-bit',
-        url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-linux-x86.sh',
-      },
-    ],
+    download_url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-linux-x64.sh',
   },
   {
     os: 'iOS',
     icon: IoLogoApple,
-    versions: [
-      {
-        arch: 'App Store',
-        url: 'https://apps.apple.com/cr/app/agm-trader/id1550920894', // Placeholder for iOS App Store link
-        recommended: true,
-      },
-    ],
+    download_url: 'https://apps.apple.com/cr/app/agm-trader/id1550920894',
   },
   {
     os: 'Android',
     icon: FaAndroid,
-    versions: [
-      {
-        arch: 'Play Store',
-        url: 'https://play.google.com/store/apps/details?id=com.clientam.agm.app&hl=en&pli=1', // Placeholder for Play Store link
-        recommended: true,
-      },
-    ],
+    download_url: 'https://play.google.com/store/apps/details?id=com.clientam.agm.app&hl=en&pli=1',
   },
 ]; 

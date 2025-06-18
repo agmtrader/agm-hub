@@ -16,6 +16,7 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
+import { FaLinkedin } from "react-icons/fa";
 
 export function TeamCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -36,43 +37,50 @@ export function TeamCarousel() {
       name: 'Hernán Castro',
       title: t('shared.team.team_carousel.hernan_title'),
       description: t('shared.team.team_carousel.hernan_description'),
-      avatar: '/assets/team/vector/hernan.png'
+      avatar: '/assets/team/vector/hernan.png',
+      linkedin: 'https://www.linkedin.com/in/hernan-castro-b87a9a13/'
     },
     {
       name: 'Ramón Castro',
       title: t('shared.team.team_carousel.ramon_title'),
       description: t('shared.team.team_carousel.ramon_description'),
-      avatar: '/assets/team/vector/ramon.png'
+      avatar: '/assets/team/vector/ramon.png',
+      linkedin: 'https://www.linkedin.com/in/ramon-castro-marin-3a648b1a2/'
     },
     {
       name: 'Cristian Ramirez',
       title: t('shared.team.team_carousel.cristian_title'),
       description: t('shared.team.team_carousel.cristian_description'),
-      avatar: '/assets/team/vector/cristian.png'
+      avatar: '/assets/team/vector/cristian.png',
+      linkedin: 'https://www.linkedin.com/in/cristian-ramírez-fernández-560b0375/'
     },
     {
       name: 'Javier Cordero',
       title: t('shared.team.team_carousel.javier_title'),
       description: t('shared.team.team_carousel.javier_description'),
-      avatar: '/assets/team/vector/javier.png'
+      avatar: '/assets/team/vector/javier.png',
+      linkedin: 'https://www.linkedin.com/in/javier-cordero-b70000100/'
     },
     {
       name: 'María José Castro',
       title: t('shared.team.team_carousel.maria_jose_title'),
       description: t('shared.team.team_carousel.maria_jose_description'),
-      avatar: '/assets/team/vector/maria_jose.png'
+      avatar: '/assets/team/vector/maria_jose.png',
+      linkedin: 'https://www.linkedin.com/in/maria-jose-castro-hernandez-592126265/'
     },
     {
       name: 'Andrés Aguilar',
       title: t('shared.team.team_carousel.andres_title'),
       description: t('shared.team.team_carousel.andres_description'),
-      avatar: '/assets/team/vector/andres.png'
+      avatar: '/assets/team/vector/andres.png',
+      linkedin: 'https://www.linkedin.com/in/aguilarcarboni/'
     },
     {
       name: 'Ramón Castro Jr',
       title: t('shared.team.team_carousel.ramon_jr_title'),
       description: t('shared.team.team_carousel.ramon_jr_description'),
-      avatar: '/assets/team/vector/ramonjr.png'
+      avatar: '/assets/team/vector/ramonjr.png',
+      linkedin: 'https://www.linkedin.com/in/ramon-castro-marin-3a648b1a2/'
     }
   ]
 
@@ -127,6 +135,14 @@ export function TeamCarousel() {
                             >
                               {member.description}
                             </motion.p>
+                          </div>
+                          <div className="mt-6 flex justify-center">
+                            <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
+                              <Button className="w-full">
+                                <FaLinkedin className="h-4 w-4 mr-2" />
+                                {t('shared.team.team_carousel.linkedin')}
+                              </Button>
+                            </a>
                           </div>
                         </motion.div>
                       </DialogContent>

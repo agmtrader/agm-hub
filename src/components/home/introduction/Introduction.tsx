@@ -25,12 +25,11 @@ interface IntroductionProps {
     description: string;
     items: { icon: React.ReactNode; label: string }[];
   }[];
-  ctaText: string;
-  ctaSubtext: string;
+  actionText: string;
   ctaLink: string;
 }
 
-export const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, ctaText, ctaSubtext, ctaLink }) => {
+export const Introduction: React.FC<IntroductionProps> = ({ title, description, cards, actionText, ctaLink }) => {
   const { lang } = useTranslationProvider()
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -99,7 +98,7 @@ export const Introduction: React.FC<IntroductionProps> = ({ title, description, 
                           <TooltipProvider delayDuration={100}>
                             <Tooltip>
                               <TooltipTrigger>
-                                <div className="bg-agm-blue text-primary p-2 rounded-full flex items-center justify-center">
+                                <div className="text-primary p-2 rounded-full flex items-center justify-center">
                                   {item.icon}
                                 </div>
                               </TooltipTrigger>
@@ -117,21 +116,19 @@ export const Introduction: React.FC<IntroductionProps> = ({ title, description, 
             </motion.div>
           ))}
         </div>
-        <motion.div variants={itemVariants} className='w-full flex justify-center items-center'>
+        <motion.div variants={itemVariants} className='w-full flex flex-col gap-y-2 justify-center items-center'>
           <Link href={formatURL(ctaLink, lang)} target="_blank" rel="noopener noreferrer">
-            <Button className="h-fit w-fit flex flex-col p-2 py-10">
-              <span className='text-lg font-semibold'>{ctaText}</span>
-              <span className='text-sm'>{ctaSubtext}</span>
+            <Button className="h-fit w-fit flex flex-col p-4 gap-y-2">
+              <span className='text-md font-semibold'>{actionText}</span>
             </Button>
           </Link>
         </motion.div>
       </div>
-      {/* {phone && <Iphone15Pro className='h-[40rem]' style={{ transform: 'perspective(1000px) rotateY(-15deg) rotateZ(0deg)' }} />} */}
     </motion.div>
   )
 }
 
-export const TraderIntroduction: React.FC<IntroductionProps> = ({ title, description, cards, ctaText, ctaSubtext, ctaLink }) => {
+export const TraderIntroduction: React.FC<IntroductionProps> = ({ title, description, cards, actionText, ctaLink }) => {
   const { lang } = useTranslationProvider()
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -239,11 +236,10 @@ export const TraderIntroduction: React.FC<IntroductionProps> = ({ title, descrip
             </motion.div>
           ))}
         </div>
-        <motion.div variants={itemVariants} className='w-full flex justify-center items-center'>
-          <Link href={formatURL(ctaLink, lang)} target="_blank" rel="noopener noreferrer">
-            <Button className="h-fit w-fit flex flex-col p-2 py-10">
-              <span className='text-lg font-semibold'>{ctaText}</span>
-              <span className='text-sm'>{ctaSubtext}</span>
+        <motion.div variants={itemVariants} className='w-full flex flex-col gap-y-2 justify-center items-center'>
+          <Link href={formatURL(ctaLink, lang)}>
+            <Button className="h-fit w-fit flex flex-col p-4 gap-y-2">
+              <span className='text-md font-semibold'>{actionText}</span>
             </Button>
           </Link>
         </motion.div>

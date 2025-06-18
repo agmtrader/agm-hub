@@ -83,7 +83,7 @@ const Services = ({ services }: ServicesProps) => {
                         <span className='text-3xl font-bold'>{service.name}</span>
                       </div>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px] bg-background text-foreground flex flex-col gap-y-5 justify-center items-center">
+                    <DialogContent className="sm:max-w-[425px] bg-background text-foreground flex flex-col gap-y-5 text-center justify-center items-center">
                       <DialogHeader>
                         <DialogTitle>{service.name}</DialogTitle>
                       </DialogHeader>

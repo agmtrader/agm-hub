@@ -59,9 +59,8 @@ export default function Home() {
         ]
       }
     ],
-    ctaText: t('agm-institutional.introduction.cta_text'),
-    ctaSubtext: t('agm-institutional.introduction.cta_subtext'),
-    ctaLink: '/apply'
+    actionText: t('agm-institutional.introduction.action_text'),
+    ctaLink: '/requirements'
   }
 
   const services = [
