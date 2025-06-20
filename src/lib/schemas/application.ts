@@ -119,36 +119,6 @@ export const tax_residency_schema = z.object({
   tinType: z.enum(['SSN', 'EIN', 'NonUS_NationalId']),
 });
 
-// Nested Schemas for Application Structure
-export const account_holder_details_schema = z.object({
-  externalId: z.string().min(1, { message: 'External ID for account holder is required' }),
-  name: name_schema,
-  email: z.string().email({ message: 'Invalid email address' }),
-  residenceAddress: address_schema,
-  mailingAddress: address_schema.optional(),
-  sameMailAddress: z.boolean().optional(),
-  countryOfBirth: z.string().min(2, { message: 'Country of birth is required' }),
-  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date of birth must be YYYY-MM-DD' }),
-  gender: z.string().optional(), // e.g., MALE, FEMALE, OTHER
-  maritalStatus: z.string().optional(), // e.g., SINGLE, MARRIED, DIVORCED
-  numDependents: z.number().int().min(0).optional(),
-  phones: z.array(phone_schema).min(1, { message: 'At least one phone number is required' }),
-  identification: identification_schema, // This might need to be more specific based on individual vs org
-  employmentDetails: employment_details_schema.optional(),
-  isPEP: z.boolean().optional(), // Politically Exposed Person
-  isControlPerson: z.boolean().optional(),
-  employmentType: z.string().min(1, { message: 'Employment type is required' }),
-  taxResidencies: z.array(tax_residency_schema).optional(),
-  authorizedToSignOnBehalfOfOwner: z.boolean().optional(),
-  authorizedTrader: z.boolean().optional(),
-  usTaxResident: z.boolean().optional(),
-  ownershipPercentage: z.number().int().min(0).max(100).optional(),
-  titles: z.array(z.object({
-    value: z.string(),
-    code: z.string()
-  })).optional(),
-});
-
 export const financial_information_schema = z.object({
   investmentExperience: z.array(investment_experience_schema).min(1, { message: 'At least one investment experience is required' }),
   investmentObjectives: z.array(z.string()).min(1, { message: 'At least one investment objective is required' }),
@@ -163,25 +133,6 @@ export const financial_information_schema = z.object({
 export const regulatory_information_schema = z.object({
   regulatoryDetails: z.array(regulatory_detail_schema).min(1, { message: 'At least one regulatory detail is required' }),
   // other regulatory fields if any
-});
-
-export const individual_applicant_schema = z.object({
-  accountHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'Account holder details are required' }),
-  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }),
-  regulatoryInformation: z.array(regulatory_information_schema).min(1, { message: 'Regulatory information is required' }),
-});
-
-// Main Schemas
-export const customer_schema = z.object({
-  accountHolder: individual_applicant_schema, // Assuming INDIVIDUAL for now, can be a union for other types
-  externalId: z.string().min(1, { message: 'Customer external ID is required' }),
-  type: z.enum(['INDIVIDUAL', 'JOINT', 'TRUST', 'ORG']), // Add other types as needed
-  prefix: z.string().min(3, { message: 'Customer prefix is required and must be at least 3 characters' }).max(6, { message: 'Customer prefix must be at most 6 characters' }),
-  email: z.string().email({ message: 'Invalid customer email address' }),
-  mdStatusNonPro: z.boolean().optional().default(true),
-  meetAmlStandard: z.string().optional().default('true'), // IBKR uses string 'true'/'false'
-  directTradingAccess: z.boolean().optional().default(true),
-  legalResidenceCountry: z.string().min(2, { message: 'Legal residence country is required' }),
 });
 
 export const account_schema = z.object({
@@ -234,21 +185,80 @@ export const local_tax_form_schema = z.object({
 
 export const w8ben_schema = z.object({
   localTaxForms: z.array(local_tax_form_schema),
-  name: z.string(),
-  tin: z.string(),
-  foreignTaxId: z.string(),
-  tinOrExplanationRequired: z.boolean(),
-  explanation: z.string(),
-  referenceNumber: z.number(),
-  part29ACountry: z.string(),
-  cert: z.boolean(),
-  signatureType: z.string(),
-  blankForm: z.boolean(),
-  taxFormFile: z.string(),
-  proprietaryFormNumber: z.number(),
-  electronicFormat: z.boolean(),
-  submitDate: z.string(),
+  name: z.string().optional(),
+  tin: z.string().optional(),
+  foreignTaxId: z.string().optional(),
+  tinOrExplanationRequired: z.boolean().optional(),
+  explanation: z.string().optional(),
+  referenceNumber: z.number().optional(),
+  part29ACountry: z.string().optional(),
+  cert: z.boolean().optional(),
+  signatureType: z.string().optional(),
+  blankForm: z.boolean().optional(),
+  taxFormFile: z.string().optional(),
+  proprietaryFormNumber: z.number().optional(),
+  electronicFormat: z.boolean().optional(),
+  submitDate: z.string().optional(),
 })
+
+// Nested Schemas for Application Structure
+export const account_holder_details_schema = z.object({
+  externalId: z.string().min(1, { message: 'External ID for account holder is required' }),
+  name: name_schema,
+  email: z.string().email({ message: 'Invalid email address' }),
+  residenceAddress: address_schema,
+  mailingAddress: address_schema.optional(),
+  sameMailAddress: z.boolean().optional(),
+  countryOfBirth: z.string().min(2, { message: 'Country of birth is required' }),
+  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date of birth must be YYYY-MM-DD' }),
+  gender: z.string().optional(), // e.g., MALE, FEMALE, OTHER
+  maritalStatus: z.string().optional(), // e.g., SINGLE, MARRIED, DIVORCED
+  numDependents: z.number().int().min(0).optional(),
+  phones: z.array(phone_schema).min(1, { message: 'At least one phone number is required' }),
+  identification: identification_schema, // This might need to be more specific based on individual vs org
+  employmentDetails: employment_details_schema.optional(),
+  isPEP: z.boolean().optional(), // Politically Exposed Person
+  isControlPerson: z.boolean().optional(),
+  employmentType: z.string().min(1, { message: 'Employment type is required' }),
+  taxResidencies: z.array(tax_residency_schema).optional(),
+  w8Ben: w8ben_schema.optional(),
+  authorizedToSignOnBehalfOfOwner: z.boolean().optional(),
+  authorizedTrader: z.boolean().optional(),
+  usTaxResident: z.boolean().optional(),
+  ownershipPercentage: z.number().int().min(0).max(100).optional(),
+  titles: z.array(z.object({
+    value: z.string(),
+    code: z.string()
+  })).optional(),
+});
+
+export const individual_applicant_schema = z.object({
+  accountHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'Account holder details are required' }),
+  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }),
+  regulatoryInformation: z.array(regulatory_information_schema).min(1, { message: 'Regulatory information is required' }),
+});
+
+export const joint_applicant_schema = z.object({
+  accountHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'Account holder details are required' }),
+  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }),
+  regulatoryInformation: z.array(regulatory_information_schema).min(1, { message: 'Regulatory information is required' }),
+});
+
+// Main Schemas
+export const customer_schema = z.object({
+  accountHolder: individual_applicant_schema, // Assuming INDIVIDUAL for now, can be a union for other types
+  jointHolders: z.array(individual_applicant_schema).optional(),
+  externalId: z.string().min(1, { message: 'Customer external ID is required' }),
+  type: z.enum(['INDIVIDUAL', 'JOINT', 'TRUST', 'ORG']), // Add other types as needed
+  prefix: z.string().min(3, { message: 'Customer prefix is required and must be at least 3 characters' }).max(6, { message: 'Customer prefix must be at most 6 characters' }),
+  email: z.string().email({ message: 'Invalid customer email address' }),
+  mdStatusNonPro: z.boolean().optional().default(true),
+  meetAmlStandard: z.string().optional().default('true'), // IBKR uses string 'true'/'false'
+  directTradingAccess: z.boolean().optional().default(true),
+  legalResidenceCountry: z.string().min(2, { message: 'Legal residence country is required' }),
+});
+
+
 
 export const application_schema = z.object({
   customer: customer_schema,

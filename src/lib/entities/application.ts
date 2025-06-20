@@ -69,8 +69,8 @@ export interface InternalApplication {
 }
 
 const external_id = Math.random().toString(36).substring(2, 12)
-const user_name = "Andres"
-const user_last_names = "Aguilar Carboni"
+const user_name = "Javier"
+const user_last_names = "Cordero Sancho"
 const user_email = `${Math.random().toString(36).substring(2, 8)}@gmail.com`
 const prefix = `askjgn`
 
@@ -102,10 +102,10 @@ export const application: Application = {
                     },
                     "residenceAddress": {
                         "country": "CRI",
-                        "street1": "Calle San Miguel",
-                        "city": "La Union",
-                        "state": "CR-C",
-                        "postalCode": "000000"
+                        "street1": "Valle del Sol",
+                        "city": "San Jose",
+                        "state": "CR-SJ",
+                        "postalCode": "10301"
                     },
                     "phones": [
                         {
@@ -136,6 +136,18 @@ export const application: Application = {
                           "tinType": "NonUS_NationalId"
                         }
                     ],
+                    "w8Ben": {
+                        "localTaxForms": [],
+                        "name": user_name + " " + user_last_names,
+                        "foreignTaxId": "118490741",
+                        "tinOrExplanationRequired": true,
+                        "part29ACountry": "N/A",
+                        "cert": true,
+                        "signatureType": "Electronic",
+                        "blankForm": true,
+                        "taxFormFile": "Form5001.pdf",
+                        "electronicFormat": true,
+                    },
                     "gender": "M",
                     "sameMailAddress": true,
                     "titles": [
@@ -239,7 +251,7 @@ export const application: Application = {
     "documents":[
         {
             "signedBy": [
-                "Andres Aguilar Carboni"
+                "Javier Cordero Sancho"
             ],
             "attachedFile": {
                 "fileName": "Form5001.pdf",

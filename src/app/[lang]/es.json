@@ -20,7 +20,7 @@
             "action_text": "Solicitar una cuenta"
         },
         "introduction": {
-            "title": "Apoyando a los Inversionistas de Hoy para los Mercados del Mañana",
+            "title": "Apoyando a los inversionistas de hoy para los mercados del mañana",
             "description": "Desde 1995, AGM como Puesto de Bolsa Internacional ha facilitado el acceso directo a más de 150 mercados financieros (Bolsas de Valores) en EE.UU., Europa, Asia y América Latina que normalmente son inaccesibles para ciertos inversionistas.",
             "description_2": "AGM Technology ofrece servicios profesionales para maximizar sus rendimientos:",
             "action_text": "Ver requisitos para comenzar a invertir",
@@ -121,7 +121,7 @@
             "action_text": "Solicitar una cuenta"
         },
         "introduction": {
-            "title": "Tu Legado Importa.",
+            "title": "Su legado importa",
             "description": [
                 "AGM Advisor, nuestra firma de servicios de asesoría, proporciona estrategias de inversión de cartera individuales que están hechas a medida para cada cliente (Cuentas de Cartera Segregadas).",
                 "Cualquier cliente que desee delegar una parte de sus activos financieros o patrimonio a través de nuestra división de asesoría, recibe un servicio personalizado de uno de nuestros Asesores asignados. ¡Nos esforzamos por proporcionar un servicio de primera clase a cada uno de nuestros clientes de asesoría!",
@@ -603,6 +603,14 @@
         "requirements": {
             "title": "Requisitos para una cuenta AGM",
             "description": "Por favor asegurarse de cumplir con los siguientes requisitos para aplicar para una cuenta",
+            "optional_preparation": {
+                "title": "Preparación Opcional",
+                "risk_profile": {
+                    "title": "Completar Perfil de Riesgo",
+                    "description": "Completa tu perfil de riesgo de inversión para ayudarnos a entender mejor tus preferencias y objetivos de inversión.",
+                    "button": "Iniciar Perfil de Riesgo"
+                }
+            },
             "personal": {
                 "title": "Requisitos para cuentas Individuales",
                 "identity": {
@@ -727,7 +735,7 @@
                     }
                 }
             },
-            "submit": "Aplicar a una cuenta"
+            "submit": "Aplicar para una cuenta"
         }
     },
     "dashboard": {

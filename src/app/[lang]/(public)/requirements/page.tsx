@@ -2,7 +2,7 @@
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Home, Wallet } from "lucide-react"
+import { FileText, Home, Wallet, ClipboardCheck } from "lucide-react"
 import Image from 'next/image'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import Link from 'next/link'
@@ -19,6 +19,7 @@ const RequirementsPage = () => {
             <h1 className="text-4xl font-bold p-5 text-center">{t('apply.requirements.title')}</h1>
             <p className="text-muted-foreground text-center">{t('apply.requirements.description')}</p>
         </div>
+
         <Tabs defaultValue="personal" className="w-full max-w-7xl">
             <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="personal">{t('apply.requirements.personal.title')}</TabsTrigger>
@@ -298,7 +299,31 @@ const RequirementsPage = () => {
                 </div>
             </TabsContent>
         </Tabs>
-        <Link href={formatURL('/apply', lang)}>
+        <div className="w-full max-w-7xl space-y-4">
+            <h2 className="text-2xl font-semibold text-center mb-4">{t('apply.requirements.optional_preparation.title')}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Risk Profile Card */}
+                <Card className="border-none shadow-md">
+                    <CardHeader className="pb-4">
+                        <div className="flex items-center gap-2">
+                            <ClipboardCheck className="h-5 w-5 text-primary" />
+                            <CardTitle className="text-lg">{t('apply.requirements.optional_preparation.risk_profile.title')}</CardTitle>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {t('apply.requirements.optional_preparation.risk_profile.description')}
+                        </p>
+                    </CardHeader>
+                    <CardContent>
+                        <Link href={formatURL('/apply/risk', lang)} target="_blank" rel="noopener noreferrer">
+                            <Button className="w-full bg-primary text-background hover:bg-primary/90">
+                                {t('apply.requirements.optional_preparation.risk_profile.button')}
+                            </Button>
+                        </Link>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+        <Link href={formatURL('/apply', lang)} target="_blank" rel="noopener noreferrer">
             <Button className="w-full">
                 {t('apply.requirements.submit')}
             </Button>

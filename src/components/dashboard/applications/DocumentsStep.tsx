@@ -17,10 +17,9 @@ interface DocumentConfig {
 }
 
 const DOCUMENT_CONFIGS: DocumentConfig[] = [
-  { id: 'taxForm', name: 'Tax Form', formNumber: 5001 },
-  { id: 'w9Form', name: 'W9 Form', formNumber: 5002 },
-  { id: 'poa', name: 'Proof of Address', formNumber: 8001 },
-  { id: 'poi', name: 'Proof of Income', formNumber: 8002 }
+  { id: 'w8', name: 'W8 Form', formNumber: 5001 },
+  { id: 'poi', name: 'Proof of Income', formNumber: 8001 },
+  { id: 'poa', name: 'Proof of Address', formNumber: 8002 }
 ];
 
 const DocumentsStep = ({ form }: Props) => {
@@ -77,7 +76,7 @@ const DocumentsStep = ({ form }: Props) => {
       return;
     }
     const file = uploadedFiles[0]; 
-    const poaFormNumber = 8001;
+    const poaFormNumber = 8002;
 
     try {
       const base64Data = await getBase64(file);
@@ -132,9 +131,9 @@ const DocumentsStep = ({ form }: Props) => {
                   <CheckCircle className="mr-2 h-5 w-5" />
                   <span>Uploaded</span>
                 </div>
-              ) : docConfig.formNumber === 8001 ? (
-                <DocumentUploader documentType="POA" handleSubmit={handlePOASubmission} />
               ) : docConfig.formNumber === 8002 ? (
+                <DocumentUploader documentType="POA" handleSubmit={handlePOASubmission} />
+              ) : docConfig.formNumber === 8001 ? (
                 <DocumentUploader documentType="POI" handleSubmit={handlePOISubmission} />
               ) : (
                 null

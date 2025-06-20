@@ -17,6 +17,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 import { FaLinkedin } from "react-icons/fa";
+import Link from "next/link";
 
 export function TeamCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -136,13 +137,13 @@ export function TeamCarousel() {
                               {member.description}
                             </motion.p>
                           </div>
-                          <div className="mt-6 flex justify-center">
-                            <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
+                          <div className="mt-6 flex justify-start">
+                            <Link href={member.linkedin} target="_blank" rel="noopener noreferrer">
                               <Button className="w-full">
                                 <FaLinkedin className="h-4 w-4 mr-2" />
                                 {t('shared.team.team_carousel.linkedin')}
                               </Button>
-                            </a>
+                            </Link>
                           </div>
                         </motion.div>
                       </DialogContent>

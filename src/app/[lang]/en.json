@@ -124,7 +124,7 @@
             "action_text": "Apply for an account"
         },
         "introduction": {
-            "title": "Your Legacy Matters.",
+            "title": "Your Legacy Matters",
             "description": [
                 "AGM Advisor, our Advisory services firm, provides individual portfolio investment strategies that are tailored made for each client (Segregated Portfolio Accounts).",
                 "Any client that would like to delegate a portion of their financial assets or wealth through our advisory division, gets one on one service from one of our Advisors that is assigned. We strive to provide best in class service to each of our advisory clients!",
@@ -606,6 +606,14 @@
         "requirements": {
             "title": "Requirements for an AGM Account",
             "description": "Please ensure you meet the following requirements to apply for an account",
+            "optional_preparation": {
+                "title": "Optional Preparation",
+                "risk_profile": {
+                    "title": "Complete Risk Profile",
+                    "description": "Fill out your investment risk profile to help us better understand your investment preferences and goals.",
+                    "button": "Start Risk Profile"
+                }
+            },
             "personal": {
                 "title": "Requirements for Individual Accounts",
                 "identity": {
