@@ -35,7 +35,7 @@ const AutoTrader = () => {
   const [backtestData, setBacktestData] = useState<BacktestSnapshot[]>([]);
   const [decisionHistory, setDecisionHistory] = useState<DecisionHistory[]>([]);
 
-  const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
+  const socketURL = process.env.DEV_MODE === 'true' ? 'http://167.71.94.59:3333' : 'NULL';
 
   useEffect(() => {
 

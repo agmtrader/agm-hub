@@ -123,19 +123,19 @@ export const about_you_primary_schema = (t: (key: string) => string) => base_abo
     }),
 })
 export const about_you_secondary_schema = (t: (key: string) => string) => base_about_you_schema.extend({
-email: z.string({
-    required_error: t('forms.errors.email'),
-}).email({
-    message: t('forms.errors.email'),
-}),
-username: z.string({
-    required_error: t('forms.errors.username_length')
-}).min(4, {
-    message: t('forms.errors.username_length')
-}),
-password: z.string({
-    required_error: t('forms.errors.password_format')
-})
+    email: z.string({
+        required_error: t('forms.errors.email'),
+    }).email({
+        message: t('forms.errors.email'),
+    }),
+    username: z.string({
+        required_error: t('forms.errors.username_length')
+    }).min(4, {
+        message: t('forms.errors.username_length')
+    }),
+    password: z.string({
+        required_error: t('forms.errors.password_format')
+    })
     .min(4, { message: t('forms.errors.password_format') })
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
     message: t('forms.errors.password_format')
