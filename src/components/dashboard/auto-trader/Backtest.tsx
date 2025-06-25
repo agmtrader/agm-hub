@@ -309,47 +309,17 @@ const Backtest = ({backtestData, strategy, decisionHistory}: Props) => {
                             {backtestData.length}
                         </span>
                     </div>
-                </div>
-
-                {/* Second row - Trading Statistics */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                            <ArrowUpCircle className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-subtitle">Total Trades</span>
-                        </div>
-                        <span className="text-2xl font-bold text-foreground">
-                            {tradingStats.totalTrades}
-                        </span>
-                    </div>
-                    <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Target className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-subtitle">Completed Trades</span>
-                        </div>
-                        <span className="text-2xl font-bold text-foreground">
-                            {tradingStats.completedTrades}
-                        </span>
-                    </div>
                     <div className="bg-muted p-4 rounded-lg">
                         <div className="flex items-center gap-2 mb-2">
                             <Percent className="h-4 w-4 text-primary" />
                             <span className="text-sm text-subtitle">Win Rate</span>
                         </div>
-                        <span className={`text-2xl font-bold ${tradingStats.winRate >= 50 ? 'text-success' : 'text-error'}`}>
+                        <span className={`text-2xl font-bold text-success`}>
                             {tradingStats.winRate.toFixed(1)}%
                         </span>
                     </div>
-                    <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                            <DollarSign className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-subtitle">Avg Trade P&L</span>
-                        </div>
-                        <span className={`text-2xl font-bold ${tradingStats.averageTradeReturn >= 0 ? 'text-success' : 'text-error'}`}>
-                            ${tradingStats.averageTradeReturn.toLocaleString()}
-                        </span>
-                    </div>
                 </div>
+
             </div>
 
             {/* Equity Curve Chart */}

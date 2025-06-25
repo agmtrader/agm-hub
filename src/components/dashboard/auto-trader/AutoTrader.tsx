@@ -5,8 +5,9 @@ import { Card } from "@/components/ui/card";
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpCircle, ArrowDownCircle, MinusCircle, DollarSign, BarChart3, TrendingUp, Briefcase, Settings, Target, Activity, Hash, Zap } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, MinusCircle, DollarSign, BarChart3, TrendingUp, Briefcase, Settings, Target, Activity, Hash, Zap, RefreshCw } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
 import TraderChart from './TraderChart';
 import {
   Strategy,
@@ -34,8 +35,16 @@ const AutoTrader = () => {
   const [strategy, setStrategy] = useState<Strategy | null>(null);
   const [backtestData, setBacktestData] = useState<BacktestSnapshot[]>([]);
   const [decisionHistory, setDecisionHistory] = useState<DecisionHistory[]>([]);
+  const [backtestLoading, setBacktestLoading] = useState(false);
 
-  const socketURL = process.env.DEV_MODE === 'true' ? 'http://167.71.94.59:3333' : 'NULL';
+  const socketURL = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:3333' : 'NULL';
+
+  const requestBacktestData = () => {
+    if (socket && strategyStarted) {
+      setBacktestLoading(true);
+      socket.emit('backtest');
+    }
+  };
 
   useEffect(() => {
 
@@ -50,17 +59,9 @@ const AutoTrader = () => {
         setDecision(data['decision'] as TradingDecision);
         setStrategy(data['strategy']);
         setAccountSummary(data['account_summary']);
-        if (data['backtest']) {
-          setBacktestData(data['backtest']);
-          // Build decision history from backtest data
-          const history = data['backtest'].map((snapshot, index) => ({
-            id: index,
-            decision: snapshot.decision,
-            created: snapshot.current_time,
-            updated: snapshot.current_time
-          }));
-          setDecisionHistory(history);
-        }
+        
+        // Request backtest data separately
+        newSocket.emit('backtest');
       } catch (error) {
         toast({
           title: 'Error connecting to Trader',
@@ -77,6 +78,8 @@ const AutoTrader = () => {
     newSocket.on('strategy_started', (data: any) => {
       console.log('Strategy started', data);
       setStrategyStarted(true);
+      // Request backtest data when strategy starts
+      newSocket.emit('backtest');
     });
 
     newSocket.on('strategy_stopped', (data: any) => {
@@ -89,16 +92,31 @@ const AutoTrader = () => {
       setDecision(data['decision'] as TradingDecision);
       setStrategy(data['strategy']);
       setAccountSummary(data['account_summary']);
-      if (data['backtest']) {
-        setBacktestData(data['backtest']);
-        // Update decision history from backtest data
-        const history = data['backtest'].map((snapshot, index) => ({
-          id: index,
-          decision: snapshot.decision,
-          created: snapshot.current_time,
-          updated: snapshot.current_time
-        }));
-        setDecisionHistory(history);
+    });
+
+    newSocket.on('backtest_data', (data: BacktestSnapshot[]) => {
+      try {
+        console.log('Received backtest data', data);
+        setBacktestLoading(false);
+        if (data && Array.isArray(data)) {
+          setBacktestData(data);
+          // Build decision history from backtest data
+          const history = data.map((snapshot, index) => ({
+            id: index,
+            decision: snapshot.decision,
+            created: snapshot.current_time,
+            updated: snapshot.current_time
+          }));
+          setDecisionHistory(history);
+        }
+      } catch (error) {
+        console.error('Error processing backtest data:', error);
+        setBacktestLoading(false);
+        toast({
+          title: 'Error processing backtest data',
+          description: 'Failed to process backtest information.',
+          variant: 'destructive',
+        });
       }
     });
 
@@ -518,7 +536,20 @@ const AutoTrader = () => {
 
               <TabsContent value="backtest" className="mt-0">
                 {strategy && strategy.params && strategy.params.contracts ? (
-                  <Backtest backtestData={backtestData} strategy={strategy} decisionHistory={decisionHistory} />
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-lg font-semibold text-foreground">Backtest Analysis</h2>
+                      <Button
+                        onClick={requestBacktestData}
+                        disabled={backtestLoading}
+                        className="bg-primary text-background hover:bg-primary/90"
+                      >
+                        <RefreshCw className={`h-4 w-4 mr-2 ${backtestLoading ? 'animate-spin' : ''}`} />
+                        {backtestLoading ? 'Loading...' : 'Refresh Backtest'}
+                      </Button>
+                    </div>
+                    <Backtest backtestData={backtestData} strategy={strategy} decisionHistory={decisionHistory} />
+                  </div>
                 ) : (
                   <LoadingComponent className='w-full h-[600px]'/>
                 )}
