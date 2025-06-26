@@ -3,13 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import { DetailItem } from './AccountPage';
-import { CreateSSOSession, GetForms, GetPendingTasksByAccountID, SubmitAccountDocument } from '@/utils/entities/account';
+import { GetForms, GetPendingTasksByAccountID, SubmitAccountDocument } from '@/utils/entities/account';
 import { DocumentSubmissionRequest, PendingTask, PendingTasksResponse } from '@/lib/entities/account';
 import { ClipboardList, FileCheck } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { formatTimestamp } from '@/utils/dates';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
 import LoaderButton from '@/components/misc/LoaderButton';
 
 interface Props {

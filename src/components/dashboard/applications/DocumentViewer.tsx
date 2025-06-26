@@ -36,13 +36,6 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
   // Create data URL from base64
   const dataUrl = `data:${mimeType};base64,${data}`
 
-  const handleDownload = () => {
-    const link = document.createElement('a')
-    link.href = dataUrl
-    link.download = fileName
-    link.click()
-  }
-
   const handleOpenInNewTab = () => {
     window.open(dataUrl, '_blank')
   }
@@ -74,10 +67,6 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
             File: {fileName}
           </p>
           <div className="flex gap-2">
-            <Button onClick={handleDownload} variant="outline">
-              <Download className="h-4 w-4 mr-2" />
-              Download
-            </Button>
             <Button onClick={handleOpenInNewTab} variant="outline">
               <ExternalLink className="h-4 w-4 mr-2" />
               Open in New Tab
@@ -95,10 +84,6 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
           <DialogTitle className="flex items-center justify-between">
             <span>{documentName}</span>
             <div className="flex gap-2">
-              <Button onClick={handleDownload} variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
               <Button onClick={handleOpenInNewTab} variant="outline" size="sm">
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Open in New Tab

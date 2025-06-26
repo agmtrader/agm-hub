@@ -3,9 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getDefaults } from '@/utils/form'
 import { poa_schema } from "@/lib/schemas/document"
-import { POADocumentInfo } from '@/lib/document'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,

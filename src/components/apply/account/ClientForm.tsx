@@ -11,9 +11,8 @@ import ApplicationEnd from './components/ApplicationEnd';
 import AuthorizedPerson from './components/AuthorizedPerson';
 import AboutOrganization from './components/AboutOrganization';
 import { pageTransition, pageVariants } from '@/lib/anims';
-import { UpdateAccountInfoByID, CreateAccount, ReadAccountInfoByID, ReadAccountByAccountID } from '@/utils/entities/account';
+import { UpdateAccountInfoByID, ReadAccountInfoByID } from '@/utils/entities/account';
 import { AccountPayload, IndividualAccountApplicationInfo } from '@/lib/entities/account';
-import UploadDocuments from './components/UploadDocuments';
 import { Account } from '@/lib/entities/account';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import { useSearchParams } from 'next/navigation';
@@ -104,6 +103,7 @@ const ClientForm = ({ accountProp }: Props) => {
 
   // Create new account and set state (for initial creation)
   async function handleCreateAccount(payload: AccountPayload, infoData: IndividualAccountApplicationInfo): Promise<Account | null> {
+    /*
     try {
 
       // First create the account to get IDs
@@ -132,6 +132,8 @@ const ClientForm = ({ accountProp }: Props) => {
       });
       return null;
     }
+    */
+   return null;
   }
 
   const stepForward = () => {
@@ -225,16 +227,6 @@ const ClientForm = ({ accountProp }: Props) => {
             />
           );
         case 4:
-          return (
-            <UploadDocuments
-              account={account}
-              accountInfo={accountInfo}
-              stepForward={stepForward}
-              stepBackward={stepBackward}
-              syncAccountData={syncAccountData}
-            />
-          );
-        case 5:
           return <ApplicationEnd />;
         default:
           return null;
@@ -286,16 +278,6 @@ const ClientForm = ({ accountProp }: Props) => {
             />
           );
         case 5:
-          return (
-            <UploadDocuments 
-              account={account}
-              accountInfo={accountInfo}
-              stepForward={stepForward}
-              stepBackward={stepBackward}
-              syncAccountData={syncAccountData}
-            />
-          );
-        case 6:
           return <ApplicationEnd />;
         default:
           return null;
@@ -345,16 +327,6 @@ const ClientForm = ({ accountProp }: Props) => {
             />
           );
         case 5:
-          return (
-            <UploadDocuments
-              account={account}
-              accountInfo={accountInfo}
-              stepForward={stepForward}
-              stepBackward={stepBackward}
-              syncAccountData={syncAccountData}
-            />
-          );
-        case 6:
           return <ApplicationEnd />;
         default:
           return null;

@@ -1,6 +1,6 @@
 import { accessAPI } from "../api"
 import { Application, InternalApplication } from "../../lib/entities/application"
-import { POADocumentInfo } from "../../lib/document"
+import { POADocumentInfo } from "@/lib/entities/document"
 
 export interface IDResponse {
     id: string
