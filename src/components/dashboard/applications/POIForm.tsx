@@ -2,8 +2,7 @@ import React from 'react'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getDefaults } from '@/utils/form'
-import { poa_schema, poi_schema } from "@/lib/schemas/document-center"
-import { POADocumentInfo } from '@/lib/entities/document'
+import { poi_schema } from "@/lib/schemas/document"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -92,9 +91,9 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="ID">ID</SelectItem>
+                  <SelectItem value="National ID Card">National ID Card</SelectItem>
                   <SelectItem value="Passport">Passport</SelectItem>
-                  <SelectItem value="License">License</SelectItem>
+                  <SelectItem value="Driver License">Driver License</SelectItem>
                 </SelectContent>
               </Select>
             </FormItem>

@@ -1,5 +1,5 @@
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { Base } from './base';
+import { Base } from '../entities/base';
 
 export interface AccountRiskProfilePayload {
   account_id: string | null;

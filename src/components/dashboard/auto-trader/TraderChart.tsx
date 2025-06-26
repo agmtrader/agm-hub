@@ -2,7 +2,7 @@
 
 import { createChart, ColorType, CandlestickData, CandlestickSeries, LineSeries } from 'lightweight-charts'
 import { useEffect, useRef } from 'react'
-import { ContractData, TradingDecision } from '@/lib/entities/trader'
+import { ContractData, TradingDecision } from '@/lib/tools/trader'
 
 interface TraderChartProps {
   contract: ContractData

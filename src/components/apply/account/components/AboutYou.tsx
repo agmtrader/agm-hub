@@ -31,7 +31,7 @@ import { marital_status, salutations, id_type, employment_status, currencies, so
 import { getDefaults } from '@/utils/form'
 import { about_you_primary_schema, about_you_secondary_schema } from "@/lib/schemas/ticket"
 import { Checkbox } from "@/components/ui/checkbox"
-import { IndividualTicket, Ticket } from "@/lib/entities/ticket"
+import { IndividualTicket, Ticket } from "@/lib/ticket"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import CountriesFormField from "@/components/ui/CountriesFormField"
 import { useToast } from "@/hooks/use-toast"

@@ -2,10 +2,10 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { ArrowDownCircle, ArrowUpCircle, TrendingUp, TrendingDown, Percent, Target, DollarSign, Activity } from 'lucide-react'
 import React from 'react'
-import { Strategy, BacktestSnapshot, DecisionHistory } from '@/lib/entities/trader'
+import { Strategy, BacktestSnapshot, DecisionHistory } from '@/lib/tools/trader'
 import TraderChart from './TraderChart'
 import EquityCurveChart from './EquityCurveChart'
-import { getDecisionColor, calculateBacktestMetrics } from '@/utils/entities/trader'
+import { getDecisionColor, calculateBacktestMetrics } from '@/utils/tools/trader'
 
 type Props = {
     backtestData: BacktestSnapshot[]

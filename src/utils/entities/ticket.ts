@@ -1,7 +1,7 @@
-import { Bucket, POADocumentInfo, POIDocumentInfo } from "@/lib/entities/document"
+import { Bucket, POADocumentInfo, POIDocumentInfo } from "@/lib/document"
 import { accessAPI } from "../api"
-import { File as DocumentFile } from "@/lib/entities/document"
-import { IndividualTicket, Ticket, TicketPayload, TicketUI } from "@/lib/entities/ticket"
+import { File as DocumentFile } from "@/lib/document"
+import { IndividualTicket, Ticket, TicketPayload, TicketUI } from "@/lib/ticket"
 
 export async function CreateTicket(ticketPayload: TicketPayload, ticketInfoData: any): Promise<any> {
     let createdTicket: {ticket: Ticket, info: IndividualTicket} = await accessAPI('/tickets/create', 'POST', {

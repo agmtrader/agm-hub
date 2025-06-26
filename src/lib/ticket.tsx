@@ -1,6 +1,6 @@
-import { about_you_primary_schema, general_info_schema, regulatory_schema } from "../schemas/ticket"
+import { about_you_primary_schema, general_info_schema, regulatory_schema } from "./schemas/ticket"
 import { z } from "zod"
-import { Base } from "./base"
+import { Base } from "./entities/base"
 
 export interface TicketPayload {
     'status': string

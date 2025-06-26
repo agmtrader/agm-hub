@@ -26,14 +26,14 @@ import {
   DialogClose,
   DialogContent
 } from "@/components/ui/dialog"
-import { GetRiskProfile, CreateAccountRiskProfile } from "@/utils/entities/risk-profile"
+import { GetRiskProfile, CreateAccountRiskProfile } from "@/utils/tools/risk-profile"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { Command, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
 import { useSession } from "next-auth/react"
-import { getRiskFormQuestions, weights, RiskProfile as RiskProfileType, AccountRiskProfilePayload } from "@/lib/entities/risk-profile"
+import { getRiskFormQuestions, weights, RiskProfile as RiskProfileType, AccountRiskProfilePayload } from "@/lib/tools/risk-profile"
 import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
 import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/ui/select"

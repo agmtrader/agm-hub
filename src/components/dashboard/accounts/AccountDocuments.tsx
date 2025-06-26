@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Account } from '@/lib/entities/account'
-import { Bucket, POADocument } from '@/lib/entities/document'
+import { Bucket, POADocument } from '@/lib/document'
 import { ColumnDefinition } from '@/components/misc/DataTable'
 import { DataTable } from '@/components/misc/DataTable'
 import { motion, AnimatePresence } from 'framer-motion'

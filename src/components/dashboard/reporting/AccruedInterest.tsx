@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import { toast } from '@/hooks/use-toast'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-import { ReadAccruedInterest } from '@/utils/entities/reporting'
+import { ReadAccruedInterest } from '@/utils/tools/reporting'
 
 const AccruedInterest  = () => {
 

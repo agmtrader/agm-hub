@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Trade, TradeTicket } from '@/lib/entities/trade-ticket'
+import { Trade, TradeTicket } from '@/lib/tools/trade-ticket'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
 import DashboardPage from '@/components/misc/DashboardPage'
-import { FetchTrades, GenerateTradeTicket, SendToClient, ListTradeTickets } from '@/utils/entities/trade-tickets'
+import { FetchTrades, GenerateTradeTicket, SendToClient, ListTradeTickets } from '@/utils/tools/trade-tickets'
 
 export default function TradeTickets() {
 

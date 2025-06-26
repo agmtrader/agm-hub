@@ -11,7 +11,7 @@ import {
   Contract,
   FutureContractOptions,
   BacktestSnapshot
-} from '@/lib/entities/trader';
+} from '@/lib/tools/trader';
 
 /**
  * Utility functions for trader operations

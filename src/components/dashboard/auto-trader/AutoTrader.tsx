@@ -19,7 +19,7 @@ import {
   BacktestSnapshot,
   ExtendedTraderResponse,
   DecisionHistory
-} from '@/lib/entities/trader';
+} from '@/lib/tools/trader';
 
 import { toast } from '@/hooks/use-toast';  
 import Backtest from './Backtest';

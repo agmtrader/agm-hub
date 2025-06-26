@@ -1,4 +1,4 @@
-import { Base } from "./base";
+import { Base } from "../entities/base";
 
 export type TradeTicket = {
     name: string;

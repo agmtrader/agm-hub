@@ -23,7 +23,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
   const DOCUMENT_TYPE_MAP: { [key: number]: string } = {
     5001: 'W8 Form',
-    8001: 'Proof of Income',
+    8001: 'Proof of Identity',
     8002: 'Proof of Address',
   };
 

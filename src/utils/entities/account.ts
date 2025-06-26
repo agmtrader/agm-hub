@@ -1,6 +1,6 @@
-import { Bucket, POADocumentInfo, POIDocumentInfo } from "@/lib/entities/document"
+import { Bucket, POADocumentInfo, POIDocumentInfo } from "@/lib/document"
 import { accessAPI } from "../api"
-import { File as DocumentFile } from "@/lib/entities/document"
+import { File as DocumentFile } from "@/lib/document"
 import { IndividualAccountApplicationInfo, AccountPayload, Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, W8BenSubmissionRequest } from "@/lib/entities/account"
 import { Contact } from "@/lib/entities/contact"
 import { formatTimestamp } from "../dates"

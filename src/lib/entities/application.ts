@@ -176,8 +176,7 @@ export const application: Application = {
                         {
                             "sourceType": 'SOW-IND-Income',
                             "percentage": 100,
-                            "usedForFunds": true,
-                            "description": "Trading"
+                            "usedForFunds": true
                         }
                     ],
                     "netWorth": 1000,
@@ -192,21 +191,18 @@ export const application: Application = {
                             "code": "AFFILIATION",
                             "status": false,
                             "details": "Affiliated with Interactive Brokers",
-                            "detail": "Affiliated with Interactive Brokers",
                             "externalIndividualId": external_id
                         },
                         {
                             "code": "EmployeePubTrade",
                             "status": false,
                             "details": "Employee is not trading publicly",
-                            "detail": "Employee is not trading publicly",
                             "externalIndividualId": external_id
                         },
                         {
                             "code": "ControlPubTraded",
                             "status": false,
                             "details": "Controlled trading is not allowed",
-                            "detail": "Controlled trading is not allowed",
                             "externalIndividualId": external_id
                         }
                     ]

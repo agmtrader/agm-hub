@@ -8,7 +8,7 @@ export const poa_schema = z.object({
 export const poi_schema = z.object({
     gender: z.string(),
     country_of_issue: z.string(),
-    type: z.enum(["ID", "Passport", "License"]),
+    type: z.enum(["National ID Card", "Driver License", "Passport"]),
     full_name: z.string(),
     id_number: z.string(),
     issued_date: z.date(),

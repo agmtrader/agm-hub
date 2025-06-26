@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import DashboardPage from '@/components/misc/DashboardPage'
 import ClientFees from './ClientFees'
 import { Separator } from '@/components/ui/separator'
-import { Report } from '@/lib/entities/report'
+import { Report } from '@/lib/tools/report'
 import { Recycle } from 'lucide-react'
 import Link from 'next/link'
 

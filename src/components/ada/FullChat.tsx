@@ -13,7 +13,7 @@ import remarkGfm from 'remark-gfm'
 import { accessAPI } from '@/utils/api'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { ChatMessage, ChatResponse } from '@/lib/ada'
+import { ChatMessage, ChatResponse } from '@/lib/tools/ada'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 const FullChat = () => {

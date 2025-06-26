@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import DashboardPage from '@/components/misc/DashboardPage'
-import { ReadClientsReport } from '@/utils/entities/reporting'
+import { ReadClientsReport } from '@/utils/tools/reporting'
 
 const Clients = () => {
 

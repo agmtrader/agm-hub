@@ -1,6 +1,6 @@
-import { Bucket, File as DocumentFile } from "@/lib/entities/document";
+import { Bucket, File as DocumentFile } from "@/lib/document";
 import { accessAPI } from "../api";
-import { POADocumentInfo } from "@/lib/entities/document";
+import { POADocumentInfo } from "@/lib/document";
 
 export async function ReadBuckets(): Promise<Bucket[]> {
     let buckets = await accessAPI(`/documents/clients/read`, 'POST', {'query': {}})

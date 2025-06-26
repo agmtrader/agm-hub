@@ -36,7 +36,7 @@ import { salutations, countries, id_type, employment_status, phone_types, securi
 import { getDefaults } from '@/utils/form'
 
 import { about_organization_schema } from "@/lib/schemas/ticket"
-import { IndividualTicket, Ticket } from "@/lib/entities/ticket"
+import { IndividualTicket, Ticket } from "@/lib/ticket"
 
 import { Checkbox } from "@/components/ui/checkbox"
 

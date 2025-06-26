@@ -2,8 +2,8 @@ import React from 'react'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getDefaults } from '@/utils/form'
-import { poa_schema } from "@/lib/schemas/document-center"
-import { POADocumentInfo } from '@/lib/entities/document'
+import { poa_schema } from "@/lib/schemas/document"
+import { POADocumentInfo } from '@/lib/document'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {

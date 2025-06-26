@@ -3,8 +3,8 @@ import { ColumnDefinition, DataTable } from '../../misc/DataTable'
 import { Doughnut } from 'react-chartjs-2'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { Account } from '@/lib/entities/account'
-import { RiskProfile as RiskProfileType } from '@/lib/entities/risk-profile'
-import { GetAssetAllocation } from '@/utils/entities/risk-profile'
+import { RiskProfile as RiskProfileType } from '@/lib/tools/risk-profile'
+import { GetAssetAllocation } from '@/utils/tools/risk-profile'
 import 'chart.js/auto'
 
 type Props = {

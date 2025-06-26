@@ -1,6 +1,8 @@
 # Next.js Gitignore
 
 # Personal
+dev/am-api
+
 *.DS_Store
 .env
 

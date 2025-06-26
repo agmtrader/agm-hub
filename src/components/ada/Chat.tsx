@@ -14,7 +14,7 @@ import { formatURL, getCallbackUrl } from '@/utils/language/lang'
 import { useSession } from 'next-auth/react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { accessAPI } from '@/utils/api'
-import { ChatMessage, ChatResponse } from '@/lib/ada'
+import { ChatMessage, ChatResponse } from '@/lib/tools/ada'
 
 const AdaChat = () => {
     const router = useRouter()

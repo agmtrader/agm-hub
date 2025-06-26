@@ -1,5 +1,5 @@
 import { accessAPI } from "@/utils/api"
-import { riskProfiles, AccountRiskProfilePayload, RiskProfile as RiskProfileType, AccountRiskProfile } from "@/lib/entities/risk-profile"
+import { riskProfiles, AccountRiskProfilePayload, RiskProfile as RiskProfileType, AccountRiskProfile } from "@/lib/tools/risk-profile"
 import { useTranslationProvider } from "../providers/TranslationProvider"
 
 export async function CreateAccountRiskProfile(account_risk_profile:AccountRiskProfilePayload) {

@@ -9,7 +9,7 @@ import { investment_objectives, products, worths } from "@/lib/form"
 import { getDefaults } from '@/utils/form'
 
 import { regulatory_schema } from "@/lib/schemas/ticket"
-import { IndividualTicket, Ticket } from "@/lib/entities/ticket"
+import { IndividualTicket, Ticket } from "@/lib/ticket"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 
 import { Button } from "@/components/ui/button"

@@ -1,6 +1,5 @@
-import { Trade, TradeTicket } from "@/lib/entities/trade-ticket"
+import { Trade, TradeTicket } from "@/lib/tools/trade-ticket"
 import { accessAPI } from "../api"
-import { FetchFlexQuery } from "./flex-query"
 import { sendEmail } from "./email"
 
 export async function ListTradeTickets() {
