@@ -37,7 +37,7 @@ const AutoTrader = () => {
   const [decisionHistory, setDecisionHistory] = useState<DecisionHistory[]>([]);
   const [backtestLoading, setBacktestLoading] = useState(false);
 
-  const socketURL = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:3333' : 'NULL';
+  const socketURL = process.env.DEV_MODE === 'true' ? 'http://167.71.94.59:3333' : 'NULL';
 
   const requestBacktestData = () => {
     if (socket && strategyStarted) {
