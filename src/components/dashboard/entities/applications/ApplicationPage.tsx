@@ -215,10 +215,22 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
   // --- Customer Section ---
   const customer = application.application.customer;
+  const isJointAccount = customer.type === 'JOINT';
+  
+  // Handle individual vs joint account structures
   const accountHolder = customer.accountHolder;
-  const accountHolderDetails = accountHolder.accountHolderDetails?.[0];
-  const financialInfo = accountHolder.financialInformation?.[0];
-  const regulatoryInfo = accountHolder.regulatoryInformation?.[0];
+  const jointHolders = customer.jointHolders;
+  
+  // For individual accounts
+  const accountHolderDetails = accountHolder?.accountHolderDetails?.[0];
+  const financialInfo = accountHolder?.financialInformation?.[0];
+  const regulatoryInfo = accountHolder?.regulatoryInformation?.[0];
+  
+  // For joint accounts
+  const firstHolderDetails = jointHolders?.firstHolderDetails?.[0];
+  const secondHolderDetails = jointHolders?.secondHolderDetails?.[0];
+  const jointFinancialInfo = jointHolders?.financialInformation?.[0];
+  const jointRegulatoryInfo = jointHolders?.regulatoryInformation?.[0];
 
   // --- Accounts Section ---
   const accounts = application.application.accounts || [];
@@ -237,6 +249,42 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const renderAccountHolderCard = (
+    title: string, 
+    details: any, 
+    isFirst: boolean = true
+  ) => {
+    if (!details) return null;
+    
+    return (
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Info className="h-5 w-5 text-primary"/> 
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <LabelValue label="Name" value={details?.name ? `${details.name.first} ${details.name.last}` : undefined} />
+          <LabelValue label="Email" value={details?.email} />
+          <LabelValue label="Country of Birth" value={details?.countryOfBirth} />
+          <LabelValue label="Date of Birth" value={formatDate(details?.dateOfBirth)} />
+          <LabelValue label="Employment Type" value={details?.employmentType} />
+          <LabelValue label="External ID" value={details?.externalId} />
+          <LabelValue label="Same Mail Address" value={<Badge variant={details?.sameMailAddress ? 'success' : 'outline'}>{details?.sameMailAddress ? 'Yes' : 'No'}</Badge>} />
+          <LabelValue label="Phones" value={details?.phones?.map((p: any) => `${p.type}: +${p.country} ${p.number}`).join(', ')} />
+          <LabelValue label="Address" value={details?.residenceAddress ? `${details.residenceAddress.street1}, ${details.residenceAddress.city}, ${details.residenceAddress.state}, ${details.residenceAddress.country} ${details.residenceAddress.postalCode}` : undefined} />
+          <LabelValue label="Employer" value={details?.employmentDetails?.employer} />
+          <LabelValue label="Occupation" value={details?.employmentDetails?.occupation} />
+          <LabelValue label="Employer Business" value={details?.employmentDetails?.employerBusiness} />
+          <LabelValue label="Employer Address" value={details?.employmentDetails?.employerAddress ? `${details.employmentDetails.employerAddress.street1}, ${details.employmentDetails.employerAddress.city}, ${details.employmentDetails.employerAddress.state}, ${details.employmentDetails.employerAddress.country} ${details.employmentDetails.employerAddress.postalCode}` : undefined} />
+          <LabelValue label="Passport" value={details?.identification?.passport} />
+          <LabelValue label="Passport Country" value={details?.identification?.issuingCountry} />
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="flex flex-col"> 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -247,7 +295,11 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
             <CardDescription>ID: <span className="text-muted-foreground">{customer.externalId}</span></CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <LabelValue label="Name" value={accountHolderDetails?.name ? `${accountHolderDetails.name.first} ${accountHolderDetails.name.last}` : undefined} />
+            <LabelValue label="Name" value={
+              isJointAccount 
+                ? firstHolderDetails?.name ? `${firstHolderDetails.name.first} ${firstHolderDetails.name.last}` : undefined
+                : accountHolderDetails?.name ? `${accountHolderDetails.name.first} ${accountHolderDetails.name.last}` : undefined
+            } />
             <LabelValue label="Type" value={<Badge>{customer.type}</Badge>} />
             <LabelValue label="Email" value={<span className="flex items-center gap-1"><Mail className="h-4 w-4"/>{customer.email}</span>} />
             <LabelValue label="Legal Residence" value={customer.legalResidenceCountry} />
@@ -258,29 +310,21 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           </CardContent>
         </Card>
 
-        {/* Account Holder Details Card */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Info className="h-5 w-5 text-primary"/> Account Holder Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <LabelValue label="Country of Birth" value={accountHolderDetails?.countryOfBirth} />
-            <LabelValue label="Date of Birth" value={formatDate(accountHolderDetails?.dateOfBirth)} />
-            <LabelValue label="Email" value={accountHolderDetails?.email} />
-            <LabelValue label="Employment Type" value={accountHolderDetails?.employmentType} />
-            <LabelValue label="External ID" value={accountHolderDetails?.externalId} />
-            <LabelValue label="Same Mail Address" value={<Badge variant={accountHolderDetails?.sameMailAddress ? 'success' : 'outline'}>{accountHolderDetails?.sameMailAddress ? 'Yes' : 'No'}</Badge>} />
-            <LabelValue label="Phones" value={accountHolderDetails?.phones?.map((p: any) => `${p.type}: +${p.country} ${p.number}`).join(', ')} />
-            <LabelValue label="Address" value={accountHolderDetails?.residenceAddress ? `${accountHolderDetails.residenceAddress.street1}, ${accountHolderDetails.residenceAddress.city}, ${accountHolderDetails.residenceAddress.state}, ${accountHolderDetails.residenceAddress.country} ${accountHolderDetails.residenceAddress.postalCode}` : undefined} />
-            <LabelValue label="Employer" value={accountHolderDetails?.employmentDetails?.employer} />
-            <LabelValue label="Occupation" value={accountHolderDetails?.employmentDetails?.occupation} />
-            <LabelValue label="Employer Business" value={accountHolderDetails?.employmentDetails?.employerBusiness} />
-            <LabelValue label="Employer Address" value={accountHolderDetails?.employmentDetails?.employerAddress ? `${accountHolderDetails.employmentDetails.employerAddress.street1}, ${accountHolderDetails.employmentDetails.employerAddress.city}, ${accountHolderDetails.employmentDetails.employerAddress.state}, ${accountHolderDetails.employmentDetails.employerAddress.country} ${accountHolderDetails.employmentDetails.employerAddress.postalCode}` : undefined} />
-            <LabelValue label="Passport" value={accountHolderDetails?.identification?.passport} />
-            <LabelValue label="Passport Country" value={accountHolderDetails?.identification?.issuingCountry} />
-          </CardContent>
-        </Card>
+        {/* Account Holder Details Card(s) */}
+        {isJointAccount ? (
+          renderAccountHolderCard("First Account Holder", firstHolderDetails, true)
+        ) : (
+          renderAccountHolderCard("Account Holder Details", accountHolderDetails, true)
+        )}
       </div>
+
+      {/* Second Account Holder for Joint Accounts */}
+      {isJointAccount && secondHolderDetails && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {renderAccountHolderCard("Second Account Holder", secondHolderDetails, false)}
+          <div></div> {/* Empty div for grid spacing */}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Accounts Table */}
@@ -353,12 +397,19 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
             <CardTitle className="flex items-center gap-2"><DollarSign className="h-5 w-5 text-primary"/> Financial Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <LabelValue label="Net Worth" value={financialInfo?.netWorth} />
-            <LabelValue label="Liquid Net Worth" value={financialInfo?.liquidNetWorth} />
-            <LabelValue label="Annual Net Income" value={financialInfo?.annualNetIncome} />
-            <LabelValue label="Objectives" value={financialInfo?.investmentObjectives?.join(', ')} />
-            <LabelValue label="Sources of Wealth" value={financialInfo?.sourcesOfWealth?.map((sow: any) => `${sow.sourceType}${sow.description ? ` (${sow.description})` : ''}: ${sow.percentage ?? '-'}%`).join('; ')} />
-            <LabelValue label="Investment Experience" value={financialInfo?.investmentExperience?.map((exp: any) => `${exp.assetClass}: ${exp.yearsTrading} years, ${exp.tradesPerYear} trades/year, ${exp.knowledgeLevel}`).join('; ')} />
+            {(() => {
+              const finInfo = isJointAccount ? jointFinancialInfo : financialInfo;
+              return (
+                <>
+                  <LabelValue label="Net Worth" value={finInfo?.netWorth} />
+                  <LabelValue label="Liquid Net Worth" value={finInfo?.liquidNetWorth} />
+                  <LabelValue label="Annual Net Income" value={finInfo?.annualNetIncome} />
+                  <LabelValue label="Objectives" value={finInfo?.investmentObjectives?.join(', ')} />
+                  <LabelValue label="Sources of Wealth" value={finInfo?.sourcesOfWealth?.map((sow: any) => `${sow.sourceType}${sow.description ? ` (${sow.description})` : ''}: ${sow.percentage ?? '-'}%`).join('; ')} />
+                  <LabelValue label="Investment Experience" value={finInfo?.investmentExperience?.map((exp: any) => `${exp.assetClass}: ${exp.yearsTrading} years, ${exp.tradesPerYear} trades/year, ${exp.knowledgeLevel}`).join('; ')} />
+                </>
+              );
+            })()}
           </CardContent>
         </Card>
 
@@ -368,26 +419,29 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
             <CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-primary"/> Regulatory Information</CardTitle>
           </CardHeader>
           <CardContent>
-            {regulatoryInfo?.regulatoryDetails?.length ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Details</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {regulatoryInfo.regulatoryDetails.map((rd: any, idx: any) => (
-                    <TableRow key={rd.code || idx}>
-                      <TableCell>{rd.code}</TableCell>
-                      <TableCell><Badge variant={rd.status ? 'success' : 'destructive'}>{rd.status ? 'Yes' : 'No'}</Badge></TableCell>
-                      <TableCell>{rd.details || rd.detail}</TableCell>
+            {(() => {
+              const regInfo = isJointAccount ? jointRegulatoryInfo : regulatoryInfo;
+              return regInfo?.regulatoryDetails?.length ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Code</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Details</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : <span className="text-muted-foreground">No regulatory details</span>}
+                  </TableHeader>
+                  <TableBody>
+                    {regInfo.regulatoryDetails.map((rd: any, idx: any) => (
+                      <TableRow key={rd.code || idx}>
+                        <TableCell>{rd.code}</TableCell>
+                        <TableCell><Badge variant={rd.status ? 'success' : 'destructive'}>{rd.status ? 'Yes' : 'No'}</Badge></TableCell>
+                        <TableCell>{rd.details || rd.detail}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : <span className="text-muted-foreground">No regulatory details</span>;
+            })()}
           </CardContent>
         </Card>
       </div>

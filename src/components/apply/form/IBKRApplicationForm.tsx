@@ -101,6 +101,8 @@ const IBKRApplicationForm = () => {
       { name: 'Documents', step: FormStep.DOCUMENTS }
     ];
 
+    console.log(form.formState.errors);
+
     return (
       <div className="mb-8">
         <div className="flex justify-between items-center">

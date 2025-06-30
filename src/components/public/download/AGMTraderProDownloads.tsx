@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils';
 import { formatURL } from '@/utils/language/lang';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { AGMTraderProDownloads as downloads } from '@/lib/downloads';
+import { AGMTraderProDownloads as downloads } from '@/lib/public/downloads';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

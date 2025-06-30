@@ -35,7 +35,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { Map } from "@/lib/types"
+import { Map } from "@/lib/public/types"
 import { Info } from "lucide-react"
 import {
   Tooltip,

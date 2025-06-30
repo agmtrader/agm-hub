@@ -226,7 +226,7 @@ const AccountPage = ({ accountId }: Props) => {
           <DetailItem label="Date Application Began" value={new Date(account.dateBegun).toLocaleDateString()} icon={CalendarDays} />
           <DetailItem label="MIFID Category" value={account.mifidCategory} icon={FileBadge} />
           <DetailItem label="Process Type" value={account.processType} icon={ListTree} />
-          <DetailItem label="External ID" value={account.dateBegun} icon={FileBadge} />
+          <DetailItem label="External ID" value={account.externalId} icon={FileBadge} />
         </CardContent>
       </Card>
 
@@ -248,9 +248,12 @@ const AccountPage = ({ accountId }: Props) => {
               <CardHeader>
                 <CardTitle className="flex items-center"> 
                   <User className="h-5 w-5 mr-2 text-primary" /> 
-                  {person.firstName} {person.lastName} ({person.associations.join(', ')})
+                  {person.firstName} {person.lastName} ({person.associations?.join(', ') || 'No association'})
                 </CardTitle>
-                <CardDescription>Username: {person.username} | Status: {person.userStatus}</CardDescription>
+                <CardDescription>
+                  {person.username ? `Username: ${person.username}` : 'No username'} 
+                  {person.userStatus ? ` | Status: ${person.userStatus}` : ''}
+                </CardDescription>
               </CardHeader>
               <CardContent className="grid grid-cols-3">
                 
@@ -323,6 +326,9 @@ const AccountPage = ({ accountId }: Props) => {
                     <DetailItem label="Trades Per Year" value={financialInformation.investmentExperience.BOND.tradesPerYear} />
                   </div>
                 )}
+                {(!financialInformation.investmentExperience?.STK && !financialInformation.investmentExperience?.BOND) && (
+                  <p className="text-sm text-muted-foreground">No investment experience information available.</p>
+                )}
               </div>
 
               {sourcesOfWealth?.length > 0 && (
@@ -352,9 +358,18 @@ const AccountPage = ({ accountId }: Props) => {
               <div>
                 <p className="text-md font-semibold mb-1 text-muted-foreground">Capabilities</p>
                 <div className="space-y-2 mt-1">
-                  <DetailItem label="Approved" value={account.capabilities.approved.map(c => <p key={c}>{c}</p>)} />
-                  <DetailItem label="Requested" value={account.capabilities.requested.map(c => <p key={c}>{c}</p>)} />
-                  <DetailItem label="Activated" value={account.capabilities.activated.map(c => <p key={c}>{c}</p>)} />
+                  {account.capabilities.approved?.length > 0 && (
+                    <DetailItem label="Approved" value={account.capabilities.approved.map(c => <p key={c}>{c}</p>)} />
+                  )}
+                  {account.capabilities.requested?.length > 0 && (
+                    <DetailItem label="Requested" value={account.capabilities.requested.map(c => <p key={c}>{c}</p>)} />
+                  )}
+                  {account.capabilities.activated?.length > 0 && (
+                    <DetailItem label="Activated" value={account.capabilities.activated.map(c => <p key={c}>{c}</p>)} />
+                  )}
+                  {(!account.capabilities.approved?.length && !account.capabilities.requested?.length && !account.capabilities.activated?.length) && (
+                    <p className="text-sm text-muted-foreground">No capabilities information available.</p>
+                  )}
                 </div>
               </div>
             </CardContent>

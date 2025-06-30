@@ -10,6 +10,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { redirect } from 'next/navigation';
+import { formatURL } from '@/utils/language/lang';
 
 const AccountsPage = () => {
 
@@ -18,13 +19,7 @@ const AccountsPage = () => {
   const [showAll, setShowAll] = useState(false)
 
   const handleRowClick = (row: any) => {
-    toast({
-      title: 'Not implemented for now',
-      description: 'This feature is not implemented for now',
-      variant: 'destructive',
-    })
-    return
-    //redirect(formatURL(`/dashboard/accounts/${row.ibkr_account_number}`, lang))
+    redirect(formatURL(`/dashboard/accounts/${row.ibkr_account_number}`, lang))
   }
 
   useEffect(() => {

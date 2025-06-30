@@ -1,6 +1,6 @@
 'use server'
 
-import { Map } from "../lib/types"
+import { Map } from "../lib/public/types"
 import { getServerSession, User } from 'next-auth'
 import { authOptions } from "./auth";
 import { UserPayload } from "@/lib/entities/user";

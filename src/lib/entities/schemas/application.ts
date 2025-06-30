@@ -265,10 +265,19 @@ export const joint_applicant_schema = z.object({
   regulatoryInformation: z.array(regulatory_information_schema).min(1, { message: 'Regulatory information is required' }),
 });
 
+// Joint Holders Schema - matching IBKR API structure
+export const joint_holders_schema = z.object({
+  firstHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'First holder details are required' }),
+  secondHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'Second holder details are required' }),
+  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }),
+  regulatoryInformation: z.array(regulatory_information_schema).min(1, { message: 'Regulatory information is required' }),
+  type: z.enum(['community', 'joint_tenants', 'tenants_common', 'tbe', 'au_joint_account']),
+}).optional();
+
 // Main Schemas
 export const customer_schema = z.object({
-  accountHolder: individual_applicant_schema, // Assuming INDIVIDUAL for now, can be a union for other types
-  jointHolders: z.array(individual_applicant_schema).optional(),
+  accountHolder: individual_applicant_schema.optional(), // For INDIVIDUAL accounts
+  jointHolders: joint_holders_schema, // For JOINT accounts
   externalId: z.string().min(1, { message: 'Customer external ID is required' }),
   type: z.enum(['INDIVIDUAL', 'JOINT', 'TRUST', 'ORG']), // Add other types as needed
   prefix: z.string().min(3, { message: 'Customer prefix is required and must be at least 3 characters' }).max(6, { message: 'Customer prefix must be at most 6 characters' }),
@@ -277,6 +286,16 @@ export const customer_schema = z.object({
   meetAmlStandard: z.string().optional().default('true'), // IBKR uses string 'true'/'false'
   directTradingAccess: z.boolean().optional().default(true),
   legalResidenceCountry: z.string().min(2, { message: 'Legal residence country is required' }),
+}).refine((data) => {
+  if (data.type === 'INDIVIDUAL' && !data.accountHolder) {
+    return false;
+  }
+  if (data.type === 'JOINT' && !data.jointHolders) {
+    return false;
+  }
+  return true;
+}, {
+  message: 'Account holder information is required for the selected account type',
 });
 
 
