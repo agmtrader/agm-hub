@@ -6,7 +6,6 @@ declare module "next-auth" {
   interface User extends DefaultUser {
     created: string
     updated: string
-    contact_id: string | null
     scopes: string;
   }
 }

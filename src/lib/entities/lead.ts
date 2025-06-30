@@ -1,4 +1,4 @@
-import { lead_schema, follow_up_schema } from "@/lib/schemas/lead"
+import { lead_schema, follow_up_schema } from "@/lib/entities/schemas/lead"
 import { z } from "zod"
 import { Base } from "./base"
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import AccountPage from '@/components/dashboard/accounts/AccountPage'
+import AccountPage from '@/components/dashboard/entities/accounts/AccountPage'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import DashboardPage from '@/components/misc/DashboardPage'
 

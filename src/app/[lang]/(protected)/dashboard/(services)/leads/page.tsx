@@ -1,5 +1,5 @@
 import DashboardPage from '@/components/misc/DashboardPage'
-import LeadsPage from '@/components/dashboard/leads/LeadsPage'
+import LeadsPage from '@/components/dashboard/entities/leads/LeadsPage'
 import React from 'react'
 
 const page = () => {

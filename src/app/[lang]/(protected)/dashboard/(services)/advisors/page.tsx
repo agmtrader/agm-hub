@@ -2,7 +2,7 @@
 
 import DashboardPage from '@/components/misc/DashboardPage'
 import React from 'react'
-import AdvisorsPage from '@/components/dashboard/advisors/AdvisorsPage'
+import AdvisorsPage from '@/components/dashboard/entities/advisors/AdvisorsPage'
 
 const page = () => {
 

@@ -1,4 +1,4 @@
-import ContactsPage from '@/components/dashboard/contacts/ContactsPage'
+import ContactsPage from '@/components/dashboard/entities/contacts/ContactsPage'
 import DashboardPage from '@/components/misc/DashboardPage'
 import React from 'react'
 

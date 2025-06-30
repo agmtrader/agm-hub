@@ -1,11 +1,11 @@
 'use client'
-import Title from "../../../../components/home/title/Title";
-import { TraderIntroduction } from "../../../../components/home/introduction/Introduction"
-import Services from "../../../../components/home/services/Services";
-import FAQ from "../../../../components/home/faq/FAQ";
+import Title from "../../../../components/public/title/Title";
+import { TraderIntroduction } from "../../../../components/public/introduction/Introduction"
+import Services from "../../../../components/public/services/Services";
+import FAQ from "../../../../components/public/faq/FAQ";
 import { Monitor, Smartphone, Globe, Headphones, Shield, BarChart, BookOpen } from "lucide-react";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
-import DownloadsCarousel from "@/components/home/download/DownloadsCarousel";
+import DownloadsCarousel from "@/components/public/download/DownloadsCarousel";
 
 export default function Home() {
 

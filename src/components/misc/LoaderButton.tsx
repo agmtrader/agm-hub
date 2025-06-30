@@ -6,12 +6,13 @@ type Props = {
     isLoading: boolean,
     text: string,
     className?: string,
-    onClick?: () => void
+    onClick?: () => void,
+    disabled?: boolean
 }
 
-const LoaderButton = ({isLoading, text, className, onClick}: Props) => {
+const LoaderButton = ({isLoading, text, className, onClick, disabled}: Props) => {
   return (
-    <Button type="submit" className={className} disabled={isLoading} onClick={onClick}>
+    <Button type="submit" className={className} disabled={isLoading || disabled} onClick={onClick}>
         {isLoading ? (
         <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -1,13 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import Title from '@/components/apply/account/title/Title';
+import Title from '@/components/apply/title/Title';
 import { Account } from '@/lib/entities/account';
 import { redirect, useSearchParams } from 'next/navigation';
 import { ReadAccountByLeadID } from '@/utils/entities/account';
 import { useToast } from '@/hooks/use-toast';
 import { formatURL } from '@/utils/language/lang';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import IBKRApplicationForm from '@/components/dashboard/applications/IBKRApplicationForm';
+import IBKRApplicationForm from '@/components/apply/form/IBKRApplicationForm';
 
 const page = () => {
 

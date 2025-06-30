@@ -1,5 +1,5 @@
 'use client'
-import RiskForm from '@/components/dashboard/risk/RiskForm'
+import RiskForm from '@/components/dashboard/tools/risk/RiskForm'
 import { StaticHeader } from '@/components/Header'
 import { containerVariants } from '@/lib/anims'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'

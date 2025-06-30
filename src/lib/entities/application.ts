@@ -27,7 +27,12 @@ import {
     trading_permission_schema,
     local_tax_form_schema,
     w8ben_schema
-} from '../schemas/application';
+} from './schemas/application';
+import { poa_schema, poi_schema, sow_schema } from './schemas/application';
+
+export type POADocumentInfo = z.infer<typeof poa_schema>
+export type POIDocumentInfo = z.infer<typeof poi_schema>
+export type SOWDocumentInfo = z.infer<typeof sow_schema>
 
 export type Application = z.infer<typeof application_schema>;
 export type Customer = z.infer<typeof customer_schema>;
@@ -66,6 +71,8 @@ export interface InternalApplication {
     master_account_id: string | null;
     lead_id: string | null;
     application: Application;
+    created: string;
+    updated: string;
 }
 
 const external_id = Math.random().toString(36).substring(2, 12)

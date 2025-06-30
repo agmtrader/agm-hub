@@ -1,18 +1,9 @@
-import { about_you_primary_schema, about_you_secondary_schema, general_info_schema, regulatory_schema } from "../schemas/account"
 import { IBKRDocument, W8Ben } from "./application"
 import { Base } from "./base"
 import { z } from "zod"
+import { account_schema } from "./schemas/account"
 
-export interface AccountPayload {
-    advisor_id: string | null
-    user_id: string
-    lead_id: string | null
-    master_account_id: string | null
-    status: string
-    account_type: string
-    ibkr_account_number: string | null
-}
-
+export type AccountPayload = z.infer<typeof account_schema>
 export type Account = Base & AccountPayload
 
 
@@ -104,6 +95,7 @@ export interface AccountManagementRequests {
   }
 }
 
+/*
 export type GeneralInfo = z.infer<ReturnType<typeof general_info_schema>>
 export type AboutYouPrimary = z.infer<ReturnType<typeof about_you_primary_schema>>
 export type AboutYouSecondary = z.infer<ReturnType<typeof about_you_secondary_schema>>
@@ -111,3 +103,4 @@ export type Regulatory = z.infer<ReturnType<typeof regulatory_schema>>
 
 export type IndividualAccountApplicationInfo = GeneralInfo & AboutYouPrimary & Regulatory
 export type JointAccountApplicationInfo = GeneralInfo & AboutYouPrimary & AboutYouSecondary & Regulatory
+*/

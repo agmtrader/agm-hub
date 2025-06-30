@@ -1,5 +1,5 @@
 import React from 'react'
-import ApplicationPage from '@/components/dashboard/applications/ApplicationPage'
+import ApplicationPage from '@/components/dashboard/entities/applications/ApplicationPage'
 import DashboardPage from '@/components/misc/DashboardPage'
 
 type Props = {

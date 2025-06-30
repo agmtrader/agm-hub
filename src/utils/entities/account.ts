@@ -1,5 +1,5 @@
 import { accessAPI } from "../api"
-import { IndividualAccountApplicationInfo, AccountPayload, Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, W8BenSubmissionRequest } from "@/lib/entities/account"
+import { AccountPayload, Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, W8BenSubmissionRequest } from "@/lib/entities/account"
 import { Contact } from "@/lib/entities/contact"
 
 export async function CreateAccount(account: AccountPayload): Promise<{id: string}> {
@@ -25,7 +25,7 @@ export async function ReadAccountByUserID(userID:string): Promise<Account[] | nu
 }
 
 export async function ReadAccountInfoByID(accountID:string) {
-    let accountInfo:IndividualAccountApplicationInfo = await accessAPI('/accounts/read_info', 'POST', {'account_id': accountID, 'query': {}})
+    let accountInfo:any = await accessAPI('/accounts/read_info', 'POST', {'account_id': accountID, 'query': {}})
     return accountInfo
 }
 
@@ -44,7 +44,7 @@ export async function UpdateAccountByID(accountID:string, accountInfo: AccountPa
     return updatedID
 }
 
-export async function UpdateAccountInfoByID(accountID:string, accountInfo: IndividualAccountApplicationInfo) {
+export async function UpdateAccountInfoByID(accountID:string, accountInfo: any) {
     const updatedID = await accessAPI('/accounts/update_info', 'POST', {'account_id': accountID, 'query': {}, 'account_info': accountInfo})
     return updatedID
 }

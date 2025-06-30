@@ -36,6 +36,12 @@ const tools = [
     url: '/dashboard/accounts',
     icon: Users,
     id: 'accounts',
+  },
+  {
+    name: 'Advisors',
+    url: '/dashboard/advisors',
+    icon: Users,
+    id: 'advisors',
   }
 ]
 
@@ -45,18 +51,6 @@ const user_tools = [
     url: '/dashboard/trade-tickets',
     icon: Ticket,
     id: 'trade_tickets',
-  },
-  {
-    name: 'Reporting',
-    url: '/dashboard/reporting',
-    icon: RefreshCcw,
-    id: 'reporting_center',
-  },
-  {
-    name: 'Investment Proposals',
-    url: '/dashboard/investment-proposals',
-    icon: FileText,
-    id: 'investment_proposals',
   },
   {
     name: 'Auto Trader',

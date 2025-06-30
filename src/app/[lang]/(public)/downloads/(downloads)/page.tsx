@@ -1,5 +1,5 @@
 import React from 'react'
-import DownloadsCarousel from '@/components/home/download/DownloadsCarousel'
+import DownloadsCarousel from '@/components/public/download/DownloadsCarousel'
 
 const page = () => {
   return (

@@ -1,9 +1,9 @@
 'use client'
-import Title from "@/components/home/title/Title";
-import {Introduction} from "@/components/home/introduction/Introduction"
-import Services from "@/components/home/services/Services";
-import FAQ from "@/components/home/faq/FAQ";
-import Team from "@/components/home/team/Team";
+import Title from "@/components/public/title/Title";
+import {Introduction} from "@/components/public/introduction/Introduction"
+import Services from "@/components/public/services/Services";
+import FAQ from "@/components/public/faq/FAQ";
+import Team from "@/components/public/team/Team";
 import { Building, BarChart2, Briefcase, Banknote, PieChart, TrendingUp, FileText, Mail, Phone, MessageCircle, DollarSign, Zap, Globe } from "lucide-react";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 
