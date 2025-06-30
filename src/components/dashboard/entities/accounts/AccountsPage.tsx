@@ -19,6 +19,7 @@ const AccountsPage = () => {
   const [showAll, setShowAll] = useState(false)
 
   const handleRowClick = (row: any) => {
+    return
     redirect(formatURL(`/dashboard/accounts/${row.ibkr_account_number}`, lang))
   }
 

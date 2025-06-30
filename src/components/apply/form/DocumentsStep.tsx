@@ -23,7 +23,7 @@ interface DocumentConfig {
 
 const DOCUMENT_CONFIGS: DocumentConfig[] = [
   { id: 'w8', name: 'W8 Form', formNumber: 5001 },
-  { id: 'poi', name: 'Proof of Income', formNumber: 8001 },
+  { id: 'poi', name: 'Proof of Identity', formNumber: 8001 },
   { id: 'poa', name: 'Proof of Address', formNumber: 8002 }
 ];
 

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { ReadApplicationByID, SendApplicationToIBKR } from "@/utils/entities/application";
+import { ReadApplicationByID, SendApplicationToIBKR, UpdateApplicationByID } from "@/utils/entities/application";
 import { Application, InternalApplication } from "@/lib/entities/application";
 import LoadingComponent from "@/components/misc/LoadingComponent";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { Mail, User, DollarSign, ShieldCheck, Info, Users, Briefcase, FileText, 
 import { toast } from '@/hooks/use-toast';
 import { Button } from "@/components/ui/button";
 import { CreateAccount } from "@/utils/entities/account";
-import { AccountPayload } from "@/lib/entities/account";
+import { AccountPayload, InternalAccount } from "@/lib/entities/account";
 import { useSession } from "next-auth/react";
 import LoaderButton from "@/components/misc/LoaderButton";
 import DocumentViewer from "./DocumentViewer";
@@ -68,17 +68,11 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   const manualAccountForm = useForm({
     resolver: zodResolver(account_schema),
     defaultValues: {
-      advisor_id: application?.advisor_id || null,
-      user_id: session?.user?.id || "",
-      lead_id: application?.lead_id || null,
-      master_account_id: application?.master_account_id || null,
-      status: "",
-      account_type: "",
-      ibkr_account_number: null,
-      ibkr_username: null,
-      ibkr_password: null,
-      temporal_email: null,
-      temporal_password: null,
+      ibkr_account_number: "",
+      ibkr_username: "",
+      ibkr_password: "",
+      temporal_email: "",
+      temporal_password: "",
     }
   });
 
@@ -103,17 +97,11 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   useEffect(() => {
     if (application && session?.user?.id) {
       manualAccountForm.reset({
-        advisor_id: application.advisor_id || null,
-        user_id: session.user.id,
-        lead_id: application.lead_id || null,
-        master_account_id: application.master_account_id || null,
-        status: "",
-        account_type: "",
-        ibkr_account_number: null,
-        ibkr_username: null,
-        ibkr_password: null,
-        temporal_email: null,
-        temporal_password: null,
+        ibkr_account_number: "",
+        ibkr_username: "",
+        ibkr_password: "",
+        temporal_email: "",
+        temporal_password: "",
       });
     }
   }, [application, session?.user?.id, manualAccountForm]);
@@ -127,26 +115,28 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     try {
       setSubmitting(true)
 
-      const account: AccountPayload = {
+      const account: InternalAccount = {
         advisor_id: application.advisor_id,
         user_id: session?.user?.id || "",
         lead_id: application.lead_id,
         master_account_id: application.master_account_id,
-        status: "",
-        account_type: "",
+        status: "pending",
+        account_type: "individual",
         ibkr_account_number: null,
         ibkr_username: null,
         ibkr_password: null,
         temporal_email: null,
         temporal_password: null,
+        application_id: application.id,
+        risk_profile_id: null,
+        fee_template: null
       }
-      console.log('account', account)
-      console.log('application', application)
       
       const accountResponse = await CreateAccount(account)
       const applicationResponse = application ? await SendApplicationToIBKR(application.application) : null
       console.log('applicationResponse', applicationResponse)
-      console.log('accountResponse', accountResponse)
+
+      //const applicationUpdateResponse = await UpdateApplicationByID(applicationId, { sentToIBKR: true })
 
       toast({
         title: "Application Sent",
@@ -177,18 +167,22 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     try {
       setIsManualAccountSubmitting(true);
 
-      const account: AccountPayload = {
-        advisor_id: values.advisor_id,
-        user_id: values.user_id,
-        lead_id: values.lead_id,
-        master_account_id: values.master_account_id,
-        status: values.status,
-        account_type: values.account_type,
+      // Construct full Account object by combining form values with application/session data
+      const account:InternalAccount = {
+        advisor_id: application.advisor_id,
+        user_id: session?.user?.id || "",
+        lead_id: application.lead_id,
+        master_account_id: application.master_account_id,
+        status: "pending", // Default status
+        account_type: "individual", // Default account type
         ibkr_account_number: values.ibkr_account_number,
         ibkr_username: values.ibkr_username,
         ibkr_password: values.ibkr_password,
         temporal_email: values.temporal_email,
         temporal_password: values.temporal_password,
+        application_id: application.id,
+        risk_profile_id: null,
+        fee_template: null
       };
 
       const accountResponse = await CreateAccount(account);
@@ -495,7 +489,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       </div>
 
       <div className="flex gap-4">
-        <LoaderButton onClick={handleCreateAccount} isLoading={submitting} text="Send Application to IBKR" className="w-fit"/>
+        <LoaderButton onClick={handleCreateAccount} isLoading={submitting} disabled={true} text="Send Application to IBKR" className="w-fit"/>
         <Button onClick={handleCreateManualAccount} variant="outline" className="w-fit">
           Create Manual Account
         </Button>
@@ -509,110 +503,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           <Form {...manualAccountForm}>
             <form onSubmit={manualAccountForm.handleSubmit(handleManualAccountSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={manualAccountForm.control}
-                  name="advisor_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Advisor ID</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter advisor ID" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={manualAccountForm.control}
-                  name="user_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>User ID</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter user ID" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={manualAccountForm.control}
-                  name="lead_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Lead ID</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter lead ID" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={manualAccountForm.control}
-                  name="master_account_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Master Account ID</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter master account ID" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={manualAccountForm.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Status</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="inactive">Inactive</SelectItem>
-                          <SelectItem value="closed">Closed</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={manualAccountForm.control}
-                  name="account_type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Account Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select account type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="individual">Individual</SelectItem>
-                          <SelectItem value="joint">Joint</SelectItem>
-                          <SelectItem value="corporate">Corporate</SelectItem>
-                          <SelectItem value="trust">Trust</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <FormField
                   control={manualAccountForm.control}
                   name="ibkr_account_number"

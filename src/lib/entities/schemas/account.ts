@@ -1,12 +1,6 @@
 import { z } from "zod"
 
 export const account_schema = z.object({
-    advisor_id: z.string().nullable(),
-    user_id: z.string(),
-    lead_id: z.string().nullable(),
-    master_account_id: z.string().nullable(),
-    status: z.string(),
-    account_type: z.string(),
     ibkr_account_number: z.string().nullable(),
     ibkr_username: z.string().nullable(),
     ibkr_password: z.string().nullable(),

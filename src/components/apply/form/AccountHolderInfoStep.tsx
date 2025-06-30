@@ -248,9 +248,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                 ))}
               </SelectContent>
             </Select>
-            <FormDescription>
-              Note: Values from this list (e.g., 'ID', 'License') may need mapping to schema-expected values (e.g., 'NATIONAL_ID', 'DRIVERS_LICENSE') for IBKR compatibility.
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}

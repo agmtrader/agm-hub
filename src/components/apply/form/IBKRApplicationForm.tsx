@@ -7,7 +7,7 @@ import {
   Form,
 } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
-import { Application, application as defaultApplicationValues, InternalApplication } from '@/lib/entities/application';
+import { Application, InternalApplication, application as defaultApplicationValues } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import AccountHolderInfoStep from './AccountHolderInfoStep'
@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button'
 import LoaderButton from '@/components/misc/LoaderButton'
 import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
+import { getDefaults } from '@/utils/form'
 
 enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -69,6 +70,7 @@ const IBKRApplicationForm = () => {
         id: "",
         created: formatTimestamp(new Date()),
         updated: formatTimestamp(new Date()),
+        sentToIBKR: false,
       }
 
       const createResponse = await CreateApplication(internalApplication);

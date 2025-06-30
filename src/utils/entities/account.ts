@@ -1,8 +1,8 @@
 import { accessAPI } from "../api"
-import { AccountPayload, Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, W8BenSubmissionRequest } from "@/lib/entities/account"
+import { AccountPayload, Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, W8BenSubmissionRequest, InternalAccount } from "@/lib/entities/account"
 import { Contact } from "@/lib/entities/contact"
 
-export async function CreateAccount(account: AccountPayload): Promise<{id: string}> {
+export async function CreateAccount(account: InternalAccount): Promise<{id: string}> {
     let account_id = await accessAPI('/accounts/create', 'POST', {
         'account': account, 
     })

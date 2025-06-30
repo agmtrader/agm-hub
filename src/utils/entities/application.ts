@@ -23,6 +23,11 @@ export async function ReadApplicationByID(applicationID: string): Promise<Intern
     return applications[0]
 }
 
+export async function UpdateApplicationByID(applicationID: string, application: any): Promise<IDResponse> {
+    const updateResponse: IDResponse = await accessAPI('/applications/update', 'POST', { 'id': applicationID, 'application': application })
+    return updateResponse
+}
+
 export async function SendApplicationToIBKR(application: Application) {
     const response: any = await accessAPI('/applications/send_to_ibkr', 'POST', { 
         'application': {
