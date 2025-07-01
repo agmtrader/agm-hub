@@ -39,6 +39,11 @@ export async function ReadAccountContactByID(accountID:string) {
     return accountContact
 }
 
+export async function ReadAccountByApplicationID(applicationID:string): Promise<Account[] | null> {
+    let accounts:Account[] = await accessAPI('/accounts/read', 'POST', {'query': {'application_id': applicationID}})
+    return accounts
+}
+
 export async function UpdateAccountByID(accountID:string, accountInfo: AccountPayload) {
     const updatedID = await accessAPI('/accounts/update', 'POST', {'account_id': accountID, 'query': {}, 'account': accountInfo})
     return updatedID

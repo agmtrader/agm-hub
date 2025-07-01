@@ -5,7 +5,7 @@ import ApplicationsPage from '@/components/dashboard/entities/applications/Appli
 
 const page = () => {
   return (
-    <DashboardPage title="Applications" description="Manage applications related to AGM">
+    <DashboardPage title="Applications" description="Manage IBKR account applications">
       <ApplicationsPage />
     </DashboardPage>
   )
