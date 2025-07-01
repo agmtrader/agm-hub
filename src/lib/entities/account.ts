@@ -5,19 +5,13 @@ import { account_schema } from "./schemas/account"
 
 export type AccountPayload = z.infer<typeof account_schema>
 export type InternalAccount = AccountPayload & {
-  advisor_id: string | null,
   user_id: string,
-  lead_id: string | null,
-  master_account_id: string | null,
-  status: string,
-  account_type: string,
-  ibkr_account_number: string | null,
+  ibkr_account_number: string,
   ibkr_username: string | null,
   ibkr_password: string | null,
   temporal_email: string | null,
   temporal_password: string | null,
-  application_id: string | null,
-  risk_profile_id: string | null,
+  application_id: string,
   fee_template: string | null,
 }
 export type Account = Base & InternalAccount

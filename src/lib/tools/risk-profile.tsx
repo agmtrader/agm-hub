@@ -3,7 +3,7 @@ import { Base } from '../entities/base';
 
 export interface AccountRiskProfilePayload {
   account_id: string | null;
-  risk_profile_id: string;
+  risk_profile_id: number;
   score: number;
 }
 

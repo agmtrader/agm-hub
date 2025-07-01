@@ -80,8 +80,7 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
         description: values.description,
         status: 'Started',
         completed: false,
-        contact_date: formatTimestamp(new Date()),
-        application_id: null,
+        contact_date: formatTimestamp(new Date())
       }
 
       await CreateLeadAPI(leadPayload, followUpsPayload)

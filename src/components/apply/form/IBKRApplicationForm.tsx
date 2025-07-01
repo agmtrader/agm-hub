@@ -19,17 +19,45 @@ import LoaderButton from '@/components/misc/LoaderButton'
 import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
 import { getDefaults } from '@/utils/form'
+import Confetti from "@/components/ui/confetti"
+import Link from "next/link"
+import { Check } from "lucide-react"
+import { useSession } from 'next-auth/react'
 
 enum FormStep {
   ACCOUNT_TYPE = 0,
   ACCOUNT_HOLDER_INFO = 1,
-  DOCUMENTS = 2
+  DOCUMENTS = 2,
+  SUCCESS = 3
+}
+
+// Success component for the final step
+const ApplicationSuccess = () => {
+  return (
+    <div className='relative h-full w-full flex flex-col justify-center items-center gap-y-8 py-16'>
+      <Confetti
+        className="absolute left-0 top-0 -z-10 size-full pointer-events-none"
+      />
+      <Check className='w-24 h-24 text-success' />
+      <p className='text-2xl font-semibold text-foreground'>Application Submitted Successfully!</p>
+      <div className='flex flex-col items-center gap-y-4'>
+        <p className='text-lg text-subtitle'>Your IBKR application has been submitted and is being processed.</p>
+        <p className='text-sm text-subtitle'>You will receive a confirmation email shortly with next steps.</p>
+      </div>
+      <div className='flex gap-4'>
+        <Button>
+          <Link href='/'>Go Back Home</Link>
+        </Button>
+      </div>
+    </div>
+  )
 }
 
 const IBKRApplicationForm = () => {
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: session } = useSession();
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
@@ -57,6 +85,10 @@ const IBKRApplicationForm = () => {
       }
       
       setIsSubmitting(true);
+
+      if (!session?.user?.id) {
+        throw new Error('User not found');
+      }
       
       const advisor_id = searchParams.get('ad') || null;
       const master_account_id = searchParams.get('ma') || null;
@@ -70,21 +102,21 @@ const IBKRApplicationForm = () => {
         id: "",
         created: formatTimestamp(new Date()),
         updated: formatTimestamp(new Date()),
-        sentToIBKR: false,
+        date_sent_to_ibkr: null,
+        user_id: session?.user?.id,
       }
 
       const createResponse = await CreateApplication(internalApplication);
       console.log('Application created:', createResponse);
-
-      if (lead_id) {
-        await UpdateLeadByID(lead_id, { application_id: createResponse.id });
-      }
       
       toast({
         title: "Application Submitted",
         description: "Your IBKR application has been successfully submitted.",
         variant: "success"
       });
+
+      // Move to success step
+      setCurrentStep(FormStep.SUCCESS);
     } catch (error) {
       toast({
         title: "Submission Failed",
@@ -100,7 +132,8 @@ const IBKRApplicationForm = () => {
     const steps = [
       { name: 'Account Type', step: FormStep.ACCOUNT_TYPE },
       { name: 'Account Holder Information', step: FormStep.ACCOUNT_HOLDER_INFO },
-      { name: 'Documents', step: FormStep.DOCUMENTS }
+      { name: 'Documents', step: FormStep.DOCUMENTS },
+      { name: 'Complete', step: FormStep.SUCCESS }
     ];
 
     console.log(form.formState.errors);
@@ -111,8 +144,12 @@ const IBKRApplicationForm = () => {
           {steps.map((step, index) => (
             <React.Fragment key={step.step}>
               <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= step.step ? 'bg-primary text-white' : 'bg-muted text-foreground'}`}>
-                  {index + 1}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= step.step ? 'bg-primary text-background' : 'bg-muted text-foreground'}`}>
+                  {currentStep >= step.step ? (
+                    step.step === FormStep.SUCCESS ? <Check className="w-4 h-4" /> : index + 1
+                  ) : (
+                    index + 1
+                  )}
                 </div>
                 <span className="mt-2 text-sm">{step.name}</span>
               </div>
@@ -129,6 +166,11 @@ const IBKRApplicationForm = () => {
         </div>
       </div>
     );
+  }
+
+  // Don't show progress or form title on success step
+  if (currentStep === FormStep.SUCCESS) {
+    return <ApplicationSuccess />;
   }
 
   return (

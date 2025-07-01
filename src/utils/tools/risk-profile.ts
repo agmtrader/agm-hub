@@ -3,7 +3,7 @@ import { riskProfiles, AccountRiskProfilePayload, RiskProfile as RiskProfileType
 import { useTranslationProvider } from "../providers/TranslationProvider"
 
 export async function CreateAccountRiskProfile(account_risk_profile:AccountRiskProfilePayload) {
-    await accessAPI('/risk_profiles/create', 'POST', {data: account_risk_profile, id: account_risk_profile.risk_profile_id})
+    return
 }
 
 export async function ReadAccountRiskProfiles(): Promise<AccountRiskProfile[] | null> {

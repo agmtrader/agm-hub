@@ -6,7 +6,6 @@ export type LeadPayload = z.infer<typeof lead_schema> & {
     status: string
     completed: boolean
     contact_date: string
-    application_id: string | null
 }
 export type Lead = Base & LeadPayload
 

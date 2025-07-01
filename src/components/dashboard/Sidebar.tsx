@@ -20,6 +20,12 @@ const tools = [
     id: 'contacts',
   },
   {
+    name: 'Advisors',
+    url: '/dashboard/advisors',
+    icon: Users,
+    id: 'advisors',
+  },
+  {
     name: 'Leads',
     url: '/dashboard/leads',
     icon: TrendingUp,
@@ -36,12 +42,6 @@ const tools = [
     url: '/dashboard/accounts',
     icon: Users,
     id: 'accounts',
-  },
-  {
-    name: 'Advisors',
-    url: '/dashboard/advisors',
-    icon: Users,
-    id: 'advisors',
   }
 ]
 

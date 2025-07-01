@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { FollowUp, FollowUpPayload, Lead } from '@/lib/entities/lead'
 import {
@@ -20,6 +20,8 @@ import { Contact } from '@/lib/entities/contact'
 import GenerateApplicationLink from './GenerateApplicationLink'
 import ContactCard from '../contacts/ContactCard'
 import { UpdateLeadFollowUpByID } from '@/utils/entities/lead'
+import { ReadApplicationByLeadID } from '@/utils/entities/application'
+import { InternalApplication } from '@/lib/entities/application'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
@@ -36,8 +38,28 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
 
   const contact = contacts.find(c => c.id === lead?.contact_id)
   const referrer = contacts.find(c => c.id === lead?.referrer_id)
+  const [application, setApplication] = useState<InternalApplication | null>(null)
 
   const { lang } = useTranslationProvider()
+
+  // Fetch application when lead changes
+  useEffect(() => {
+    const fetchApplication = async () => {
+      if (lead?.id) {
+        try {
+          const app = await ReadApplicationByLeadID(lead.id)
+          setApplication(app)
+        } catch (error) {
+          console.error('Error fetching application:', error)
+          setApplication(null)
+        }
+      } else {
+        setApplication(null)
+      }
+    }
+
+    fetchApplication()
+  }, [lead?.id])
 
   async function handleCompleteFollowUp(followUp: FollowUpPayload) {
     if (!lead) return
@@ -80,16 +102,16 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
             </div>
 
             {/* Application Information */}
-            {lead.application_id && (
+            {application && (
               <Card className="p-6 space-y-4">
                 <h3 className="text-lg font-semibold">Application Information</h3>
                 <div>
                   <p className="text-foreground font-medium text-md">Application ID</p>
                   <Link 
-                    href={formatURL(`/dashboard/applications/${lead.application_id}`, lang)}
+                    href={formatURL(`/dashboard/applications/${application.id}`, lang)}
                     className="text-primary hover:text-primary/80 underline text-sm transition-colors"
                   >
-                    {lead.application_id}
+                    {application.id}
                   </Link>
                 </div>
               </Card>

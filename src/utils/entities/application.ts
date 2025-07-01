@@ -23,8 +23,15 @@ export async function ReadApplicationByID(applicationID: string): Promise<Intern
     return applications[0]
 }
 
+export async function ReadApplicationByLeadID(leadID: string): Promise<InternalApplication | null> {
+    const applications: InternalApplication[] = await accessAPI('/applications/read', 'POST', { 'query': { 'lead_id': leadID } })
+    if (applications.length === 0) return null
+    if (applications.length > 1) throw new Error('Multiple applications found for Lead ID: ' + leadID)
+    return applications[0]
+}
+
 export async function UpdateApplicationByID(applicationID: string, application: any): Promise<IDResponse> {
-    const updateResponse: IDResponse = await accessAPI('/applications/update', 'POST', { 'id': applicationID, 'application': application })
+    const updateResponse: IDResponse = await accessAPI('/applications/update', 'POST', { 'query': { 'id': applicationID }, 'application': application })
     return updateResponse
 }
 

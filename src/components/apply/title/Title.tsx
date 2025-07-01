@@ -1,28 +1,95 @@
 'use client'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Header } from '@/components/Header'
 import { motion } from 'framer-motion'
 import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { containerVariants, itemVariants } from '@/lib/anims'
-import { Account } from '@/lib/entities/account'
-import PreviousApplications from './PreviousApplications'
 import Link from 'next/link'
 import { formatURL } from '@/utils/language/lang'
 import { useSearchParams } from 'next/navigation'
+import { ReadApplicationByLeadID } from '@/utils/entities/application'
+import { ReadLeadByID } from '@/utils/entities/lead'
+import { toast } from '@/hooks/use-toast'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
-  setAccount: React.Dispatch<React.SetStateAction<Account | null>>
 }
 
-const Title = ({setStarted, setAccount }:Props) => {
+const Title = ({ setStarted }:Props) => {
 
   const { t, lang } = useTranslationProvider()
+  const searchParams = useSearchParams()
+  const [isCheckingApplication, setIsCheckingApplication] = useState(false)
+  const [existingApplicationError, setExistingApplicationError] = useState(false)
+  const [leadNotFoundError, setLeadNotFoundError] = useState(false)
+
+  useEffect(() => {
+    checkLeadAndApplication()
+  }, [searchParams])
+
+  async function checkLeadAndApplication() {
+    const leadId = searchParams.get('ld')
+    if (!leadId) return
+
+    setIsCheckingApplication(true)
+    try {
+      // First check if the lead exists
+      const leadData = await ReadLeadByID(leadId)
+      if (!leadData || !leadData.leads || leadData.leads.length === 0) {
+        setLeadNotFoundError(true)
+        toast({
+          title: "Lead Not Found",
+          description: "The lead ID provided is invalid or does not exist.",
+          variant: "destructive"
+        })
+        return
+      }
+
+      // If lead exists, check for existing application
+      const existingApplication = await ReadApplicationByLeadID(leadId)
+      if (existingApplication) {
+        setExistingApplicationError(true)
+        toast({
+          title: "Application Already Exists",
+          description: "An application has already been submitted for this lead. Please contact support for more information.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Error checking lead and application:', error)
+      toast({
+        title: "Validation Error",
+        description: "Unable to validate lead information. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsCheckingApplication(false)
+    }
+  }
 
   async function handleStartApplication() {
+    if (leadNotFoundError) {
+      toast({
+        title: "Invalid Lead",
+        description: "Cannot start application with an invalid lead ID.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (existingApplicationError) {
+      toast({
+        title: "Cannot Start Application",
+        description: "An application already exists for this lead.",
+        variant: "destructive"
+      })
+      return
+    }
     setStarted(true)
   }
+
+  const hasError = leadNotFoundError || existingApplicationError
 
   return (
     <div className='w-full h-screen flex flex-col'>
@@ -46,6 +113,7 @@ const Title = ({setStarted, setAccount }:Props) => {
               {t('apply.account.title.get_started')} <Link href={formatURL('/requirements', lang)} className='text-primary'>{t('apply.account.title.get_started_link')}</Link>.
             </p>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -57,15 +125,27 @@ const Title = ({setStarted, setAccount }:Props) => {
           <motion.div variants={itemVariants}>
             <ShimmerButton
               onClick={handleStartApplication}
-              className="px-8 py-3 text-lg font-semibold mt-4"
-              background='#22c55e'
+              className={`px-8 py-3 text-lg font-semibold mt-4 ${hasError ? 'opacity-50 cursor-not-allowed' : ''}`}
+              background={hasError ? '#6b7280' : '#22c55e'}
+              disabled={isCheckingApplication || hasError}
             >
-                <p className="text-sm">{t('apply.account.title.startApplication')}</p>
+                <p className="text-sm">
+                  {isCheckingApplication 
+                    ? 'Validating...' 
+                    : leadNotFoundError
+                      ? 'Invalid Lead'
+                      : existingApplicationError 
+                        ? 'Application Exists' 
+                        : t('apply.account.title.startApplication')
+                  }
+                </p>
             </ShimmerButton>
           </motion.div>
-          <motion.div variants={itemVariants}>
-            <PreviousApplications setAccount={setAccount} setStarted={setStarted}/>
-          </motion.div>
+          {/*
+            <motion.div variants={itemVariants}>
+              <PreviousApplications setAccount={setAccount} setStarted={setStarted}/>
+            </motion.div>
+          */}
         </motion.div>
       </div>
     </div>

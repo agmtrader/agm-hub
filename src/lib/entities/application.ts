@@ -75,7 +75,8 @@ export interface InternalApplication {
     application: Application;
     created: string;
     updated: string;
-    sentToIBKR: boolean;
+    date_sent_to_ibkr: string | null;
+    user_id: string | null;
 }
 
 const external_id = Math.random().toString(36).substring(2, 12)

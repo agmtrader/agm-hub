@@ -58,7 +58,7 @@ export default function Home() {
       }
     ],
     actionText: t('agm-advisor.introduction.action_text'),
-    ctaLink: '/requirements'
+    ctaLink: '/apply/risk'
   }
 
   const services = [

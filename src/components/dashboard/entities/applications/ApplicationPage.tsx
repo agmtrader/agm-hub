@@ -40,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatTimestamp } from "@/utils/dates";
 
 interface Props {
   applicationId: string;
@@ -112,31 +113,32 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
     if (!application) return;
 
+    if (!session?.user?.id) {
+      throw new Error('User not found');
+    }
+
     try {
       setSubmitting(true)
 
+      const applicationResponse = await SendApplicationToIBKR(application.application)
+      console.log('applicationResponse', applicationResponse)
+
+      console.log(applicationResponse.fileData.application.accounts[0].value)
+
+      // Assign account # here
       const account: InternalAccount = {
-        advisor_id: application.advisor_id,
-        user_id: session?.user?.id || "",
-        lead_id: application.lead_id,
-        master_account_id: application.master_account_id,
-        status: "pending",
-        account_type: "individual",
-        ibkr_account_number: null,
+        user_id: session?.user?.id,
+        ibkr_account_number: applicationResponse.fileData.application.accounts[0].value,
         ibkr_username: null,
         ibkr_password: null,
         temporal_email: null,
         temporal_password: null,
         application_id: application.id,
-        risk_profile_id: null,
         fee_template: null
       }
-      
-      const accountResponse = await CreateAccount(account)
-      const applicationResponse = application ? await SendApplicationToIBKR(application.application) : null
-      console.log('applicationResponse', applicationResponse)
+      await CreateAccount(account)
 
-      //const applicationUpdateResponse = await UpdateApplicationByID(applicationId, { sentToIBKR: true })
+      await UpdateApplicationByID(applicationId, { sentToIBKR: true })
 
       toast({
         title: "Application Sent",
@@ -164,28 +166,28 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   async function handleManualAccountSubmit(values: any) {
     if (!application) return;
 
+    if (!session?.user?.id) {
+      throw new Error('User not found');
+    }
+
     try {
       setIsManualAccountSubmitting(true);
 
       // Construct full Account object by combining form values with application/session data
       const account:InternalAccount = {
-        advisor_id: application.advisor_id,
-        user_id: session?.user?.id || "",
-        lead_id: application.lead_id,
-        master_account_id: application.master_account_id,
-        status: "pending", // Default status
-        account_type: "individual", // Default account type
+        user_id: session?.user?.id,
         ibkr_account_number: values.ibkr_account_number,
         ibkr_username: values.ibkr_username,
         ibkr_password: values.ibkr_password,
         temporal_email: values.temporal_email,
         temporal_password: values.temporal_password,
         application_id: application.id,
-        risk_profile_id: null,
         fee_template: null
       };
 
-      const accountResponse = await CreateAccount(account);
+      await CreateAccount(account);
+
+      await UpdateApplicationByID(applicationId, { date_sent_to_ibkr: formatTimestamp(new Date()) })
       
       toast({
         title: "Account Created",

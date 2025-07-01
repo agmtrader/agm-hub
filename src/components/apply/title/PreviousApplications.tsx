@@ -27,8 +27,6 @@ const PreviousApplications = ({setAccount, setStarted}:Props) => {
             if (!session?.user?.id) throw new Error('User not found')
             let accounts = await ReadAccountByUserID(session?.user?.id)
             if (!accounts) return
-            
-            accounts = accounts.filter((account) => account.status === 'Started')
             setPreviousAccounts(accounts)
         }   
         getPreviousAccounts()
