@@ -21,6 +21,7 @@ import Confetti from "@/components/ui/confetti"
 import Link from "next/link"
 import { Check } from "lucide-react"
 import { useSession } from 'next-auth/react'
+import { getDefaults } from '@/utils/form'
 
 enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -59,7 +60,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: defaultApplicationValues,
+    defaultValues: getDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });
