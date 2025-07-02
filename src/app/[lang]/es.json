@@ -446,7 +446,7 @@
                 "account_types": {
                     "individual": "Cuenta Individual",
                     "joint": "Cuenta Conjunta",
-                    "trust": "Cuenta Fiduciaria",
+                
                     "institutional": "Cuenta Institucional"
                 },
                 "referrer": "¿Quién te refirió?",

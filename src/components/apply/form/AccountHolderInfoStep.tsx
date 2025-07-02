@@ -110,119 +110,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
     </>
   );
 
-  // TRUST FIELDS
-  const renderTrustFields = () => (
-    <Card className="p-6 space-y-6">
-      <h3 className="text-xl font-semibold">Trust Information</h3>
-      <FormField
-        control={form.control}
-        name={`customer.trust.identification.0.name` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Trust Name</FormLabel>
-            <FormControl>
-              <Input placeholder="" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name={`customer.trust.identification.0.typeOfTrust` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Type of Trust</FormLabel>
-            <FormControl>
-              <Input placeholder="IRREVOC, REVOC" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name={`customer.trust.identification.0.dateFormed` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Date Formed</FormLabel>
-            <FormControl>
-              <Input type="date" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name={`customer.trust.identification.0.purposeOfTrust` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Purpose of Trust</FormLabel>
-            <FormControl>
-              <Input placeholder="" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <CountriesFormField
-        form={form}
-        element={{
-          name: `customer.trust.identification.0.formationCountry`,
-          title: "Formation Country"
-        }}
-      />
-      <FormField
-        control={form.control}
-        name={`customer.trust.identification.0.formationState` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Formation State/Province</FormLabel>
-            <FormControl>
-              <Input placeholder="" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name={`customer.trust.identification.0.registrationNumber` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Registration Number</FormLabel>
-            <FormControl>
-              <Input placeholder="" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name={`customer.trust.identification.0.registrationType` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Registration Type</FormLabel>
-            <FormControl>
-              <Input placeholder="" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <CountriesFormField
-        form={form}
-        element={{
-          name: `customer.trust.identification.0.registrationCountry`,
-          title: "Registration Country"
-        }}
-      />
-      <h4 className="text-lg font-semibold pt-4">Trust Address</h4>
-      {renderAddressFields('customer.trust.identification.0.address')}
-    </Card>
-  );
+
 
   // ORGANIZATION FIELDS
   const renderOrganizationFields = () => (
@@ -580,7 +468,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         <p className="text-subtitle">
           {accountType === 'JOINT' 
             ? 'Please provide information for both account holders' 
-            : accountType === 'TRUST' ? 'Provide trust information' : accountType === 'ORG' ? 'Provide organization information' : 'Please provide your account holder information'
+            : accountType === 'ORG' ? 'Provide organization information' : 'Please provide your account holder information'
           }
         </p>
       </div>
@@ -653,26 +541,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           {/* Second Holder */}
           {renderAccountHolderFields("customer.jointHolders.secondHolderDetails.0", "Second Account Holder")}
         </div>
-      ) : accountType === 'TRUST' ? (
-        <div className="space-y-6">
-          {renderTrustFields()}
 
-          {/* Trust Parties */}
-          {renderAccountHolderFields(
-            "customer.trust.grantors.individual.0",
-            "Grantor Details"
-          )}
-
-          {renderAccountHolderFields(
-            "customer.trust.beneficiaries.individual.0",
-            "Beneficiary Details"
-          )}
-
-          {renderAccountHolderFields(
-            "customer.trust.trustees.individuals.0",
-            "Trustee Details"
-          )}
-        </div>
       ) : accountType === 'ORG' ? (
         <div className="space-y-6">
           {renderOrganizationFields()}

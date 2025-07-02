@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Card } from '@/components/ui/card'
-import { Application, trustApplication, organizationApplication, application as individualApplication, jointApplication } from '@/lib/entities/application'
+import { Application, organizationApplication, application as individualApplication, jointApplication } from '@/lib/entities/application'
 
 interface AccountTypeStepProps {
   form: UseFormReturn<Application>
@@ -23,13 +23,10 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
     if (value === 'INDIVIDUAL') {
       form.reset({ ...individualApplication, customer: { ...individualApplication.customer, type: 'INDIVIDUAL' } } as any)
     }
-    if (value === 'JOINT') {
-      form.reset({ ...jointApplication, customer: { ...jointApplication.customer, type: 'JOINT' } } as any)
-    }
-    if (value === 'TRUST') {
-      form.reset({ ...trustApplication, customer: { ...trustApplication.customer, type: 'TRUST' } } as any)
-    }
-    if (value === 'ORG') {
+          if (value === 'JOINT') {
+        form.reset({ ...jointApplication, customer: { ...jointApplication.customer, type: 'JOINT' } } as any)
+      }
+      if (value === 'ORG') {
       form.reset({ ...organizationApplication, customer: { ...organizationApplication.customer, type: 'ORG' } } as any)
     }
   }
@@ -80,21 +77,7 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
                   </FormItem>
                 </Card>
 
-                <Card className="p-6 hover:border-primary transition-colors">
-                  <FormItem className="flex flex-row items-center justify-start gap-10">
-                      <FormControl>
-                        <RadioGroupItem value="TRUST" />
-                      </FormControl>
-                      <div> 
-                        <FormLabel className="text-lg font-medium text-foreground cursor-pointer">
-                          Trust Account
-                        </FormLabel>
-                        <p className="text-sm text-subtitle">
-                          An account owned by a trust entity
-                        </p>
-                      </div>
-                  </FormItem>
-                </Card>
+
 
                 <Card className="p-6">
                   <FormItem className="flex flex-row items-center justify-start gap-10">

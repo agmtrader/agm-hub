@@ -447,7 +447,7 @@
                 "account_types": {
                     "individual": "Individual Account",
                     "joint": "Joint Account",
-                    "trust": "Trust Account",
+                
                     "institutional": "Institutional Account"
                 },
                 "referrer": "Who referred you?",
@@ -651,7 +651,7 @@
                         "salary": "Salaries (Copy of the most recent Employer Order or Certification by a CPA)",
                         "investments": "Income from Investment Gains (Brokerage Account Statement showing such gains)",
                         "property": "Property Sale (Property Purchase/Sale Contract)",
-                        "inheritance": "Inheritance (Copy of Legal Document: Trust, Will, etc.)",
+                        "inheritance": "Inheritance (Copy of Legal Document: Will, etc.)",
                         "shares": "Sale of Shares in one or more companies (Brokerage Account Statement showing such sales)",
                         "dividends": "Dividends received (Copy of Shareholders' Minutes authorizing Dividend distribution)",
                         "other": "Other"
@@ -730,7 +730,7 @@
                     "documents": {
                         "investments": "Income from Investment Gains: (Stock Exchange Account Statement showing such gains)",
                         "property": "Property Sale: (Property Purchase/Sale Contract)",
-                        "inheritance": "Inheritance: (Copy of Legal Document: Trust, Will, etc.)",
+                        "inheritance": "Inheritance: (Copy of Legal Document: Will, etc.)",
                         "shares": "Sale of Shares in one or more companies: (Stock Exchange Account Statement showing such sales)",
                         "profits": "Income from Profits: (Copy of Financial Statements of the Company showing such income)",
                         "business": "Income from Business: (Copy of Financial Statements of the Company showing such income)",

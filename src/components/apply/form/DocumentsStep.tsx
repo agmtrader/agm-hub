@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useFormContext, UseFormReturn, useWatch } from 'react-hook-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, FileText, Clock, Users } from 'lucide-react'
+import { CheckCircle, FileText, Clock, Users, Building } from 'lucide-react'
 import { Application } from '@/lib/entities/application'
 import DocumentUploader, { DocumentType } from './DocumentUploader'
 import { FormField } from '@/components/ui/form'
@@ -25,12 +25,15 @@ interface HolderInfo {
   id: string;
   name: string;
   fullName: string;
+  type: 'individual' | 'organization';
 }
 
 const DOCUMENT_CONFIGS: DocumentConfig[] = [
   { id: 'w8', name: 'W8 Form', formNumber: 5001 },
   { id: 'poi', name: 'Proof of Identity', formNumber: 8001 },
-  { id: 'poa', name: 'Proof of Address', formNumber: 8002 }
+  { id: 'poa', name: 'Proof of Address', formNumber: 8002 },
+  { id: 'poe', name: 'Proof of Existence', formNumber: 9001 }, // Organization proof of existence
+  { id: 'ppb', name: 'Proof of Place of Business', formNumber: 9002 } // Organization proof of place of business
 ];
 
 const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
@@ -51,47 +54,80 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     defaultValue: [],
   }) || [];
 
-  // Check if this is a joint application
+  // Check application type
   const isJointApplication = actualFormData?.customer?.type === 'JOINT';
+  const isOrganizationApplication = actualFormData?.customer?.type === 'ORG';
 
-  // Get holder information for joint applications
+  // Get holder information for all application types
   const getHolderInfo = (): HolderInfo[] => {
-    if (!isJointApplication || !actualFormData?.customer?.jointHolders) {
-      // For individual applications
-      const holder = actualFormData?.customer?.accountHolder?.accountHolderDetails?.[0];
-      if (holder) {
-        return [{
-          id: 'primary',
-          name: 'Account Holder',
-          fullName: `${holder.name.first} ${holder.name.last}`
-        }];
+    if (isOrganizationApplication && actualFormData?.customer?.organization) {
+      const holders: HolderInfo[] = [];
+      
+      // Add organization entity
+      const orgIdentification = actualFormData.customer.organization.identifications?.[0];
+      if (orgIdentification) {
+        holders.push({
+          id: 'organization',
+          name: 'Organization',
+          fullName: orgIdentification.name,
+          type: 'organization'
+        });
       }
-      return [];
-    }
-
-    // For joint applications
-    const firstHolder = actualFormData.customer.jointHolders.firstHolderDetails?.[0];
-    const secondHolder = actualFormData.customer.jointHolders.secondHolderDetails?.[0];
-    
-    const holders: HolderInfo[] = [];
-    
-    if (firstHolder) {
-      holders.push({
-        id: 'first',
-        name: 'First Holder',
-        fullName: `${firstHolder.name.first} ${firstHolder.name.last}`
+      
+      // Add associated individuals
+      const associatedIndividuals = actualFormData.customer.organization.associatedEntities?.associatedIndividuals || [];
+      associatedIndividuals.forEach((individual, index) => {
+        holders.push({
+          id: `individual-${index}`,
+          name: `Associated Individual ${index + 1}`,
+          fullName: `${individual.name.first} ${individual.name.last}`,
+          type: 'individual'
+        });
       });
+      
+      return holders;
     }
     
-    if (secondHolder) {
-      holders.push({
-        id: 'second',
-        name: 'Second Holder',
-        fullName: `${secondHolder.name.first} ${secondHolder.name.last}`
-      });
+    if (isJointApplication && actualFormData?.customer?.jointHolders) {
+      // For joint applications
+      const firstHolder = actualFormData.customer.jointHolders.firstHolderDetails?.[0];
+      const secondHolder = actualFormData.customer.jointHolders.secondHolderDetails?.[0];
+      
+      const holders: HolderInfo[] = [];
+      
+      if (firstHolder) {
+        holders.push({
+          id: 'first',
+          name: 'First Holder',
+          fullName: `${firstHolder.name.first} ${firstHolder.name.last}`,
+          type: 'individual'
+        });
+      }
+      
+      if (secondHolder) {
+        holders.push({
+          id: 'second',
+          name: 'Second Holder',
+          fullName: `${secondHolder.name.first} ${secondHolder.name.last}`,
+          type: 'individual'
+        });
+      }
+      
+      return holders;
     }
     
-    return holders;
+    // For individual applications
+    const holder = actualFormData?.customer?.accountHolder?.accountHolderDetails?.[0];
+    if (holder) {
+      return [{
+        id: 'primary',
+        name: 'Account Holder',
+        fullName: `${holder.name.first} ${holder.name.last}`,
+        type: 'individual'
+      }];
+    }
+    
+    return [];
   };
 
   const holders = getHolderInfo();
@@ -258,12 +294,152 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     }
   }
 
+  // New handlers for organization-specific documents
+  async function handlePOESubmission(
+    documentType: DocumentType,
+    poeFormValues: any,
+    uploadedFiles: File[] | null,
+    holderId?: string
+  ) {
+    if (!uploadedFiles || uploadedFiles.length === 0) { 
+      console.error("No file provided for POE submission.");
+      return;
+    }
+    const file = uploadedFiles[0]; 
+    const poeFormNumber = 9001;
+
+    try {
+      const base64Data = await getBase64(file);
+      const sha1Checksum = await calculateSHA1(file);
+      const ibkrTimestamp = getIBKRTimestamp();
+
+      const signerName = getSignerName(holderId || 'organization');
+
+      const newDoc = {
+        signedBy: [signerName],
+        attachedFile: {
+          fileName: file.name,
+          fileLength: file.size,
+          sha1Checksum: sha1Checksum,
+        },
+        formNumber: poeFormNumber,
+        execLoginTimestamp: ibkrTimestamp,
+        execTimestamp: ibkrTimestamp,
+        proofOfExistenceType: poeFormValues.type,
+        holderId: holderId || 'organization',
+        payload: {
+          mimeType: file.type,
+          data: base64Data,
+        },
+      };
+
+      const currentDocs = actualForm?.getValues('documents') || [];
+      actualForm?.setValue('documents', [...currentDocs, newDoc], { shouldValidate: true, shouldDirty: true });
+      
+      toast({
+        title: "Success",
+        description: "Proof of Existence document uploaded successfully for Organization",
+        variant: "success"
+      });
+      
+      console.log('[DocumentsStep] POE Document submitted:', newDoc);
+    } catch (error) {
+      console.error("Error processing POE document:", error);
+      toast({
+        title: "Error",
+        description: "Failed to upload Proof of Existence document",
+        variant: "destructive"
+      });
+    }
+  }
+
+  async function handlePPBSubmission(
+    documentType: DocumentType,
+    ppbFormValues: any,
+    uploadedFiles: File[] | null,
+    holderId?: string
+  ) {
+    if (!uploadedFiles || uploadedFiles.length === 0) { 
+      console.error("No file provided for PPB submission.");
+      return;
+    }
+    const file = uploadedFiles[0]; 
+    const ppbFormNumber = 9002;
+
+    try {
+      const base64Data = await getBase64(file);
+      const sha1Checksum = await calculateSHA1(file);
+      const ibkrTimestamp = getIBKRTimestamp();
+
+      const signerName = getSignerName(holderId || 'organization');
+
+      const newDoc = {
+        signedBy: [signerName],
+        attachedFile: {
+          fileName: file.name,
+          fileLength: file.size,
+          sha1Checksum: sha1Checksum,
+        },
+        formNumber: ppbFormNumber,
+        validAddress: ppbFormValues.type !== 'other',
+        execLoginTimestamp: ibkrTimestamp,
+        execTimestamp: ibkrTimestamp,
+        proofOfPlaceOfBusinessType: ppbFormValues.type,
+        holderId: holderId || 'organization',
+        payload: {
+          mimeType: file.type,
+          data: base64Data,
+        },
+      };
+
+      const currentDocs = actualForm?.getValues('documents') || [];
+      actualForm?.setValue('documents', [...currentDocs, newDoc], { shouldValidate: true, shouldDirty: true });
+      
+      toast({
+        title: "Success",
+        description: "Proof of Place of Business document uploaded successfully for Organization",
+        variant: "success"
+      });
+      
+      console.log('[DocumentsStep] PPB Document submitted:', newDoc);
+    } catch (error) {
+      console.error("Error processing PPB document:", error);
+      toast({
+        title: "Error",
+        description: "Failed to upload Proof of Place of Business document",
+        variant: "destructive"
+      });
+    }
+  }
+
   const renderDocumentSection = (holder: HolderInfo) => {
-    const requiredDocs = DOCUMENT_CONFIGS.filter(doc => doc.formNumber === 8001 || doc.formNumber === 8002); // POI and POA only for now
+    // Determine which documents are required based on holder type
+    let requiredDocs: DocumentConfig[] = [];
+    
+    if (holder.type === 'organization') {
+      // Organization needs POE and PPB
+      requiredDocs = DOCUMENT_CONFIGS.filter(doc => 
+        doc.formNumber === 9001 || doc.formNumber === 9002
+      );
+    } else {
+      // Individuals need POI and POA
+      requiredDocs = DOCUMENT_CONFIGS.filter(doc => 
+        doc.formNumber === 8001 || doc.formNumber === 8002
+      );
+    }
     
     return (
       <div key={holder.id} className="mb-4">
-        <p className="text-lg font-medium text-foreground">Upload required documents for {holder.name.toLowerCase()}.</p>
+        <div className="flex items-center gap-2 mb-2">
+          {holder.type === 'organization' ? (
+            <Building className="h-5 w-5" />
+          ) : (
+            <Users className="h-5 w-5" />
+          )}
+          <p className="text-lg font-medium text-foreground">
+            Upload required documents for {holder.name.toLowerCase()} - {holder.fullName}
+          </p>
+        </div>
         <CardContent className="space-y-4">
           {requiredDocs.map((docConfig) => {
             const isUploaded = isDocumentUploaded(docConfig.formNumber, holder.id);
@@ -297,6 +473,20 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                         handlePOISubmission(docType, formValues, files, holder.id)
                       } 
                     />
+                  ) : docConfig.formNumber === 9001 ? (
+                    <DocumentUploader 
+                      documentType="POI" // Reusing POI uploader for now, can be customized
+                      handleSubmit={(docType, formValues, files) => 
+                        handlePOESubmission(docType, formValues, files, holder.id)
+                      } 
+                    />
+                  ) : docConfig.formNumber === 9002 ? (
+                    <DocumentUploader 
+                      documentType="POA" // Reusing POA uploader for business address
+                      handleSubmit={(docType, formValues, files) => 
+                        handlePPBSubmission(docType, formValues, files, holder.id)
+                      } 
+                    />
                   ) : null}
                 </div>
               </div>
@@ -307,6 +497,26 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     );
   };
 
+  const getApplicationTypeDescription = () => {
+    if (isOrganizationApplication) {
+      return "Please upload the required documents for the organization and each associated individual.";
+    }
+    if (isJointApplication) {
+      return "Please upload the required documents for each account holder.";
+    }
+    return "Please upload the following required documents for your application.";
+  };
+
+  const getApplicationTypeBadge = () => {
+    if (isOrganizationApplication) {
+      return <Badge variant="outline" className="ml-2">Organization Application</Badge>;
+    }
+    if (isJointApplication) {
+      return <Badge variant="outline" className="ml-2">Joint Application</Badge>;
+    }
+    return null;
+  };
+
   return (
     <div className="space-y-6">
       {/* Document Upload Section */}
@@ -315,23 +525,20 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
             Required Document Uploads
-            {isJointApplication && <Badge variant="outline" className="ml-2">Joint Application</Badge>}
+            {getApplicationTypeBadge()}
           </CardTitle>
           <CardDescription>
-            {isJointApplication 
-              ? "Please upload the required documents for each account holder." 
-              : "Please upload the following required documents for your application."
-            }
+            {getApplicationTypeDescription()}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isJointApplication ? (
+          {isJointApplication || isOrganizationApplication ? (
             <div className="space-y-4">
               {holders.map(holder => renderDocumentSection(holder))}
             </div>
           ) : (
             <div className="space-y-4">
-              {DOCUMENT_CONFIGS.map((docConfig) => {
+              {DOCUMENT_CONFIGS.filter(doc => doc.formNumber <= 8002).map((docConfig) => {
                 const isUploaded = isDocumentUploaded(docConfig.formNumber);
                 return (
                   <div key={docConfig.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -373,18 +580,22 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
             </Badge>
           </div>
           <p className="text-xs text-subtitle mt-1">
-            {isJointApplication 
-              ? "Upload the required documents for each account holder to complete your application."
-              : "Upload the required documents above to complete your application."
+            {isOrganizationApplication 
+              ? "Upload the required documents for the organization and each associated individual to complete your application."
+              : isJointApplication 
+                ? "Upload the required documents for each account holder to complete your application."
+                : "Upload the required documents above to complete your application."
             }
           </p>
-          {isJointApplication && documents.length > 0 && (
+          {(isJointApplication || isOrganizationApplication) && documents.length > 0 && (
             <div className="mt-3 space-y-1">
               {holders.map(holder => {
                 const holderDocs = documents.filter((doc: any) => doc.holderId === holder.id);
                 return (
                   <div key={holder.id} className="flex items-center justify-between text-xs">
-                    <span className="text-subtitle">{holder.name}:</span>
+                    <span className="text-subtitle">
+                      {holder.name} ({holder.type === 'organization' ? 'Organization' : 'Individual'}):
+                    </span>
                     <Badge variant="outline" className="text-xs">
                       {holderDocs.length} document(s)
                     </Badge>

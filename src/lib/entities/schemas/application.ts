@@ -274,49 +274,7 @@ export const joint_holders_schema = z.object({
   type: z.enum(['community', 'joint_tenants', 'tenants_common', 'tbe', 'au_joint_account']),
 }).optional();
 
-// Trust Account Schemas
-export const trust_identification_schema = z.object({
-  address: address_schema,
-  mailingAddress: address_schema.optional(),
-  phones: z.array(phone_schema).optional(),
-  name: z.string(),
-  description: z.string().optional(),
-  typeOfTrust: z.string(), // e.g., IRREVOC, REVOC
-  purposeOfTrust: z.string().optional(),
-  dateFormed: z.string().optional(), // YYYY-MM-DD
-  formationCountry: z.string().optional(),
-  formationState: z.string().optional(),
-  registrationNumber: z.string().optional(),
-  registrationType: z.string().optional(),
-  registrationCountry: z.string().optional(),
-  sameMailAddress: z.boolean().optional(),
-});
 
-export const trust_grantors_schema = z.object({
-  individual: z.array(account_holder_details_schema).optional(),
-  legalEntity: z.array(z.any()).optional(), // Placeholder for future detailed schema
-});
-
-export const trust_beneficiaries_schema = z.object({
-  individual: z.array(account_holder_details_schema).optional(),
-  legalEntity: z.array(z.any()).optional(),
-});
-
-export const trust_trustees_schema = z.object({
-  individuals: z.array(account_holder_details_schema).optional(),
-  entities: z.array(z.any()).optional(),
-});
-
-export const trust_schema = z.object({
-  identification: z.array(trust_identification_schema).min(1),
-  financialInformation: z.array(financial_information_schema).min(1),
-  regulatoryInformation: z.array(regulatory_information_schema).min(1),
-  grantors: trust_grantors_schema.optional(),
-  beneficiaries: trust_beneficiaries_schema.optional(),
-  trustees: trust_trustees_schema.optional(),
-  regulatedMemberships: z.any().optional(),
-  accreditedInvestorInformation: z.any().optional(),
-}).optional();
 
 // Organization Account Schemas
 export const organization_identification_schema = z.object({
@@ -359,10 +317,9 @@ export const organization_schema = z.object({
 export const customer_schema = z.object({
   accountHolder: individual_applicant_schema.optional(), // For INDIVIDUAL accounts
   jointHolders: joint_holders_schema, // For JOINT accounts
-  trust: trust_schema, // For TRUST accounts
   organization: organization_schema, // For ORG accounts
   externalId: z.string().min(1, { message: 'Customer external ID is required' }),
-  type: z.enum(['INDIVIDUAL', 'JOINT', 'TRUST', 'ORG']),
+  type: z.enum(['INDIVIDUAL', 'JOINT', 'ORG']),
   prefix: z.string().min(3).max(6),
   email: z.string().email(),
   mdStatusNonPro: z.boolean().optional().default(true),
@@ -372,7 +329,6 @@ export const customer_schema = z.object({
 }).refine((data) => {
   if (data.type === 'INDIVIDUAL' && !data.accountHolder) return false;
   if (data.type === 'JOINT' && !data.jointHolders) return false;
-  if (data.type === 'TRUST' && !data.trust) return false;
   if (data.type === 'ORG' && !data.organization) return false;
   return true;
 }, {
