@@ -1553,20 +1553,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
             : accountType === 'ORG' ? 'Provide organization information' : 'Please provide your account holder information'
           }
         </p>
-        
-        {/* Development Button - Only show in development */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="pt-4">
-            <Button 
-              type="button"
-              variant="outline"
-              onClick={fillWithFakeData}
-              className="text-xs px-3 py-1"
-            >
-              🎲 Fill with Fake Data (Dev Only)
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* NEW: Primary applicant contact credentials */}
