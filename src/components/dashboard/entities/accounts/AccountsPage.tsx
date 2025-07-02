@@ -137,6 +137,14 @@ const AccountsPage = () => {
             {
               label: 'View',
               onClick: (row: InternalAccount) => handleRowClick(row)
+            },
+            {
+              label: 'View Application',
+              onClick: (row: InternalAccount) => {
+                if (row.application_id) {
+                  redirect(formatURL(`/dashboard/applications/${row.application_id}`, lang))
+                }
+              },
             }
           ]}
         />

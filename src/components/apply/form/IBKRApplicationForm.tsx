@@ -7,7 +7,7 @@ import {
   Form,
 } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
-import { Application, InternalApplication, application as defaultApplicationValues } from '@/lib/entities/application';
+import { Application, InternalApplication, jointApplication as defaultApplicationValues } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import AccountHolderInfoStep from './AccountHolderInfoStep'
@@ -16,9 +16,7 @@ import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
 import LoaderButton from '@/components/misc/LoaderButton'
-import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
-import { getDefaults } from '@/utils/form'
 import Confetti from "@/components/ui/confetti"
 import Link from "next/link"
 import { Check } from "lucide-react"

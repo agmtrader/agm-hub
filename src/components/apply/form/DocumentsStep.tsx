@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useFormContext, UseFormReturn, useWatch } from 'react-hook-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, FileText, Clock } from 'lucide-react'
+import { CheckCircle, FileText, Clock, Users } from 'lucide-react'
 import { Application } from '@/lib/entities/application'
 import DocumentUploader, { DocumentType } from './DocumentUploader'
 import { FormField } from '@/components/ui/form'
@@ -19,6 +19,12 @@ interface DocumentConfig {
   id: string;
   name: string;
   formNumber: number;
+}
+
+interface HolderInfo {
+  id: string;
+  name: string;
+  fullName: string;
 }
 
 const DOCUMENT_CONFIGS: DocumentConfig[] = [
@@ -45,6 +51,51 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     defaultValue: [],
   }) || [];
 
+  // Check if this is a joint application
+  const isJointApplication = actualFormData?.customer?.type === 'JOINT';
+
+  // Get holder information for joint applications
+  const getHolderInfo = (): HolderInfo[] => {
+    if (!isJointApplication || !actualFormData?.customer?.jointHolders) {
+      // For individual applications
+      const holder = actualFormData?.customer?.accountHolder?.accountHolderDetails?.[0];
+      if (holder) {
+        return [{
+          id: 'primary',
+          name: 'Account Holder',
+          fullName: `${holder.name.first} ${holder.name.last}`
+        }];
+      }
+      return [];
+    }
+
+    // For joint applications
+    const firstHolder = actualFormData.customer.jointHolders.firstHolderDetails?.[0];
+    const secondHolder = actualFormData.customer.jointHolders.secondHolderDetails?.[0];
+    
+    const holders: HolderInfo[] = [];
+    
+    if (firstHolder) {
+      holders.push({
+        id: 'first',
+        name: 'First Holder',
+        fullName: `${firstHolder.name.first} ${firstHolder.name.last}`
+      });
+    }
+    
+    if (secondHolder) {
+      holders.push({
+        id: 'second',
+        name: 'Second Holder',
+        fullName: `${secondHolder.name.first} ${secondHolder.name.last}`
+      });
+    }
+    
+    return holders;
+  };
+
+  const holders = getHolderInfo();
+
   // Utility functions for document upload
   function getBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -66,8 +117,13 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     return hashHex;
   }
 
-  const isDocumentUploaded = (formNumber: number): boolean => {
-    return documents.some((doc: any) => doc.formNumber === formNumber);
+  const isDocumentUploaded = (formNumber: number, holderId?: string): boolean => {
+    return documents.some((doc: any) => {
+      if (holderId) {
+        return doc.formNumber === formNumber && doc.holderId === holderId;
+      }
+      return doc.formNumber === formNumber;
+    });
   };
 
   const getIBKRTimestamp = () => {
@@ -78,10 +134,16 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     );
   };
 
+  const getSignerName = (holderId: string): string => {
+    const holder = holders.find(h => h.id === holderId);
+    return holder?.fullName || "Account Holder";
+  };
+
   async function handlePOASubmission(
     documentType: DocumentType, 
     poaFormValues: any,         
-    uploadedFiles: File[] | null 
+    uploadedFiles: File[] | null,
+    holderId?: string
   ) {
     if (!uploadedFiles || uploadedFiles.length === 0) { 
       console.error("No file provided for POA submission.");
@@ -95,9 +157,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       const sha1Checksum = await calculateSHA1(file);
       const ibkrTimestamp = getIBKRTimestamp();
 
-      // Get account holder name for signing
-      const accountHolderName = actualFormData?.customer?.accountHolder?.accountHolderDetails?.[0]?.name
-      const signerName = accountHolderName ? `${accountHolderName.first} ${accountHolderName.last}` : "Account Holder"
+      const signerName = getSignerName(holderId || 'primary');
 
       const newDoc = {
         signedBy: [signerName],
@@ -110,7 +170,8 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
         validAddress: poaFormValues.type !== 'other', 
         execLoginTimestamp: ibkrTimestamp,
         execTimestamp: ibkrTimestamp,
-        proofOfAddressType: poaFormValues.type, 
+        proofOfAddressType: poaFormValues.type,
+        holderId: holderId || 'primary', // Add holder identifier
         payload: {
           mimeType: file.type,
           data: base64Data,
@@ -120,9 +181,10 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       const currentDocs = actualForm?.getValues('documents') || [];
       actualForm?.setValue('documents', [...currentDocs, newDoc], { shouldValidate: true, shouldDirty: true });
       
+      const holderName = holders.find(h => h.id === holderId)?.name || 'Account Holder';
       toast({
         title: "Success",
-        description: "Proof of Address document uploaded successfully",
+        description: `Proof of Address document uploaded successfully for ${holderName}`,
         variant: "success"
       });
       
@@ -140,7 +202,8 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
   async function handlePOISubmission(
     documentType: DocumentType,
     poiFormValues: any,
-    uploadedFiles: File[] | null
+    uploadedFiles: File[] | null,
+    holderId?: string
   ) {
     if (!uploadedFiles || uploadedFiles.length === 0) { 
       console.error("No file provided for POI submission.");
@@ -154,9 +217,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       const sha1Checksum = await calculateSHA1(file);
       const ibkrTimestamp = getIBKRTimestamp();
 
-      // Get account holder name for signing
-      const accountHolderName = actualFormData?.customer?.accountHolder?.accountHolderDetails?.[0]?.name
-      const signerName = accountHolderName ? `${accountHolderName.first} ${accountHolderName.last}` : "Account Holder"
+      const signerName = getSignerName(holderId || 'primary');
 
       const newDoc = {
         signedBy: [signerName],
@@ -169,6 +230,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
         execLoginTimestamp: ibkrTimestamp,
         execTimestamp: ibkrTimestamp,
         proofOfIdentityType: poiFormValues.type,
+        holderId: holderId || 'primary', // Add holder identifier
         payload: {
           mimeType: file.type,
           data: base64Data,
@@ -178,9 +240,10 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       const currentDocs = actualForm?.getValues('documents') || [];
       actualForm?.setValue('documents', [...currentDocs, newDoc], { shouldValidate: true, shouldDirty: true });
       
+      const holderName = holders.find(h => h.id === holderId)?.name || 'Account Holder';
       toast({
         title: "Success",
-        description: "Proof of Identity document uploaded successfully",
+        description: `Proof of Identity document uploaded successfully for ${holderName}`,
         variant: "success"
       });
       
@@ -195,24 +258,17 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     }
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Document Upload Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Required Document Uploads
-          </CardTitle>
-          <CardDescription>
-            Please upload the following required documents for your application.
-          </CardDescription>
-        </CardHeader>
+  const renderDocumentSection = (holder: HolderInfo) => {
+    const requiredDocs = DOCUMENT_CONFIGS.filter(doc => doc.formNumber === 8001 || doc.formNumber === 8002); // POI and POA only for now
+    
+    return (
+      <div key={holder.id} className="mb-4">
+        <p className="text-lg font-medium text-foreground">Upload required documents for {holder.name.toLowerCase()}.</p>
         <CardContent className="space-y-4">
-          {DOCUMENT_CONFIGS.map((docConfig) => {
-            const isUploaded = isDocumentUploaded(docConfig.formNumber);
+          {requiredDocs.map((docConfig) => {
+            const isUploaded = isDocumentUploaded(docConfig.formNumber, holder.id);
             return (
-              <div key={docConfig.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div key={`${holder.id}-${docConfig.id}`} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div className="flex items-center gap-3">
                   {isUploaded ? (
                     <CheckCircle className="h-4 w-4 text-success" />
@@ -228,14 +284,82 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                   {isUploaded ? (
                     <Badge variant="success">Uploaded</Badge>
                   ) : docConfig.formNumber === 8002 ? (
-                    <DocumentUploader documentType="POA" handleSubmit={handlePOASubmission} />
+                    <DocumentUploader 
+                      documentType="POA" 
+                      handleSubmit={(docType, formValues, files) => 
+                        handlePOASubmission(docType, formValues, files, holder.id)
+                      } 
+                    />
                   ) : docConfig.formNumber === 8001 ? (
-                    <DocumentUploader documentType="POI" handleSubmit={handlePOISubmission} />
+                    <DocumentUploader 
+                      documentType="POI" 
+                      handleSubmit={(docType, formValues, files) => 
+                        handlePOISubmission(docType, formValues, files, holder.id)
+                      } 
+                    />
                   ) : null}
                 </div>
               </div>
             );
           })}
+        </CardContent>
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Document Upload Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Required Document Uploads
+            {isJointApplication && <Badge variant="outline" className="ml-2">Joint Application</Badge>}
+          </CardTitle>
+          <CardDescription>
+            {isJointApplication 
+              ? "Please upload the required documents for each account holder." 
+              : "Please upload the following required documents for your application."
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isJointApplication ? (
+            <div className="space-y-4">
+              {holders.map(holder => renderDocumentSection(holder))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {DOCUMENT_CONFIGS.map((docConfig) => {
+                const isUploaded = isDocumentUploaded(docConfig.formNumber);
+                return (
+                  <div key={docConfig.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <div className="flex items-center gap-3">
+                      {isUploaded ? (
+                        <CheckCircle className="h-4 w-4 text-success" />
+                      ) : (
+                        <Clock className="h-4 w-4 text-warning" />
+                      )}
+                      <div>
+                        <p className="font-medium">{docConfig.name}</p>
+                        <p className="text-sm text-subtitle">Form {docConfig.formNumber}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {isUploaded ? (
+                        <Badge variant="success">Uploaded</Badge>
+                      ) : docConfig.formNumber === 8002 ? (
+                        <DocumentUploader documentType="POA" handleSubmit={handlePOASubmission} />
+                      ) : docConfig.formNumber === 8001 ? (
+                        <DocumentUploader documentType="POI" handleSubmit={handlePOISubmission} />
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -249,8 +373,26 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
             </Badge>
           </div>
           <p className="text-xs text-subtitle mt-1">
-            Upload the required documents above to complete your application.
+            {isJointApplication 
+              ? "Upload the required documents for each account holder to complete your application."
+              : "Upload the required documents above to complete your application."
+            }
           </p>
+          {isJointApplication && documents.length > 0 && (
+            <div className="mt-3 space-y-1">
+              {holders.map(holder => {
+                const holderDocs = documents.filter((doc: any) => doc.holderId === holder.id);
+                return (
+                  <div key={holder.id} className="flex items-center justify-between text-xs">
+                    <span className="text-subtitle">{holder.name}:</span>
+                    <Badge variant="outline" className="text-xs">
+                      {holderDocs.length} document(s)
+                    </Badge>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
 

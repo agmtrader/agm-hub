@@ -28,6 +28,297 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
 
   const accountType = form.watch("customer.type");
 
+  // Reusable address fields component
+  const renderAddressFields = (basePath: string) => (
+    <>
+      <FormField
+        control={form.control}
+        name={`${basePath}.street1` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Street Address 1</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`${basePath}.street2` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Street Address 2 (Optional)</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name={`${basePath}.city` as any}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>City</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={`${basePath}.state` as any}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>State/Province/Region</FormLabel>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name={`${basePath}.postalCode` as any}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Postal Code</FormLabel>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <CountriesFormField
+          form={form}
+          element={{
+            name: `${basePath}.country`,
+            title: "Country"
+          }}
+        />
+      </div>
+    </>
+  );
+
+  // TRUST FIELDS
+  const renderTrustFields = () => (
+    <Card className="p-6 space-y-6">
+      <h3 className="text-xl font-semibold">Trust Information</h3>
+      <FormField
+        control={form.control}
+        name={`customer.trust.identification.0.name` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Trust Name</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.trust.identification.0.typeOfTrust` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Type of Trust</FormLabel>
+            <FormControl>
+              <Input placeholder="IRREVOC, REVOC" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.trust.identification.0.dateFormed` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Date Formed</FormLabel>
+            <FormControl>
+              <Input type="date" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.trust.identification.0.purposeOfTrust` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Purpose of Trust</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <CountriesFormField
+        form={form}
+        element={{
+          name: `customer.trust.identification.0.formationCountry`,
+          title: "Formation Country"
+        }}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.trust.identification.0.formationState` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Formation State/Province</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.trust.identification.0.registrationNumber` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Registration Number</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.trust.identification.0.registrationType` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Registration Type</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <CountriesFormField
+        form={form}
+        element={{
+          name: `customer.trust.identification.0.registrationCountry`,
+          title: "Registration Country"
+        }}
+      />
+      <h4 className="text-lg font-semibold pt-4">Trust Address</h4>
+      {renderAddressFields('customer.trust.identification.0.address')}
+    </Card>
+  );
+
+  // ORGANIZATION FIELDS
+  const renderOrganizationFields = () => (
+    <Card className="p-6 space-y-6">
+      <h3 className="text-xl font-semibold">Organization Information</h3>
+      <FormField
+        control={form.control}
+        name={`customer.organization.identifications.0.name` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Organization Name</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.organization.identifications.0.businessDescription` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Business Description</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.organization.accountSupport.type` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Organization Type</FormLabel>
+            <FormControl>
+              <Input placeholder="LLC, CORPORATION" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.organization.accountSupport.businessDescription` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Business Description (Account Support)</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.organization.identifications.0.identification` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Organization Identification Number</FormLabel>
+            <FormControl>
+              <Input placeholder="" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`customer.organization.accountSupport.ownersResideUS` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Owners Reside in US?</FormLabel>
+            <Select onValueChange={(val)=>field.onChange(val==='true')} defaultValue={field.value?.toString() ?? 'false'}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="true">Yes</SelectItem>
+                <SelectItem value="false">No</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <h4 className="text-lg font-semibold pt-4">Place of Business Address</h4>
+      {renderAddressFields('customer.organization.identifications.0.placeOfBusinessAddress')}
+    </Card>
+  );
+
   // Render form fields for a single account holder
   const renderAccountHolderFields = (basePath: string, title: string) => (
     <Card className="p-6 space-y-6">
@@ -102,82 +393,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       </div>
 
       <h4 className="text-lg font-semibold pt-4">Residence Address</h4>
-      <FormField
-        control={form.control}
-        name={`${basePath}.residenceAddress.street1` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Street Address 1</FormLabel>
-            <FormControl>
-              <Input placeholder="" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name={`${basePath}.residenceAddress.street2` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Street Address 2 (Optional)</FormLabel>
-            <FormControl>
-              <Input placeholder="" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name={`${basePath}.residenceAddress.city` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>City</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name={`${basePath}.residenceAddress.state` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>State/Province/Region</FormLabel>
-              <FormControl>
-                <Input placeholder="" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name={`${basePath}.residenceAddress.postalCode` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Postal Code</FormLabel>
-              <FormControl>
-                <Input placeholder="" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <CountriesFormField
-          form={form}
-          element={{
-            name: `${basePath}.residenceAddress.country`,
-            title: "Country"
-          }}
-        />
-      </div>
+      {renderAddressFields(`${basePath}.residenceAddress`)}
 
       <h4 className="text-lg font-semibold pt-4">Contact Information (Primary Phone)</h4>
       <div className="grid grid-cols-3 gap-4">
@@ -364,10 +580,42 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         <p className="text-subtitle">
           {accountType === 'JOINT' 
             ? 'Please provide information for both account holders' 
-            : 'Please provide your account holder information'
+            : accountType === 'TRUST' ? 'Provide trust information' : accountType === 'ORG' ? 'Provide organization information' : 'Please provide your account holder information'
           }
         </p>
       </div>
+
+      {/* NEW: Primary applicant contact credentials */}
+      <Card className="p-6 space-y-6">
+        <h3 className="text-xl font-semibold">Primary Contact Credentials</h3>
+        <FormField
+          control={form.control}
+          name={"customer.email" as any}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="you@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={"customer.prefix" as any}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username (Prefix)</FormLabel>
+              <FormDescription>Your desired username (3–6 characters).</FormDescription>
+              <FormControl>
+                <Input placeholder="e.g. agm123" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </Card>
 
       {accountType === 'JOINT' ? (
         <div className="space-y-6">
@@ -404,6 +652,36 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           
           {/* Second Holder */}
           {renderAccountHolderFields("customer.jointHolders.secondHolderDetails.0", "Second Account Holder")}
+        </div>
+      ) : accountType === 'TRUST' ? (
+        <div className="space-y-6">
+          {renderTrustFields()}
+
+          {/* Trust Parties */}
+          {renderAccountHolderFields(
+            "customer.trust.grantors.individual.0",
+            "Grantor Details"
+          )}
+
+          {renderAccountHolderFields(
+            "customer.trust.beneficiaries.individual.0",
+            "Beneficiary Details"
+          )}
+
+          {renderAccountHolderFields(
+            "customer.trust.trustees.individuals.0",
+            "Trustee Details"
+          )}
+        </div>
+      ) : accountType === 'ORG' ? (
+        <div className="space-y-6">
+          {renderOrganizationFields()}
+
+          {/* Associated Individual (first entry) */}
+          {renderAccountHolderFields(
+            "customer.organization.associatedEntities.associatedIndividuals.0",
+            "Associated Individual Details"
+          )}
         </div>
       ) : (
         // Individual Account

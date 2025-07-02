@@ -274,31 +274,110 @@ export const joint_holders_schema = z.object({
   type: z.enum(['community', 'joint_tenants', 'tenants_common', 'tbe', 'au_joint_account']),
 }).optional();
 
+// Trust Account Schemas
+export const trust_identification_schema = z.object({
+  address: address_schema,
+  mailingAddress: address_schema.optional(),
+  phones: z.array(phone_schema).optional(),
+  name: z.string(),
+  description: z.string().optional(),
+  typeOfTrust: z.string(), // e.g., IRREVOC, REVOC
+  purposeOfTrust: z.string().optional(),
+  dateFormed: z.string().optional(), // YYYY-MM-DD
+  formationCountry: z.string().optional(),
+  formationState: z.string().optional(),
+  registrationNumber: z.string().optional(),
+  registrationType: z.string().optional(),
+  registrationCountry: z.string().optional(),
+  sameMailAddress: z.boolean().optional(),
+});
+
+export const trust_grantors_schema = z.object({
+  individual: z.array(account_holder_details_schema).optional(),
+  legalEntity: z.array(z.any()).optional(), // Placeholder for future detailed schema
+});
+
+export const trust_beneficiaries_schema = z.object({
+  individual: z.array(account_holder_details_schema).optional(),
+  legalEntity: z.array(z.any()).optional(),
+});
+
+export const trust_trustees_schema = z.object({
+  individuals: z.array(account_holder_details_schema).optional(),
+  entities: z.array(z.any()).optional(),
+});
+
+export const trust_schema = z.object({
+  identification: z.array(trust_identification_schema).min(1),
+  financialInformation: z.array(financial_information_schema).min(1),
+  regulatoryInformation: z.array(regulatory_information_schema).min(1),
+  grantors: trust_grantors_schema.optional(),
+  beneficiaries: trust_beneficiaries_schema.optional(),
+  trustees: trust_trustees_schema.optional(),
+  regulatedMemberships: z.any().optional(),
+  accreditedInvestorInformation: z.any().optional(),
+}).optional();
+
+// Organization Account Schemas
+export const organization_identification_schema = z.object({
+  placeOfBusinessAddress: address_schema,
+  mailingAddress: address_schema.optional(),
+  phones: z.array(phone_schema).optional(),
+  name: z.string(),
+  businessDescription: z.string().optional(),
+  websiteAddress: z.string().optional(),
+  identification: z.string(),
+  identificationCountry: z.string().optional(),
+  formationCountry: z.string().optional(),
+  formationState: z.string().optional(),
+  sameMailAddress: z.boolean().optional(),
+  translated: z.boolean().optional(),
+});
+
+export const organization_associated_entities_schema = z.object({
+  associatedIndividuals: z.array(account_holder_details_schema).optional(),
+  associatedEntities: z.array(z.any()).optional(),
+});
+
+export const organization_account_support_schema = z.object({
+  businessDescription: z.string().min(1, { message: 'Business description required' }),
+  ownersResideUS: z.boolean().optional(),
+  type: z.string().min(1, { message: 'Organization type required' }),
+});
+
+export const organization_schema = z.object({
+  identifications: z.array(organization_identification_schema).min(1),
+  accountSupport: organization_account_support_schema, // now required minimal fields
+  associatedEntities: organization_associated_entities_schema.optional(),
+  financialInformation: z.array(financial_information_schema).min(1),
+  regulatoryInformation: z.array(regulatory_information_schema).min(1),
+  accreditedInvestorInformation: z.any().optional(),
+  regulatedMemberships: z.any().optional(),
+}).optional();
+
 // Main Schemas
 export const customer_schema = z.object({
   accountHolder: individual_applicant_schema.optional(), // For INDIVIDUAL accounts
   jointHolders: joint_holders_schema, // For JOINT accounts
+  trust: trust_schema, // For TRUST accounts
+  organization: organization_schema, // For ORG accounts
   externalId: z.string().min(1, { message: 'Customer external ID is required' }),
-  type: z.enum(['INDIVIDUAL', 'JOINT', 'TRUST', 'ORG']), // Add other types as needed
-  prefix: z.string().min(3, { message: 'Customer prefix is required and must be at least 3 characters' }).max(6, { message: 'Customer prefix must be at most 6 characters' }),
-  email: z.string().email({ message: 'Invalid customer email address' }),
+  type: z.enum(['INDIVIDUAL', 'JOINT', 'TRUST', 'ORG']),
+  prefix: z.string().min(3).max(6),
+  email: z.string().email(),
   mdStatusNonPro: z.boolean().optional().default(true),
-  meetAmlStandard: z.string().optional().default('true'), // IBKR uses string 'true'/'false'
+  meetAmlStandard: z.string().optional().default('true'),
   directTradingAccess: z.boolean().optional().default(true),
-  legalResidenceCountry: z.string().min(2, { message: 'Legal residence country is required' }),
+  legalResidenceCountry: z.string().min(2),
 }).refine((data) => {
-  if (data.type === 'INDIVIDUAL' && !data.accountHolder) {
-    return false;
-  }
-  if (data.type === 'JOINT' && !data.jointHolders) {
-    return false;
-  }
+  if (data.type === 'INDIVIDUAL' && !data.accountHolder) return false;
+  if (data.type === 'JOINT' && !data.jointHolders) return false;
+  if (data.type === 'TRUST' && !data.trust) return false;
+  if (data.type === 'ORG' && !data.organization) return false;
   return true;
 }, {
-  message: 'Account holder information is required for the selected account type',
+  message: 'Customer information does not match account type',
 });
-
-
 
 export const application_schema = z.object({
   customer: customer_schema,
