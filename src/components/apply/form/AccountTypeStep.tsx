@@ -11,7 +11,9 @@ import {
 } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Card } from '@/components/ui/card'
-import { Application, organizationApplication, application as individualApplication, jointApplication } from '@/lib/entities/application'
+import { Application } from '@/lib/entities/application'
+import { application_schema } from '@/lib/entities/schemas/application'
+import { getApplicationDefaults, getDefaultRegulatoryInformation, getDefaultW8Ben } from '@/utils/form'
 
 interface AccountTypeStepProps {
   form: UseFormReturn<Application>
@@ -19,16 +21,63 @@ interface AccountTypeStepProps {
 
 const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
   const handleAccountTypeChange = (value: string) => {
-    // Initialize minimal structures based on selected type to satisfy schema
-    if (value === 'INDIVIDUAL') {
-      form.reset({ ...individualApplication, customer: { ...individualApplication.customer, type: 'INDIVIDUAL' } } as any)
+    // Get clean defaults
+    const cleanDefaults = getApplicationDefaults(application_schema)
+    const defaultRegulatoryInformation = getDefaultRegulatoryInformation()
+    const defaultW8Ben = getDefaultW8Ben()
+    
+    // Build the customer object based on the account type
+    const accountType = value as 'INDIVIDUAL' | 'JOINT' | 'ORG'
+    
+    // Get current customer values to preserve basic info
+    const currentCustomer = form.getValues('customer')
+    
+    // Create a clean customer object with only the basic properties
+    const cleanCustomer: any = {
+      type: accountType,
+      externalId: currentCustomer?.externalId,
+      prefix: currentCustomer?.prefix,
+      email: currentCustomer?.email,
+      mdStatusNonPro: currentCustomer?.mdStatusNonPro ?? true,
+      meetAmlStandard: currentCustomer?.meetAmlStandard ?? 'true',
+      directTradingAccess: currentCustomer?.directTradingAccess ?? true,
+      legalResidenceCountry: currentCustomer?.legalResidenceCountry,
     }
-          if (value === 'JOINT') {
-        form.reset({ ...jointApplication, customer: { ...jointApplication.customer, type: 'JOINT' } } as any)
+    
+    // Add the appropriate nested structure based on account type
+    if (accountType === 'INDIVIDUAL') {
+      cleanCustomer.accountHolder = {
+        accountHolderDetails: [{
+          w8Ben: { ...defaultW8Ben }
+        }],
+        regulatoryInformation: defaultRegulatoryInformation
       }
-      if (value === 'ORG') {
-      form.reset({ ...organizationApplication, customer: { ...organizationApplication.customer, type: 'ORG' } } as any)
+    } else if (accountType === 'JOINT') {
+      cleanCustomer.jointHolders = {
+        firstHolderDetails: [{
+          w8Ben: { ...defaultW8Ben }
+        }],
+        secondHolderDetails: [{
+          w8Ben: { ...defaultW8Ben }
+        }],
+        regulatoryInformation: defaultRegulatoryInformation
+      }
+    } else if (accountType === 'ORG') {
+      cleanCustomer.organization = {
+        associatedEntities: {
+          associatedIndividuals: [{
+            w8Ben: { ...defaultW8Ben }
+          }]
+        },
+        regulatoryInformation: defaultRegulatoryInformation
+      }
     }
+    
+    // Reset the customer object completely
+    form.setValue('customer', cleanCustomer)
+    
+    // Clear documents array - W8 forms will be generated when names are provided
+    form.setValue('documents', [])
   }
 
   return (

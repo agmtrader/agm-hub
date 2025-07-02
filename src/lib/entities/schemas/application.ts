@@ -32,7 +32,7 @@ export const name_schema = z.object({
 export const address_schema = z.object({
   country: z.string().min(2, { message: 'Country is required (2 or 3 letter ISO code)' }), // ISO 3166-1 alpha-2 or alpha-3
   street1: z.string().min(1, { message: 'Street address is required' }),
-  street2: z.string().optional(),
+  street2: z.string().optional().nullable(),
   city: z.string().min(1, { message: 'City is required' }),
   state: z.string().optional(), // Or province/region
   postalCode: z.string().min(1, { message: 'Postal code is required' }),
@@ -233,15 +233,15 @@ export const account_holder_details_schema = z.object({
   countryOfBirth: z.string().min(2, { message: 'Country of birth is required' }),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date of birth must be YYYY-MM-DD' }),
   gender: z.string().optional(), // e.g., MALE, FEMALE, OTHER
-  maritalStatus: z.string().optional(), // e.g., SINGLE, MARRIED, DIVORCED
-  numDependents: z.number().int().min(0).optional(),
+  maritalStatus: z.string(), // e.g., S, M, D
+  numDependents: z.number().int().min(0),
   phones: z.array(phone_schema).min(1, { message: 'At least one phone number is required' }),
   identification: identification_schema, // This might need to be more specific based on individual vs org
-  employmentDetails: employment_details_schema.optional(),
+  employmentDetails: employment_details_schema,
   isPEP: z.boolean().optional(), // Politically Exposed Person
   isControlPerson: z.boolean().optional(),
   employmentType: z.string().min(1, { message: 'Employment type is required' }),
-  taxResidencies: z.array(tax_residency_schema).optional(),
+  taxResidencies: z.array(tax_residency_schema),
   w8Ben: w8ben_schema.optional(),
   authorizedToSignOnBehalfOfOwner: z.boolean().optional(),
   authorizedTrader: z.boolean().optional(),
@@ -340,10 +340,10 @@ export const application_schema = z.object({
   accounts: z.array(account_schema).min(1, { message: 'At least one account is required' }),
   users: z.array(user_schema).min(1, { message: 'At least one user is required' }),
   documents: z.array(ibkr_document_schema).optional(),
-  additionalAccounts: z.array(add_additional_account_schema).optional(),
-  masterAccountId: z.string().optional(),
-  id: z.string().optional(),
-  inputLanguage: z.enum(['en', 'zh-Hans', 'ja', 'ru', 'fr', 'pt', 'es', 'it', 'ar-AE', 'de', 'he-IL', 'hu']).optional(),
-  translation: z.boolean().optional(),
-  paperAccount: z.boolean().optional(),
+  additionalAccounts: z.array(add_additional_account_schema).optional().nullable(),
+  masterAccountId: z.string().optional().nullable(),
+  id: z.string().optional().nullable(),
+  inputLanguage: z.enum(['en', 'zh-Hans', 'ja', 'ru', 'fr', 'pt', 'es', 'it', 'ar-AE', 'de', 'he-IL', 'hu']).optional().nullable(),
+  translation: z.boolean().optional().nullable(),
+  paperAccount: z.boolean().optional().nullable(),
 });

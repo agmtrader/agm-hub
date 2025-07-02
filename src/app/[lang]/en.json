@@ -406,23 +406,21 @@
                 "net_worth": "Net Worth",
                 "investment_objectives": "Investment Objectives",
                 "investment_objectives_list": {
-                    "capital": "Capital",
                     "growth": "Growth",
-                    "hedging": "Hedging",
-                    "profits": "Profits"
+                    "trading": "Trading",
+                    "income": "Income",
+                    "hedging": "Hedging"
                 },
                 "products_to_trade": "Products to Trade",
                 "amount_to_invest": "Amount to Invest",
                 "source_of_wealth": {
-                    "allowance": "Allowance",
-                    "disability": "Disability",
                     "income": "Income",
                     "inheritance": "Inheritance",
-                    "profits": "Profits",
-                    "interest": "Interest",
+                    "investments": "Investments",
+                    "business": "Business",
+                    "property": "Property",
                     "pension": "Pension",
-                    "other": "Other",
-                    "property": "Property"
+                    "other": "Other"
                 },
                 "products": {
                     "bonds": "Bonds",

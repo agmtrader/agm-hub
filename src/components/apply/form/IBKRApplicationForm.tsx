@@ -7,7 +7,7 @@ import {
   Form,
 } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
-import { Application, InternalApplication, jointApplication as defaultApplicationValues } from '@/lib/entities/application';
+import { Application, InternalApplication, application, application as defaultApplicationValues } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import AccountHolderInfoStep from './AccountHolderInfoStep'
@@ -21,7 +21,7 @@ import Confetti from "@/components/ui/confetti"
 import Link from "next/link"
 import { Check } from "lucide-react"
 import { useSession } from 'next-auth/react'
-import { getDefaults } from '@/utils/form'
+import { getApplicationDefaults } from '@/utils/form'
 
 enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -60,7 +60,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getDefaults(application_schema),
+    defaultValues: getApplicationDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -76,7 +76,6 @@ const IBKRApplicationForm = () => {
   };
 
   async function onSubmit(values: Application) {
-    console.log('[IBKRApplicationForm] onSubmit received values:', values);
     try {
       if (currentStep !== FormStep.DOCUMENTS) {
         setCurrentStep(currentStep + 1);
@@ -136,6 +135,7 @@ const IBKRApplicationForm = () => {
     ];
 
     console.log(form.formState.errors);
+    console.log(form.getValues());
 
     return (
       <div className="mb-8">

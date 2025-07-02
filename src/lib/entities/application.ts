@@ -579,6 +579,7 @@ export const organizationApplication: Application = {
             associatedEntities: {
                 associatedIndividuals: [
                     {
+                        numDependents: 0,
                         externalId: Math.random().toString(36).substring(2, 12),
                         email: `${Math.random().toString(36).substring(2, 8)}@gmail.com`,
                         name: {

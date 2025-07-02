@@ -37,12 +37,6 @@ import { getRiskFormQuestions, weights, RiskProfile as RiskProfileType, AccountR
 import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
 import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/ui/select"
-import { CommandGroup } from "@/components/ui/command"
-import { CommandInput } from "@/components/ui/command"
-import { CommandItem } from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CommandEmpty } from "@/components/ui/command"
-import { CommandList } from "@/components/ui/command"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 
 // Each question in the form has a weight and each answer in the question has a weight

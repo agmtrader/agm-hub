@@ -405,23 +405,21 @@
                 "net_worth": "Patrimonio Neto",
                 "investment_objectives": "Objetivos de Inversión",
                 "investment_objectives_list": {
-                    "capital": "Capital",
                     "growth": "Crecimiento",
-                    "hedging": "Cobertura",
-                    "profits": "Beneficios"
+                    "trading": "Trading",
+                    "income": "Ingresos",
+                    "hedging": "Cobertura"
                 },
                 "products_to_trade": "Productos para Operar",
                 "amount_to_invest": "Cantidad a Invertir",
                 "source_of_wealth": {
-                    "allowance": "Asignación",
-                    "disability": "Discapacidad",
                     "income": "Ingresos",
                     "inheritance": "Herencia",
-                    "profits": "Beneficios",
-                    "interest": "Intereses",
+                    "investments": "Inversiones",
+                    "business": "Negocio",
+                    "property": "Propiedad",
                     "pension": "Pensión",
-                    "other": "Otro",
-                    "property": "Propiedad"
+                    "other": "Otro"
                 },
                 "products": {
                     "bonds": "Bonos",

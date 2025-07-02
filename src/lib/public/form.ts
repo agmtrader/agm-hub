@@ -219,10 +219,10 @@ export const salutations = [
 ] as const
 
 export const marital_status = (t: (key: string) => string) => [
-    { label: t('apply.account.about_you.marital_status_list.single'), value: "Single" },
-    { label: t('apply.account.about_you.marital_status_list.married'), value: "Married" },
-    { label: t('apply.account.about_you.marital_status_list.divorced'), value: "Divorced" },
-    { label: t('apply.account.about_you.marital_status_list.widowed'), value: "Widowed" },
+    { label: t('apply.account.about_you.marital_status_list.single'), value: "S" },
+    { label: t('apply.account.about_you.marital_status_list.married'), value: "M" },
+    { label: t('apply.account.about_you.marital_status_list.divorced'), value: "D" },
+    { label: t('apply.account.about_you.marital_status_list.widowed'), value: "W" },
 ] as const
 
 export const phone_types = (t: (key: string) => string) => [
@@ -232,9 +232,8 @@ export const phone_types = (t: (key: string) => string) => [
 
 export const id_type = (t: (key: string) => string) => [
     { label: t('apply.account.about_you.id_type_list.passport'), value: "Passport" },
-    { label: t('apply.account.about_you.id_type_list.national_id'), value: "ID" },
-    { label: t('apply.account.about_you.id_type_list.license'), value: "License" },
-    { label: t('apply.account.about_you.id_type_list.alien'), value: "Alien" },
+    { label: t('apply.account.about_you.id_type_list.national_id'), value: "National ID Card" },
+    { label: t('apply.account.about_you.id_type_list.license'), value: "Driver License" },
 ] as const
 
 export const employment_status = (t: (key: string) => string) => [
@@ -360,84 +359,157 @@ export const purposes = (t: (key: string) => string) => [
   { label: t('apply.account.organization.purpose_list.financial_institution'), id: "Financial institution" },
 ] as const
 
-// Dictionaries for Checklists
 export const source_of_wealth = (t: (key: string) => string) => [
   {
-    id: "Allowance",
-    label: t('apply.account.regulatory.source_of_wealth.allowance')
-  },
-  {
-    id: "Disability",
-    label: t('apply.account.regulatory.source_of_wealth.disability')
-  },
-  {
-    id: "Income",
+    id: "SOW-IND-Income",
     label: t('apply.account.regulatory.source_of_wealth.income')
   },
   {
-    id: "Inheritance",
+    id: "SOW-IND-Inheritance",
     label: t('apply.account.regulatory.source_of_wealth.inheritance')
   },
   {
-    id: "Interest",
+    id: "SOW-IND-Interest",
     label: t('apply.account.regulatory.source_of_wealth.interest')
   },
   {
-    id: "Profits",
-    label: t('apply.account.regulatory.source_of_wealth.profits')
+    id: "SOW-IND-MarketProfit",
+    label: t('apply.account.regulatory.source_of_wealth.market_profit')
   },
   {
-    id: "Pension",
-    label: t('apply.account.regulatory.source_of_wealth.pension')
-  },
-  {
-    id: "Property",
+    id: "SOW-IND-Property",
     label: t('apply.account.regulatory.source_of_wealth.property')
   },
   {
-    id: "Other",
+    id: "SOW-IND-Pension",
+    label: t('apply.account.regulatory.source_of_wealth.pension')
+  },
+  {
+    id: "SOW-IND-Allowance",
+    label: t('apply.account.regulatory.source_of_wealth.allowance')
+  },
+  {
+    id: "SOW-IND-Disability",
+    label: t('apply.account.regulatory.source_of_wealth.disability')
+  },
+  {
+    id: "SOW-IND-Other",
     label: t('apply.account.regulatory.source_of_wealth.other')
   },
 ] as const
 
 export const investment_objectives = (t: (key: string) => string) => [
   {
-    id: "Capital",
-    label: t('apply.account.regulatory.investment_objectives_list.capital')
-  },
-  {
     id: "Growth",
     label: t('apply.account.regulatory.investment_objectives_list.growth')
   },
   {
-    id: "Hedging",
-    label: t('apply.account.regulatory.investment_objectives_list.hedging')
+    id: "Trading",
+    label: t('apply.account.regulatory.investment_objectives_list.trading')
   },
   {
-    id: "Profits",
-    label: t('apply.account.regulatory.investment_objectives_list.profits')
+    id: "Income",
+    label: t('apply.account.regulatory.investment_objectives_list.income')
+  },
+  {
+    id: "Hedging",
+    label: t('apply.account.regulatory.investment_objectives_list.hedging')
   }
 ] as const
 
 export const products = (t: (key: string) => string) => [
   {
-    id: "Bonds",
+    id: "BOND",
     label: t('apply.account.regulatory.products.bonds')
   },
   {
-    id: "Stocks",
-    label: t('apply.account.regulatory.products.stocks')
-  },
-  {
-    id: "Options",
-    label: t('apply.account.regulatory.products.options')
-  },
-  {
-    id: "Futures",
+    id: "FUT",
     label: t('apply.account.regulatory.products.futures')
   },
   {
-    id: "ETFs",
-    label: t('apply.account.regulatory.products.etfs')
+    id: "FX",
+    label: t('apply.account.regulatory.products.forex')
+  },
+  {
+    id: "FOP",
+    label: t('apply.account.regulatory.products.futures_options')
+  },
+  {
+    id: "FUND",
+    label: t('apply.account.regulatory.products.mutual_funds')
+  },
+  {
+    id: "STK",
+    label: t('apply.account.regulatory.products.stocks')
+  },
+  {
+    id: "SSF",
+    label: t('apply.account.regulatory.products.single_stock_futures')
+  },
+  {
+    id: "OPT",
+    label: t('apply.account.regulatory.products.options')
+  },
+  {
+    id: "STOPT",
+    label: t('apply.account.regulatory.products.stock_options')
   }
+] as const
+
+export const regulatory_codes = [
+  {
+    code: "AFFILIATION",
+    label: "Interactive Brokers Affiliation",
+    description: "Are you affiliated with Interactive Brokers?"
+  },
+  {
+    code: "EmployeePubTrade",
+    label: "Employee of Publicly Traded Company",
+    description: "Are you an employee of a publicly traded company?"
+  },
+  {
+    code: "ControlPubTraded",
+    label: "Control Person of Publicly Traded Company",
+    description: "Are you a control person of a publicly traded company?"
+  }
+] as const
+
+export const knowledge_levels = [
+  { label: "None", value: "None" },
+  { label: "Limited", value: "Limited" },
+  { label: "Good", value: "Good" },
+  { label: "Extensive", value: "Extensive" },
+] as const
+
+export const asset_classes = [
+  { label: "Stocks", value: "STK" },
+  { label: "Bonds", value: "BOND" },
+  { label: "Options", value: "OPT" },
+  { label: "Futures", value: "FUT" },
+  { label: "Foreign Exchange", value: "FX" },
+  { label: "Funds", value: "FUND" },
+] as const
+
+export const margin_types = [
+  { label: "Cash Account", value: "Cash" },
+  { label: "Regulation T Margin", value: "RegTMargin" },
+  { label: "Portfolio Margin", value: "PortfolioMargin" },
+] as const
+
+export const trading_countries = [
+  { label: "United States", value: "UNITED STATES" },
+  { label: "Canada", value: "CANADA" },
+  { label: "United Kingdom", value: "UNITED KINGDOM" },
+  { label: "European Union", value: "EUROPEAN UNION" },
+  { label: "Hong Kong", value: "HONG KONG" },
+  { label: "Japan", value: "JAPAN" },
+  { label: "Australia", value: "AUSTRALIA" },
+] as const
+
+export const trading_products = [
+  { label: "Stocks", value: "STOCKS" },
+  { label: "Bonds", value: "BONDS" },
+  { label: "Options", value: "OPTIONS" },
+  { label: "Futures", value: "FUTURES" },
+  { label: "Foreign Exchange", value: "FOREX" },
 ] as const
