@@ -8,7 +8,10 @@
     },
     "protected": {
         "lockedOut": "Bloqueado",
-        "lockedOutMessage": "Inicia sesión para acceder a las funciones del cliente AGM."
+        "lockedOutMessage": "Inicia sesión para acceder a las funciones del cliente AGM.",
+        "noPermissions": "Sin permisos",
+        "noPermissionsMessage": "No tienes autorización para acceder a esta página",
+        "goBack": "Volver al inicio"
     },
     "agm-technology": {
         "title": {
@@ -17,11 +20,10 @@
             "action_text": "Solicitar una cuenta"
         },
         "introduction": {
-            "title": "Apoyando a los Inversionistas de Hoy para los Mercados del Mañana",
+            "title": "Apoyando a los inversionistas de hoy para los mercados del mañana",
             "description": "Desde 1995, AGM como Puesto de Bolsa Internacional ha facilitado el acceso directo a más de 150 mercados financieros (Bolsas de Valores) en EE.UU., Europa, Asia y América Latina que normalmente son inaccesibles para ciertos inversionistas.",
             "description_2": "AGM Technology ofrece servicios profesionales para maximizar sus rendimientos:",
-            "action_text": "¿Interesado?",
-            "action_subtext": "Vea los pasos para comenzar su viaje de trading.",
+            "action_text": "Ver requisitos para comenzar a invertir",
             "cards": [
                 {
                     "title": "Invierta en cualquier momento y lugar",
@@ -57,17 +59,22 @@
             ]
         }
     },
+    "products": {
+        "download": {
+            "title": "Descargar Productos AGM",
+            "description": "Descarga nuestras aplicaciones de trading profesionales para tu plataforma preferida"
+        }
+    },
     "agm-trader": {
         "title": {
             "title": "Trader",
             "subtitle": "Invierta en: acciones, bonos, ETFs, opciones, futuros, criptomonedas y más en cualquier momento y lugar.",
-            "action_text": "Descargar ahora"
+            "action_text": "Descargar nuestras aplicaciones ya"
         },
         "introduction": {
             "title": "Innovando a Escala Global",
             "description": "AGM Trader te permite operar e invertir 24/7 en una amplia gama de instrumentos financieros en más de 150 mercados y 20 diferentes monedas desde una sola cuenta.",
-            "cta_text": "¿Listo para comenzar a operar desde cualquier lugar?",
-            "cta_subtext": "Descarga ahora.",
+            "action_text": "Ver catálogo de productos",
             "cards": [
                 {
                     "title": "Opera en Cualquier Momento y Lugar",
@@ -114,12 +121,13 @@
             "action_text": "Solicitar una cuenta"
         },
         "introduction": {
-            "title": "Tu Legado Importa.",
+            "title": "Su legado importa",
             "description": [
                 "AGM Advisor, nuestra firma de servicios de asesoría, proporciona estrategias de inversión de cartera individuales que están hechas a medida para cada cliente (Cuentas de Cartera Segregadas).",
                 "Cualquier cliente que desee delegar una parte de sus activos financieros o patrimonio a través de nuestra división de asesoría, recibe un servicio personalizado de uno de nuestros Asesores asignados. ¡Nos esforzamos por proporcionar un servicio de primera clase a cada uno de nuestros clientes de asesoría!",
                 "Conoce tu perfil de riesgo como inversor y la cartera de inversión propuesta que coincide con tu perfil."
             ],
+            "action_text": "Ver requisitos para comenzar a invertir",
             "cards": [
                 {
                     "title": "Estrategias de Inversión Personalizadas",
@@ -165,8 +173,7 @@
                 "Nuestra división Institucional proporciona servicios de ejecución de clase mundial a las instituciones más sofisticadas.",
                 "Nuestro equipo dedicado de profesionales asegura que cualquier necesidad o requisito sea atendido, proporcionando la mejor ejecución y precios en más de 150 mercados en todo el mundo a través de todas las clases de activos."
             ],
-            "cta_text": "¿Listo para comenzar a operar desde cualquier lugar?",
-            "cta_subtext": "Descarga nuestra aplicación ahora.",
+            "action_text": "Ver requisitos para comenzar a invertir",
             "cards": [
                 {
                     "title": "A Quién Servimos",
@@ -235,7 +242,8 @@
             "description": "Conoce a nuestro equipo de profesionales dedicados a brindar un servicio excepcional.",
             "contact_us": "Contactanos",
             "team_carousel": {
-                "hernan_title": "Director de Operaciones",
+                "linkedin": "LinkedIn",
+                "hernan_title": "Director General",
                 "hernan_description": "El Sr. Castro también tiene más de 30 años de experiencia en los mercados de valores y es un socio fundador de AGM, y como tal ha ayudado a la firma a convertirse en un Broker/Dealer y Asesor Internacional. El Sr. Castro no solo es nuestro Director de Operaciones, sino que supervisa nuestra División de Asesoría de Inversiones. El Sr. Castro ha estado registrado en FINRA en EE. UU. como Series 7 y Serie 66 bajo el CRD # 4575350.",
                 "ramon_title": "Director de Operaciones",
                 "ramon_description": "El Sr. Castro también tiene más de 30 años de experiencia en los mercados de valores y es un socio fundador de AGM, y como tal ha ayudado a la firma a convertirse en un Broker/Dealer y Asesor Internacional. El Sr. Castro no solo es nuestro Director de Operaciones, sino que supervisa nuestra División de Asesoría de Inversiones. El Sr. Castro ha estado registrado en FINRA en EE. UU. como Series 7 y Serie 66 bajo el CRD # 4575350.",
@@ -438,9 +446,10 @@
                 "account_types": {
                     "individual": "Cuenta Individual",
                     "joint": "Cuenta Conjunta",
-                    "trust": "Cuenta Fiduciaria",
+                
                     "institutional": "Cuenta Institucional"
                 },
+                "referrer": "¿Quién te refirió?",
                 "disclaimer": {
                     "title": "AVISO LEGAL",
                     "content": "Si deseas abrir una Cuenta Individual, te aconsejamos que por motivos de herencia e impuestos, es mejor abrir una Cuenta Conjunta. Una Cuenta Individual no permite la opción de nombrar Beneficiarios al momento de la apertura o posteriormente y puede estar sujeta a impuestos sucesorios. Por favor, considera la opción de abrir una cuenta conjunta en lugar de una cuenta individual.",
@@ -544,7 +553,7 @@
             "title": "Cuestionario de Evaluación de Riesgo",
             "description": "Por favor, completa este formulario para ayudarnos a entender tu tolerancia al riesgo y preferencias de inversión.",
             "form": {
-                "account_number": "Número de cuenta",
+                "account_id": "Número de cuenta",
                 "client_name": "Nombre completo",
                 "type": {
                     "title": "¿Qué tipo de inversor te consideras?",
@@ -594,6 +603,14 @@
         "requirements": {
             "title": "Requisitos para una cuenta AGM",
             "description": "Por favor asegurarse de cumplir con los siguientes requisitos para aplicar para una cuenta",
+            "optional_preparation": {
+                "title": "Preparación Opcional",
+                "risk_profile": {
+                    "title": "Completar Perfil de Riesgo",
+                    "description": "Completa tu perfil de riesgo de inversión para ayudarnos a entender mejor tus preferencias y objetivos de inversión.",
+                    "button": "Iniciar Perfil de Riesgo"
+                }
+            },
             "personal": {
                 "title": "Requisitos para cuentas Individuales",
                 "identity": {
@@ -718,7 +735,7 @@
                     }
                 }
             },
-            "submit": "Aplicar a una cuenta"
+            "submit": "Aplicar para una cuenta"
         }
     },
     "dashboard": {
@@ -754,7 +771,7 @@
                         }
                     }
                 },
-                "average_yield": "Rendimiento promedio"
+                "average_yield": "Rendimiento estimado promedio anual"
             }
         }
     },
@@ -773,14 +790,16 @@
             "username_length": "El nombre de usuario debe tener al menos 4 caracteres.",
             "password_format": "La contraseña debe tener al menos una letra mayúscula, una letra minúscula, un número y un símbolo.",
             "select_required": "Por favor, seleccione una opción.",
-            "security_answer": "Por favor, ingrese una respuesta para la pregunta de seguridad."
+            "input_required": "Por favor, ingrese un valor.",
+            "security_answer": "Por favor, ingrese una respuesta para la pregunta de seguridad.",
+            "true_required": "La casilla debe estar marcada."
         }
     },
     "signin": {
         "title": "Iniciar Sesión",
         "signin": "Iniciar Sesión",
         "signingIn": "Iniciando sesión...",
-        "username": "Nombre de usuario",
+        "email": "Correo electrónico",
         "password": "Contraseña",
         "register": {
             "message": "¿No tiene una cuenta?",
@@ -804,9 +823,9 @@
     },
     "ada": {
         "title": "Chat con ADA",
-        "description": "Chat con ADA, nuestro asistente virtual de AGM.",
+        "start_conversation": "Inicia una conversación con Ada",
+        "typing": "Ada está escribiendo...",
         "placeholder": "Escribe tu mensaje aquí...",
-        "send": "Enviar",
-        "system_prompt": "Eres Ada, la asistente de IA de AGM. Operas en nuestro sitio web como un chatbot y serás utilizado principalmente por nuestros clientes. Aquí tienes información importante sobre AGM: AGM es un corredor/agente de bolsa internacional líder desde 1995, que proporciona acceso directo a más de 150 mercados financieros en EE. UU., Europa, Asia y América Latina. Nos especializamos en hacer accesibles mercados que antes eran inaccesibles para traders e inversionistas. Servicios clave: AGM Trader: Para traders individuales AGM Advisor: Para soluciones de inversión gestionadas AGM Institutional: Para clientes institucionales. Ofrecemos: Plataforma global de trading para acciones, ETFs, opciones, futuros, bonos y criptomonedas Acceso a los mercados 24/7 Herramientas profesionales de trading y un panel de control avanzado Atención al cliente dedicada El sitio web (https://agmtechnology.com) ofrece una amplia gama de servicios, incluyendo: Inicio de sesión en la plataforma de trading en la ruta /signin y creación de cuenta en /create-account Páginas de servicios: /trader, /advisor, /institutional Centro de aprendizaje en /learning Centro de ayuda en /help Los siguientes endpoints están disponibles para los usuarios registrados y con sesión iniciada: Solicitud de una cuenta AGM en /apply Acceso directo al portal de cuentas en /portal Brinda respuestas precisas, profesionales y útiles sobre los servicios de AGM, sus capacidades de trading y los mercados financieros. Mantén siempre un tono profesional y prioriza la precisión en la información financiera."
+        "system_prompt": "Eres Ada, la asistente de IA de AGM. Operas en nuestro sitio web (https://agmtechnology.com) como un chatbot y serás utilizado principalmente por nuestros clientes. Cuando hables de cualquier enlace dentro del sitio web, necesitas usar el siguiente formato: [Texto del Enlace](https://agmtechnology.com/endpoint). Aquí tienes información importante sobre AGM: AGM es un corredor/agente de bolsa internacional líder desde 1995, que proporciona acceso directo a más de 150 mercados financieros en EE. UU., Europa, Asia y América Latina. Nos especializamos en hacer accesibles mercados que antes eran inaccesibles para traders e inversionistas. Servicios clave: AGM Trader: Para traders individuales. AGM Advisor: Para soluciones de inversión gestionadas. AGM Institutional: Para clientes institucionales. Ofrecemos: Plataforma global de trading para acciones, ETFs, opciones, futuros, bonos y criptomonedas. Acceso a los mercados 24/7. Herramientas profesionales de trading y panel de control. Atención al cliente dedicada. El sitio web (https://agmtechnology.com) ofrece una amplia gama de servicios, incluyendo: Inicio de sesión en la plataforma de trading con endpoint /signin y creación de cuenta con /create-account. Páginas de servicios en /trader, /advisor, /institutional. Centro de aprendizaje en /learning. Centro de ayuda en /help. Estos endpoints están disponibles para usuarios registrados y con sesión iniciada: Solicitud de una cuenta AGM con endpoint /apply. Acceso directo al portal de cuentas en /portal. Brinda respuestas precisas, profesionales y útiles relacionadas con los servicios de AGM, capacidades de trading y mercados financieros. Mantén siempre un tono profesional y prioriza la precisión en la información financiera. NO OFRECES CONSEJOS DE INVERSIÓN, NO ERES UN ASESOR FINANCIERO."
     }
 }

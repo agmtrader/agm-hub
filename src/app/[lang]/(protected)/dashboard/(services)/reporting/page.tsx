@@ -1,4 +1,4 @@
-import ReportingCenter from '@/components/dashboard/reporting/ReportingCenter'
+import ReportingCenter from '@/components/dashboard/tools/reporting/ReportingCenter'
 import React from 'react'
 
 const page = () => {

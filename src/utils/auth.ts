@@ -3,10 +3,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from "next-auth/providers/credentials"
 import { LoginUserWithCredentials } from "./api"
 
-import { FirestoreAdapter } from "@next-auth/firebase-adapter"
-import { firestore } from "@/utils/firebase/firebase-admin"
-
-const defaultScopes = "users/read users/update tickets/create tickets/update tickets/read notifications/create"
+const defaultScopes = "users/read users/update accounts/create accounts/read accounts/update"
 
 export const authOptions: NextAuthOptions = {
 
@@ -27,52 +24,37 @@ export const authOptions: NextAuthOptions = {
       CredentialsProvider({
         name: 'Credentials',
         credentials: {
-          username: { label: "Username", type: "text", placeholder: "jsmith" },
+          email: { label: "Email", type: "text", placeholder: "jsmith@gmail.com" },
           password: { label: "Password", type: "password" }
         },
         async authorize(credentials) {
 
-          if (credentials?.username && credentials?.password) {
+          if (credentials?.email && credentials?.password) {
             try {
 
-              // Fetch user profile manually from database
-              // When logging in with Google, the user profile is fetched from Firebase Authentication
-              // that uses the same database as this, /users
-
-              const user = await LoginUserWithCredentials(credentials.username, credentials.password)
-              if (!user) return null
+              const user = await LoginUserWithCredentials(credentials.email, credentials.password)
               return user
-              
 
             } catch (error) {
-
-              console.error('Authentication error:', error);
-              return null;
+              throw new Error('Invalid credentials')
             }
           }
           return null
         }
       }),
     ],
-    adapter: FirestoreAdapter(firestore),
     callbacks: {
 
       async jwt({ token, user }) {
 
         // Build token from user profile
-        // This can be Google Response or Credentials Response
-        
         if (user) {
 
           token.sub = user.id
           token.email = user.email || null
           token.name = user.name || null
           token.image = user.image || null
-
-          token.emailVerified = user.emailVerified || false
-          token.country = user.country || null
-          token.username = user.username || null
-          token.scopes = user.scopes || defaultScopes
+          token.scopes = user.scopes + ' ' + defaultScopes
 
         }
         
@@ -89,37 +71,7 @@ export const authOptions: NextAuthOptions = {
             session.user.name = token.name || null
             session.user.email = token.email || null
             session.user.image = token.image || null
-
-            session.user.emailVerified = token.emailVerified || false
-            session.user.username = token.username || null
-            session.user.country = token.country || null
             session.user.scopes = token.scopes || defaultScopes
-
-            /*
-            // Sync Firebase Authentication Profile with session data (maybe remove this)
-            let currentUser = null
-            try {
-              currentUser = await firebaseAdminAuth.getUser(token.sub)
-            } catch (error) {
-              currentUser = await firebaseAdminAuth.createUser({
-                uid: token.sub,
-              })
-            }
-
-            if (!currentUser) throw new Error('Failed to create or fetch user in Firebase Authentication')
-
-            if (!currentUser.email && session.user.email) {
-              await firebaseAdminAuth.updateUser(token.sub, { email: session.user.email })
-            }
-
-            if (!currentUser.displayName && session.user.name) {
-              await firebaseAdminAuth.updateUser(token.sub, { displayName: session.user.name })
-            }
-
-            if (!currentUser.photoURL && session.user.image) {
-              await firebaseAdminAuth.updateUser(token.sub, { photoURL: session.user.image })
-            }
-            */
 
           }
           

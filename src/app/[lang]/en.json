@@ -23,8 +23,7 @@
             "title": "Empowering Today's Traders for Tomorrow's Markets",
             "description": "Since 1995, AGM as an International Securities Broker/Dealer has facilitated direct access to more than 150 financial markets (Stock Exchanges) in the USA, Europe, Asia, and Latin America, otherwise inaccessible to certain investors.",
             "description_2": "AGM Technology offers professional services to maximize your returns:",
-            "action_text": "Interested?",
-            "action_subtext": "See the steps to begin your trading journey.",
+            "action_text": "View requirements to start investing",
             "cards": [
                 {
                     "title": "Trade anytime, anywhere",
@@ -60,6 +59,12 @@
             ]
         }
     },
+    "products": {
+        "download": {
+            "title": "Download AGM Products",
+            "description": "Download our professional trading applications for your preferred platform"
+        }
+    },
     "agm-trader": {
         "title": {
             "title": "Trader",
@@ -69,8 +74,7 @@
         "introduction": {
             "title": "Execute your trading strategy at the speed of your fingertips",
             "description": "AGM Trader lets you trade and invest 24/7 in a wide range of financial instruments across 150+ markets and 20+ different currencies from a single account.",
-            "cta_text": "Ready to start trading anywhere?",
-            "cta_subtext": "Download our app now.",
+            "action_text": "View our products",
             "cards": [
                 {
                     "title": "Trade Any Time, Anywhere",
@@ -104,10 +108,13 @@
             ]
         },
         "download": {
-            "title": "Download Our Apps",
-            "device": "First of all, what device are you using?",
-            "operating_system": "What operating system are you using?",
-            "download_now": "Download now."
+            "title": "Download AGM Trader Pro",
+            "description": "AGM Trader Pro is our flagship product, a trading platform that allows you to trade stocks, options, futures, and more.",
+            "download_now": "Download now",
+            "desktop_platforms": "Desktop Platforms",
+            "mobile_platforms": "Mobile Platforms",
+            "by_downloading": "By downloading, you agree to our",
+            "terms_of_service": "Terms of Service"
         }
     },
     "agm-advisor": {
@@ -117,7 +124,7 @@
             "action_text": "Apply for an account"
         },
         "introduction": {
-            "title": "Your Legacy Matters.",
+            "title": "Your Legacy Matters",
             "description": [
                 "AGM Advisor, our Advisory services firm, provides individual portfolio investment strategies that are tailored made for each client (Segregated Portfolio Accounts).",
                 "Any client that would like to delegate a portion of their financial assets or wealth through our advisory division, gets one on one service from one of our Advisors that is assigned. We strive to provide best in class service to each of our advisory clients!",
@@ -152,8 +159,7 @@
                     ]
                 }
             ],
-            "cta_text": "Discover Your Investment Profile",
-            "cta_subtext": "Take our risk assessment to get started with a tailored investment strategy."
+            "action_text": "Take our risk assessment now"
         }
     },
     "agm-institutional": {
@@ -168,8 +174,7 @@
                 "Our Institutional division provides world-class execution services to the most sophisticated institutions.",
                 "Our dedicated team of professionals ensures that any need or requirement is met, providing the best execution and pricing in over 150 markets worldwide across all asset classes."
             ],
-            "cta_text": "Ready to start trading anywhere?",
-            "cta_subtext": "Download our app now.",
+            "action_text": "View requirements to start investing",
             "cards": [
                 {
                     "title": "Who We Serve",
@@ -238,6 +243,7 @@
             "description": "Meet our team of professionals dedicated to providing exceptional service.",
             "contact_us": "Contact Us",
             "team_carousel": {
+                "linkedin": "LinkedIn",
                 "hernan_title": "Chief Executive Officer",
                 "hernan_description": "Mr. Castro has also more than 30 years of experience in the securities markets and is also a founding partner of AGM and as such has helped the firm become an International Broker/Dealer and Advisor. Mr. Castro is not only our Chief Operating Officer, but he oversees our Investment Advisory Division. Mr. Castro has been registered with FINRA in the USA as a Series 7 and Serie 66 under CRD # 4575350.",
                 "ramon_title": "Chief Operating Officer",
@@ -441,7 +447,7 @@
                 "account_types": {
                     "individual": "Individual Account",
                     "joint": "Joint Account",
-                    "trust": "Trust Account",
+                
                     "institutional": "Institutional Account"
                 },
                 "referrer": "Who referred you?",
@@ -550,7 +556,7 @@
             "title": "Risk Assessment Questionnaire",
             "description": "Please complete this form to help us understand your risk tolerance and investment preferences.",
             "form": {
-                "account_number": "Account number",
+                "account_id": "Account number",
                 "client_name": "Full name",
                 "type": {
                     "title": "What type of investor do you consider yourself?",
@@ -600,6 +606,14 @@
         "requirements": {
             "title": "Requirements for an AGM Account",
             "description": "Please ensure you meet the following requirements to apply for an account",
+            "optional_preparation": {
+                "title": "Optional Preparation",
+                "risk_profile": {
+                    "title": "Complete Risk Profile",
+                    "description": "Fill out your investment risk profile to help us better understand your investment preferences and goals.",
+                    "button": "Start Risk Profile"
+                }
+            },
             "personal": {
                 "title": "Requirements for Individual Accounts",
                 "identity": {
@@ -637,7 +651,7 @@
                         "salary": "Salaries (Copy of the most recent Employer Order or Certification by a CPA)",
                         "investments": "Income from Investment Gains (Brokerage Account Statement showing such gains)",
                         "property": "Property Sale (Property Purchase/Sale Contract)",
-                        "inheritance": "Inheritance (Copy of Legal Document: Trust, Will, etc.)",
+                        "inheritance": "Inheritance (Copy of Legal Document: Will, etc.)",
                         "shares": "Sale of Shares in one or more companies (Brokerage Account Statement showing such sales)",
                         "dividends": "Dividends received (Copy of Shareholders' Minutes authorizing Dividend distribution)",
                         "other": "Other"
@@ -716,7 +730,7 @@
                     "documents": {
                         "investments": "Income from Investment Gains: (Stock Exchange Account Statement showing such gains)",
                         "property": "Property Sale: (Property Purchase/Sale Contract)",
-                        "inheritance": "Inheritance: (Copy of Legal Document: Trust, Will, etc.)",
+                        "inheritance": "Inheritance: (Copy of Legal Document: Will, etc.)",
                         "shares": "Sale of Shares in one or more companies: (Stock Exchange Account Statement showing such sales)",
                         "profits": "Income from Profits: (Copy of Financial Statements of the Company showing such income)",
                         "business": "Income from Business: (Copy of Financial Statements of the Company showing such income)",
@@ -760,7 +774,7 @@
                         }
                     }
                 },
-                "average_yield": "Average Yield"
+                "average_yield": "Estimated Average Annual Yield"
             }
         }
     },
@@ -786,7 +800,7 @@
         "title": "Sign In",
         "signin": "Sign in",
         "signingIn": "Signing in...",
-        "username": "Username",
+        "email": "Email",
         "password": "Password",
         "register": {
             "message": "Don't have an account? ",
@@ -811,6 +825,8 @@
     "ada": {
         "title": "Chat with ADA",
         "placeholder": "Type your message here...",
+        "start_conversation": "Start a conversation with Ada",
+        "typing": "Ada is typing...",
         "system_prompt": "You are AGM's AI assistant called Ada. You are running on our website (https://agmtechnology.com) as a chatbot, and will be used the most by our customers. When talking about any link inside the website, you need use the following format: [Link Text](https://agmtechnology.com/endpoint). Here's important context about AGM: AGM is a leading International Securities Broker/Dealer since 1995, providing direct access to over 150 financial markets across the USA, Europe, Asia, and Latin America. We specialize in making previously inaccessible markets accessible to traders and investors. Key Services: AGM Trader: For individual traders. AGM Advisor: For managed investment solutions. AGM Institutional: For institutional clients. We offer: Global trading platform for stocks, ETFs, options, futures, bonds, and cryptocurrencies. 24/7 market access. Professional trading tools and dashboard. Dedicated customer support. The website (https://agmtechnology.com) offers a wide range of services, including: Login to the trading platform with endpoint /signin and account creation with /create-account. Services page at /trader, /advisor, /institutional. Learning center at /learning. Help center at /help. These endpoints are available for the user to interact with, but only for registered and signed in users: Application of an AGM account with endpoint /apply. Login directly to our account portal at /portal. Please provide accurate, professional, and helpful responses related to AGM's services, trading capabilities, and financial markets. Always maintain a professional tone and prioritize accuracy in financial information. YOU DO NOT OFFER INVESTMENT ADVICE, YOU ARE NOT A FINANCIAL ADVISOR."
     }
 }

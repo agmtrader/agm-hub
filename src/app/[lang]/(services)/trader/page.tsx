@@ -1,11 +1,11 @@
 'use client'
-import Title from "../../../../components/home/title/Title";
-import { TraderIntroduction } from "../../../../components/home/introduction/Introduction"
-import Services from "../../../../components/home/services/Services";
-import FAQ from "../../../../components/home/faq/FAQ";
+import Title from "../../../../components/public/title/Title";
+import { TraderIntroduction } from "../../../../components/public/introduction/Introduction"
+import Services from "../../../../components/public/services/Services";
+import FAQ from "../../../../components/public/faq/FAQ";
 import { Monitor, Smartphone, Globe, Headphones, Shield, BarChart, BookOpen } from "lucide-react";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
-import Download from "@/components/home/download/Download";
+import DownloadsCarousel from "@/components/public/download/DownloadsCarousel";
 
 export default function Home() {
 
@@ -17,7 +17,7 @@ export default function Home() {
     title: t('agm-trader.title.title'),
     subtitle: t('agm-trader.title.subtitle'),
     ctaText: t('agm-trader.title.action_text'),
-    ctaLink: '/trader#download' 
+    ctaLink: '/downloads' 
   }
   
   const introductionProps = {
@@ -46,9 +46,8 @@ export default function Home() {
         ]
       }
     ],
-    ctaText: t('agm-trader.introduction.cta_text'),
-    ctaSubtext: t('agm-trader.introduction.cta_subtext'),
-    ctaLink: '/apply'
+    actionText: t('agm-trader.introduction.action_text'),
+    ctaLink: '/trader#download'
   }
 
   const services = [
@@ -71,7 +70,7 @@ export default function Home() {
       <Title {...titleProps} />
       <TraderIntroduction {...introductionProps} />
       <Services services={services} />
-      <Download />
+      <DownloadsCarousel />
       <FAQ />
     </div>
   )

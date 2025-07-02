@@ -1,10 +1,10 @@
-export interface Advisor {
-    'AdvisorCode': string
-    'AdvisorName': string
-    'Agency': string
-    'HierarchyL1': string
-    'HierarchyL2': string
-    'InceptionDate': string
-    'id': string
-  }
-  
+import { Base } from "./base"
+
+export type Advisor = Base & {
+  code: string
+  agency: string
+  hierarchy1: string
+  hierarchy2: string
+  name: string
+  contact_id: string
+}

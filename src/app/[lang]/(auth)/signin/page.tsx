@@ -14,12 +14,14 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/anims';
 import { useSession } from 'next-auth/react';
+import { error } from 'console';
+import LoaderButton from '@/components/misc/LoaderButton';
 
 function SignIn() {
 
   const { lang, t } = useTranslationProvider()
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -37,21 +39,26 @@ function SignIn() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const result = await signIn('credentials', {
-      username,
-      password,
-      redirect: false,
-      callbackUrl: callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang),
+
+  const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang),
     });
-    if (result?.ok) {
-      router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
-    } else {
+
+    if (result?.error) {
       toast({
         title: 'Error',
-        description: 'Invalid username or password',
+        description: result.error,
         variant: 'destructive'
       })
     }
+
+    if (result?.status === 200) {
+      router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
+    }
+
     setIsLoading(false);
   }
 
@@ -82,9 +89,9 @@ function SignIn() {
             <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-full'>
               <Input
                 type="text"
-                placeholder={t('signin.username')}
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder={t('signin.email')}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
               />
@@ -96,16 +103,7 @@ function SignIn() {
                 required
                 disabled={isLoading}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('signin.signingIn')}
-                  </>
-                ) : (
-                  t('signin.signin')
-                )}
-              </Button>
+              <LoaderButton isLoading={isLoading} text={t('signin.signin')} />
             </form>
             <p className='text-sm text-muted-foreground text-center text-red-500'>{t('signin.no_account_warning')}</p>
           </CardContent>

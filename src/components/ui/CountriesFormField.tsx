@@ -5,10 +5,10 @@ import { Button } from './button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from './form'
 import { Popover, PopoverTrigger, PopoverContent } from './popover'
 import { Command, CommandList, CommandInput, CommandEmpty, CommandGroup, CommandItem } from './command'
-import { countries } from '@/lib/form'
+import { countries } from '@/lib/public/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
-const CountriesFormField = ({ form, element }: { form: any, element: any }) => {
+const CountriesFormField = ({ form, element }: { form: any, element: { name: string, title: string } }) => {
 
   const { t, lang } = useTranslationProvider();
 

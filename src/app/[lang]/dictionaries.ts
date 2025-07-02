@@ -1,4 +1,4 @@
-import { Map } from '@/lib/types';
+import { Map } from '@/lib/public/types';
 import { _t, Dict, Lang} from '@/utils/language/i18n'
 
 interface D {

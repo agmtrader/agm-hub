@@ -1,19 +1,16 @@
 'use client'
 import React, { useState } from 'react';
-import ClientForm from '@/components/apply/account/ClientForm';
-import Title from '@/components/apply/account/title/Title';
-import { Ticket } from '@/lib/entities/ticket';
+import Title from '@/components/apply/title/Title';
+import IBKRApplicationForm from '@/components/apply/form/IBKRApplicationForm';
 
 const page = () => {
-
   const [started, setStarted] = useState(false)
-  const [ticket, setTicket] = useState<Ticket | null>(null)
 
   if (started) {
-    return <ClientForm ticketProp={ticket}/>
+    return <IBKRApplicationForm />
   }
   else {
-    return <Title setStarted={setStarted} setTicket={setTicket}/>
+    return <Title setStarted={setStarted}/>
   }
 }
 

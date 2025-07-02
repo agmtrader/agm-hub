@@ -1,11 +1,11 @@
 'use client'
 
-import Title from "@/components/home/title/Title";
-import { Introduction } from "@/components/home/introduction/Introduction"
-import Services from "@/components/home/services/Services";
-import FAQ from "@/components/home/faq/FAQ";
+import Title from "@/components/public/title/Title";
+import { Introduction } from "@/components/public/introduction/Introduction"
+import Services from "@/components/public/services/Services";
+import FAQ from "@/components/public/faq/FAQ";
 
-import Team from "@/components/home/team/Team";
+import Team from "@/components/public/team/Team";
 import { Handshake, BarChart2, PieChart, TrendingUp, Clock, Database, LayoutDashboard, FileText, MessageCircle } from "lucide-react";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 
@@ -57,8 +57,7 @@ export default function Home() {
         ]
       }
     ],
-    ctaText: t('agm-advisor.introduction.cta_text'),
-    ctaSubtext: t('agm-advisor.introduction.cta_subtext'),
+    actionText: t('agm-advisor.introduction.action_text'),
     ctaLink: '/apply/risk'
   }
 

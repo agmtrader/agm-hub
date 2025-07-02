@@ -1,9 +1,9 @@
 'use client'
-import Title from "../../../../components/home/title/Title";
-import { Introduction } from "../../../../components/home/introduction/Introduction"
-import Services from "@/components/home/services/Services";
-import FAQ from "@/components/home/faq/FAQ";
-import Team from "@/components/home/team/Team";
+import Title from "../../../../components/public/title/Title";
+import { Introduction } from "../../../../components/public/introduction/Introduction"
+import Services from "@/components/public/services/Services";
+import FAQ from "@/components/public/faq/FAQ";
+import Team from "@/components/public/team/Team";
 import { BarChart2, Briefcase, Banknote, PieChart, TrendingUp, CandlestickChart, Clock, Database, LayoutDashboard, FileText, Mail, Phone, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
@@ -60,9 +60,8 @@ export default function Home() {
         ]
       }
     ],
-    ctaText: t('agm-technology.introduction.action_text'),
-    ctaSubtext: t('agm-technology.introduction.action_subtext'),
-    ctaLink: '/apply'
+    actionText: t('agm-technology.introduction.action_text'),
+    ctaLink: '/requirements'
   };
 
   const services = [

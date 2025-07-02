@@ -1,6 +1,8 @@
 # Next.js Gitignore
 
 # Personal
+dev/am-api
+
 *.DS_Store
 .env
 
@@ -42,3 +44,4 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 .next
+.config/

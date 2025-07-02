@@ -5,20 +5,21 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Send, RotateCcw, Bot, Minimize2, Expand, X } from 'lucide-react'
+import { Send, RotateCcw, Bot } from 'lucide-react'
 import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
-import { chat } from '@/utils/ada'
+import { accessAPI } from '@/utils/api'
 import { useSession } from 'next-auth/react'
-import { Dash } from 'react-bootstrap-icons'
-import DashboardPage from '../misc/DashboardPage'
 import { useRouter } from 'next/navigation'
+import { ChatMessage, ChatResponse } from '@/lib/public/ada'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 const FullChat = () => {
     const router = useRouter()
     const {data:session} = useSession()
+    const {t} = useTranslationProvider()
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>('');
     const [id, setId] = useState<number>(1);
@@ -41,9 +42,8 @@ const FullChat = () => {
         setIsTyping(true);
 
         try {
-            // Get response from Gemini API
-            const response = await chat([{ role: 'user', content: input }]);
-            
+            // Call Ada chat endpoint directly
+            const response: ChatResponse = await accessAPI('/ada/chat', 'POST', { messages: [{ role: 'user', content: input }] });
             // Add assistant message
             const assistantMessage: Message = { 
                 role: 'assistant', 
@@ -53,8 +53,6 @@ const FullChat = () => {
             setMessages(prevMessages => [...prevMessages, assistantMessage]);
             setId(prev => prev + 1);
         } catch (error) {
-            console.error('Error getting response:', error);
-            // Add error message to chat
             const errorMessage: Message = { 
                 role: 'assistant', 
                 content: 'Sorry, I encountered an error. Please try again.', 
@@ -72,7 +70,7 @@ const FullChat = () => {
     return (
         <Card className="flex-1 flex flex-col border-none shadow-none backdrop-blur">
             <CardHeader className="flex flex-row items-center justify-between w-full">
-                <CardTitle className="text-2xl text-foreground font-bold w-full">Chat with Ada</CardTitle>
+                <CardTitle className="text-2xl text-foreground font-bold w-full">{t('ada.title')}</CardTitle>
                     <div className="flex justify-center w-fit">
                         <Button 
                             variant="ghost" 
@@ -88,7 +86,7 @@ const FullChat = () => {
                     {messages.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center flex-col gap-4 text-muted-foreground">
                             <Bot className="h-12 w-12" />
-                            <p className="text-center">Start a conversation with Ada</p>
+                            <p className="text-center">{t('ada.start_conversation')}</p>
                         </div>
                     ) : (
                         <ScrollArea className="flex-1 pr-4">
@@ -147,7 +145,7 @@ const FullChat = () => {
                                         <Bot className="h-4 w-4 text-primary" />
                                     </div>
                                     <div className="bg-muted p-3 rounded-lg">
-                                        Ada is typing...
+                                        {t('ada.typing')}
                                     </div>
                                 </motion.div>
                             )}
@@ -163,7 +161,7 @@ const FullChat = () => {
                         <Input
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="Type your message..."
+                            placeholder={t('ada.placeholder')}
                             className="flex-grow"
                             disabled={isTyping}
                         />

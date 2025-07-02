@@ -1,9 +1,12 @@
-import LeadsPage from '@/components/dashboard/leads/LeadsPage'
+import DashboardPage from '@/components/misc/DashboardPage'
+import LeadsPage from '@/components/dashboard/entities/leads/LeadsPage'
 import React from 'react'
 
 const page = () => {
   return (
-    <LeadsPage />
+    <DashboardPage title="Leads" description="Manage and create new leads">
+      <LeadsPage />
+    </DashboardPage>
   )
 }
 

@@ -41,6 +41,18 @@ export function formatDateFromTimestamp(timestamp: string | undefined): string {
   }
 }
 
+export function getDateObjectFromTimestamp(timestamp: string | undefined): Date {
+    if (!timestamp || typeof timestamp !== 'string' || timestamp.length < 14) throw new Error('Invalid timestamp format')
+
+    const year = timestamp.slice(0, 4)
+    const month = timestamp.slice(4, 6)
+    const day = timestamp.slice(6, 8)
+    const hour = timestamp.slice(8, 10)
+    const minute = timestamp.slice(10, 12)
+
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute))
+}
+
 export function formatTimestamp(date:any) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed

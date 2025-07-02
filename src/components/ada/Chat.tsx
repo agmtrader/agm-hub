@@ -13,12 +13,13 @@ import { usePathname, useRouter } from 'next/navigation'
 import { formatURL, getCallbackUrl } from '@/utils/language/lang'
 import { useSession } from 'next-auth/react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { chat } from '@/utils/ada'
+import { accessAPI } from '@/utils/api'
+import { ChatMessage, ChatResponse } from '@/lib/public/ada'
 
 const AdaChat = () => {
     const router = useRouter()
     const {data:session} = useSession()
-    const {lang} = useTranslationProvider()
+    const {lang, t} = useTranslationProvider()
     const pathname = usePathname()
     
     const [isExpanded, setIsExpanded] = useState(false)
@@ -44,9 +45,9 @@ const AdaChat = () => {
         setIsTyping(true);
 
         try {
-            // Get response from Gemini API
-            const response = await chat([{ role: 'user', content: input }]);
-            
+            // Call Ada chat endpoint directly
+            const response: ChatResponse = await accessAPI('/ada/chat', 'POST', { messages: [{ role: 'user', content: input }] });
+            console.log(response)
             // Add assistant message
             const assistantMessage: Message = { 
                 role: 'assistant', 
@@ -99,7 +100,7 @@ const AdaChat = () => {
                     >
                         <Card className="w-80 h-fit flex flex-col border-none shadow-none backdrop-blur">
                             <CardHeader className="flex flex-row items-center justify-between w-full">
-                                <CardTitle className="text-md text-foreground font-medium w-full">Chat with Ada</CardTitle>
+                                <CardTitle className="text-md text-foreground font-medium w-full">{t('ada.title')}</CardTitle>
                                 <div className="flex justify-center w-fit">
                                     <Button 
                                         variant="ghost" 
@@ -131,7 +132,7 @@ const AdaChat = () => {
                                 {messages.length === 0 ? (
                                     <div className="h-72 flex items-center justify-center flex-col gap-4 text-muted-foreground">
                                         <Bot className="h-12 w-12" />
-                                        <p className="text-center">Start a conversation with Ada</p>
+                                        <p className="text-center">{t('ada.start_conversation')}</p>
                                     </div>
                                 ) : (
                                     <ScrollArea className="h-72 w-full pr-4">
@@ -190,7 +191,7 @@ const AdaChat = () => {
                                                     <Bot className="h-4 w-4 text-primary" />
                                                 </div>
                                                 <div className="bg-muted p-3 rounded-lg">
-                                                    Ada is typing...
+                                                    {t('ada.typing')}
                                                 </div>
                                             </motion.div>
                                         )}
@@ -206,7 +207,7 @@ const AdaChat = () => {
                                     <Input
                                         value={input}
                                         onChange={(e) => setInput(e.target.value)}
-                                        placeholder="Type your message..."
+                                        placeholder={t('ada.placeholder')}
                                         className="flex-grow"
                                         disabled={isTyping}
                                     />
