@@ -78,7 +78,14 @@ const RiskCenter = () => {
       </div>
 
       {accountRiskProfile && (
-        <RiskProfile riskProfile={riskProfilesDictionary.find(profile => profile.id === accountRiskProfile.risk_profile_id)!} />
+        (() => {
+          const riskProfile = riskProfilesDictionary.find(profile => profile.id === parseInt(accountRiskProfile.risk_profile_id.toString()))
+          return riskProfile ? <RiskProfile riskProfile={riskProfile} /> : (
+            <div className="text-center text-subtitle">
+              <p>Risk profile not found for ID: {accountRiskProfile.risk_profile_id}</p>
+            </div>
+          )
+        })()
       )}
 
       </div>
