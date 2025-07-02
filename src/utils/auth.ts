@@ -8,19 +8,6 @@ const defaultScopes = "users/read users/update accounts/create accounts/read acc
 export const authOptions: NextAuthOptions = {
 
     providers: [
-      GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID!,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        checks: 'none',
-        authorization: {
-          params: {
-            prompt: "consent",
-            access_type: "offline",
-            response_type: "code",
-            scope: "openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
-          }
-        }
-      }),
       CredentialsProvider({
         name: 'Credentials',
         credentials: {

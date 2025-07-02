@@ -78,7 +78,7 @@ const RiskCenter = () => {
       </div>
 
       {accountRiskProfile && (
-        <RiskProfile riskProfile={riskProfilesDictionary.find(profile => profile.id === parseInt(accountRiskProfile.risk_profile_id))!} />
+        <RiskProfile riskProfile={riskProfilesDictionary.find(profile => profile.id === accountRiskProfile.risk_profile_id)!} />
       )}
 
       </div>
