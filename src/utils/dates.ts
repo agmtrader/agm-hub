@@ -8,36 +8,38 @@ function formatDate(date:any) {
 
 export function formatDateFromTimestamp(timestamp: string | undefined): string {
 
-  if (!timestamp || typeof timestamp !== 'string' || timestamp.length < 14) throw new Error('Invalid timestamp format')
+  if (!timestamp || typeof timestamp !== 'string' || timestamp.length < 14) {
+    return ''
+  }
 
   try {
-      const year = timestamp.slice(0, 4)
-      const month = timestamp.slice(4, 6)
-      const day = timestamp.slice(6, 8)
-      const hour = timestamp.slice(8, 10)
-      const minute = timestamp.slice(10, 12)
+    const year = timestamp.slice(0, 4)
+    const month = timestamp.slice(4, 6)
+    const day = timestamp.slice(6, 8)
+    const hour = timestamp.slice(8, 10)
+    const minute = timestamp.slice(10, 12)
 
-      const date = new Date(
-          parseInt(year),
-          parseInt(month) - 1,
-          parseInt(day),
-          parseInt(hour),
-          parseInt(minute)
-      )
+    const date = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(hour),
+      parseInt(minute)
+    )
 
-      // Check if the date is valid
-      if (isNaN(date.getTime())) throw new Error('Invalid date created from timestamp')
+    // If date is invalid, return empty string
+    if (isNaN(date.getTime())) return ''
 
-      return new Intl.DateTimeFormat('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-      }).format(date)
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    }).format(date)
 
-  } catch (error) {
-      throw error
+  } catch {
+    return ''
   }
 }
 
