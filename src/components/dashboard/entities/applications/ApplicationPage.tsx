@@ -137,8 +137,9 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         application_id: application.id,
         fee_template: null
       }
-      //await CreateAccount(account)
 
+      // TODO: Uncomment this
+      //await CreateAccount(account)
       //await UpdateApplicationByID(applicationId, { sentToIBKR: true })
 
       toast({
@@ -492,7 +493,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       </div>
 
       <div className="flex gap-4">
-        <LoaderButton onClick={handleCreateAccount} isLoading={submitting} disabled={false} text="Send Application to IBKR" className="w-fit"/>
+        <LoaderButton onClick={handleCreateAccount} isLoading={submitting} disabled={true} text="Send Application to IBKR" className="w-fit"/>
         <Button onClick={handleCreateManualAccount} variant="outline" className="w-fit">
           Create Manual Account
         </Button>
