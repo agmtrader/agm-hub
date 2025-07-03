@@ -65,17 +65,17 @@ const AccountsPage = () => {
       accessorKey: 'ibkr_account_number',
     },
     {
-      header: 'Username',
+      header: 'IBKR Username',
       accessorKey: 'ibkr_username',
       cell: ({ row }: any) => {
-        return row.original.ibkr_username ? (
-          <span className="font-mono">
-            {row.original.ibkr_username.length > 3 
-              ? `${row.original.ibkr_username.substring(0, 3)}***`
-              : '***'
-            }
-          </span>
-        ) : '-'
+        return row.original.ibkr_username || '-'
+      }
+    },
+    {
+      header: 'IBKR Password',
+      accessorKey: 'ibkr_password',
+      cell: ({ row }: any) => {
+        return row.original.ibkr_password || '-'
       }
     },
     {
@@ -83,6 +83,13 @@ const AccountsPage = () => {
       accessorKey: 'temporal_email',
       cell: ({ row }: any) => {
         return row.original.temporal_email || '-'
+      }
+    },
+    {
+      header: 'Temporal Password',
+      accessorKey: 'temporal_password',
+      cell: ({ row }: any) => {
+        return row.original.temporal_password || '-'
       }
     },
     {
