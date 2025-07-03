@@ -8,7 +8,7 @@ import { DeleteLeadByID, ReadLeads, ReadFollowUpsByLeadID } from '@/utils/entiti
 import { ColumnDefinition } from '@/components/misc/DataTable'
 import { toast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
-import { formatDateFromTimestamp } from '@/utils/dates'
+import { formatDateFromTimestamp, getDateObjectFromTimestamp } from '@/utils/dates'
 import { Contact } from '@/lib/entities/contact'
 import { ReadContacts } from '@/utils/entities/contact'
 import ContactsLeadsView from './ContactsLeadsView'
@@ -29,7 +29,19 @@ const LeadsPage = () => {
 
     const leadsWithFollowUps = await ReadLeads()
 
-    setLeads(leadsWithFollowUps.leads)
+    const getTimeSafe = (ts: string) => {
+      try {
+        return getDateObjectFromTimestamp(ts).getTime()
+      } catch {
+        return 0 // Fallback for malformed timestamps
+      }
+    }
+
+    setLeads(
+      leadsWithFollowUps.leads.sort(
+        (a, b) => getTimeSafe(b.contact_date) - getTimeSafe(a.contact_date)
+      )
+    )
     setFollowUps(leadsWithFollowUps.follow_ups)
   }
 
@@ -45,6 +57,8 @@ const LeadsPage = () => {
       })
     }
   }
+
+  console.log(leads)
 
   async function handleRefreshData() {
     await fetchContacts()
@@ -98,7 +112,10 @@ const LeadsPage = () => {
         
         const sortedFollowUps = [...filteredFollowUps]
           .filter(followUp => !followUp.completed)
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+          .sort((a, b) => (
+            (a.date instanceof Date ? a.date : getDateObjectFromTimestamp(a.date as string)).getTime() -
+            (b.date instanceof Date ? b.date : getDateObjectFromTimestamp(b.date as string)).getTime()
+          ))
 
         if (sortedFollowUps.length === 0) {
           return (

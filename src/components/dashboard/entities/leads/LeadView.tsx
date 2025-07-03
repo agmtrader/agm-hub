@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { FollowUp, FollowUpPayload, Lead } from '@/lib/entities/lead'
+import { FollowUp, Lead } from '@/lib/entities/lead'
 import {
   Dialog,
   DialogContent,
@@ -19,11 +19,13 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Contact } from '@/lib/entities/contact'
 import GenerateApplicationLink from './GenerateApplicationLink'
 import ContactCard from '../contacts/ContactCard'
-import { UpdateLeadFollowUpByID } from '@/utils/entities/lead'
+import { UpdateLeadFollowUpByID, DeleteLeadFollowUpByID } from '@/utils/entities/lead'
 import { ReadApplicationByLeadID } from '@/utils/entities/application'
 import { InternalApplication } from '@/lib/entities/application'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import AddFollowUp from './AddFollowUp'
+import { Trash2 } from 'lucide-react'
 
 interface LeadViewProps {
   lead: Lead |  null
@@ -61,17 +63,16 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
     fetchApplication()
   }, [lead?.id])
 
-  async function handleCompleteFollowUp(followUp: FollowUpPayload) {
+  async function handleCompleteFollowUp(followUp: FollowUp) {
     if (!lead) return
 
-    if (followUp.completed) {
-      followUp.completed = false
-    } else {
-      followUp.completed = true
+    const updatedFollowUp: FollowUp = {
+      ...followUp,
+      completed: !followUp.completed,
     }
 
     try {
-      await UpdateLeadFollowUpByID(lead.id, followUp)
+      await UpdateLeadFollowUpByID(lead.id, followUp.id, updatedFollowUp)
       onSuccess?.()
 
     } catch (error) {
@@ -79,6 +80,26 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
         title: 'Error',
         description: 'Failed to complete follow-up',
         variant: 'destructive'
+      })
+    }
+  }
+
+  async function handleDeleteFollowUp(followUp: FollowUp) {
+    if (!lead) return
+
+    try {
+      await DeleteLeadFollowUpByID(lead.id, followUp.id)
+      toast({
+        title: 'Deleted',
+        description: 'Follow-up removed successfully',
+        variant: 'success',
+      })
+      onSuccess?.()
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete follow-up',
+        variant: 'destructive',
       })
     }
   }
@@ -139,8 +160,11 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
                     <div key={followUp.id} className="space-y-2">
                       <div className="flex justify-between items-center">
                         <p className="text-sm font-medium text-foreground">{formatDateFromTimestamp(followUp.date.toString())}</p>
-                        <div className="flex flex-col items-end gap-2">
+                        <div className="flex items-center gap-2">
                           <Checkbox checked={followUp.completed} onCheckedChange={() => handleCompleteFollowUp(followUp)} />
+                          <button onClick={() => handleDeleteFollowUp(followUp)} className="text-destructive hover:text-destructive/80">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
                       </div>
                       <p className="text-sm text-subtitle whitespace-pre-wrap">{followUp.description}</p>
@@ -148,6 +172,7 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
                     </div>
                   ))}
               </div>
+              <AddFollowUp leadId={lead.id} onSuccess={onSuccess} />
             </Card>
             {lead && <GenerateApplicationLink lead={lead} followUps={followUps} />}
           </div>

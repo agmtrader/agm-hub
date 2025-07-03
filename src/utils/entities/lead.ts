@@ -29,12 +29,39 @@ export async function UpdateLeadByID(leadID:string, lead:any): Promise<IDRespons
     return updateResponse
 }
 
-export async function UpdateLeadFollowUpByID(leadID:string, followUp:FollowUpPayload): Promise<IDResponse> {
-    let updateResponse: IDResponse = await accessAPI('/leads/update_follow_up', 'POST', {'lead_id': leadID, 'follow_up': followUp})
+export async function DeleteLeadByID(leadID:string): Promise<IDResponse> {
+    let deleteResponse: IDResponse = await accessAPI('/leads/delete', 'POST', {'query': {'id': leadID}})
+    return deleteResponse
+}
+
+// Create a follow-up for a given lead
+export async function CreateLeadFollowUp(leadID: string, followUp: Omit<FollowUpPayload, 'lead_id'>): Promise<IDResponse> {
+    const createResponse: IDResponse = await accessAPI('/leads/create_follow_up', 'POST', {
+        'lead_id': leadID,
+        'follow_up': followUp,
+    })
+    return createResponse
+}
+
+// Update an existing follow-up (requires the follow-up id in a separate param, per API spec)
+export async function UpdateLeadFollowUpByID(
+    leadID: string,
+    followUpID: string,
+    followUp: FollowUpPayload,
+): Promise<IDResponse> {
+    const updateResponse: IDResponse = await accessAPI('/leads/update_follow_up', 'POST', {
+        'lead_id': leadID,
+        'follow_up_id': followUpID,
+        'follow_up': followUp,
+    })
     return updateResponse
 }
 
-export async function DeleteLeadByID(leadID:string): Promise<IDResponse> {
-    let deleteResponse: IDResponse = await accessAPI('/leads/delete', 'POST', {'query': {'id': leadID}})
+// Delete a follow-up by id
+export async function DeleteLeadFollowUpByID(leadID: string, followUpID: string): Promise<IDResponse> {
+    const deleteResponse: IDResponse = await accessAPI('/leads/delete_follow_up', 'POST', {
+        'lead_id': leadID,
+        'follow_up_id': followUpID,
+    })
     return deleteResponse
 }
