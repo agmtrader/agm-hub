@@ -2,7 +2,7 @@ import { Lead, LeadPayload } from "@/lib/entities/lead"
 import { FollowUpPayload } from "@/lib/entities/lead"
 import { accessAPI } from "../api"
 import { FollowUp } from "@/lib/entities/lead"
-import { IDResponse } from "./application"
+import { IDResponse } from "@/lib/entities/base"
 
 export async function CreateLead(lead:LeadPayload, follow_ups:FollowUpPayload[]): Promise<IDResponse> {
     const createResponse: IDResponse = await accessAPI('/leads/create', 'POST', {'lead': lead, 'follow_ups': follow_ups})

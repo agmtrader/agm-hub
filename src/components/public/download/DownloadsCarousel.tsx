@@ -7,10 +7,17 @@ import { FaApple, FaLinux, FaWindows, FaAndroid } from 'react-icons/fa'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { AGMTraderProDownloads as downloads } from '@/lib/public/downloads'
-import { osTypes } from '@/lib/public/types'
 import Link from "next/link"
 import { formatURL } from "@/utils/language/lang"
+
+export enum osTypes {
+  WINDOWS = 0,
+  LINUX = 1,
+  MACOS = 2,
+  ANDROID = 3,
+  IOS = 4
+}
+
 
 function DownloadsCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({

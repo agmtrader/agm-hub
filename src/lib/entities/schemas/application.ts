@@ -51,13 +51,10 @@ export const phone_schema = z.object({
 export const identification_schema = z.object({
   // Common fields, can be extended by specific ID types
   passport: z.string().optional(),
-  nationalId: z.string().optional(),
-  taxId: z.string().optional(),
+  nationalCard: z.string().optional(),
   driversLicense: z.string().optional(),
   issuingCountry: z.string().optional(),
-  issueDate: z.string().optional(), // YYYY-MM-DD
   expirationDate: z.string().optional(), // YYYY-MM-DD
-  type: z.string().optional(), // e.g. PASSPORT, NATIONAL_ID
   citizenship: z.string().optional(),
 });
 
@@ -153,7 +150,6 @@ export const financial_information_schema = z.object({
 
 export const regulatory_information_schema = z.object({
   regulatoryDetails: z.array(regulatory_detail_schema).min(1, { message: 'At least one regulatory detail is required' }),
-  // other regulatory fields if any
 });
 
 export const account_schema = z.object({

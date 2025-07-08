@@ -68,7 +68,7 @@ const CreateAccount = () => {
     try {
       setCreating(true)
 
-      const user:any = {
+      const user:UserPayload = {
         'name': values.name,
         'email': values.email,
         'image': '',

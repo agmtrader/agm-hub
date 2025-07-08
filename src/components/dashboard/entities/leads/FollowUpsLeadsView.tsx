@@ -51,7 +51,7 @@ const FollowUpsLeadsView = ({ leads, followUps, contacts}: Props) => {
         </Badge>
       )
     }
-  ] as ColumnDefinition<any>[]
+  ] as ColumnDefinition<FollowUp>[]
 
   return (
     <div className="flex flex-col my-5 gap-5">

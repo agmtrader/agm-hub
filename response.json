@@ -1,0 +1,25 @@
+{
+    "requestId": 292596929,
+    "dateSubmitted": "20250708204043 UTC",
+    "fileData": {
+        "data": {
+            "execution": {
+                "executedAt": "20250708204044 UTC",
+                "client": "AGM Technology ",
+                "clientMasterAccount": "I6413690",
+                "processFile": "AGMTechnology-FD-QA_2025-07-08_044043250_866167.json"
+            },
+            "application": {
+                "customer": "Andres Aguilar",
+                "externalId": "781efd8f-e25f-41cd-afd7-2093c5eec4de",
+                "status": "Error",
+                "error": [
+                    {
+                        "value": "Error occurred while processing the application."
+                    }
+                ]
+            }
+        },
+        "name": "AGMTechnology-FD-QA_20250708-164044340_441414.json.report"
+    }
+}

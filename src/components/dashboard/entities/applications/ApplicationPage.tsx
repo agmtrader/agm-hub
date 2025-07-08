@@ -493,7 +493,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       </div>
 
       <div className="flex gap-4">
-        <LoaderButton onClick={handleCreateAccount} isLoading={submitting} disabled={true} text="Send Application to IBKR" className="w-fit"/>
+        <LoaderButton onClick={handleCreateAccount} isLoading={submitting} text="Send Application to IBKR" className="w-fit"/>
         <Button onClick={handleCreateManualAccount} variant="outline" className="w-fit">
           Create Manual Account
         </Button>

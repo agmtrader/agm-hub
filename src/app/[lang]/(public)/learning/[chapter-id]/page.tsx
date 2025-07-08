@@ -18,12 +18,18 @@ type Props = {
     }>
 }
 
+interface Video {
+    id: string
+    title: string
+    chapter: string
+}
+
 const ChapterPage = ({ params }: Props) => {
 
     const { 'chapter-id': chapterId } = use(params)
 
-    const videos = videosDictionary.filter((video) => video.chapter === chapterId)
-    const [selected, setSelected] = useState<any | null>(videos[0])
+    const videos:Video[] = videosDictionary.filter((video) => video.chapter === chapterId)
+    const [selected, setSelected] = useState<Video | null>(videos[0] ?? null)
     const [showList, setShowList] = useState(true)
 
     const { lang } = useTranslationProvider()
@@ -141,7 +147,7 @@ const ChapterPage = ({ params }: Props) => {
                 <div className="absolute h-[2px] w-full top-1/2 -translate-y-1/2">
                     {videos.map((_, index) => {
                         if (index === videos.length - 1) return null;
-                        const isWatched = index < videos.findIndex(v => v.id === selected.id);
+                        const isWatched = index < videos.findIndex(v => v.id === selected?.id);
                         return (
                             <div
                                 key={`line-${index}`}
@@ -161,9 +167,9 @@ const ChapterPage = ({ params }: Props) => {
 
                 <div className="flex justify-between w-full relative">
                     {videos.map((video, index) => {
-                        const isWatched = index < videos.findIndex(v => v.id === selected.id);
-                        const isCurrent = video.id === selected.id;
-                        
+                        const isWatched = index < videos.findIndex(v => v.id === selected?.id);
+                        const isCurrent = video.id === selected?.id;
+
                         return (
                             <button
                                 key={video.id}

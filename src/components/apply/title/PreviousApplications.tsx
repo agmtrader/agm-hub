@@ -43,13 +43,13 @@ const PreviousApplications = ({setAccount, setStarted}:Props) => {
         {
             header: t('apply.account.title.previous_applications.date'),
             accessorKey: 'created',
-            cell: ({row}: any) => formatDateFromTimestamp(row.original.created)
+            cell: ({row}: {row: {original: Account}}) => formatDateFromTimestamp(row.original.created)
         },
         {
             header: t('apply.account.title.previous_applications.advisor'),
             accessorKey: 'id',
         }
-    ] as ColumnDefinition<any>[]
+    ] as ColumnDefinition<Account>[]
 
     const rowActions = [
         {

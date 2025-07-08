@@ -81,3 +81,7 @@ export interface Trade {
     "Weight": string;
     "file_name": string;
 }
+
+export interface TradeTicketResponse {
+    "message": string;
+}

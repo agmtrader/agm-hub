@@ -1,8 +1,9 @@
 import { accessAPI } from "../api"
 import { User } from "next-auth"
+import { IDResponse } from "@/lib/entities/base"
 
-export async function CreateUser(user:User) {
-    let user_response = await accessAPI('/users/create', 'POST', {'user': user})
+export async function CreateUser(user:User): Promise<IDResponse> {
+    const user_response: IDResponse = await accessAPI('/users/create', 'POST', {'user': user})
     return user_response
 }
 
@@ -40,11 +41,11 @@ export async function ReadUserPassword(id:string) {
 }
 
 export async function UpdateUserByID(id:string, data:any) {
-    await accessAPI('/users/update', 'POST', {'data': data, 'query': {'id': id}})
-    return 'Updated'
+    const updateResponse: IDResponse = await accessAPI('/users/update', 'POST', {'data': data, 'query': {'id': id}})
+    return updateResponse
 }
 
 export async function UpdateUserByEmail(email:string, data:any) {
-    await accessAPI('/users/update', 'POST', {'data': data, 'query': {'email': email}})
-    return 'Updated'
+    const updateResponse: IDResponse = await accessAPI('/users/update', 'POST', {'data': data, 'query': {'email': email}})
+    return updateResponse
 }

@@ -685,7 +685,7 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
       disabled = false,
       displayFormat,
       granularity = 'second',
-      placeholder = 'Pick a date',
+      placeholder = '',
       className,
       ...props
     },

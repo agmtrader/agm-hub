@@ -456,6 +456,45 @@ export const products = (t: (key: string) => string) => [
   }
 ] as const
 
+export const products_complete = (t: (key: string) => string) => [
+  {
+    id: "BONDS",
+    label: t('apply.account.regulatory.products.bonds')
+  },
+  {
+    id: "FUTURES",
+    label: t('apply.account.regulatory.products.futures')
+  },
+  {
+    id: "FOREX",
+    label: t('apply.account.regulatory.products.forex')
+  },
+  {
+    id: "FUTURES_OPTIONS",
+    label: t('apply.account.regulatory.products.futures_options')
+  },
+  {
+    id: "FUNDS",
+    label: t('apply.account.regulatory.products.mutual_funds')
+  },
+  {
+    id: "STOCKS",
+    label: t('apply.account.regulatory.products.stocks')
+  },
+  {
+    id: "SINGLE_STOCK_FUTURES",
+    label: t('apply.account.regulatory.products.single_stock_futures')
+  },
+  {
+    id: "OPTIONS",
+    label: t('apply.account.regulatory.products.options')
+  },
+  { 
+    id: "STOCK_OPTIONS",
+    label: t('apply.account.regulatory.products.stock_options')
+  }
+]
+
 export const regulatory_codes = [
   {
     code: "AFFILIATION",

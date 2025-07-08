@@ -3,3 +3,7 @@ export type Base = {
     updated: string
     created: string
 }
+
+export interface IDResponse {
+    id: string
+}

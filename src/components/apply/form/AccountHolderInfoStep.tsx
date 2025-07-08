@@ -10,15 +10,19 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
+import { useFieldArray } from "react-hook-form";
 import CountriesFormField from "@/components/ui/CountriesFormField";
 import { Application } from "@/lib/entities/application";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { phone_types as getPhoneTypes, id_type as getIdTypes, investment_objectives as getInvestmentObjectives, products as getProducts, source_of_wealth as getSourceOfWealth, marital_status as getMaritalStatus } from '@/lib/public/form';
+import { phone_types as getPhoneTypes, id_type as getIdTypes, investment_objectives as getInvestmentObjectives, products as getProducts, products_complete as getProductsComplete, source_of_wealth as getSourceOfWealth, marital_status as getMaritalStatus } from '@/lib/public/form';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { createW8FormDocument } from '@/utils/form';
+import { DateTimePicker } from "@/components/ui/datetime-picker";
+import { format as formatDateFns } from "date-fns";
+import { Trash2, Plus } from "lucide-react";
 
 interface AccountHolderInfoStepProps {
   form: UseFormReturn<Application>;
@@ -33,243 +37,641 @@ const generateUUID = () => {
   });
 };
 
-// Fake data generator for development/testing
-const generateFakeData = (accountType: string) => {
-  const fakeNames = ['Carlos', 'Maria', 'Jose', 'Ana', 'Luis', 'Sofia', 'Diego', 'Carmen', 'Ricardo', 'Elena'];
-  const fakeLastNames = ['Rodriguez', 'Gonzalez', 'Martinez', 'Lopez', 'Hernandez', 'Perez', 'Sanchez', 'Ramirez', 'Torres', 'Flores'];
-  const fakeCompanies = ['AGM Technology', 'Costa Rica Tech', 'Central Valley Solutions', 'Pura Vida Systems', 'Pacific Coast Industries'];
-  const fakeOccupations = ['Software Engineer', 'Financial Analyst', 'Product Manager', 'Business Consultant', 'Investment Advisor'];
-  const fakeCities = ['San Jose', 'Cartago', 'Alajuela', 'Heredia', 'Puntarenas', 'Escazu'];
-  const fakeStates = ['CR-SJ', 'CR-C', 'CR-A', 'CR-H', 'CR-P', 'CR-G', 'CR-L'];
-  const fakeStreets = ['Valle del Sol', 'Hype Way', 'Avenida Central', 'Calle Real', 'Paseo Colon', 'Avenida Escazu'];
-  
-  const randomChoice = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
-  const randomNumber = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-  const randomDate = () => {
-    const start = new Date(1985, 0, 1);
-    const end = new Date(2005, 11, 31);
-    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-    return date.toISOString().split('T')[0];
-  };
+const external_id = Math.random().toString(36).substring(2, 12)
+const user_name = "Javier"
+const user_last_names = "Cordero Sancho"
+const user_email = `${Math.random().toString(36).substring(2, 8)}@gmail.com`
+const prefix = `askjgn`
 
-  const basePersonData: any = {
-    name: {
-      first: randomChoice(fakeNames),
-      last: randomChoice(fakeLastNames),
-      salutation: randomChoice(['Mr.', 'Ms.', 'Mrs.'])
+const joint_external_id_1 = Math.random().toString(36).substring(2, 12)
+const joint_external_id_2 = Math.random().toString(36).substring(2, 12)
+const joint_user_name_1 = "Maria"
+const joint_user_last_names_1 = "Rodriguez Garcia"
+const joint_user_name_2 = "Carlos"
+const joint_user_last_names_2 = "Mendez Lopez"
+const joint_user_email_1 = `${Math.random().toString(36).substring(2, 8)}@gmail.com`
+const joint_user_email_2 = `${Math.random().toString(36).substring(2, 8)}@gmail.com`
+const joint_prefix = `joints`
+
+// Organization Account Testing Structure
+const org_external_id = Math.random().toString(36).substring(2, 12)
+const org_prefix = `orgs`
+const org_email = `${Math.random().toString(36).substring(2, 8)}@gmail.com`
+
+
+/**
+ * Static sample payloads that will be used to populate the form.
+ *
+ * Replace the placeholder objects once with your specific data so that every
+ * click on “Fill with Fake Data” populates the exact same information.
+ */
+const STATIC_SAMPLE_DATA: Record<string, any> = {
+  INDIVIDUAL: {
+    "customer": {
+        "accountHolder": {
+            "accountHolderDetails": [
+                {
+                    "externalId": external_id,
+                    "email": user_email,
+                    "name": {
+                        "first": user_name,
+                        "last": user_last_names,
+                        "salutation": "Mr.",
+                    },
+                    "dateOfBirth": "2002-07-24",
+                    "countryOfBirth": "CRI",
+                    "numDependents": 0,
+                    "maritalStatus": "S",
+                    "identification": {
+                        "passport": "118490741",
+                        "issuingCountry": "CRI",
+                        "expirationDate": "2030-07-24",
+                        "citizenship": "CRI"
+                    },
+                    "residenceAddress": {
+                        "country": "CRI",
+                        "street1": "Valle del Sol",
+                        "city": "San Jose",
+                        "state": "CR-SJ",
+                        "postalCode": "10301"
+                    },
+                    "phones": [
+                        {
+                            "type": "Mobile",
+                            "country": "CRI",
+                            "number": "83027366",
+                            "verified": true
+                        }
+                    ],
+                    "employmentType": "EMPLOYED",
+                    "employmentDetails": {
+                        "employerBusiness": "Finance",
+                        "employer": "AGM Technology",
+                        "occupation": "Software Engineer",
+                        "employerAddress": {
+                            "country": "CRI",
+                            "street1": "Hype Way",
+                            "street2": "",
+                            "city": "Escazu",
+                            "state": "CR-SJ",
+                            "postalCode": "10301"
+                        }
+                    },
+                    "taxResidencies": [
+                        {
+                          "country": "CRI",
+                          "tin": "118490741",
+                          "tinType": "NonUS_NationalId"
+                        }
+                    ],
+                    "w8Ben": {
+                        "localTaxForms": [],
+                        "name": user_name + " " + user_last_names,
+                        "foreignTaxId": "118490741",
+                        "tinOrExplanationRequired": true,
+                        "part29ACountry": "N/A",
+                        "cert": true,
+                        "signatureType": "Electronic",
+                        "blankForm": true,
+                        "taxFormFile": "Form5001.pdf",
+                        "electronicFormat": true,
+                    },
+                    "gender": "M",
+                    "sameMailAddress": true,
+                    "titles": [
+                        {
+                            "code": "Account Holder",
+                            "value": "Account Holder"
+                        }
+                    ]
+                }
+            ],
+            "financialInformation": [
+                {
+                    "investmentExperience": [
+                        {
+                            "assetClass": "STK",
+                            "yearsTrading": 1,
+                            "tradesPerYear": 1,
+                            "knowledgeLevel": "Good"
+                        },
+                        {
+                            "assetClass": "BOND",
+                            "yearsTrading": 1,
+                            "tradesPerYear": 1,
+                            "knowledgeLevel": "Good"
+                        },
+                    ],
+                    "investmentObjectives": [
+                        "Trading",
+                        "Growth"
+                    ],
+                    "sourcesOfWealth": [
+                        {
+                            "sourceType": 'SOW-IND-Income',
+                            "percentage": 95,
+                            "usedForFunds": true
+                        },
+                        {
+                            "sourceType": 'SOW-IND-Property',
+                            "percentage": 5,
+                            "usedForFunds": true
+                        },
+                        
+                        
+                    ],
+                    "netWorth": 1000,
+                    "liquidNetWorth": 1000,
+                    "annualNetIncome": 1000,
+                }
+            ],
+            "regulatoryInformation": [
+                {
+                    "regulatoryDetails": [
+                        {
+                            "code": "AFFILIATION",
+                            "status": false,
+                            "details": "Affiliated with Interactive Brokers",
+                            "externalIndividualId": external_id
+                        },
+                        {
+                            "code": "EmployeePubTrade",
+                            "status": false,
+                            "details": "Employee is not trading publicly",
+                            "externalIndividualId": external_id
+                        },
+                        {
+                            "code": "ControlPubTraded",
+                            "status": false,
+                            "details": "Controlled trading is not allowed",
+                            "externalIndividualId": external_id
+                        }
+                    ]
+                }
+            ],
+        },
+        "externalId": external_id,
+        "type": "INDIVIDUAL",
+        "prefix": prefix,
+        "email": user_email,
+        "mdStatusNonPro": true,
+        "meetAmlStandard": "true",
+        "directTradingAccess": true,
+        "legalResidenceCountry": "CRI"
     },
-    email: `${randomChoice(fakeNames).toLowerCase()}.${randomChoice(fakeLastNames).toLowerCase()}@example.com`,
-    dateOfBirth: randomDate(),
-    countryOfBirth: 'CRI',
-    maritalStatus: randomChoice(['S', 'M', 'D']),
-    numDependents: randomNumber(0, 3),
-    residenceAddress: {
-      street1: randomChoice(fakeStreets),
-      street2: randomNumber(1, 10) > 7 ? `Apartamento ${randomNumber(1, 100)}` : '',
-      city: randomChoice(fakeCities),
-      state: randomChoice(fakeStates),
-      postalCode: '10301',
-      country: 'CRI'
+    "accounts": [
+        {
+            "investmentObjectives": [
+                "Trading",
+                "Growth"
+            ],
+            "tradingPermissions": [
+                {
+                    "country": "UNITED STATES",
+                    "product": "STOCKS"
+                }
+            ],
+            "externalId": external_id,
+            "baseCurrency": "USD",
+            "multiCurrency": true,
+            "margin": "Cash",
+            "alias": "AGM"
+        },
+    ],
+    "users": [
+        {
+            "externalUserId": external_id,
+            "externalIndividualId": external_id,
+            "prefix": prefix
+        } 
+    ],
+  },
+  JOINT: {
+    "customer": {
+        "jointHolders": {
+            "firstHolderDetails": [
+                {
+                    "externalId": joint_external_id_1,
+                    "email": joint_user_email_1,
+                    "name": {
+                        "first": joint_user_name_1,
+                        "last": joint_user_last_names_1,
+                        "salutation": "Ms.",
+                    },
+                    "dateOfBirth": "1990-03-15",
+                    "countryOfBirth": "CRI",
+                    "numDependents": 1,
+                    "maritalStatus": "M",
+                    "identification": {
+                        "passport": "221334567",
+                        "issuingCountry": "CRI",
+                        "expirationDate": "2031-03-15",
+                        "citizenship": "CRI"
+                    },
+                    "residenceAddress": {
+                        "country": "CRI",
+                        "street1": "Avenida Escazu",
+                        "city": "Escazu",
+                        "state": "CR-SJ",
+                        "postalCode": "10201"
+                    },
+                    "phones": [
+                        {
+                            "type": "Mobile",
+                            "country": "CRI",
+                            "number": "87654321",
+                            "verified": true
+                        }
+                    ],
+                    "employmentType": "EMPLOYED",
+                    "employmentDetails": {
+                        "employerBusiness": "Healthcare",
+                        "employer": "Hospital Nacional",
+                        "occupation": "Doctor",
+                        "employerAddress": {
+                            "country": "CRI",
+                            "street1": "Hospital Avenue",
+                            "street2": "",
+                            "city": "San Jose",
+                            "state": "CR-SJ",
+                            "postalCode": "10101"
+                        }
+                    },
+                    "taxResidencies": [
+                        {
+                          "country": "CRI",
+                          "tin": "221334567",
+                          "tinType": "NonUS_NationalId"
+                        }
+                    ],
+                    "gender": "F",
+                    "sameMailAddress": true,
+                    "titles": [
+                        {
+                            "code": "Account Holder",
+                            "value": "Account Holder"
+                        }
+                    ]
+                }
+            ],
+            "secondHolderDetails": [
+                {
+                    "externalId": joint_external_id_2,
+                    "email": joint_user_email_2,
+                    "name": {
+                        "first": joint_user_name_2,
+                        "last": joint_user_last_names_2,
+                        "salutation": "Mr.",
+                    },
+                    "dateOfBirth": "1988-07-22",
+                    "countryOfBirth": "CRI",
+                    "numDependents": 1,
+                    "maritalStatus": "M",
+                    "identification": {
+                        "passport": "334567890",
+                        "issuingCountry": "CRI",
+                        "expirationDate": "2032-07-22",
+                        "citizenship": "CRI"
+                    },
+                    "residenceAddress": {
+                        "country": "CRI",
+                        "street1": "Avenida Escazu",
+                        "city": "Escazu",
+                        "state": "CR-SJ",
+                        "postalCode": "10201"
+                    },
+                    "phones": [
+                        {
+                            "type": "Mobile",
+                            "country": "CRI",
+                            "number": "89123456",
+                            "verified": true
+                        }
+                    ],
+                    "employmentType": "EMPLOYED",
+                    "employmentDetails": {
+                        "employerBusiness": "Engineering",
+                        "employer": "Tech Solutions CR",
+                        "occupation": "Civil Engineer",
+                        "employerAddress": {
+                            "country": "CRI",
+                            "street1": "Tech Park",
+                            "street2": "",
+                            "city": "Heredia",
+                            "state": "CR-H",
+                            "postalCode": "40101"
+                        }
+                    },
+                    "taxResidencies": [
+                        {
+                          "country": "CRI",
+                          "tin": "334567890",
+                          "tinType": "NonUS_NationalId"
+                        }
+                    ],
+                    "gender": "M",
+                    "sameMailAddress": true,
+                    "titles": [
+                        {
+                            "code": "Account Holder",
+                            "value": "Account Holder"
+                        }
+                    ]
+                }
+            ],
+            "financialInformation": [
+                {
+                    "investmentExperience": [
+                        {
+                            "assetClass": "STK",
+                            "yearsTrading": 3,
+                            "tradesPerYear": 12,
+                            "knowledgeLevel": "Extensive"
+                        },
+                        {
+                            "assetClass": "BOND",
+                            "yearsTrading": 2,
+                            "tradesPerYear": 6,
+                            "knowledgeLevel": "Good"
+                        }
+                    ],
+                    "investmentObjectives": [
+                        "Trading",
+                        "Growth"
+                    ],
+                    "sourcesOfWealth": [
+                        {
+                            "sourceType": 'SOW-IND-Income',
+                            "percentage": 70,
+                            "usedForFunds": true
+                        },
+                        {
+                            "sourceType": 'SOW-IND-Inheritance',
+                            "percentage": 30,
+                            "usedForFunds": true
+                        }
+                    ],
+                    "netWorth": 150000,
+                    "liquidNetWorth": 75000,
+                    "annualNetIncome": 85000,
+                }
+            ],
+            "regulatoryInformation": [
+                {
+                    "regulatoryDetails": [
+                        {
+                            "code": "AFFILIATION",
+                            "status": false,
+                            "details": "Affiliated with Interactive Brokers",
+                            "externalIndividualId": external_id
+                        },
+                        {
+                            "code": "EmployeePubTrade",
+                            "status": false,
+                            "details": "Employee is not trading publicly",
+                            "externalIndividualId": external_id
+                        },
+                        {
+                            "code": "ControlPubTraded",
+                            "status": false,
+                            "details": "Controlled trading is not allowed",
+                            "externalIndividualId": external_id
+                        }
+                    ]
+                }
+            ],
+            "type": "joint_tenants"
+        },
+        "externalId": joint_external_id_1, // Primary holder's ID for customer
+        "type": "JOINT",
+        "prefix": joint_prefix,
+        "email": joint_user_email_1, // Primary holder's email for customer
+        "mdStatusNonPro": true,
+        "meetAmlStandard": "true",
+        "directTradingAccess": true,
+        "legalResidenceCountry": "CRI"
     },
-    phones: [{
-      type: 'Mobile',
-      country: 'CRI',
-      number: `8${randomNumber(1000000, 9999999)}`
-    }],
-    identification: {
-      passport: `${randomNumber(100000000, 999999999)}`,
-      expirationDate: '2030-12-31',
-      issuingCountry: 'CRI',
-      citizenship: 'CRI'
-    },
-    taxResidencies: [{
-      country: 'CRI',
-      tin: `${randomNumber(100000000, 999999999)}`,
-      tinType: 'NonUS_NationalId'
-    }],
-    employmentType: 'EMPLOYED',
-    employmentDetails: {
-      employer: randomChoice(fakeCompanies),
-      occupation: randomChoice(fakeOccupations),
-      employerBusiness: randomChoice(['Technology', 'Finance', 'Consulting', 'Manufacturing', 'Services']),
-      employerAddress: {
-        street1: randomChoice(fakeStreets),
-        street2: '',
-        city: randomChoice(fakeCities),
-        state: randomChoice(fakeStates),
-        postalCode: '10301',
-        country: 'CRI'
-      }
-    },
-    gender: randomChoice(['M', 'F']),
-    sameMailAddress: true,
-    titles: [{
-      code: "Account Holder",
-      value: "Account Holder"
-    }]
-  };
-
-      // W8 form will be automatically generated with proper signature
-
-  const baseFinancialData = {
-    netWorth: randomNumber(50000, 2000000),
-    liquidNetWorth: randomNumber(25000, 500000),
-    annualNetIncome: randomNumber(30000, 250000),
-    investmentExperience: [{
-      assetClass: randomChoice(['STK']),
-      yearsTrading: randomNumber(1, 15),
-      tradesPerYear: randomNumber(5, 200),
-      knowledgeLevel: randomChoice(['Limited', 'Good', 'Extensive'])
-    }],
-    investmentObjectives: [randomChoice(['Growth', 'Trading', 'Income'])],
-    sourcesOfWealth: [{
-      sourceType: 'SOW-IND-Income', // Always use income for employed people to meet IBKR requirements
-      percentage: 100
-    }]
-  };
-
-  const baseRegulatoryData = {
-    regulatoryDetails: [
-      {
-        code: 'AFFILIATION',
-        status: false,
-        details: 'Not affiliated with Interactive Brokers'
-      },
-      {
-        code: 'EmployeePubTrade',
-        status: false,
-        details: 'Employee is not trading publicly'
-      },
-      {
-        code: 'ControlPubTraded',
-        status: false,
-        details: 'Controlled trading is not allowed'
-      }
-    ]
-  };
-
-  if (accountType === 'INDIVIDUAL') {
-    return {
-      customer: {
-        type: 'INDIVIDUAL',
-        email: basePersonData.email,
-        prefix: `${basePersonData.name.first.toLowerCase()}${randomNumber(100, 999)}`,
-        legalResidenceCountry: 'CRI',
-        mdStatusNonPro: true,
-        meetAmlStandard: 'true',
-        directTradingAccess: true,
-        accountHolder: {
-          accountHolderDetails: [basePersonData],
-          financialInformation: [baseFinancialData],
-          regulatoryInformation: [baseRegulatoryData]
+    "accounts": [
+        {
+            "investmentObjectives": [
+                "Trading",
+                "Growth"
+            ],
+            "tradingPermissions": [
+                {
+                    "country": "UNITED STATES",
+                    "product": "STOCKS"
+                },
+                {
+                    "country": "UNITED STATES",
+                    "product": "BONDS"
+                }
+            ],
+            "externalId": joint_external_id_1,
+            "baseCurrency": "USD",
+            "multiCurrency": true,
+            "margin": "RegTMargin",
+            "alias": "AGM Joint"
+        },
+    ],
+    "users": [
+        {
+            "externalUserId": joint_external_id_1,
+            "externalIndividualId": joint_external_id_1,
+            "prefix": joint_prefix
+        },
+        {
+            "externalUserId": joint_external_id_2,
+            "externalIndividualId": joint_external_id_2,
+            "prefix": joint_prefix
         }
-      },
-      accounts: [{
-        baseCurrency: 'USD',
-        margin: randomChoice(['Cash', 'Margin']),
-        multiCurrency: true,
-        alias: 'AGM',
-        investmentObjectives: [randomChoice(['Growth', 'Trading', 'Income'])],
-        tradingPermissions: [{
-          country: 'UNITED STATES',
-          product: randomChoice(['STOCKS'])
-        }]
-      }]
-    };
-  } else if (accountType === 'JOINT') {
-    const secondPerson: any = {
-      ...basePersonData,
-      name: {
-        first: randomChoice(fakeNames),
-        last: basePersonData.name.last, // Same last name for joint
-        salutation: randomChoice(['Ms.', 'Mrs.'])
-      },
-      email: `${randomChoice(fakeNames).toLowerCase()}.${basePersonData.name.last.toLowerCase()}@example.com`
-    };
-
-    // W8 form will be automatically generated with proper signature
-
-    return {
-      customer: {
-        type: 'JOINT',
-        email: basePersonData.email,
-        prefix: `${basePersonData.name.first.toLowerCase()}${randomNumber(100, 999)}`,
-        legalResidenceCountry: 'CRI',
-        mdStatusNonPro: true,
-        meetAmlStandard: 'true',
-        directTradingAccess: true,
-        jointHolders: {
-          type: randomChoice(['joint_tenants', 'tenants_common']),
-          firstHolderDetails: [basePersonData],
-          secondHolderDetails: [secondPerson],
-          financialInformation: [baseFinancialData],
-          regulatoryInformation: [baseRegulatoryData]
-        }
-      },
-      accounts: [{
-        baseCurrency: 'USD',
-        margin: randomChoice(['Cash', 'Margin']),
-        multiCurrency: true,
-        alias: 'AGM',
-        investmentObjectives: [randomChoice(['Growth', 'Trading', 'Income'])],
-        tradingPermissions: [{
-          country: 'UNITED STATES',
-          product: randomChoice(['STOCKS', 'BONDS'])
-        }]
-      }]
-    };
-  } else if (accountType === 'ORG') {
-    return {
-      customer: {
-        type: 'ORG',
-        email: basePersonData.email,
-        prefix: `org${randomNumber(100, 999)}`,
-        legalResidenceCountry: 'CRI',
-        mdStatusNonPro: true,
-        meetAmlStandard: 'true',
-        directTradingAccess: true,
+    ],
+  },
+  ORG: {
+    customer: {
         organization: {
-          identifications: [{
-            name: randomChoice(fakeCompanies),
-            businessDescription: 'Technology services and software development',
-            identification: `${randomNumber(100000000, 999999999)}`,
-            placeOfBusinessAddress: {
-              street1: randomChoice(fakeStreets),
-              street2: '',
-              city: randomChoice(fakeCities),
-              state: randomChoice(fakeStates),
-              postalCode: '10301',
-              country: 'CRI'
-            }
-          }],
-          accountSupport: {
-            type: randomChoice(['LLC', 'CORPORATION', 'PARTNERSHIP']),
-            businessDescription: 'Technology services and software development',
-            ownersResideUS: false
-          },
-          associatedEntities: {
-            associatedIndividuals: [basePersonData]
-          },
-          financialInformation: [baseFinancialData],
-          regulatoryInformation: [baseRegulatoryData]
-        }
-      },
-      accounts: [{
-        baseCurrency: 'USD',
-        margin: randomChoice(['Cash', 'Margin']),
-        multiCurrency: true,
-        alias: 'AGM',
-        investmentObjectives: [randomChoice(['Growth', 'Trading', 'Income'])],
-        tradingPermissions: [{
-          country: 'UNITED STATES',
-          product: randomChoice(['STOCKS', 'BONDS'])
-        }]
-      }]
-    };
-  }
-
-  return {};
+            identifications: [
+                {
+                    placeOfBusinessAddress: {
+                        street1: "123 Business Rd",
+                        city: "San Jose",
+                        state: "CR-SJ",
+                        country: "CRI",
+                        postalCode: "10101",
+                    },
+                    mailingAddress: {
+                        street1: "123 Business Rd",
+                        city: "San Jose",
+                        state: "CR-SJ",
+                        country: "CRI",
+                        postalCode: "10101",
+                    },
+                    phones: [
+                        {
+                            type: "Work",
+                            number: "22223333",
+                            country: "CRI",
+                            verified: true,
+                        },
+                    ],
+                    name: "AGM Tech Corp",
+                    businessDescription: "Software Development",
+                    identification: org_external_id,
+                    identificationCountry: "CRI",
+                    formationCountry: "CRI",
+                    formationState: "CR-SJ",
+                    sameMailAddress: true,
+                    translated: true,
+                },
+            ],
+            accountSupport: {
+                businessDescription: "Technology Services",
+                ownersResideUS: false,
+                type: "CORPORATION",
+            },
+            associatedEntities: {
+                associatedIndividuals: [
+                    {
+                        numDependents: 0,
+                        externalId: Math.random().toString(36).substring(2, 12),
+                        email: `${Math.random().toString(36).substring(2, 8)}@gmail.com`,
+                        name: {
+                            salutation: "Mr.",
+                            first: "Carlos",
+                            last: "Jimenez",
+                        },
+                        dateOfBirth: "1985-04-12",
+                        countryOfBirth: "CRI",
+                        gender: "M",
+                        maritalStatus: "M",
+                        residenceAddress: {
+                            street1: "Ciudad Colon",
+                            city: "San Jose",
+                            state: "CR-SJ",
+                            country: "CRI",
+                            postalCode: "10501",
+                        },
+                        phones: [
+                            {
+                                type: "Mobile",
+                                number: "83334444",
+                                country: "CRI",
+                                verified: true,
+                            },
+                        ],
+                        identification: {
+                            passport: "445566778",
+                            issuingCountry: "CRI",
+                            expirationDate: "2033-04-12",
+                            citizenship: "CRI",
+                        },
+                        employmentType: "EMPLOYED",
+                        employmentDetails: {
+                            employerBusiness: "Technology",
+                            employer: "AGM Tech Corp",
+                            occupation: "Director",
+                            employerAddress: {
+                                country: "CRI",
+                                street1: "Business Rd 123",
+                                city: "San Jose",
+                                state: "CR-SJ",
+                                postalCode: "10101",
+                            },
+                        },
+                        taxResidencies: [
+                            {
+                                country: "CRI",
+                                tin: "445566778",
+                                tinType: "NonUS_NationalId",
+                            },
+                        ],
+                        sameMailAddress: true,
+                        titles: [
+                            {
+                                value: "Director",
+                                code: "Director",
+                            },
+                        ],
+                    },
+                ],
+                associatedEntities: [],
+            },
+            financialInformation: [
+                {
+                    investmentExperience: [
+                        {
+                            assetClass: "STK",
+                            yearsTrading: 5,
+                            tradesPerYear: 50,
+                            knowledgeLevel: "Extensive",
+                        },
+                    ],
+                    investmentObjectives: ["Growth"],
+                    sourcesOfWealth: [
+                        {
+                            sourceType: "SOW-IND-Income",
+                            percentage: 100,
+                            usedForFunds: true,
+                        },
+                    ],
+                    netWorth: 500000,
+                    liquidNetWorth: 250000,
+                    annualNetIncome: 100000,
+                },
+            ],
+            regulatoryInformation: [
+                {
+                    regulatoryDetails: [
+                        {
+                            code: "AFFILIATION",
+                            status: false,
+                            details: "No affiliations",
+                        },
+                    ],
+                },
+            ],
+        },
+        externalId: org_external_id,
+        type: "ORG",
+        prefix: org_prefix,
+        email: org_email,
+        mdStatusNonPro: true,
+        meetAmlStandard: "true",
+        directTradingAccess: true,
+        legalResidenceCountry: "CRI",
+    },
+    accounts: [
+        {
+            investmentObjectives: ["Growth", "Trading"],
+            tradingPermissions: [
+                {
+                    country: "UNITED STATES",
+                    product: "STOCKS",
+                },
+                {
+                    country: "UNITED STATES",
+                    product: "BONDS",
+                },
+            ],
+            externalId: org_external_id,
+            baseCurrency: "USD",
+            multiCurrency: true,
+            margin: "RegTMargin",
+            alias: "AGM ORG",
+        },
+    ],
+    users: [
+        {
+            externalUserId: org_external_id,
+            externalIndividualId: org_external_id,
+            prefix: org_prefix,
+        },
+    ],
+  },
 };
+
+// Returns the static payload for the requested account type (or an empty object)
+const generateFakeData = (accountType: string) => STATIC_SAMPLE_DATA[accountType] ?? {};
 
 const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   const { t } = useTranslationProvider();
@@ -277,6 +679,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   const idTypeOptions = getIdTypes(t);
   const investmentObjectivesOptions = getInvestmentObjectives(t);
   const productsOptions = getProducts(t);
+  const productsCompleteOptions = getProductsComplete(t);
   const sourceOfWealthOptions = getSourceOfWealth(t);
   const maritalStatusOptions = getMaritalStatus(t);
 
@@ -352,8 +755,8 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       }
     }
 
-    // Generate ONE external ID to use everywhere
-    const externalId = generateUUID();
+    // Reuse ONE external ID across the whole application
+    const externalId = externalIdRef.current;
 
     // Set the same external ID everywhere it's needed
     form.setValue("customer.externalId", externalId);
@@ -384,42 +787,43 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   };
 
   // Generate external IDs if not already set
+  const externalIdRef = React.useRef<string>(generateUUID())
   React.useEffect(() => {
     const currentCustomerExternalId = form.getValues("customer.externalId");
     if (!currentCustomerExternalId) {
-      form.setValue("customer.externalId", generateUUID());
+      form.setValue("customer.externalId", externalIdRef.current);
     }
 
     if (accountType === 'INDIVIDUAL') {
       const currentAccountHolderExternalId = form.getValues("customer.accountHolder.accountHolderDetails.0.externalId");
       if (!currentAccountHolderExternalId) {
-        form.setValue("customer.accountHolder.accountHolderDetails.0.externalId", generateUUID());
+        form.setValue("customer.accountHolder.accountHolderDetails.0.externalId", externalIdRef.current);
       }
     } else if (accountType === 'JOINT') {
       const firstHolderExternalId = form.getValues("customer.jointHolders.firstHolderDetails.0.externalId");
       if (!firstHolderExternalId) {
-        form.setValue("customer.jointHolders.firstHolderDetails.0.externalId", generateUUID());
+        form.setValue("customer.jointHolders.firstHolderDetails.0.externalId", externalIdRef.current);
       }
       const secondHolderExternalId = form.getValues("customer.jointHolders.secondHolderDetails.0.externalId");
       if (!secondHolderExternalId) {
-        form.setValue("customer.jointHolders.secondHolderDetails.0.externalId", generateUUID());
+        form.setValue("customer.jointHolders.secondHolderDetails.0.externalId", externalIdRef.current);
       }
     }
 
     // Generate account external ID
     const accountExternalId = form.getValues("accounts.0.externalId");
     if (!accountExternalId) {
-      form.setValue("accounts.0.externalId", generateUUID());
+      form.setValue("accounts.0.externalId", externalIdRef.current);
     }
 
     // Generate user external IDs
     const userExternalId = form.getValues("users.0.externalUserId");
     if (!userExternalId) {
-      form.setValue("users.0.externalUserId", generateUUID());
+      form.setValue("users.0.externalUserId", externalIdRef.current);
     }
     const userIndividualId = form.getValues("users.0.externalIndividualId");
     if (!userIndividualId) {
-      form.setValue("users.0.externalIndividualId", generateUUID());
+      form.setValue("users.0.externalIndividualId", externalIdRef.current);
     }
   }, [accountType, form]);
 
@@ -472,6 +876,24 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           form.setValue("users.0.prefix", customerPrefix);
         }
       }
+
+      // Sync customer email with primary holder's email (first holder for joint / associated individual for org)
+      if (
+        name === "customer.accountHolder.accountHolderDetails.0.email" ||
+        name === "customer.jointHolders.firstHolderDetails.0.email" ||
+        name === "customer.organization.associatedEntities.associatedIndividuals.0.email"
+      ) {
+        const email =
+          name === "customer.accountHolder.accountHolderDetails.0.email"
+            ? value.customer?.accountHolder?.accountHolderDetails?.[0]?.email
+            : name === "customer.jointHolders.firstHolderDetails.0.email"
+              ? value.customer?.jointHolders?.firstHolderDetails?.[0]?.email
+              : value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.email;
+
+        if (email) {
+          form.setValue("customer.email", email);
+        }
+      }
       
       // Sync business description for organizations
       if (name === "customer.organization.identifications.0.businessDescription") {
@@ -482,17 +904,15 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       }
       
       // Sync investment objectives between account setup and financial information
-      if (name === "accounts.0.investmentObjectives.0") {
-        const investmentObjective = value.accounts?.[0]?.investmentObjectives?.[0];
-        if (investmentObjective) {
-          const accountType = value.customer?.type;
-          if (accountType === 'INDIVIDUAL') {
-            form.setValue("customer.accountHolder.financialInformation.0.investmentObjectives.0", investmentObjective);
-          } else if (accountType === 'JOINT') {
-            form.setValue("customer.jointHolders.financialInformation.0.investmentObjectives.0", investmentObjective);
-          } else if (accountType === 'ORG') {
-            form.setValue("customer.organization.financialInformation.0.investmentObjectives.0", investmentObjective);
-          }
+      if (name && name.startsWith("accounts.0.investmentObjectives")) {
+        const invObjectives = (value.accounts?.[0]?.investmentObjectives || []).filter(Boolean) as string[];
+        const acctType = value.customer?.type;
+        if (acctType === 'INDIVIDUAL') {
+          form.setValue("customer.accountHolder.financialInformation.0.investmentObjectives", invObjectives);
+        } else if (acctType === 'JOINT') {
+          form.setValue("customer.jointHolders.financialInformation.0.investmentObjectives", invObjectives);
+        } else if (acctType === 'ORG') {
+          form.setValue("customer.organization.financialInformation.0.investmentObjectives", invObjectives);
         }
       }
 
@@ -591,6 +1011,51 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           }
         }
       }
+
+      // Ensure only the selected identification number field is kept
+      if (name?.endsWith("identificationType")) {
+        const selectedIdType = form.getValues(name as any) as string | undefined;
+        const basePath = name.replace(/\.identificationType$/, "");
+
+        const idFieldMapping: Record<string, string> = {
+          Passport: "passport",
+          "Driver License": "driversLicense",
+          "National ID Card": "nationalCard",
+        };
+
+        const selectedKey = idFieldMapping[selectedIdType ?? ""] ?? "";
+
+        // Build a clean identification object retaining misc keys (issuingCountry, etc.)
+        const currentIdentification = form.getValues(`${basePath}.identification` as any) || {};
+
+        // 1. Preserve non ID-number fields (e.g., issuingCountry, citizenship, expirationDate)
+        const cleanedIdentification: Record<string, any> = {};
+        Object.entries(currentIdentification).forEach(([k, v]) => {
+          if (!Object.values(idFieldMapping).includes(k)) {
+            cleanedIdentification[k] = v; // keep misc keys
+          }
+        });
+
+        if (selectedKey) {
+          // 2. Attempt to carry over any existing ID number value from the previous key(s)
+          const idNumberKeys = Object.values(idFieldMapping);
+          // Prefer the value already stored under the new key (if any)
+          let carriedValue = currentIdentification[selectedKey];
+
+          // If new key is empty, look for the first non-empty value from other ID keys
+          if (!carriedValue) {
+            carriedValue = idNumberKeys
+              .filter((k) => k !== selectedKey)
+              .map((k) => currentIdentification[k])
+              .find((v) => v !== undefined && v !== "");
+          }
+
+          cleanedIdentification[selectedKey] = carriedValue ?? "";
+        }
+
+        // 3. Update the form with the cleaned + migrated identification object
+        form.setValue(`${basePath}.identification` as any, cleanedIdentification);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -600,6 +1065,23 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   React.useEffect(() => {
     updateW8Documents();
   }, [accountType]);
+
+  // Ensure customer.email is initialized/synced with the appropriate holder email when account type changes
+  React.useEffect(() => {
+    let email: string | undefined;
+
+    if (accountType === 'INDIVIDUAL') {
+      email = form.getValues("customer.accountHolder.accountHolderDetails.0.email");
+    } else if (accountType === 'JOINT') {
+      email = form.getValues("customer.jointHolders.firstHolderDetails.0.email");
+    } else if (accountType === 'ORG') {
+      email = form.getValues("customer.organization.associatedEntities.associatedIndividuals.0.email");
+    }
+
+    if (email) {
+      form.setValue("customer.email", email);
+    }
+  }, [accountType, form]);
 
   // Reusable address fields component
   const renderAddressFields = (basePath: string) => (
@@ -698,8 +1180,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               <FormLabel>Net Worth (USD)</FormLabel>
               <FormControl>
                 <Input 
-                  type="number" 
-                  placeholder="1000000" 
+                  placeholder="" 
                   {...field} 
                   onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
                 />
@@ -716,8 +1197,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               <FormLabel>Liquid Net Worth (USD)</FormLabel>
               <FormControl>
                 <Input 
-                  type="number" 
-                  placeholder="500000" 
+                  placeholder="" 
                   {...field} 
                   onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
                 />
@@ -734,8 +1214,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               <FormLabel>Annual Net Income (USD)</FormLabel>
               <FormControl>
                 <Input 
-                  type="number" 
-                  placeholder="100000" 
+                  placeholder="" 
                   {...field} 
                   onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
                 />
@@ -746,173 +1225,259 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         />
       </div>
 
-      {/* Investment Objectives */}
+      {/* Investment Objectives are selected in the Account Setup section and automatically synced here. */}
       <FormField
         control={form.control}
-        name={`${basePath}.0.investmentObjectives.0` as any}
+        name={`${basePath}.0.investmentObjectives` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Primary Investment Objective</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select investment objective" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {investmentObjectivesOptions.map((option) => (
-                  <SelectItem key={option.id} value={option.id}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
+            <FormLabel>Investment Objectives</FormLabel>
+            <div className="flex flex-wrap gap-2">
+              {((field.value as string[]) || []).map((obj) => {
+                const label = investmentObjectivesOptions.find((o) => o.id === obj)?.label || obj;
+                return (
+                  <span key={obj} className="px-2 py-1 rounded bg-muted text-sm">
+                    {label}
+                  </span>
+                );
+              })}
+              {!(field.value && field.value.length) && (
+                <span className="text-subtitle text-sm">(Selections are made in Account Setup)</span>
+              )}
+            </div>
           </FormItem>
         )}
       />
 
       {/* Investment Experience */}
       <h4 className="text-lg font-semibold">Investment Experience</h4>
-      <div className="grid grid-cols-3 gap-4">
-        <FormField
-          control={form.control}
-          name={`${basePath}.0.investmentExperience.0.assetClass` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Asset Class</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select asset class" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="STK">Stocks</SelectItem>
-                  <SelectItem value="OPT">Options</SelectItem>
-                  <SelectItem value="FUT">Futures</SelectItem>
-                  <SelectItem value="FX">Foreign Exchange</SelectItem>
-                  <SelectItem value="BOND">Bonds</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name={`${basePath}.0.investmentExperience.0.yearsTrading` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Years Trading Experience</FormLabel>
-              <FormControl>
-                <Input 
-                  type="number" 
-                  placeholder="5" 
-                  {...field} 
-                  onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name={`${basePath}.0.investmentExperience.0.tradesPerYear` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Trades Per Year</FormLabel>
-              <FormControl>
-                <Input 
-                  type="number" 
-                  placeholder="100" 
-                  {...field} 
-                  onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-      <FormField
-        control={form.control}
-        name={`${basePath}.0.investmentExperience.0.knowledgeLevel` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Investment Knowledge Level</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select knowledge level" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="None">None</SelectItem>
-                <SelectItem value="Limited">Limited</SelectItem>
-                <SelectItem value="Good">Good</SelectItem>
-                <SelectItem value="Extensive">Extensive</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <InvestmentExperienceFields basePath={basePath} />
 
       {/* Source of Wealth */}
       <h4 className="text-lg font-semibold">Source of Wealth</h4>
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name={`${basePath}.0.sourcesOfWealth.0.sourceType` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Primary Source Type</FormLabel>
-              <FormDescription>
-                <strong>Note:</strong> If your employment type is "Employed", you must select "Income" as your source of wealth.
-              </FormDescription>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select source type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {sourceOfWealthOptions.map((option) => (
-                    <SelectItem key={option.id} value={option.id}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name={`${basePath}.0.sourcesOfWealth.0.percentage` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Percentage (%)</FormLabel>
-              <FormControl>
-                <Input 
-                  type="number" 
-                  placeholder="100" 
-                  max="100" 
-                  min="0" 
-                  {...field} 
-                  onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      <SourcesOfWealthFields basePath={basePath} />
     </Card>
   );
+
+  // --- Sub-component: dynamic Sources of Wealth list ---
+  const SourcesOfWealthFields = ({ basePath }: { basePath: string }) => {
+    const { fields, append, remove } = useFieldArray({
+      control: form.control,
+      name: `${basePath}.0.sourcesOfWealth` as any,
+    });
+
+    return (
+      <div className="space-y-4">
+        {fields.map((fieldItem, index) => (
+          <div key={fieldItem.id} className="grid grid-cols-5 gap-4 items-end">
+            {/* Source Type */}
+            <FormField
+              control={form.control}
+              name={`${basePath}.0.sourcesOfWealth.${index}.sourceType` as any}
+              render={({ field }) => (
+                <FormItem className="col-span-3">
+                  {index === 0 && (
+                    <>
+                      <FormLabel>Source Type</FormLabel>
+                      <FormDescription>
+                        If employment type is "Employed", include "Income" as one of your sources.
+                      </FormDescription>
+                    </>
+                  )}
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select source" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {sourceOfWealthOptions.map((option) => (
+                        <SelectItem key={option.id} value={option.id}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            {/* Percentage */}
+            <FormField
+              control={form.control}
+              name={`${basePath}.0.sourcesOfWealth.${index}.percentage` as any}
+              render={({ field }) => (
+                <FormItem>
+                  {index === 0 && <FormLabel>Percentage (%)</FormLabel>}
+                  <FormControl>
+                    <Input
+                      placeholder=""
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? null : parseInt(e.target.value))
+                      }
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* Remove button */}
+            {fields.length > 1 && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => remove(index)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => append({ sourceType: "", percentage: 0 })}
+        >
+          <Plus className="h-4 w-4 mr-2" /> Add Source
+        </Button>
+      </div>
+    );
+  };
+
+  // --- Sub-component: dynamic Investment Experience list ---
+  const InvestmentExperienceFields = ({ basePath }: { basePath: string }) => {
+    const { fields, append, remove } = useFieldArray({
+      control: form.control,
+      name: `${basePath}.0.investmentExperience` as any,
+    });
+
+    const assetClassOptions = [
+      { id: "STK", label: "Stocks" },
+      { id: "OPT", label: "Options" },
+      { id: "FUT", label: "Futures" },
+      { id: "FX", label: "Foreign Exchange" },
+      { id: "BOND", label: "Bonds" },
+    ];
+
+    const knowledgeOptions = ["None", "Limited", "Good", "Extensive"];
+
+    return (
+      <div className="space-y-4">
+        {fields.map((fieldItem, index) => (
+          <div key={fieldItem.id} className="grid grid-cols-5 gap-4 items-end">
+            {/* Asset Class */}
+            <FormField
+              control={form.control}
+              name={`${basePath}.0.investmentExperience.${index}.assetClass` as any}
+              render={({ field }) => (
+                <FormItem>
+                  {index === 0 && <FormLabel>Asset Class</FormLabel>}
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select class" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {assetClassOptions.map((opt) => (
+                        <SelectItem key={opt.id} value={opt.id}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            {/* Years Trading */}
+            <FormField
+              control={form.control}
+              name={`${basePath}.0.investmentExperience.${index}.yearsTrading` as any}
+              render={({ field }) => (
+                <FormItem>
+                  {index === 0 && <FormLabel>Years Trading</FormLabel>}
+                  <FormControl>
+                    <Input
+                      placeholder=""
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? null : parseInt(e.target.value))
+                      }
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* Trades per Year */}
+            <FormField
+              control={form.control}
+              name={`${basePath}.0.investmentExperience.${index}.tradesPerYear` as any}
+              render={({ field }) => (
+                <FormItem>
+                  {index === 0 && <FormLabel>Trades / Year</FormLabel>}
+                  <FormControl>
+                    <Input
+                      placeholder=""
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? null : parseInt(e.target.value))
+                      }
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* Knowledge Level */}
+            <FormField
+              control={form.control}
+              name={`${basePath}.0.investmentExperience.${index}.knowledgeLevel` as any}
+              render={({ field }) => (
+                <FormItem>
+                  {index === 0 && <FormLabel>Knowledge Level</FormLabel>}
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select level" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {knowledgeOptions.map((lvl) => (
+                        <SelectItem key={lvl} value={lvl}>{lvl}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            {/* Remove button */}
+            {fields.length > 1 && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => remove(index)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => append({ assetClass: "", yearsTrading: 0, tradesPerYear: 0, knowledgeLevel: "" })}
+        >
+          <Plus className="h-4 w-4 mr-2" /> Add Experience
+        </Button>
+      </div>
+    );
+  };
 
   // Regulatory Information Section
   const renderRegulatoryInformation = (basePath: string) => (
@@ -1037,27 +1602,33 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
 
       <FormField
         control={form.control}
-        name="accounts.0.investmentObjectives.0"
+        name="accounts.0.investmentObjectives"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Investment Objective</FormLabel>
-            <FormDescription>
-              Select your primary investment goal for this account
-            </FormDescription>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select investment objective" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {investmentObjectivesOptions.map((option) => (
-                  <SelectItem key={option.id} value={option.id}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormLabel>Investment Objectives</FormLabel>
+            <FormDescription>Select all that apply to this account</FormDescription>
+            <div className="flex flex-col space-y-2">
+              {investmentObjectivesOptions.map((option) => {
+                const checked = (field.value || []).includes(option.id);
+                return (
+                  <label key={option.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(isChecked) => {
+                        let newValue: string[] = Array.isArray(field.value) ? [...field.value] : [];
+                        if (isChecked) {
+                          if (!newValue.includes(option.id)) newValue.push(option.id);
+                        } else {
+                          newValue = newValue.filter((v) => v !== option.id);
+                        }
+                        field.onChange(newValue);
+                      }}
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                );
+              })}
+            </div>
             <FormMessage />
           </FormItem>
         )}
@@ -1108,7 +1679,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {productsOptions.map((option) => (
+                  {productsCompleteOptions.map((option) => (
                     <SelectItem key={option.id} value={option.id}>
                       {option.label}
                     </SelectItem>
@@ -1206,7 +1777,17 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   );
 
   // Render form fields for a single account holder
-  const renderAccountHolderFields = (basePath: string, title: string) => (
+  const renderAccountHolderFields = (basePath: string, title: string) => {
+    // Watch the selected ID type to decide which identification field to bind
+    const idTypeValue = form.watch(`${basePath}.identificationType` as any)
+    const idFieldMapping: Record<string, string> = {
+      Passport: 'passport',
+      'Driver License': 'driversLicense',
+      'National ID Card': 'nationalCard',
+    }
+    const idNumberField = `${basePath}.identification.${idFieldMapping[idTypeValue] || 'passport'}` as any
+
+    return (
     <Card className="p-6 space-y-6">
       <h3 className="text-xl font-semibold">{title}</h3>
       
@@ -1261,9 +1842,15 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.dateOfBirth` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date of Birth (YYYY-MM-DD)</FormLabel>
+              <FormLabel>Date of Birth</FormLabel>
               <FormControl>
-                <Input type="date" placeholder="YYYY-MM-DD" {...field} />
+                <DateTimePicker
+                  value={field.value ? new Date(field.value) : undefined}
+                  onChange={(date) =>
+                    field.onChange(date ? formatDateFns(date, "yyyy-MM-dd") : "")
+                  }
+                  granularity="day"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -1312,9 +1899,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               <FormLabel>Number of Dependents</FormLabel>
               <FormControl>
                 <Input 
-                  type="number" 
-                  min="0" 
-                  placeholder="0" 
+                  placeholder="" 
                   {...field} 
                   onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseInt(e.target.value))}
                 />
@@ -1377,10 +1962,39 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       </div>
 
       <h4 className="text-lg font-semibold pt-4">Identification</h4>
-      <div className="grid grid-cols-2 gap-4">
+
+      {/* ID Type Selection */}
+      <FormField
+        control={form.control}
+        name={`${basePath}.identificationType` as any}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>ID Type</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select ID type" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {idTypeOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <div className="grid grid-cols-2 gap-4 pt-4">
+        {/* Dynamic ID Number field */}
         <FormField
+          key={idNumberField}
           control={form.control}
-          name={`${basePath}.identification.passport` as any}
+          name={idNumberField}
           render={({ field }) => (
             <FormItem>
               <FormLabel>ID Number</FormLabel>
@@ -1391,14 +2005,22 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
             </FormItem>
           )}
         />
+
+        {/* Expiration Date */}
         <FormField
           control={form.control}
           name={`${basePath}.identification.expirationDate` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Expiration Date (YYYY-MM-DD)</FormLabel>
+              <FormLabel>Expiration Date</FormLabel>
               <FormControl>
-                <Input type="date" placeholder="YYYY-MM-DD" {...field} />
+                <DateTimePicker
+                  value={field.value ? new Date(field.value) : undefined}
+                  onChange={(date) =>
+                    field.onChange(date ? formatDateFns(date, "yyyy-MM-dd") : "")
+                  }
+                  granularity="day"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -1438,7 +2060,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
             <FormItem>
               <FormLabel>Tax Identification Number (TIN)</FormLabel>
               <FormControl>
-                <Input placeholder="Enter TIN" {...field} />
+                <Input placeholder="" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -1541,7 +2163,8 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       <h5 className="text-md font-semibold pt-4">Employer Address</h5>
       {renderAddressFields(`${basePath}.employmentDetails.employerAddress`)}
     </Card>
-  );
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -1553,24 +2176,18 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
             : accountType === 'ORG' ? 'Provide organization information' : 'Please provide your account holder information'
           }
         </p>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={fillWithFakeData}
+        >
+          Fill with Fake Data
+        </Button>
       </div>
 
       {/* NEW: Primary applicant contact credentials */}
       <Card className="p-6 space-y-6">
         <h3 className="text-xl font-semibold">Primary Contact Credentials</h3>
-        <FormField
-          control={form.control}
-          name={"customer.email" as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="you@example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name={"customer.prefix" as any}
@@ -1579,7 +2196,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               <FormLabel>Username (Prefix)</FormLabel>
               <FormDescription>Your desired username (3–6 characters).</FormDescription>
               <FormControl>
-                <Input placeholder="e.g. agm123" {...field} />
+                <Input placeholder="" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

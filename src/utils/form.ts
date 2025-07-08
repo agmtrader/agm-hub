@@ -46,7 +46,6 @@ export function createW8FormDocument(holderName: string, holderId: string = 'pri
     };
 }
 
-// Helper function to get default regulatory information for any application type
 export function getDefaultRegulatoryInformation() {
     return [
         {
@@ -71,7 +70,6 @@ export function getDefaultRegulatoryInformation() {
     ]
 }
 
-// Helper function to get default W8-BEN form structure
 export function getDefaultW8Ben() {
     return {
         localTaxForms: [],

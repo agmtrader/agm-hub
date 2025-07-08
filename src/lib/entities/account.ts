@@ -104,13 +104,3 @@ export interface AccountManagementRequests {
     updateW8Ben?: W8BenSubmissionRequest
   }
 }
-
-/*
-export type GeneralInfo = z.infer<ReturnType<typeof general_info_schema>>
-export type AboutYouPrimary = z.infer<ReturnType<typeof about_you_primary_schema>>
-export type AboutYouSecondary = z.infer<ReturnType<typeof about_you_secondary_schema>>
-export type Regulatory = z.infer<ReturnType<typeof regulatory_schema>>
-
-export type IndividualAccountApplicationInfo = GeneralInfo & AboutYouPrimary & Regulatory
-export type JointAccountApplicationInfo = GeneralInfo & AboutYouPrimary & AboutYouSecondary & Regulatory
-*/

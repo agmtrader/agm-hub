@@ -1,16 +1,15 @@
 import { accessAPI } from "../api"
 import { AccountPayload, Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, W8BenSubmissionRequest, InternalAccount } from "@/lib/entities/account"
 import { Contact } from "@/lib/entities/contact"
+import { IDResponse } from "@/lib/entities/base"
 
-export async function CreateAccount(account: InternalAccount): Promise<{id: string}> {
-    let account_id = await accessAPI('/accounts/create', 'POST', {
-        'account': account, 
-    })
-    return {'id': account_id}
+export async function CreateAccount(account: InternalAccount): Promise<IDResponse> {
+    const createResponse: IDResponse = await accessAPI('/accounts/create', 'POST', { 'account': account })
+    return createResponse
 }
 
 export async function ReadAccounts() {
-    let accounts:any = await accessAPI('/accounts/read', 'POST', {'query': {}})
+    let accounts:Account[] = await accessAPI('/accounts/read', 'POST', {'query': {}})
     return accounts
 }
 

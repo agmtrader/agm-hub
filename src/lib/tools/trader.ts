@@ -1,5 +1,3 @@
-// TypeScript interfaces mirroring Python trader structures
-
 export interface Contract {
   symbol: string;
   secType: string;
@@ -63,7 +61,6 @@ export interface AccountSummaryItem {
   modelCode: string;
 }
 
-// Base strategy parameters interface
 export interface BaseStrategyParams {
   position: number;
   contracts: ContractData[];
@@ -72,7 +69,6 @@ export interface BaseStrategyParams {
   positions: PositionData[];
 }
 
-// Ichimoku strategy specific parameters
 export interface IchimokuBaseParams extends BaseStrategyParams {
   tenkan: number;
   kijun: number;
@@ -82,20 +78,11 @@ export interface IchimokuBaseParams extends BaseStrategyParams {
   historical_data?: { [symbol: string]: HistoricalDataPoint[] };
 }
 
-// Strategy interface
 export interface Strategy {
   name: string;
   params: IchimokuBaseParams;
 }
 
-// Trader snapshot interface
-export interface TraderSnapshot {
-  strategy: Strategy;
-  decision: string;
-  account_summary: AccountSummaryItem[];
-}
-
-// Response interface for trader communications
 export interface TraderResponse {
   status: string;
   strategy: Strategy;
@@ -103,7 +90,6 @@ export interface TraderResponse {
   account_summary: AccountSummaryItem[];
 }
 
-// Add backtest interfaces
 export interface BacktestSnapshot {
   current_time: string;
   decision: TradingDecision;
@@ -128,115 +114,4 @@ export interface ExtendedTraderResponse extends TraderResponse {
   backtest?: BacktestSnapshot[];
 }
 
-export interface DecisionHistory {
-  id: number;
-  decision: TradingDecision;
-  created: string;
-  updated: string;
-}
-
-// Decision types
 export type TradingDecision = 'LONG' | 'SHORT' | 'STAY' | 'EXIT';
-
-// Utility type for strategy creation
-export interface StrategyConfig {
-  name: string;
-  type: 'ICHIMOKU_BASE' | string;
-  params?: Partial<IchimokuBaseParams>;
-}
-
-// Contract creation helpers
-export interface FutureContractOptions {
-  symbol: string;
-  lastTradeDateOrContractMonth: string;
-  exchange: string;
-  currency?: string;
-}
-
-// Strategy calculation interfaces
-export interface TechnicalIndicatorParams {
-  startAf?: number;
-  incrementAf?: number;
-  maxAf?: number;
-}
-
-export interface PsarCalculationResult {
-  values: number[];
-  isUptrend: boolean[];
-  extremePoints: number[];
-}
-
-export interface IchimokuIndicators {
-  tenkan: number;
-  kijun: number;
-  senkouSpanA: number;
-  senkouSpanB: number;
-  chikouSpan: number;
-}
-
-// Order creation interfaces
-export interface OrderParams {
-  symbol: string;
-  quantity: number;
-  action: 'BUY' | 'SELL';
-  orderType: 'MARKET' | 'LIMIT' | 'STOP';
-  price?: number;
-  stopPrice?: number;
-}
-
-export interface BracketOrderParams extends OrderParams {
-  takeProfitPrice?: number;
-  stopLossPrice?: number;
-}
-
-// Market data interfaces
-export interface MarketDataRequest {
-  contract: Contract;
-  endDateTime?: string;
-  durationStr: string;
-  barSizeSetting: string;
-  whatToShow: string;
-  useRTH: number;
-}
-
-export interface RealTimeMarketData {
-  symbol: string;
-  last: number;
-  bid: number;
-  ask: number;
-  volume: number;
-  timestamp: Date;
-}
-
-// Trader state interfaces
-export interface TraderState {
-  isConnected: boolean;
-  isRunning: boolean;
-  currentStrategy: Strategy | null;
-  lastDecision: TradingDecision | null;
-  accountSummary: AccountSummaryItem[] | null;
-  positions: PositionData[];
-  openOrders: OrderData[];
-  executedOrders: OrderData[];
-}
-
-// Error handling
-export interface TraderError {
-  code: string;
-  message: string;
-  timestamp: Date;
-  context?: any;
-}
-
-export interface TraderPerformanceMetrics {
-  totalTrades: number;
-  winningTrades: number;
-  losingTrades: number;
-  totalPnL: number;
-  winRate: number;
-  averageWin: number;
-  averageLoss: number;
-  profitFactor: number;
-  maxDrawdown: number;
-  sharpeRatio: number;
-} 

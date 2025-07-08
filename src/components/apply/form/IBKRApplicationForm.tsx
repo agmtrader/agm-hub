@@ -7,7 +7,7 @@ import {
   Form,
 } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
-import { Application, InternalApplication, application, application as defaultApplicationValues } from '@/lib/entities/application';
+import { Application, InternalApplication } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import AccountHolderInfoStep from './AccountHolderInfoStep'

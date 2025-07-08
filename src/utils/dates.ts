@@ -1,4 +1,4 @@
-function formatDate(date:any) {
+function formatDate(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
   const day = String(date.getDate()).padStart(2, '0');
@@ -55,7 +55,7 @@ export function getDateObjectFromTimestamp(timestamp: string | undefined): Date 
     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute))
 }
 
-export function formatTimestamp(date:any) {
+export function formatTimestamp(date: Date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
     const day = String(date.getDate()).padStart(2, '0');

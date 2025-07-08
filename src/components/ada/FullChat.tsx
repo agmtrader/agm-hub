@@ -9,11 +9,10 @@ import { Send, RotateCcw, Bot } from 'lucide-react'
 import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-
 import { accessAPI } from '@/utils/api'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { ChatMessage, ChatResponse } from '@/lib/public/ada'
+import { ChatResponse } from '@/lib/public/ada'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 const FullChat = () => {

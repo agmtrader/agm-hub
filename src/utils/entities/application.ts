@@ -1,10 +1,7 @@
 import { accessAPI } from "../api"
 import { Application, InternalApplication } from "../../lib/entities/application"
 import { POADocumentInfo } from "@/lib/entities/application"
-
-export interface IDResponse {
-    id: string
-}
+import { IDResponse } from "@/lib/entities/base"
 
 export async function CreateApplication(application: InternalApplication): Promise<IDResponse> {
     const createResponse: IDResponse = await accessAPI('/applications/create', 'POST', { 'application': application })
