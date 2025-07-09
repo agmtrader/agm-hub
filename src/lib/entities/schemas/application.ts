@@ -158,7 +158,7 @@ export const account_schema = z.object({
   externalId: z.string().min(1, { message: 'Account external ID is required' }),
   baseCurrency: z.string().min(3, { message: 'Base currency is required (3-letter code)' }),
   multiCurrency: z.boolean().optional().default(true),
-  margin: z.string().min(1, { message: 'Margin type is required' }), // e.g., Cash, Margin
+  margin: z.string().min(1, { message: 'Margin type is required' }),
   tradingLimits: trading_limits_schema, // Added from new schema
   alias: z.string().optional(),
 });

@@ -44,10 +44,16 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
           e.stopPropagation(); // Prevent event from bubbling to parent forms
           form.handleSubmit(handleSubmit)(e);
         }}
-        className="space-y-4"
+        /*
+         * Use a responsive grid so the fields look good on both mobile and larger screens.
+         * On mobile (default) we keep a single-column layout; from the `sm` breakpoint (≥640px)
+         * we switch to two columns. Each field (`FormItem`) will take the full column width
+         * by default, but long fields can later be configured with `col-span-2` when needed.
+         */
+        className="space-y-6"
       >
-
-        <FormField
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FormField
           control={form.control}
           name="gender"
           render={({ field }) => (
@@ -74,7 +80,7 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
           element={{ name: "country_of_issue", title: "Country of Issue" }}
         />
 
-        <FormField
+          <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
@@ -99,11 +105,11 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
           )}
         />
 
-        <FormField
+          <FormField
           control={form.control}
           name="full_name"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="col-span-2">
               <FormLabel>Full Name</FormLabel>
               <Input {...field} />
               <FormMessage />
@@ -111,11 +117,11 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
           )}
         />
 
-        <FormField
+          <FormField
           control={form.control}
           name="id_number"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="col-span-2 sm:col-span-1">
               <FormLabel>ID Number</FormLabel>
               <Input {...field} />
               <FormMessage />
@@ -123,7 +129,7 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
           )}
         />
 
-        <FormField
+          <FormField
           control={form.control}
           name="issued_date"
           render={({ field }) => (
@@ -137,7 +143,7 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
           )}
         />
 
-        <FormField
+          <FormField
           control={form.control}
           name="date_of_birth"
           render={({ field }) => (
@@ -151,7 +157,7 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
           )}
         />
 
-        <FormField
+          <FormField
           control={form.control}
           name="expiration_date"
           render={({ field }) => (
@@ -169,15 +175,16 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
           form={form}
           element={{ name: "country_of_birth", title: "Country of Birth" }}
         />
+        </div>
 
         {
           uploading ? (
-            <Button className="h-fit w-fit" type="submit">
+            <Button className="h-fit w-full sm:w-fit" type="submit">
               <Loader2 className="h-4 w-4 animate-spin text-background" /> 
               Submitting...
             </Button>
           ) : (
-            <Button className="h-fit w-fit text-background" type="submit">Submit</Button>
+            <Button className="h-fit w-full sm:w-fit text-background" type="submit">Submit</Button>
           )
         }
 

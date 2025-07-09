@@ -417,61 +417,10 @@ export const investment_objectives = (t: (key: string) => string) => [
   }
 ] as const
 
-export const products = (t: (key: string) => string) => [
-  {
-    id: "BOND",
-    label: t('apply.account.regulatory.products.bonds')
-  },
-  {
-    id: "FUT",
-    label: t('apply.account.regulatory.products.futures')
-  },
-  {
-    id: "FX",
-    label: t('apply.account.regulatory.products.forex')
-  },
-  {
-    id: "FOP",
-    label: t('apply.account.regulatory.products.futures_options')
-  },
-  {
-    id: "FUND",
-    label: t('apply.account.regulatory.products.mutual_funds')
-  },
-  {
-    id: "STK",
-    label: t('apply.account.regulatory.products.stocks')
-  },
-  {
-    id: "SSF",
-    label: t('apply.account.regulatory.products.single_stock_futures')
-  },
-  {
-    id: "OPT",
-    label: t('apply.account.regulatory.products.options')
-  },
-  {
-    id: "STOPT",
-    label: t('apply.account.regulatory.products.stock_options')
-  }
-] as const
-
 export const products_complete = (t: (key: string) => string) => [
   {
     id: "BONDS",
     label: t('apply.account.regulatory.products.bonds')
-  },
-  {
-    id: "FUTURES",
-    label: t('apply.account.regulatory.products.futures')
-  },
-  {
-    id: "FOREX",
-    label: t('apply.account.regulatory.products.forex')
-  },
-  {
-    id: "FUTURES_OPTIONS",
-    label: t('apply.account.regulatory.products.futures_options')
   },
   {
     id: "FUNDS",
@@ -482,16 +431,12 @@ export const products_complete = (t: (key: string) => string) => [
     label: t('apply.account.regulatory.products.stocks')
   },
   {
-    id: "SINGLE_STOCK_FUTURES",
-    label: t('apply.account.regulatory.products.single_stock_futures')
-  },
-  {
     id: "OPTIONS",
     label: t('apply.account.regulatory.products.options')
   },
-  { 
-    id: "STOCK_OPTIONS",
-    label: t('apply.account.regulatory.products.stock_options')
+  {
+    id: "FUTURES",
+    label: t('apply.account.regulatory.products.futures')
   }
 ]
 
@@ -521,12 +466,11 @@ export const knowledge_levels = [
 ] as const
 
 export const asset_classes = [
-  { label: "Stocks", value: "STK" },
   { label: "Bonds", value: "BOND" },
+  { label: "ETFs", value: "FUND" },
+  { label: "Stocks", value: "STK" },
   { label: "Options", value: "OPT" },
   { label: "Futures", value: "FUT" },
-  { label: "Foreign Exchange", value: "FX" },
-  { label: "Funds", value: "FUND" },
 ] as const
 
 export const margin_types = [
@@ -546,9 +490,9 @@ export const trading_countries = [
 ] as const
 
 export const trading_products = [
-  { label: "Stocks", value: "STOCKS" },
   { label: "Bonds", value: "BONDS" },
+  { label: "ETFs", value: "FUNDS" },
+  { label: "Stocks", value: "STOCKS" },
   { label: "Options", value: "OPTIONS" },
   { label: "Futures", value: "FUTURES" },
-  { label: "Foreign Exchange", value: "FOREX" },
 ] as const

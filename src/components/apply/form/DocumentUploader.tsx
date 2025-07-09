@@ -44,16 +44,15 @@ const DocumentUploader = ({ documentType, handleSubmit }: Props) => {
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-                <Button className='w-fit h-fit flex gap-x-5' variant='ghost'>
+                <Button className='w-fit h-fit flex gap-x-5 bg-transparent hover:bg-transparent' variant='ghost'>
                     <Upload className='h-4 w-4' />
-                    Upload document
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[50%]">
+            <DialogContent className="max-w-[80vw] sm:max-w-[50%]">
                 <DialogHeader>
                     <DialogTitle>Upload document</DialogTitle>
                     <DialogDescription>
-                        to the document center
+                        for your application
                     </DialogDescription>
                 </DialogHeader>
                 <FileUploader

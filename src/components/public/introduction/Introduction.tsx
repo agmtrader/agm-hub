@@ -65,7 +65,7 @@ export const Introduction: React.FC<IntroductionProps> = ({ title, description, 
       variants={containerVariants}
     >
       <div className={cn("flex flex-col h-full text-foreground w-full max-w-6xl text-center gap-y-10 justify-center items-center")}>
-        <motion.h1 variants={itemVariants} className='whitespace-nowrap text-5xl font-semibold'>{title}</motion.h1>
+        <motion.h1 variants={itemVariants} className='text-5xl font-semibold'>{title}</motion.h1>
         {description.map((paragraph, index) => (
           <motion.p key={index} variants={itemVariants} className='text-xl font-light'>
             {paragraph}

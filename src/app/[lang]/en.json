@@ -424,10 +424,10 @@
                 },
                 "products": {
                     "bonds": "Bonds",
+                    "mutual_funds": "ETFs",
                     "stocks": "Stocks",
-                    "futures": "Futures",
                     "options": "Options",
-                    "etfs": "ETFs"
+                    "futures": "Futures"
                 }
             },
             "application_end": {

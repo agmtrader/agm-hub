@@ -173,11 +173,13 @@ const IBKRApplicationForm = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center my-20 gap-5">
-      <h1 className="text-3xl font-bold">IBKR Account Application Form</h1>
-      <p className="text-lg">Please fill out the form below to apply for an IBKR account.</p>
+    <div className="flex flex-col justify-center items-center my-20 gap-5 p-5">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold ">IBKR Account Application Form</h1>
+        <p className="text-lg">Please fill out the form below to apply for an IBKR account.</p>
+      </div>
       {renderProgress()}
-      <div className="w-[50%]">
+      <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {currentStep === FormStep.ACCOUNT_TYPE && (
