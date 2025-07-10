@@ -17,11 +17,11 @@ import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
 import LoaderButton from '@/components/misc/LoaderButton'
 import { formatTimestamp } from '@/utils/dates'
-import Confetti from "@/components/ui/confetti"
-import Link from "next/link"
 import { Check } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { getApplicationDefaults } from '@/utils/form'
+import { filledForm } from './SampleInfo'
+import ApplicationSuccess from './ApplicationSuccess'
 
 enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -30,33 +30,12 @@ enum FormStep {
   SUCCESS = 3
 }
 
-// Success component for the final step
-const ApplicationSuccess = () => {
-  return (
-    <div className='relative h-full w-full flex flex-col justify-center items-center gap-y-8 py-16'>
-      <Confetti
-        className="absolute left-0 top-0 -z-10 size-full pointer-events-none"
-      />
-      <Check className='w-24 h-24 text-success' />
-      <p className='text-2xl font-semibold text-foreground'>Application Submitted Successfully!</p>
-      <div className='flex flex-col items-center gap-y-4'>
-        <p className='text-lg text-subtitle'>Your IBKR application has been submitted and is being processed.</p>
-        <p className='text-sm text-subtitle'>You will receive a confirmation email shortly with next steps.</p>
-      </div>
-      <div className='flex gap-4'>
-        <Button>
-          <Link href='/'>Go Back Home</Link>
-        </Button>
-      </div>
-    </div>
-  )
-}
-
 const IBKRApplicationForm = () => {
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
@@ -64,8 +43,6 @@ const IBKRApplicationForm = () => {
     mode: 'onChange',
     shouldUnregister: false,
   });
-
-  const searchParams = useSearchParams();
 
   const handleNextStep = async () => { 
     setCurrentStep(prevStep => prevStep + 1);
@@ -92,8 +69,15 @@ const IBKRApplicationForm = () => {
       const master_account_id = searchParams.get('ma') || null;
       const lead_id = searchParams.get('ld') || null;
 
+      // Sanitize documents: remove holderId from each document
+      const sanitizedDocuments = (values.documents || []).map((doc: any) => {
+        const { holderId, ...rest } = doc;
+        return rest;
+      });
+      const sanitizedValues = { ...values, documents: sanitizedDocuments };
+
       const internalApplication: InternalApplication = {
-        application: values,
+        application: sanitizedValues,
         advisor_id,
         master_account_id,
         lead_id,
@@ -104,8 +88,12 @@ const IBKRApplicationForm = () => {
         user_id: session?.user?.id,
       }
 
+      console.log('Application ready to submit:', internalApplication.application);
+
       const createResponse = await CreateApplication(internalApplication);
-      console.log('Application created:', createResponse);
+      if (!createResponse) {
+        throw new Error('Failed to create application');
+      }
       
       toast({
         title: "Application Submitted",
@@ -167,7 +155,6 @@ const IBKRApplicationForm = () => {
     );
   }
 
-  // Don't show progress or form title on success step
   if (currentStep === FormStep.SUCCESS) {
     return <ApplicationSuccess />;
   }
@@ -237,6 +224,7 @@ const IBKRApplicationForm = () => {
       </div>
     </div>
   );
+
 }
 
 export default IBKRApplicationForm;

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from '@/components/ui/file-upload'
 import POAForm from './POAForm'
-import POIForm from './POIForm' // Assuming POIForm exists and is similar
+import POIForm from './POIForm'
 
 export type DocumentType = 'POA' | 'POI';
 
@@ -31,8 +31,6 @@ const DocumentUploader = ({ documentType, handleSubmit }: Props) => {
     const handleUpload = async (values: any) => {
         setUploading(true)
         handleSubmit(documentType, values, files)
-
-        // Save backup to database and drive
 
         setUploading(false)
         setDialogOpen(false)

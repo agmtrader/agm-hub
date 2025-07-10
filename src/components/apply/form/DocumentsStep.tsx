@@ -4,11 +4,12 @@ import React, { useEffect, useState } from 'react'
 import { useFormContext, UseFormReturn, useWatch } from 'react-hook-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, FileText, Clock, Users, Building } from 'lucide-react'
+import { CheckCircle, FileText, Clock, Users, Building, Trash2 } from 'lucide-react'
 import { Application } from '@/lib/entities/application'
 import DocumentUploader, { DocumentType } from './DocumentUploader'
 import { FormField } from '@/components/ui/form'
 import { toast } from '@/hooks/use-toast'
+import { Button } from '@/components/ui/button'
 
 interface DocumentsStepProps {
   form?: UseFormReturn<Application>
@@ -173,6 +174,28 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
   const getSignerName = (holderId: string): string => {
     const holder = holders.find(h => h.id === holderId);
     return holder?.fullName || "Account Holder";
+  };
+
+  // New function to remove a document
+  const handleRemoveDocument = (formNumber: number, holderId?: string) => {
+    const currentDocs = actualForm?.getValues('documents') || [];
+    const updatedDocs = currentDocs.filter((doc: any) => {
+      if (holderId) {
+        return !(doc.formNumber === formNumber && doc.holderId === holderId);
+      }
+      return doc.formNumber !== formNumber;
+    });
+    
+    actualForm?.setValue('documents', updatedDocs, { shouldValidate: true, shouldDirty: true });
+    
+    const holderName = holderId ? holders.find(h => h.id === holderId)?.name || 'Account Holder' : 'Account Holder';
+    const docName = DOCUMENT_CONFIGS.find(config => config.formNumber === formNumber)?.name || 'Document';
+    
+    toast({
+      title: "Document Removed",
+      description: `${docName} for ${holderName} has been removed successfully`,
+      variant: "success"
+    });
   };
 
   async function handlePOASubmission(
@@ -458,7 +481,18 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                 </div>
                 <div className="flex items-center gap-2">
                   {isUploaded ? (
-                    <Badge variant="success">Uploaded</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="success">Uploaded</Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleRemoveDocument(docConfig.formNumber, holder.id)}
+                        title="Remove document"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
                   ) : docConfig.formNumber === 8002 ? (
                     <DocumentUploader 
                       documentType="POA" 
@@ -555,7 +589,18 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                     </div>
                     <div className="flex items-center gap-2">
                       {isUploaded ? (
-                        <Badge variant="success">Uploaded</Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="success">Uploaded</Badge>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => handleRemoveDocument(docConfig.formNumber)}
+                            title="Remove document"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       ) : docConfig.formNumber === 8002 ? (
                         <DocumentUploader documentType="POA" handleSubmit={handlePOASubmission} />
                       ) : docConfig.formNumber === 8001 ? (

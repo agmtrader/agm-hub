@@ -234,9 +234,13 @@ const AccountPage = ({ accountId }: Props) => {
       <Tabs defaultValue="persons" className="w-full">
         <TabsList className="mb-4 w-fit overflow-x-auto whitespace-nowrap justify-start sm:justify-center">
           <TabsTrigger value="persons"><Users className="mr-2 h-4 w-4" />Associated Persons ({associatedPersons?.length || 0})</TabsTrigger>
-          <TabsTrigger value="financial"><DollarSign className="mr-2 h-4 w-4" />Financial Profile</TabsTrigger>
-          <TabsTrigger value="trading"><CandlestickChart className="mr-2 h-4 w-4" />Trading</TabsTrigger>
-          <TabsTrigger value="documents"><FileText className="mr-2 h-4 w-4" />Documents</TabsTrigger>
+          {account.clearingStatus === 'O' && (
+            <>
+              <TabsTrigger value="financial"><DollarSign className="mr-2 h-4 w-4" />Financial Profile</TabsTrigger>
+              <TabsTrigger value="trading"><CandlestickChart className="mr-2 h-4 w-4" />Trading</TabsTrigger>
+              <TabsTrigger value="documents"><FileText className="mr-2 h-4 w-4" />Documents</TabsTrigger>
+            </>
+          )}
           <TabsTrigger value="registrationTasks"><ListChecks className="mr-2 h-4 w-4" />Registration Tasks</TabsTrigger>
           <TabsTrigger value="pendingTasks"><ClipboardList className="mr-2 h-4 w-4" />Pending Tasks</TabsTrigger>
         </TabsList>
@@ -292,119 +296,109 @@ const AccountPage = ({ accountId }: Props) => {
           {(!associatedPersons || associatedPersons.length === 0) && <p className="text-muted-foreground">No associated persons found for this account.</p>}
         </TabsContent>
 
-        {/* Financial Profile Tab */}
-        <TabsContent value="financial">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 mr-2 text-primary"/>Financial Profile</CardTitle>
-              <CardDescription>Currency: {financialInformation.currency}</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-3 gap-4">
+        {/* Financial Profile Tab - Only for open accounts */}
+        {account.clearingStatus === 'O' && (
+          <TabsContent value="financial">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 mr-2 text-primary"/>Financial Profile</CardTitle>
+                <CardDescription>Currency: {financialInformation.currency}</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-3 gap-4">
 
-              <div className="flex flex-col justify-start items-start">
-                <p className="text-lg font-semibold text-foreground">Worths</p>
-                <DetailItem label="Net Worth" value={financialInformation.netWorth} icon={DollarSign}/>
-                <DetailItem label="Liquid Net Worth" value={financialInformation.liquidNetWorth} icon={DollarSign}/>
-                <DetailItem label="Annual Net Income" value={financialInformation.annualNetIncome} icon={DollarSign}/>
-              </div>
-              
-              <div className="flex flex-col justify-start items-start">
-                <p className="text-lg font-semibold text-foreground">Investment Experience</p>
-                {financialInformation.investmentExperience?.STK && (
-                  <div>
-                    <p className="text-sm font-semibold">Stocks</p>
-                    <DetailItem label="Knowledge Level" value={financialInformation.investmentExperience.STK.knowledgeLevel} />
-                    <DetailItem label="Years Trading" value={financialInformation.investmentExperience.STK.yearsTrading} />
-                    <DetailItem label="Trades Per Year" value={financialInformation.investmentExperience.STK.tradesPerYear} />
-                  </div>
-                )}
-                {financialInformation.investmentExperience?.BOND && (
-                  <div>
-                    <p className="text-sm font-semibold">Bonds</p>
-                    <DetailItem label="Knowledge Level" value={financialInformation.investmentExperience.BOND.knowledgeLevel} />
-                    <DetailItem label="Years Trading" value={financialInformation.investmentExperience.BOND.yearsTrading} />
-                    <DetailItem label="Trades Per Year" value={financialInformation.investmentExperience.BOND.tradesPerYear} />
-                  </div>
-                )}
-                {(!financialInformation.investmentExperience?.STK && !financialInformation.investmentExperience?.BOND) && (
-                  <p className="text-sm text-muted-foreground">No investment experience information available.</p>
-                )}
-              </div>
-
-              {sourcesOfWealth?.length > 0 && (
-                <div className="flex flex-col">
-                  <p className="text-lg font-semibold text-foreground">Sources of Wealth</p>
-                  <div className="flex flex-wrap gap-1">
-                    {sourcesOfWealth.map(source => (
-                      <p key={source.label}>
-                        {source.label} - {source.annual_percentage}%
-                      </p>
-                    ))}
-                  </div>
+                <div className="flex flex-col justify-start items-start">
+                  <p className="text-lg font-semibold text-foreground">Worths</p>
+                  <DetailItem label="Net Worth" value={financialInformation.netWorth} icon={DollarSign}/>
+                  <DetailItem label="Liquid Net Worth" value={financialInformation.liquidNetWorth} icon={DollarSign}/>
+                  <DetailItem label="Annual Net Income" value={financialInformation.annualNetIncome} icon={DollarSign}/>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Trading Tab */}
-        <TabsContent value="trading">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center"><Package className="h-5 w-5 mr-2 text-primary"/>Trading Permissions & Bundles</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <DetailItem label="Limited Option Trading" value={account.limitedOptionTrading} icon={AlertTriangle}/>
-              <div>
-                <p className="text-md font-semibold mb-1 text-muted-foreground">Capabilities</p>
-                <div className="space-y-2 mt-1">
-                  {account.capabilities.approved?.length > 0 && (
-                    <DetailItem label="Approved" value={account.capabilities.approved.map(c => <p key={c}>{c}</p>)} />
+                
+                <div className="flex flex-col justify-start items-start">
+                  <p className="text-lg font-semibold text-foreground">Investment Experience</p>
+                  {financialInformation.investmentExperience?.STK && (
+                    <div>
+                      <p className="text-sm font-semibold">Stocks</p>
+                      <DetailItem label="Knowledge Level" value={financialInformation.investmentExperience.STK.knowledgeLevel} />
+                      <DetailItem label="Years Trading" value={financialInformation.investmentExperience.STK.yearsTrading} />
+                      <DetailItem label="Trades Per Year" value={financialInformation.investmentExperience.STK.tradesPerYear} />
+                    </div>
                   )}
-                  {account.capabilities.requested?.length > 0 && (
-                    <DetailItem label="Requested" value={account.capabilities.requested.map(c => <p key={c}>{c}</p>)} />
+                  {financialInformation.investmentExperience?.BOND && (
+                    <div>
+                      <p className="text-sm font-semibold">Bonds</p>
+                      <DetailItem label="Knowledge Level" value={financialInformation.investmentExperience.BOND.knowledgeLevel} />
+                      <DetailItem label="Years Trading" value={financialInformation.investmentExperience.BOND.yearsTrading} />
+                      <DetailItem label="Trades Per Year" value={financialInformation.investmentExperience.BOND.tradesPerYear} />
+                    </div>
                   )}
-                  {account.capabilities.activated?.length > 0 && (
-                    <DetailItem label="Activated" value={account.capabilities.activated.map(c => <p key={c}>{c}</p>)} />
-                  )}
-                  {(!account.capabilities.approved?.length && !account.capabilities.requested?.length && !account.capabilities.activated?.length) && (
-                    <p className="text-sm text-muted-foreground">No capabilities information available.</p>
+                  {(!financialInformation.investmentExperience?.STK && !financialInformation.investmentExperience?.BOND) && (
+                    <p className="text-sm text-muted-foreground">No investment experience information available.</p>
                   )}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
-        {/* Fee Information Tab */}
-        <TabsContent value="fees">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center"><Receipt className="h-5 w-5 mr-2 text-primary"/>Fee Information</CardTitle>
-              <CardDescription>Details about account fee structures.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {account.feeTemplate?.brokerFeeInfo ? (
-                <DetailItem label="Broker Fee Information" value={account.feeTemplate.brokerFeeInfo} />
-              ) : (
-                <p className="text-sm text-muted-foreground">No fee template information available.</p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                {sourcesOfWealth?.length > 0 && (
+                  <div className="flex flex-col">
+                    <p className="text-lg font-semibold text-foreground">Sources of Wealth</p>
+                    <div className="flex flex-wrap gap-1">
+                      {sourcesOfWealth.map(source => (
+                        <p key={source.label}>
+                          {source.label} - {source.annual_percentage}%
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
-        <TabsContent value="documents">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center"><FileText className="h-5 w-5 mr-2 text-primary"/>Documents</CardTitle>
-              <CardDescription>Manage and view account-related documents.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Document management features will be implemented here. (e.g., W-8BEN, account statements, trade confirmations, etc.)</p>
-              {/* Placeholder for future document list or upload functionality */}
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {/* Trading Tab - Only for open accounts */}
+        {account.clearingStatus === 'O' && (
+          <TabsContent value="trading">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center"><Package className="h-5 w-5 mr-2 text-primary"/>Trading Permissions & Bundles</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <DetailItem label="Limited Option Trading" value={account.limitedOptionTrading} icon={AlertTriangle}/>
+                <div>
+                  <p className="text-md font-semibold mb-1 text-muted-foreground">Capabilities</p>
+                  <div className="space-y-2 mt-1">
+                    {account.capabilities.approved?.length > 0 && (
+                      <DetailItem label="Approved" value={account.capabilities.approved.map(c => <p key={c}>{c}</p>)} />
+                    )}
+                    {account.capabilities.requested?.length > 0 && (
+                      <DetailItem label="Requested" value={account.capabilities.requested.map(c => <p key={c}>{c}</p>)} />
+                    )}
+                    {account.capabilities.activated?.length > 0 && (
+                      <DetailItem label="Activated" value={account.capabilities.activated.map(c => <p key={c}>{c}</p>)} />
+                    )}
+                    {(!account.capabilities.approved?.length && !account.capabilities.requested?.length && !account.capabilities.activated?.length) && (
+                      <p className="text-sm text-muted-foreground">No capabilities information available.</p>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {/* Documents Tab - Only for open accounts */}
+        {account.clearingStatus === 'O' && (
+          <TabsContent value="documents">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center"><FileText className="h-5 w-5 mr-2 text-primary"/>Documents</CardTitle>
+                <CardDescription>Manage and view account-related documents.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Document management features will be implemented here. (e.g., W-8BEN, account statements, trade confirmations, etc.)</p>
+                {/* Placeholder for future document list or upload functionality */}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
         {/* Registration Tasks Tab */}
         <TabsContent value="registrationTasks">

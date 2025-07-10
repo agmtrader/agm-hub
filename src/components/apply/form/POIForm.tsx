@@ -41,15 +41,9 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
       <form
         onSubmit={e => {
           e.preventDefault();
-          e.stopPropagation(); // Prevent event from bubbling to parent forms
+          e.stopPropagation();
           form.handleSubmit(handleSubmit)(e);
         }}
-        /*
-         * Use a responsive grid so the fields look good on both mobile and larger screens.
-         * On mobile (default) we keep a single-column layout; from the `sm` breakpoint (≥640px)
-         * we switch to two columns. Each field (`FormItem`) will take the full column width
-         * by default, but long fields can later be configured with `col-span-2` when needed.
-         */
         className="space-y-6"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

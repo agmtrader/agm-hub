@@ -12,8 +12,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Card } from '@/components/ui/card'
 import { Application } from '@/lib/entities/application'
-import { application_schema } from '@/lib/entities/schemas/application'
-import { getApplicationDefaults, getDefaultRegulatoryInformation, getDefaultW8Ben } from '@/utils/form'
+import { getDefaultRegulatoryInformation, getDefaultW8Ben } from '@/utils/form'
 
 interface AccountTypeStepProps {
   form: UseFormReturn<Application>
@@ -21,8 +20,6 @@ interface AccountTypeStepProps {
 
 const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
   const handleAccountTypeChange = (value: string) => {
-    // Get clean defaults
-    const cleanDefaults = getApplicationDefaults(application_schema)
     const defaultRegulatoryInformation = getDefaultRegulatoryInformation()
     const defaultW8Ben = getDefaultW8Ben()
     

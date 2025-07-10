@@ -39,7 +39,7 @@ const POAForm = ({ onSubmit, uploading }:Props) => {
       <form
         onSubmit={e => {
           e.preventDefault();
-          e.stopPropagation(); // Prevent event from bubbling to parent forms
+          e.stopPropagation();
           form.handleSubmit(handleSubmit)(e);
         }}
         className="space-y-4"

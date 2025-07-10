@@ -34,9 +34,7 @@ export async function UpdateApplicationByID(applicationID: string, application: 
 
 export async function SendApplicationToIBKR(application: Application) {
     const response: any = await accessAPI('/applications/send_to_ibkr', 'POST', { 
-        'application': {
-            'application': application 
-        }
+        'application': application 
     })
     return response
 }
