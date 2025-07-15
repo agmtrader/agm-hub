@@ -3,16 +3,9 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { accessAPI } from '@/utils/api'
-import { CheckCircle2, ChevronDownIcon, ChevronUpIcon, XCircle } from 'lucide-react'
-import { DataTable } from '@/components/misc/DataTable'
+import { CheckCircle2, XCircle } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { motion } from 'framer-motion'
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
 
 const PipelineStep = ({ name, step, currentStep, status, onClick, disabled }: { name: string, step: number, currentStep: number, status: string, onClick: () => void, disabled: boolean }) => {
   const getStepStatus = () => {
@@ -58,20 +51,14 @@ const PipelineStep = ({ name, step, currentStep, status, onClick, disabled }: { 
 
 const GenerateReportsPage = () => {
     
-  const [currentStep, setCurrentStep] = useState(1)
-  const [stepStatus, setStepStatus] = useState('pending')
-  const [batchFiles, setBatchFiles] = useState<any[] | null>(null)
-  const [resourcesFiles, setResourcesFiles] = useState<any[] | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState('extract')
-
-  const [showDetails, setShowDetails] = useState(false)
+  const [extractStatus, setExtractStatus] = useState<'pending' | 'loading' | 'complete' | 'error'>('pending')
+  const [transformStatus, setTransformStatus] = useState<'pending' | 'loading' | 'complete' | 'error'>('pending')
 
   const { toast } = useToast()
 
-  const handleError = (message: string) => {
-    setError(message)
-    setStepStatus('error')
+  const handleError = (message: string, step: 'extract' | 'transform') => {
+    if (step === 'extract') setExtractStatus('error')
+    if (step === 'transform') setTransformStatus('error')
     toast({
       title: 'Error',
       description: message,
@@ -80,68 +67,29 @@ const GenerateReportsPage = () => {
   }
 
   async function extract() {
-    setStepStatus('loading')
-    setError(null)
+    setExtractStatus('loading')
     try {
       const response = await accessAPI('/reporting/extract', 'GET')
-      setBatchFiles(response['content'])
-      setStepStatus('complete')
-      setCurrentStep(2)
-      setStepStatus('pending')
+      setExtractStatus('complete')
     } catch (err: any) {
-      handleError(err.message || 'An error occurred while fetching reports')
+      handleError(err.message || 'An error occurred while fetching reports', 'extract')
     }
   }
 
   async function transformReports() {
-    setStepStatus('loading')
-    setError(null)
+    setTransformStatus('loading')
     try {
       const response = await accessAPI('/reporting/transform', 'GET')
       if (response['status'] === 'error' || !response['content']) {
         throw new Error(response['message'] || 'Failed to transform reports')
       }
-      setResourcesFiles(response['content'])
-      setStepStatus('complete')
-      setCurrentStep(3)
-      setStepStatus('pending')
+      setTransformStatus('complete')
     } catch (err: any) {
-      handleError(err.message || 'An error occurred while transforming reports')
+      handleError(err.message || 'An error occurred while transforming reports', 'transform')
     }
   }
 
-  async function loadReports() {
-    setStepStatus('loading')
-    setError(null)
-    try {
-      const response = await accessAPI('/reporting/load', 'GET')
-      if (response['status'] === 'error' || !response['content']) {
-        throw new Error(response['message'] || 'Failed to load reports')
-      }
-      console.log(response['content'])
-      setStepStatus('complete')
-    } catch (err: any) {
-      handleError(err.message || 'An error occurred while loading reports')
-    }
-  }
-
-  const handleStepClick = (step: number) => {
-    if ((step === currentStep && stepStatus === 'pending') || stepStatus === 'error') {
-      switch (step) {
-        case 1:
-          extract()
-          break
-        case 2:
-          transformReports()
-          setActiveTab('transform')
-          break
-        case 3:
-          loadReports()
-          setActiveTab('load')
-          break
-      }
-    }
-  }
+  // Remove loadReports and currentStep logic for now, as only Extract and Transform are shown
 
   const fadeIn = {
     hidden: { opacity: 0 },
@@ -184,54 +132,24 @@ const GenerateReportsPage = () => {
           variants={slideUp}
           className="flex justify-center items-center gap-20"
         >
-          <PipelineStep name='Extract' step={1} currentStep={currentStep} status={stepStatus} onClick={() => handleStepClick(1)} disabled={currentStep !== 1} />
-          <PipelineStep name='Transform' step={2} currentStep={currentStep} status={stepStatus} onClick={() => handleStepClick(2)} disabled={currentStep !== 2} />
+          <PipelineStep 
+            name='Extract' 
+            step={1} 
+            currentStep={1} // not used anymore, but required by PipelineStep signature
+            status={extractStatus} 
+            onClick={extract} 
+            disabled={extractStatus === 'loading'} 
+          />
+          <PipelineStep 
+            name='Transform' 
+            step={2} 
+            currentStep={2} // not used anymore, but required by PipelineStep signature
+            status={transformStatus} 
+            onClick={transformReports} 
+            disabled={transformStatus === 'loading'} 
+          />
         </motion.div>
       </motion.div>
-
-
-      {!showDetails ? 
-        <motion.div variants={fadeIn} className='w-full max-w-6xl gap-2 flex justify-center items-center'>
-          <p className='text-xs text-subtitle'>Show more details</p>
-          <Button variant='ghost' size='icon' onClick={() => setShowDetails(!showDetails)}>
-            <ChevronDownIcon className='w-4 h-4' />
-          </Button>
-        </motion.div>
-        :
-        <motion.div variants={fadeIn} className='w-full max-w-6xl gap-2 flex justify-center items-center'>
-          <p className='text-xs text-subtitle'>Show less details</p>
-          <Button variant='ghost' size='icon' onClick={() => setShowDetails(!showDetails)}>
-            <ChevronUpIcon className='w-4 h-4' />
-          </Button>
-        </motion.div>
-      }
-
-      {showDetails &&
-        <motion.div variants={fadeIn} className='w-full max-w-6xl'>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="extract">Extract</TabsTrigger>
-            <TabsTrigger value="transform">Transform</TabsTrigger>
-          </TabsList>
-          <TabsContent value="extract">
-            {batchFiles && (
-              <motion.div variants={slideUp} className="bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-2xl font-semibold mb-4">Extracted Reports</h2>
-                <DataTable data={batchFiles} />
-              </motion.div>
-            )}
-          </TabsContent>
-          <TabsContent value="transform">
-            {resourcesFiles && (
-              <motion.div variants={slideUp} className="bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-2xl font-semibold mb-4">Transformed Reports</h2>
-                <DataTable data={resourcesFiles} />
-              </motion.div>
-            )}
-          </TabsContent>
-        </Tabs>
-        </motion.div>
-      }
 
     </motion.div>
   )

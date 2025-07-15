@@ -9,8 +9,9 @@ import { ReadAdvisors } from '@/utils/entities/advisor'
 import { Advisor } from '@/lib/entities/advisor'
 import { FollowUp, Lead } from '@/lib/entities/lead'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-type AccountType = 'br' | 'ad'
-type Language = 'en' | 'es'
+
+export type AccountType = 'br' | 'ad'
+export type Language = 'en' | 'es'
 
 interface Props {
     lead: Lead

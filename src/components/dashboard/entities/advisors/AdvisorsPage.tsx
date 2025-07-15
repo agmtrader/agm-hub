@@ -16,6 +16,7 @@ const AdvisorsPage = (props: Props) => {
 
     const [advisors, setAdvisors] = useState<Advisor[] | null>(null)
     const [selectedAdvisorForLink, setSelectedAdvisorForLink] = useState<Advisor | null>(null)
+    const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
 
     const { lang } = useTranslationProvider()
 
@@ -58,6 +59,7 @@ const AdvisorsPage = (props: Props) => {
             label: 'Generate application link',
             onClick: (row: Advisor) => {
                 setSelectedAdvisorForLink(row)
+                setIsLinkDialogOpen(true)
             }
         }
     ]
@@ -78,6 +80,13 @@ const AdvisorsPage = (props: Props) => {
         }
         <AdvisorApplicationLinks
             advisor={selectedAdvisorForLink}
+            isOpen={isLinkDialogOpen}
+            setIsOpen={(open) => {
+                setIsLinkDialogOpen(open)
+                if (!open) {
+                    setSelectedAdvisorForLink(null)
+                }
+            }}
         />
     </div>
   )

@@ -134,17 +134,33 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
   const holders = getHolderInfo();
 
   // Utility functions for document upload
+  /**
+   * Convert a File into a pure base-64 string (without the Data URL prefix).
+   * Using `arrayBuffer` avoids any unintended UTF-8 conversions that can
+   * corrupt binary data (e.g. PDFs) when the file is large. The returned
+   * string is safe to send directly to the backend.
+   */
   function getBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
+      reader.readAsArrayBuffer(file);
       reader.onload = () => {
-        const result = reader.result as string;
-        resolve(result.split(',')[1]);
+        try {
+          const buffer = reader.result as ArrayBuffer;
+          const bytes = new Uint8Array(buffer);
+          let binary = "";
+          for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          const base64 = btoa(binary);
+          resolve(base64);
+        } catch (err) {
+          reject(err);
+        }
       };
       reader.onerror = error => reject(error);
     });
-  };
+  }
 
   async function calculateSHA1(file: File): Promise<string> {
     const buffer = await file.arrayBuffer();

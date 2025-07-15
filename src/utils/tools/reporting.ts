@@ -10,6 +10,11 @@ export async function ReadClientsReport() {
   return report
 }
 
+export async function CashReport() {
+  const report = await accessAPI('/reporting/get_cash_report', 'GET')
+  return report
+}
+
 export async function ExtractReports() {
   const report = await accessAPI('/reporting/extract', 'GET')
   return report

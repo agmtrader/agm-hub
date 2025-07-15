@@ -19,9 +19,9 @@ import LoaderButton from '@/components/misc/LoaderButton'
 import { formatTimestamp } from '@/utils/dates'
 import { Check } from "lucide-react"
 import { useSession } from 'next-auth/react'
-import { getApplicationDefaults } from '@/utils/form'
 import { filledForm } from './SampleInfo'
 import ApplicationSuccess from './ApplicationSuccess'
+import { getApplicationDefaults } from '@/utils/form'
 
 enum FormStep {
   ACCOUNT_TYPE = 0,

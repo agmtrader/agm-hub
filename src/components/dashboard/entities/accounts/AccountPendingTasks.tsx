@@ -5,7 +5,7 @@ import LoadingComponent from '@/components/misc/LoadingComponent';
 import { DetailItem } from './AccountPage';
 import { GetForms, GetPendingTasksByAccountID, SubmitAccountDocument } from '@/utils/entities/account';
 import { DocumentSubmissionRequest, PendingTask, PendingTasksResponse } from '@/lib/entities/account';
-import { ClipboardList, PenTool, CheckSquare } from 'lucide-react';
+import { ClipboardList, PenTool, CheckSquare, UploadCloud } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { formatTimestamp } from '@/utils/dates';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -218,6 +218,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
   // Categorize pending tasks
   const tasksToSign = pendingTasks.pendingTasks?.filter(task => task.action === "to sign") || [];
   const tasksToComplete = pendingTasks.pendingTasks?.filter(task => task.action === "to complete") || [];
+  const tasksToSend = pendingTasks.pendingTasks?.filter(task => task.action === "to send") || [];
   const signableTasks = tasksToSign.filter(task => task.onlineTask);
 
   return (
@@ -319,6 +320,37 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
                             </div>
                             <p className="text-xs text-warning font-medium">
                               This form requires additional information to be completed and cannot be auto-signed.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Forms to Send Section */}
+              {tasksToSend.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="text-md font-semibold text-secondary flex items-center gap-2">
+                    <UploadCloud className="h-4 w-4" />
+                    Forms to Send ({tasksToSend.length}):
+                  </h4>
+                  {tasksToSend.map((task: PendingTask, index: number) => (
+                    <Card key={`send-${task.formNumber}-${task.taskNumber}-${index}`} className="p-3 bg-secondary/10 border-secondary/20 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <UploadCloud className="h-5 w-5 text-secondary" />
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold">{task.formName} (Form: {task.formNumber})</p>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs">{task.requiredForApproval ? "Required for Approval" : "Not Required for Approval"}</p>
+                              {task.requiredForTrading && (
+                                <span className="text-xs bg-error/20 text-error px-2 py-0.5 rounded">Required for Trading</span>
+                              )}
+                            </div>
+                            <p className="text-xs text-secondary font-medium">
+                              This form needs to be sent manually. Please follow the instructions provided.
                             </p>
                           </div>
                         </div>

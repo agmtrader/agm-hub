@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { ReadApplicationByID, SendApplicationToIBKR, UpdateApplicationByID } from "@/utils/entities/application";
-import { Application, InternalApplication } from "@/lib/entities/application";
+import { InternalApplication } from "@/lib/entities/application";
 import LoadingComponent from "@/components/misc/LoadingComponent";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,7 @@ import { Mail, User, DollarSign, ShieldCheck, Info, Users, Briefcase, FileText, 
 import { toast } from '@/hooks/use-toast';
 import { Button } from "@/components/ui/button";
 import { CreateAccount } from "@/utils/entities/account";
-import { AccountPayload, InternalAccount } from "@/lib/entities/account";
+import { InternalAccount } from "@/lib/entities/account";
 import { useSession } from "next-auth/react";
 import LoaderButton from "@/components/misc/LoaderButton";
 import DocumentViewer from "./DocumentViewer";
@@ -210,6 +210,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       setIsManualAccountSubmitting(false);
     }
   }
+
+  console.log(application)
 
   // --- Customer Section ---
   const customer = application.application.customer;

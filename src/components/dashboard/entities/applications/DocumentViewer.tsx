@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -36,8 +36,46 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
   // Create data URL from base64
   const dataUrl = `data:${mimeType};base64,${data}`
 
+  /*
+   * For large PDF files some browsers (Safari, Firefox) have trouble rendering
+   * them through a long data URL.  Creating a Blob URL is far more reliable
+   * and avoids any inherent length limitations.  We only create the object
+   * URL for PDFs – images are typically smaller and work fine as data URLs.
+   */
+  const [blobUrl, setBlobUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!document?.payload) {
+      setBlobUrl(null)
+      return
+    }
+
+    if (mimeType === 'application/pdf') {
+      try {
+        // Decode base-64 into binary data and build a Blob
+        const byteCharacters = atob(data)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        const byteArray = new Uint8Array(byteNumbers)
+        const blob = new Blob([byteArray], { type: mimeType })
+        const url = URL.createObjectURL(blob)
+        setBlobUrl(url)
+
+        // Clean up the URL on unmount / change
+        return () => URL.revokeObjectURL(url)
+      } catch {
+        // Fallback to data URL if anything goes wrong
+        setBlobUrl(null)
+      }
+    } else {
+      setBlobUrl(null)
+    }
+  }, [document, mimeType, data])
+
   const handleOpenInNewTab = () => {
-    window.open(dataUrl, '_blank')
+    window.open(blobUrl || dataUrl, '_blank')
   }
 
   const renderDocument = () => {
@@ -52,7 +90,7 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
     } else if (mimeType === 'application/pdf') {
       return (
         <iframe
-          src={dataUrl}
+          src={blobUrl || dataUrl}
           className="w-full h-[70vh] border-0"
           title={documentName}
         />

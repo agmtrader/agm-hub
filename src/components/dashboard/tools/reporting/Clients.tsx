@@ -2,16 +2,16 @@
 
 import { toast } from '@/hooks/use-toast'
 import React, { useEffect, useState } from 'react'
-import { ColumnDefinition, DataTable } from '../../../misc/DataTable'
+import { DataTable } from '../../../misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import DashboardPage from '@/components/misc/DashboardPage'
 import { ReadClientsReport } from '@/utils/tools/reporting'
+import { Account } from '@/lib/entities/account'
 
 const Clients = () => {
-
+  
+    const [accounts, setAccounts] = useState<Account[] | null>(null)
     const [clients, setClients] = useState<any[] | null>(null)
-    const [accounts, setAccounts] = useState<any[] | null>(null)
-    const [nav, setNav] = useState<any[] | null>(null)
 
     useEffect(() => {
       async function fetchData() {
@@ -19,8 +19,8 @@ const Clients = () => {
         
           // Fetch files in resources folder
           let report = await ReadClientsReport()
-          setClients(report['clients'])
           setAccounts(report['accounts'])
+          setClients(report['clients'])
 
         } catch (error:any) {
           toast({
@@ -33,85 +33,7 @@ const Clients = () => {
       fetchData()
     }, [])
 
-    if (!clients || !accounts) return <LoadingComponent />
-
-    const accounts_columns = [
-      {
-        header: 'Timestamp',
-        accessorKey: 'AccountID',
-      },
-      {
-        header: 'Username',
-        accessorKey: 'IBKRUsername',
-      },
-      {
-        header: 'Password',
-        accessorKey: 'IBKRPassword',
-      },
-      {
-        header: 'Account Number',
-        accessorKey: 'AccountNumber',
-      },
-    ] as ColumnDefinition<any>[]
-
-    const clients_columns = [
-      {
-        header: 'Account User',
-        accessorKey: 'Username',
-      },
-      {
-        header: 'Master Account',
-        accessorKey: 'MasterAccount',
-      },
-      {
-        header: 'Account ID',
-        accessorKey: 'Account ID',
-      },
-      {
-        header: 'Account Title',
-        accessorKey: 'Title',
-      },
-      {
-        header: 'Account Holder',
-        accessorKey: 'AccountHolder',
-      },
-      {
-        header: 'Status',
-        accessorKey: 'Status',
-      },
-      {
-        header: 'Date Opened',
-        accessorKey: 'Date Opened',
-      },
-      {
-        header: 'NAV',
-        accessorKey: 'NAV',
-      },
-      {
-        header: 'Account Type',
-        accessorKey: 'Account Type',
-      },
-      {
-        header: 'Phone Number',
-        accessorKey: 'Phone Number',
-      },
-      {
-        header: 'SLS Devices',
-        accessorKey: 'SLS Devices',
-      },
-      {
-        header: 'Advisor Name',
-        accessorKey: 'Advisor',
-      },
-      {
-        header: 'Advisor GForm',
-        accessorKey: 'AdvisorGForm',
-      },
-      {
-        header: 'Trading Type',
-        accessorKey: 'Trading Type',
-      },
-    ] as ColumnDefinition<any>[]
+    if (!accounts || !clients) return <LoadingComponent />
 
   return (
     <DashboardPage
@@ -127,18 +49,15 @@ const Clients = () => {
             data={accounts}
             enablePagination
             pageSize={5}
-            columns={accounts_columns}
           />
         </div>
-      </div>
-      <div className='w-full h-full gap-5'>
-        <DataTable 
-          data={clients}
-          enablePagination
-          pageSize={5}
-          enableFiltering
-          columns={clients_columns}
-        />
+        <div className='w-1/2'>
+          <DataTable 
+            data={clients}
+            enablePagination
+            pageSize={5}
+          />
+        </div>
       </div>
     </DashboardPage>
   )
