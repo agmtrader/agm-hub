@@ -1,66 +1,77 @@
-'use client'
-
-import { toast } from '@/hooks/use-toast'
 import React, { useEffect, useState } from 'react'
+import { ColumnDefinition } from '../../../misc/DataTable'
+import { toast } from '@/hooks/use-toast'
 import { DataTable } from '../../../misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-import DashboardPage from '@/components/misc/DashboardPage'
 import { ReadClientsReport } from '@/utils/tools/reporting'
-import { Account } from '@/lib/entities/account'
 
 const Clients = () => {
-  
-    const [accounts, setAccounts] = useState<Account[] | null>(null)
-    const [clients, setClients] = useState<any[] | null>(null)
 
-    useEffect(() => {
-      async function fetchData() {
-        try {
-        
-          // Fetch files in resources folder
-          let report = await ReadClientsReport()
-          setAccounts(report['accounts'])
-          setClients(report['clients'])
+  const [data, setData] = useState<any[] | null>(null)
 
-        } catch (error:any) {
-          toast({
-            title: 'Error fetching clients',
-            description: error.message,
-            variant: 'destructive',
-          })
-        }
+  const columns = [
+    {
+      header: 'Account User',
+      accessorKey: 'Username',
+    },
+    {
+      header: 'Master Account',
+      accessorKey: 'master_account_id',
+    },
+    {
+      header: 'Account ID',
+      accessorKey: 'Account ID',
+    },
+    {
+      header: 'Account Title',
+      accessorKey: 'Title',
+    },
+    {
+      header: 'Alias (Standard to type into IBKR)',
+      accessorKey: 'account_alias',
+      cell: ({ row }: { row: any }) => {
+        return <div className='text-sm text-gray-500'>{row.original['Account ID']} + {row.original.Title}</div>
       }
-      fetchData()
-    }, [])
+    },
+    {
+      header: 'Status',
+      accessorKey: 'Status',
+    },
+    {
+      header: 'Current Alias',
+      accessorKey: 'Alias',
+    },
+    
+  ] as ColumnDefinition<any>[]
 
-    if (!accounts || !clients) return <LoadingComponent />
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        let report = await ReadClientsReport()
+        setData(report['consolidated'])
+      } catch (error:any) {
+        toast({
+          title: 'Error fetching clients',
+          description: error.message,
+          variant: 'destructive',
+        })
+      }
+    }
+    fetchData()
+  }, [])
 
-  return (
-    <DashboardPage
-      title='Clients Report'
-      description='View and manage clients and their accounts.'
-    >
-    <div className='w-full h-full flex flex-col gap-5'>
-        <div className='w-1/2'>
+  if (!data) return <LoadingComponent className='h-full w-full'/>
 
-        </div>
-        <div className='w-1/2'>
-          <DataTable 
-            data={accounts}
-            enablePagination
-            pageSize={5}
-          />
-        </div>
-        <div className='w-1/2'>
-          <DataTable 
-            data={clients}
-            enablePagination
-            pageSize={5}
-          />
-        </div>
-      </div>
-    </DashboardPage>
-  )
+return (
+  <div className='w-full h-full flex flex-col gap-5'>
+    <DataTable 
+        data={data}
+        enablePagination
+        infiniteScroll
+        pageSize={5}
+      />
+  </div>
+)
 }
 
 export default Clients

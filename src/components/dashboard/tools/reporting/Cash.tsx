@@ -8,6 +8,7 @@ import { CashReport } from '@/utils/tools/reporting'
 
 const Cash = () => {
     const [report, setReport] = useState<any[] | null>(null)
+    console.log(report)
 
     useEffect(() => {
       async function fetchData() {
@@ -27,6 +28,37 @@ const Cash = () => {
       fetchData()
     }, [])
 
+    const columns = [
+      {
+        header: 'Account ID',
+        accessorKey: 'ClientAccountID',
+      },
+      {
+        header: 'Title',
+        accessorKey: 'AccountAlias',
+      },
+      {
+        header: 'Cash',
+        accessorKey: 'Cash',
+      },
+      {
+        header: 'Cash %',
+        accessorKey: 'CashPercentage',
+      },
+      {
+        header: 'NAV',
+        accessorKey: 'NAV',
+      },
+      {
+        header: '5% Cash',
+        accessorKey: 'FivePercentCash',
+      },
+      {
+        header: 'Report Date',
+        accessorKey: 'ReportDate',
+      }
+    ]
+
     if (!report) return <LoadingComponent />
 
   return (
@@ -43,6 +75,7 @@ const Cash = () => {
             data={report}
             enablePagination
             pageSize={5}
+            columns={columns}
           />
         </div>
       </div>

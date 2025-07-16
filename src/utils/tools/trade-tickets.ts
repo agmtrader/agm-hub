@@ -1,6 +1,6 @@
 import { Trade, TradeTicket, TradeTicketResponse } from "@/lib/tools/trade-ticket"
 import { accessAPI } from "../api"
-import { sendEmail } from "./email"
+import { sendTradeTicketEmail } from "./email"
 
 export async function ListTradeTickets() {
     const availableTradeTickets:TradeTicket[] = await accessAPI('/trade_tickets/list', 'POST', {})
@@ -53,5 +53,5 @@ export async function GenerateTradeTicket(trades: Trade[], selectedTrades: Trade
 
 export async function SendToClient(clientMessage: string, email: string) {
     if (!clientMessage) return;
-    await sendEmail(email, 'Confirmación de Transacción', clientMessage, 'trade_ticket')
+    await sendTradeTicketEmail(clientMessage, email)
 }

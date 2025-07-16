@@ -1008,11 +1008,13 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.name.first` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First Name</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>First Name</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1021,11 +1023,13 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.name.last` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Last Name</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>Last Name</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1036,11 +1040,13 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`${basePath}.email` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Email</FormLabel>
+            <div className='flex flex-row gap-2 items-center'>
+              <FormLabel>Email</FormLabel>
+              <FormMessage />
+            </div>
             <FormControl>
               <Input type="email" placeholder="" {...field} />
             </FormControl>
-            <FormMessage />
           </FormItem>
         )}
       />
@@ -1052,7 +1058,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.dateOfBirth` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date of Birth</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>Date of Birth</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <DateTimePicker
                   value={field.value ? new Date(field.value) : undefined}
@@ -1062,7 +1071,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   granularity="day"
                 />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1082,7 +1090,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.maritalStatus` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Marital Status</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>Marital Status</FormLabel>
+                <FormMessage />
+              </div>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -1097,7 +1108,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1106,7 +1116,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.numDependents` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Number of Dependents</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>Number of Dependents</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <Input 
                   placeholder="" 
@@ -1114,7 +1127,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseInt(e.target.value))}
                 />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1130,7 +1142,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.phones.0.type` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone Type</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>Phone Type</FormLabel>
+                <FormMessage />
+              </div>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -1145,7 +1160,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1161,11 +1175,13 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.phones.0.number` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone Number</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>Phone Number</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1207,11 +1223,13 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={idNumberField}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>ID Number</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>ID Number</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1222,7 +1240,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.identification.expirationDate` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Expiration Date</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>Expiration Date</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <DateTimePicker
                   value={field.value ? new Date(field.value) : undefined}
@@ -1232,7 +1253,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   granularity="day"
                 />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1269,11 +1289,13 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.taxResidencies.0.tin` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tax Identification Number (TIN)</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>Tax Identification Number (TIN)</FormLabel>
+                <FormMessage />
+              </div>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1282,7 +1304,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.taxResidencies.0.tinType` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>TIN Type</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>TIN Type</FormLabel>
+                <FormMessage />
+              </div>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -1295,7 +1320,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   <SelectItem value="NonUS_NationalId">Non-US National ID</SelectItem>
                 </SelectContent>
               </Select>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1307,7 +1331,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`${basePath}.employmentType` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Employment Type</FormLabel>
+            <div className='flex flex-row gap-2 items-center'>
+              <FormLabel>Employment Type</FormLabel>
+              <FormMessage />
+            </div>
             <FormDescription>
               <strong>Important:</strong> If you select "Employed", you must include "Income" as one of your sources of wealth in the Financial Information section.
             </FormDescription>
@@ -1325,7 +1352,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                 ))}
               </SelectContent>
             </Select>
-            <FormMessage />
           </FormItem>
         )}
       />
@@ -1392,12 +1418,14 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={"customer.prefix" as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>Username</FormLabel>
+                <FormMessage />
+              </div>
               <FormDescription>Your desired username (3–6 characters).</FormDescription>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1424,7 +1452,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               name="customer.jointHolders.type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Joint Account Type</FormLabel>
+                  <div className='flex flex-row gap-2 items-center'>
+                    <FormLabel>Joint Account Type</FormLabel>
+                    <FormMessage />
+                  </div>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -1439,7 +1470,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                       <SelectItem value="au_joint_account">AU Joint Account</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
                 </FormItem>
               )}
             />

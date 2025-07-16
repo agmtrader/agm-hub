@@ -1,9 +1,9 @@
-import GenerateReportsPage from '@/components/dashboard/tools/reporting/GenerateReportsPage'
+import ReportingCenter from '@/components/dashboard/tools/reporting/ReportingCenter'
 import React from 'react'
 
 const page = () => {
   return (
-    <GenerateReportsPage />
+    <ReportingCenter />
   )
 }
 

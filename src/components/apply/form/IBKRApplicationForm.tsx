@@ -39,10 +39,13 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: process.env.NODE_ENV === 'development' ? filledForm : getApplicationDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });
+
+  // Watch for changes in the selected account type so we can enable / disable the "Next" button
+  const selectedAccountType = form.watch('customer.type');
 
   const handleNextStep = async () => { 
     setCurrentStep(prevStep => prevStep + 1);
@@ -177,6 +180,7 @@ const IBKRApplicationForm = () => {
                     type="button" 
                     onClick={handleNextStep}
                     className="bg-primary text-background hover:bg-primary/90"
+                    disabled={!selectedAccountType}
                   >
                     Next
                   </Button>

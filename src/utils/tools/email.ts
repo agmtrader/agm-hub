@@ -1,11 +1,34 @@
 import { accessAPI } from "../api";
 
-export async function sendEmail(email: string, subject: string, content: any, email_template: string) {
-  const response = await accessAPI('/email/send_email', 'POST', {
+
+export async function sendAccountAccessEmail(content: any, email: string) {
+  const response = await accessAPI('/email/send_email/account_access', 'POST', {
     client_email: email,
-    subject: subject,
     content: content,
-    email_template: email_template,
+  })
+  return response
+}
+
+export async function sendTradeTicketEmail(content: any, email: string) {
+  const response = await accessAPI('/email/send_email/trade_ticket', 'POST', {
+    client_email: email,
+    content: content,
+  })
+  return response
+}
+
+export async function sendEmailChangeEmail(client_email: string, advisor_email: string) {
+  const response = await accessAPI('/email/send_email/email_change', 'POST', {
+    client_email: client_email,
+    advisor_email: advisor_email,
+  })
+  return response
+}
+
+export async function sendTwoFactorReminderEmail(content: any, email: string) {
+  const response = await accessAPI('/email/send_email/two_factor_reminder', 'POST', {
+    client_email: email,
+    content: content,
   })
   return response
 }

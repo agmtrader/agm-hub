@@ -3,20 +3,19 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import DashboardPage from '@/components/misc/DashboardPage'
-import ClientFees from './ClientFees'
-import { Separator } from '@/components/ui/separator'
+import Clients from './Clients'
 import { Report } from '@/lib/tools/report'
 import { Recycle } from 'lucide-react'
 import Link from 'next/link'
+import PendingAliases from './PendingAliases'
+import { Tabs, TabsTrigger, TabsList, TabsContent } from '@/components/ui/tabs'
 
-const Page = () => {
+const ReportingCenter = () => {
 
   const reports: Report[] = [
-    { id: 1, name: 'Clients', report: <ClientFees /> }
+    { id: 1, name: 'Clients', report: <Clients /> },
+    { id: 2, name: 'Pending Aliases', report: <PendingAliases /> }
   ]
-
-  const [selectedReport, setSelectedReport] = useState<Report | null>(reports[0])
-
   return (
     <DashboardPage title='Reporting Center' description='Download, transform and backup daily reports.'>
       <Button asChild className='w-fit'>
@@ -25,25 +24,20 @@ const Page = () => {
           Generate Reports
         </Link>
       </Button>
-      <div className='flex flex-col gap-2 w-fit'>
+      <Tabs defaultValue={reports[0].id.toString()} className='w-full'>
+        <TabsList>
+          {reports.map((report:Report) => (
+            <TabsTrigger key={report.id} value={report.id.toString()}>{report.name}</TabsTrigger>
+          ))}
+        </TabsList>
         {reports.map((report:Report) => (
-          <Button 
-            variant={selectedReport?.id === report.id ? 'primary' : 'ghost'}
-            onClick={() => setSelectedReport(report)} 
-            key={report.id} 
-            className='w-fit whitespace-nowrap'
-          >
-            {report.name}
-          </Button>
+          <TabsContent key={report.id} value={report.id.toString()}>
+            {report.report}
+          </TabsContent>
         ))}
-      </div>
-      <Card className='w-full h-full'>
-        <CardContent className='flex flex-col gap-2 p-4 w-full h-full'>
-          {selectedReport && selectedReport.report}
-        </CardContent>
-      </Card>
+      </Tabs>
     </DashboardPage>
   )
 }
 
-export default Page
+export default ReportingCenter
