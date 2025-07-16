@@ -49,8 +49,16 @@ const AccountsPage = () => {
 
     async function fetchData () {
 
+      try {
         const accounts = await ReadAccounts()
         setAccounts(accounts)
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch accounts",
+          variant: "destructive"
+        })
+      }
     }
 
     fetchData()

@@ -19,9 +19,10 @@ import LoaderButton from '@/components/misc/LoaderButton'
 import { formatTimestamp } from '@/utils/dates'
 import { Check } from "lucide-react"
 import { useSession } from 'next-auth/react'
-import { filledForm } from './SampleInfo'
+import { individual_form, joint_form, organizational_form } from './SampleInfo'
 import ApplicationSuccess from './ApplicationSuccess'
 import { getApplicationDefaults } from '@/utils/form'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -36,19 +37,43 @@ const IBKRApplicationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
   const searchParams = useSearchParams();
+  const { t } = useTranslationProvider();
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: process.env.NODE_ENV === 'development' ? filledForm : getApplicationDefaults(application_schema),
+    defaultValues: getApplicationDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });
 
-  // Watch for changes in the selected account type so we can enable / disable the "Next" button
-  const selectedAccountType = form.watch('customer.type');
+  // Helper to validate the required fields for the current step before moving on
+  const validateCurrentStep = async () => {
+    // Account Type step: make sure an account type is selected
+    if (currentStep === FormStep.ACCOUNT_TYPE) {
+      return await form.trigger('customer.type');
+    }
 
-  const handleNextStep = async () => { 
-    setCurrentStep(prevStep => prevStep + 1);
+    // Account Holder Information step: validate the full form (all currently registered fields)
+    if (currentStep === FormStep.ACCOUNT_HOLDER_INFO) {
+      return await form.trigger();
+    }
+
+    // No extra validation required for other steps here
+    return true;
+  };
+
+  const handleNextStep = async () => {
+    const isValid = await validateCurrentStep();
+
+    if (isValid) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      toast({
+        title: 'Form Errors',
+        description: 'Please correct the highlighted errors before continuing.',
+        variant: 'destructive'
+      });
+    }
   };
 
   const handlePreviousStep = () => {
@@ -119,10 +144,10 @@ const IBKRApplicationForm = () => {
 
   const renderProgress = () => {
     const steps = [
-      { name: 'Account Type', step: FormStep.ACCOUNT_TYPE },
-      { name: 'Account Holder Information', step: FormStep.ACCOUNT_HOLDER_INFO },
-      { name: 'Documents', step: FormStep.DOCUMENTS },
-      { name: 'Complete', step: FormStep.SUCCESS }
+      { name: t('apply.account.header.steps.account_type'), step: FormStep.ACCOUNT_TYPE },
+      { name: t('apply.account.header.steps.account_holder_info'), step: FormStep.ACCOUNT_HOLDER_INFO },
+      { name: t('apply.account.header.steps.documents'), step: FormStep.DOCUMENTS },
+      { name: t('apply.account.header.steps.complete'), step: FormStep.SUCCESS }
     ];
 
     console.log(form.formState.errors);
@@ -165,8 +190,8 @@ const IBKRApplicationForm = () => {
   return (
     <div className="flex flex-col justify-center items-center my-20 gap-5 p-5">
       <div className="text-center">
-        <h1 className="text-3xl font-bold ">IBKR Account Application Form</h1>
-        <p className="text-lg">Please fill out the form below to apply for an IBKR account.</p>
+        <h1 className="text-3xl font-bold ">{t('apply.account.header.title')}</h1>
+        <p className="text-lg">{t('apply.account.header.description')}</p>
       </div>
       {renderProgress()}
       <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl">
@@ -180,7 +205,6 @@ const IBKRApplicationForm = () => {
                     type="button" 
                     onClick={handleNextStep}
                     className="bg-primary text-background hover:bg-primary/90"
-                    disabled={!selectedAccountType}
                   >
                     Next
                   </Button>

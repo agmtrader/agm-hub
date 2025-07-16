@@ -1,0 +1,20 @@
+{
+    "accountId": "U13330168",
+    "status": "N",
+    "description": "New Account",
+    "state": "Under Review with IBKR",
+    "pendingTasks": [
+        {
+            "taskNumber": 0,
+            "formNumber": 2109,
+            "formName": "Legal Acknowledgement",
+            "action": "to complete",
+            "state": "To Be Completed",
+            "entityId": 0,
+            "onlineTask": true,
+            "requiredForApproval": true,
+            "requiredForTrading": false
+        }
+    ],
+    "pendingTaskPresent": true
+}

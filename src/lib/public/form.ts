@@ -219,31 +219,31 @@ export const salutations = [
 ] as const
 
 export const marital_status = (t: (key: string) => string) => [
-    { label: t('apply.account.about_you.marital_status_list.single'), value: "S" },
-    { label: t('apply.account.about_you.marital_status_list.married'), value: "M" },
-    { label: t('apply.account.about_you.marital_status_list.divorced'), value: "D" },
-    { label: t('apply.account.about_you.marital_status_list.widowed'), value: "W" },
+    { label: t('apply.account.account_holder_info.single'), value: "S" },
+    { label: t('apply.account.account_holder_info.married'), value: "M" },
+    { label: t('apply.account.account_holder_info.divorced'), value: "D" },
+    { label: t('apply.account.account_holder_info.widowed'), value: "W" },
 ] as const
 
 export const phone_types = (t: (key: string) => string) => [
-  { label: t('apply.account.about_you.phone_types.mobile'), value: "Mobile" },
-  { label: t('apply.account.about_you.phone_types.home'), value: "Home" },
+  { label: t('apply.account.account_holder_info.mobile'), value: "Mobile" },
+  { label: t('apply.account.account_holder_info.home'), value: "Home" },
 ] as const
 
 export const id_type = (t: (key: string) => string) => [
-    { label: t('apply.account.about_you.id_type_list.passport'), value: "Passport" },
-    { label: t('apply.account.about_you.id_type_list.national_id'), value: "National ID Card" },
-    { label: t('apply.account.about_you.id_type_list.license'), value: "Driver License" },
+    { label: t('apply.account.account_holder_info.passport'), value: "Passport" },
+    { label: t('apply.account.account_holder_info.national_id'), value: "National ID Card" },
+    { label: t('apply.account.account_holder_info.license'), value: "Driver License" },
 ] as const
 
 export const employment_status = (t: (key: string) => string) => [
-    { label: t('apply.account.about_you.employment_status_list.employed'), value: "Employed" },
-    { label: t('apply.account.about_you.employment_status_list.retired'), value: "Retired" },
-    { label: t('apply.account.about_you.employment_status_list.self_employed'), value: "Self-employed" },
-    { label: t('apply.account.about_you.employment_status_list.trader'), value: "Trader" },
-    { label: t('apply.account.about_you.employment_status_list.student'), value: "Student" },
-    { label: t('apply.account.about_you.employment_status_list.homemaker'), value: "Homemaker" },
-    { label: t('apply.account.about_you.employment_status_list.unemployed'), value: "Unemployed" },
+    { label: t('apply.account.account_holder_info.employed'), value: "Employed" },
+    { label: t('apply.account.account_holder_info.retired'), value: "Retired" },
+    { label: t('apply.account.account_holder_info.self_employed'), value: "Self-employed" },
+    { label: t('apply.account.account_holder_info.trader'), value: "Trader" },
+    { label: t('apply.account.account_holder_info.student'), value: "Student" },
+    { label: t('apply.account.account_holder_info.homemaker'), value: "Homemaker" },
+    { label: t('apply.account.account_holder_info.unemployed'), value: "Unemployed" },
 ] as const
 
 export const currencies = [

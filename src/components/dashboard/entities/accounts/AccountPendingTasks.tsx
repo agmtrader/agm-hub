@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import { DetailItem } from './AccountPage';
-import { GetForms, GetPendingTasksByAccountID, SubmitAccountDocument } from '@/utils/entities/account';
+import { GetForms, GetPendingTasksByAccountID, SubmitAccountDocument, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
 import { DocumentSubmissionRequest, PendingTask, PendingTasksResponse } from '@/lib/entities/account';
 import { ClipboardList, PenTool, CheckSquare, UploadCloud } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -21,6 +21,9 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAutoSigning, setIsAutoSigning] = useState(false);
   const [pendingTasks, setPendingTasks] = useState<PendingTasksResponse | null>(null);
+
+  // Holder names (for joint accounts we expect multiple names)
+  const [holderNames, setHolderNames] = useState<string[]>([]);
 
   console.log(pendingTasks)
 
@@ -42,6 +45,29 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
     fetchData();
   }, [accountId]);
 
+  // Fetch account holder names (to handle joint accounts)
+  useEffect(() => {
+    const fetchHolderNames = async () => {
+      try {
+        const details: any = await ReadAccountDetailsByAccountID(accountId);
+        if (details && details.associatedPersons && Array.isArray(details.associatedPersons)) {
+          // Extract unique full names of associated persons (first + last)
+          const names: string[] = details.associatedPersons
+            .map((p: any) => `${p.firstName} ${p.lastName}`.trim())
+            .filter((name: string, idx: number, arr: string[]) => name && arr.indexOf(name) === idx);
+          setHolderNames(names);
+        } else {
+          setHolderNames([]);
+        }
+      } catch (error) {
+        console.warn('Failed to fetch account holder names:', error);
+        setHolderNames([]);
+      }
+    };
+
+    fetchHolderNames();
+  }, [accountId]);
+
   async function handleSignTask(task: PendingTask) {
     setIsSubmitting(true);
     try {
@@ -61,7 +87,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
       const documentSubmission: DocumentSubmissionRequest = {
         documents: [
           {
-            signedBy: [`${accountTitle}`],
+            signedBy: holderNames.length > 0 ? holderNames : [`${accountTitle}`],
             attachedFile: {
               fileName: form.fileName,
               fileLength: form.fileLength,
@@ -136,7 +162,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
             const fileData = forms.fileData;
             
             documents.push({
-              signedBy: [accountTitle],
+              signedBy: holderNames.length > 0 ? holderNames : [accountTitle],
               attachedFile: {
                 fileName: form.fileName,
                 fileLength: form.fileLength,

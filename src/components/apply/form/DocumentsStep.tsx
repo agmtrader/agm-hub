@@ -547,6 +547,92 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     );
   };
 
+  const renderJointW8Section = () => {
+    // For joint accounts, show a single W8 upload for the account (holderId: 'joint')
+    const firstHolder = holders.find(h => h.id === 'first');
+    if (!firstHolder) return null;
+    const isUploaded = isDocumentUploaded(5001, 'joint');
+    return (
+      <div className="mb-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Users className="h-5 w-5" />
+          <p className="text-lg font-medium text-foreground">
+            Upload W8 Form for Joint Account - {firstHolder.fullName}
+          </p>
+        </div>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+            <div className="flex items-center gap-3">
+              {isUploaded ? (
+                <CheckCircle className="h-4 w-4 text-success" />
+              ) : (
+                <Clock className="h-4 w-4 text-warning" />
+              )}
+              <div>
+                <p className="font-medium">W8 Form</p>
+                <p className="text-sm text-subtitle">Form 5001</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {isUploaded ? (
+                <div className="flex items-center gap-2">
+                  <Badge variant="success">Uploaded</Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => handleRemoveDocument(5001, 'joint')}
+                    title="Remove document"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
+                <DocumentUploader
+                  documentType="POI"
+                  handleSubmit={(docType, formValues, files) => {
+                    // Use POI uploader for W8, but set formNumber to 5001 and holderId to 'joint'
+                    if (!files || files.length === 0) return;
+                    const file = files[0];
+                    (async () => {
+                      const base64Data = await getBase64(file);
+                      const sha1Checksum = await calculateSHA1(file);
+                      const ibkrTimestamp = getIBKRTimestamp();
+                      const signerName = getSignerName('first');
+                      const newDoc = {
+                        signedBy: [signerName],
+                        attachedFile: {
+                          fileName: file.name,
+                          fileLength: file.size,
+                          sha1Checksum: sha1Checksum,
+                        },
+                        formNumber: 5001,
+                        execLoginTimestamp: ibkrTimestamp,
+                        execTimestamp: ibkrTimestamp,
+                        holderId: 'joint',
+                        payload: {
+                          mimeType: file.type,
+                          data: base64Data,
+                        },
+                      };
+                      const currentDocs = actualForm?.getValues('documents') || [];
+                      actualForm?.setValue('documents', [...currentDocs, newDoc], { shouldValidate: true, shouldDirty: true });
+                      toast({
+                        title: 'Success',
+                        description: 'W8 Form uploaded successfully for Joint Account',
+                        variant: 'success',
+                      });
+                    })();
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </div>
+    );
+  };
+
   const getApplicationTypeDescription = () => {
     if (isOrganizationApplication) {
       return "Please upload the required documents for the organization and each associated individual.";
@@ -582,7 +668,12 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isJointApplication || isOrganizationApplication ? (
+          {isJointApplication ? (
+            <div className="space-y-4">
+              {renderJointW8Section()}
+              {holders.map(holder => renderDocumentSection(holder))}
+            </div>
+          ) : isOrganizationApplication ? (
             <div className="space-y-4">
               {holders.map(holder => renderDocumentSection(holder))}
             </div>

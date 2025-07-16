@@ -13,12 +13,14 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Card } from '@/components/ui/card'
 import { Application } from '@/lib/entities/application'
 import { getDefaultRegulatoryInformation, getDefaultW8Ben } from '@/utils/form'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface AccountTypeStepProps {
   form: UseFormReturn<Application>
 }
 
 const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
+  const { t } = useTranslationProvider();
   const handleAccountTypeChange = (value: string) => {
     const defaultRegulatoryInformation = getDefaultRegulatoryInformation()
     const defaultW8Ben = getDefaultW8Ben()
@@ -98,10 +100,10 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
                       </FormControl>
                       <div> 
                         <FormLabel className="text-lg font-medium text-foreground cursor-pointer">
-                          Individual Account
+                          {t('apply.account.account_type.individual')}
                         </FormLabel>
                         <p className="text-sm text-subtitle">
-                          An account owned and controlled by a single person
+                          {t('apply.account.account_type.individual_description')}
                         </p>
                       </div>
                   </FormItem>
@@ -114,10 +116,10 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
                       </FormControl>
                       <div> 
                         <FormLabel className="text-lg font-medium text-foreground cursor-pointer">
-                          Joint Account
+                          {t('apply.account.account_type.joint')}
                         </FormLabel>
                         <p className="text-sm text-subtitle">
-                          An account owned by two or more people
+                          {t('apply.account.account_type.joint_description')}
                         </p>
                       </div>
                   </FormItem>
@@ -132,10 +134,10 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
                     </FormControl>
                     <div> 
                       <FormLabel className="text-lg font-medium text-foreground cursor-pointer">
-                        Organization Account
+                        {t('apply.account.account_type.institutional')}
                       </FormLabel>
                       <p className="text-sm text-subtitle">
-                        An account for businesses and organizations
+                        {t('apply.account.account_type.institutional_description')}
                       </p>
                     </div>
                   </FormItem>

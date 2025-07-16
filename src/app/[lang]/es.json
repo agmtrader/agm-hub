@@ -7,8 +7,6 @@
         "downloads": "Descargas"
     },
     "protected": {
-        "lockedOut": "Bloqueado",
-        "lockedOutMessage": "Inicia sesión para acceder a las funciones del cliente AGM.",
         "noPermissions": "Sin permisos",
         "noPermissionsMessage": "No tienes autorización para acceder a esta página",
         "goBack": "Volver al inicio"
@@ -290,128 +288,161 @@
         "account": {
             "title": {
                 "ready": "¿Listo para ganar dinero?",
-                "description": "Desbloquea el mundo de oportunidades financieras con tu cuenta AGM.",
-                "get_started": "¿No sabes cómo empezar? Revisa los requisitos",
+                "description": "Desbloquea un mundo de oportunidades financieras con tu cuenta AGM.",
+                "get_started": "¿No sabes cómo empezar? Consulta los requisitos",
                 "get_started_link": "aquí",
                 "startApplication": "Iniciar Solicitud",
                 "previous_applications": {
                     "title": "Solicitudes Anteriores",
                     "button": "Ver solicitudes anteriores",
-                    "date": "Fecha de inicio",
+                    "date": "Fecha de Inicio",
                     "status": "Estado",
                     "resume": "Reanudar"
                 }
             },
-            "about_you": {
-                "title": "Sobre Ti",
-                "primary": "Titular Principal",
-                "secondary": "Titular Secundario",
-
-                "basic_info": "Información Básica",
-                "login_info": "Información de Inicio de Sesión",
-                "residential_info": "Información Residencial",
-                "personal_info": "Información Personal",
-                "id_info": "Información de Identificación",
-                "employer_info": "Información del Empleador",
-                "financial_info": "Información Financiera",
-                "security_questions": "Preguntas de Seguridad",
-                
-                "salutation": "Tratamiento",
+            "header": {
+                "title": "Formulario de Solicitud IBKR",
+                "description": "Completa el siguiente formulario para solicitar una cuenta con AGM.",
+                "account_type": "Tipo de Cuenta",
+                "steps": {
+                    "account_type": "Tipo de Cuenta",
+                    "account_holder_info": "Información del Titular de la Cuenta",
+                    "documents": "Documentos",
+                    "complete": "Completo"
+                }
+            },
+            "account_type": {
+                "individual": "Cuenta Individual",
+                "individual_description": "Una cuenta propiedad y controlada por una sola persona",
+                "joint": "Cuenta Mancomunada",
+                "joint_description": "Una cuenta propiedad y controlada por dos o más personas",
+                "institutional": "Cuenta Institucional",
+                "institutional_description": "Una cuenta propiedad y controlada por una empresa u organización"
+            },
+            "account_holder_info": {
+                "account_holder_information": "Información del Titular de la Cuenta",
+                "primary_contact_credentials": "Credenciales del Contacto Principal",
+                "username": "Nombre de Usuario",
+                "username_description": "Tu nombre de usuario deseado (3–6 caracteres).",
+                "legal_residence_country": "País de Residencia Legal",
+                "account_holder_info": "Información del Titular de la Cuenta",
                 "first_name": "Nombre",
-                "middle_name": "Segundo Nombre",
-                "last_name": "Apellidos",
-
-                "address": "Dirección",
+                "last_name": "Apellido",
+                "email": "Correo Electrónico",
+                "date_of_birth": "Fecha de Nacimiento",
+                "country_of_birth": "País de Nacimiento",
+                "marital_status": "Estado Civil",
+                "single": "Soltero",
+                "married": "Casado",
+                "divorced": "Divorciado",
+                "widowed": "Viudo",
+                "mobile": "Celular",
+                "home": "Casa",
+                "num_dependents": "Número de Dependientes",
+                "street_address_1": "Dirección (Línea 1)",
+                "street_address_2": "Dirección (Línea 2)",
                 "city": "Ciudad",
-                "state": "Estado/Provincia",
+                "state": "Estado",
                 "zip": "Código Postal",
+                "country": "País",
                 "phone_type": "Tipo de Teléfono",
-                "phone_types": {
-                    "mobile": "Móvil",
-                    "home": "Casa"
-                },
                 "phone_country": "País del Teléfono",
                 "phone_number": "Número de Teléfono",
-                "citizenship": "Ciudadanía",
-                "country_of_birth": "País de Nacimiento",
-                
-                "date_of_birth": "Fecha de Nacimiento",
-                "marital_status": "Estado Civil",
-                "marital_status_list": {
-                    "single": "Soltero/a",
-                    "married": "Casado/a",
-                    "divorced": "Divorciado/a",
-                    "widowed": "Viudo/a"
-                },
-                "select_marital_status": "Selecciona un estado",
-                "number_of_dependents": "Número de Dependientes",
-                "country_of_residence": "País de Residencia",
-                "tax_id": "Identificación Fiscal",
-                
-                "id_country": "País de Identificación",
                 "id_type": "Tipo de Identificación",
-                "id_type_list": {
-                    "passport": "Pasaporte",
-                    "national_id": "DNI",
-                    "license": "Licencia",
-                    "alien": "Tarjeta de Residencia"
-                },
-                "select_id_type": "Selecciona tipo de identificación",
                 "id_number": "Número de Identificación",
-                "id_expiration": "Fecha de Vencimiento",
-                
-                "employment_status": "Situación Laboral",
-                "employment_status_list": {
-                    "employed": "Empleado",
-                    "retired": "Jubilado",
-                    "self_employed": "Autónomo",
-                    "trader": "Comerciante",
-                    "student": "Estudiante",
-                    "homemaker": "Ama/o de Casa",
-                    "unemployed": "Desempleado"
-                },
-                "select_employment_status": "Selecciona una situación",
-                "employer_name": "Nombre del Empleador",
-                "employer_address": "Dirección del Empleador",
-                "employer_city": "Ciudad del Empleador",
-                "employer_state": "Estado/Provincia del Empleador",
-                "employer_country": "País del Empleador",
-                "employer_zip": "Código Postal del Empleador",
-                "nature_of_business": "Naturaleza del Negocio",
+                "expiration_date": "Fecha de Expiración",
+                "issuing_country": "País Emisor",
+                "citizenship": "Ciudadanía",
+                "tax_residence_country": "País de Residencia Fiscal",
+                "tax_identification_number": "Número de Identificación Fiscal (NIF)",
+                "tin_type": "Tipo de NIF",
+                "employment_type": "Tipo de Empleo",
+                "employer": "Empleador",
                 "occupation": "Ocupación",
-                
-                "source_of_wealth": "Origen de los Fondos",
-                "currency": "Moneda",
-                "select_currency": "Selecciona una moneda",
-                
-                "security_question_1": "Pregunta de Seguridad 1",
-                "security_answer_1": "Respuesta de Seguridad 1",
-                "security_question_2": "Pregunta de Seguridad 2",
-                "security_answer_2": "Respuesta de Seguridad 2",
-                "security_question_3": "Pregunta de Seguridad 3",
-                "security_answer_3": "Respuesta de Seguridad 3",
-                "select_security_question": "Selecciona una pregunta de seguridad",
-                
-                "email": "Correo Electrónico",
-                "username": "Nombre de Usuario",
-                "password": "Contraseña",
-
-                "fill_fake_data": "Rellenar con datos falsos"
+                "employer_business": "Actividad del Empleador",
+                "employer_address": "Dirección del Empleador",
+                "financial_information": "Información Financiera",
+                "net_worth": "Patrimonio Neto",
+                "liquid_net_worth": "Patrimonio Neto Líquido",
+                "annual_net_income": "Ingresos Netos Anuales",
+                "investment_objectives": "Objetivos de Inversión",
+                "investment_objectives_description": "Selecciona todos los que apliquen a esta cuenta",
+                "investment_experience": "Experiencia en Inversiones",
+                "source_of_wealth": "Fuente de Riqueza",
+                "source_type": "Tipo de Fuente",
+                "percentage": "Porcentaje",
+                "add_source": "Agregar Fuente",
+                "asset_class": "Clase de Activo",
+                "years_trading": "Años Operando",
+                "trades_per_year": "Operaciones / Año",
+                "knowledge_level": "Nivel de Conocimiento",
+                "add_experience": "Agregar Experiencia",
+                "account_setup": "Configuración de la Cuenta",
+                "base_currency": "Moneda Base",
+                "account_type": "Tipo de Cuenta",
+                "trading_permissions": "Permisos de Operación",
+                "trading_permissions_description": "Especifica en qué mercados y productos deseas permiso para operar",
+                "primary_trading_market": "Mercado Principal de Operación",
+                "product_types": "Tipos de Productos",
+                "organization_information": "Información de la Organización",
+                "organization_name": "Nombre de la Organización",
+                "business_description": "Descripción del Negocio",
+                "organization_type": "Tipo de Organización",
+                "organization_identification_number": "Número de Identificación de la Organización",
+                "owners_reside_in_us": "¿Los propietarios residen en EE. UU.?",
+                "place_of_business_address": "Dirección del Lugar de Negocio",
+                "contact_information": "Información de Contacto (Teléfono Principal)",
+                "residence_address": "Dirección de Residencia",
+                "employment_details": "Detalles de Empleo",
+                "tax_residencies": "Residencias Fiscales",
+                "identification": "Identificación",
+                "important": "Importante",
+                "contact_information_primary_phone": "Información de Contacto (Teléfono Principal)",
+                "employment_type_description": "Si seleccionas 'Empleado', debes incluir 'Ingresos' como una de tus fuentes de riqueza en la sección de Información Financiera.",
+                "second_account_holder": "Segundo Titular de la Cuenta",
+                "first_account_holder": "Primer Titular de la Cuenta",
+                "joint_account_type": "Tipo de Cuenta Mancomunada",
+                "community_property": "Propiedad Comunal",
+                "joint_tenants_with_rights_of_survivorship": "Mancomunados con Derechos de Sobrevivencia",
+                "tenants_in_common": "Mancomunados en Común",
+                "tenants_by_the_entirety": "Mancomunados en Totalidad",
+                "au_joint_account": "Cuenta Mancomunada en Australia",
+                "yes": "Sí",
+                "no": "No",
+                "united_states": "Estados Unidos",
+                "germany": "Alemania",
+                "japan": "Japón",
+                "united_kingdom": "Reino Unido",
+                "australia": "Australia",
+                "canada": "Canadá",
+                "cash_account": "Cuenta de Efectivo",
+                "margin_account": "Cuenta de Margen",
+                "usd": "USD",
+                "eur": "EUR",
+                "gbp": "GBP",
+                "cad": "CAD",
+                "aud": "AUD",
+                "ssn": "SSN",
+                "ein": "EIN",
+                "non_us_national_id": "ID Nacional No Estadounidense",
+                "passport": "Pasaporte",
+                "national_id": "Cédula de Identidad",
+                "license": "Licencia de Conducir"
             },
             "regulatory": {
                 "title": "Información Regulatoria",
-                "annual_net_income": "Ingreso Neto Anual",
-                "liquid_net_worth": "Patrimonio Líquido Neto",
+                "annual_net_income": "Ingresos Netos Anuales",
+                "liquid_net_worth": "Patrimonio Neto Líquido",
                 "net_worth": "Patrimonio Neto",
                 "investment_objectives": "Objetivos de Inversión",
                 "investment_objectives_list": {
                     "growth": "Crecimiento",
-                    "trading": "Trading",
+                    "trading": "Operar",
                     "income": "Ingresos",
                     "hedging": "Cobertura"
                 },
-                "products_to_trade": "Productos para Operar",
-                "amount_to_invest": "Cantidad a Invertir",
+                "products_to_trade": "Productos a Operar",
+                "amount_to_invest": "Monto a Invertir",
                 "source_of_wealth": {
                     "income": "Ingresos",
                     "inheritance": "Herencia",
@@ -423,38 +454,12 @@
                 },
                 "products": {
                     "bonds": "Bonos",
+                    "mutual_funds": "ETFs",
                     "stocks": "Acciones",
-                    "futures": "Futuros",
                     "options": "Opciones",
-                    "etfs": "ETFs"
+                    "futures": "Futuros"
                 }
             },
-            "application_end": {
-                "title": "¡Solicitud Enviada con Éxito!",
-                "description": "Gracias por elegir nuestros servicios. Revisaremos tu solicitud y te contactaremos pronto.",
-                "apply_another": "Solicitar otra cuenta",
-                "go_back_home": "Volver a la página principal"
-            },
-            "general_info": {
-                "title": "Información General",
-                "email": "Correo Electrónico",
-                "email_placeholder": "Ingresa tu correo electrónico",
-                "country": "País de Residencia",
-                "account_type": "Tipo de Cuenta",
-                "account_types": {
-                    "individual": "Cuenta Individual",
-                    "joint": "Cuenta Conjunta",
-                
-                    "institutional": "Cuenta Institucional"
-                },
-                "referrer": "¿Quién te refirió?",
-                "disclaimer": {
-                    "title": "AVISO LEGAL",
-                    "content": "Si deseas abrir una Cuenta Individual, te aconsejamos que por motivos de herencia e impuestos, es mejor abrir una Cuenta Conjunta. Una Cuenta Individual no permite la opción de nombrar Beneficiarios al momento de la apertura o posteriormente y puede estar sujeta a impuestos sucesorios. Por favor, considera la opción de abrir una cuenta conjunta en lugar de una cuenta individual.",
-                    "contact": "Si tienes alguna pregunta antes de aplicar, contáctanos en:"
-                }
-            },
-
             "organization": {
                 "title": "Información de la Organización",
                 "basic_info": "Información Básica",
@@ -471,16 +476,17 @@
 
                 "purpose_list": {
                     "title": "Propósito",
-                    "operating_business": "Un negocio operativo formado para ofrecer bienes o servicios a clientes que no fue formado con el propósito de comerciar o mantener activos financieros. Por favor, selecciona esta opción solo para negocios reales, como fabricantes, restaurantes, compañías petroleras, etc.",
-                    "family_investment": "Un vehículo de inversión personal o familiar beneficiosamente propiedad de una sola persona o de un grupo de familiares cercanos que crearon la organización con el propósito de realizar inversiones financieras para el propietario y/o sus familiares cercanos.",
-                    "proprietary_trading": "Una empresa de trading propietario de participación cerrada (o corporación o vehículo similar) creada con el propósito de operar con el capital propio de la empresa. Esto incluye cualquier corporación o LLC donde los miembros aportan su propio capital al LLC y las ganancias pertenecen a la empresa.",
-                    "financial_institution": "Una institución financiera (banco, corredor de bolsa, etc.) que operará por cuenta propia."
+                    "operating_business": "Un negocio operativo formado para ofrecer bienes o servicios a clientes que no fue creado con el propósito de operar o mantener activos financieros. Selecciona esta opción solo para negocios reales, como fabricantes, restaurantes, compañías petroleras, etc.",
+                    "family_investment": "Un vehículo de inversión personal o familiar propiedad de una sola persona o de un grupo de familiares cercanos que crearon la organización con el propósito de realizar inversiones financieras para el propietario y/o su familia cercana.",
+                    "proprietary_trading": "Una empresa de trading propietario de capital cerrado (o corporación o vehículo similar) creada con el propósito de operar el capital propio de la empresa. Esto incluye cualquier corporación o LLC donde los miembros aportan su propio capital y las ganancias pertenecen a la empresa.",
+                    "financial_institution": "Una institución financiera (banco, broker-dealer, etc.) que operará por cuenta propia."
                 },
                 "proprietary_assets": {
                     "title": "Activos Propietarios",
                     "error": "Se requiere la verificación de activos propietarios."
                 },
-                "third_party": "Administrador Tercero",
+
+                "third_party": "¿El vehículo de inversión personal o familiar tiene un administrador profesional externo o proveedor de servicios corporativos?",
 
                 "phone_type": "Tipo de Teléfono",
                 "phone_country": "País del Teléfono",
@@ -492,9 +498,9 @@
                 "zip": "Código Postal",
 
                 "tax_country": "País Fiscal",
-                "tax_id": "Identificación Fiscal",
+                "tax_id": "ID Fiscal",
 
-                "source_of_wealth": "Origen de los Fondos",
+                "source_of_wealth": "Fuente de Riqueza",
                 "currency": "Moneda"
             },
             "authorized_person": {
@@ -506,14 +512,15 @@
                 "employer_info": "Información del Empleador",
                 "security_questions": "Preguntas de Seguridad",
                 
-                "salutation": "Tratamiento",
+                "salutation": "Saludo",
                 "first_name": "Nombre",
                 "middle_name": "Segundo Nombre",
-                "last_name": "Apellidos",
+                "last_name": "Apellido",
                 "suffix": "Sufijo",
                 "date_of_birth": "Fecha de Nacimiento",
                 "position": "Cargo",
-                "third_party": "¿El vehículo de inversión personal o familiar tiene un administrador profesional tercero o proveedor de servicios corporativos?",
+                
+                "third_party": "¿El vehículo de inversión personal o familiar tiene un administrador profesional externo o proveedor de servicios corporativos?",
                 
                 "email": "Correo Electrónico",
                 "phone_type": "Tipo de Teléfono",
@@ -528,14 +535,14 @@
                 
                 "tax_info": "Información Fiscal",
                 "tax_country": "País Fiscal",
-                "tax_id": "Identificación Fiscal",
+                "tax_id": "ID Fiscal",
                 
-                "id_country": "País de Identificación",
+                "id_country": "País de la Identificación",
                 "id_type": "Tipo de Identificación",
                 "id_number": "Número de Identificación",
-                "id_expiration": "Fecha de Vencimiento",
+                "id_expiration": "Expiración de la Identificación",
                 
-                "employment_status": "Situación Laboral",
+                "employment_status": "Estado Laboral",
                 "employer_name": "Nombre del Empleador",
                 "employer_address": "Dirección del Empleador",
                 "employer_city": "Ciudad del Empleador",

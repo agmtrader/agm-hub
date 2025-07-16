@@ -6,7 +6,7 @@ import LoadingComponent from '@/components/misc/LoadingComponent';
 import { DetailItem } from './AccountPage';
 import { GetRegistrationTasksByAccountID } from '@/utils/entities/account';
 import { RegistrationTask, RegistrationTasksResponse } from '@/lib/entities/account';
-import { ListChecks } from 'lucide-react';
+import { ListChecks, PenTool, CheckSquare, UploadCloud, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface Props {
@@ -16,6 +16,14 @@ interface Props {
 export function AccountRegistrationTasks({ accountId }: Props) {
   const [registrationTasksData, setRegistrationTasksData] = useState<RegistrationTasksResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Categorize tasks for prettier UI similar to pending tasks component
+  const registrationTasks: RegistrationTask[] = registrationTasksData?.registrationTasks || [];
+  const completedTasks = registrationTasks.filter(task => task.isCompleted);
+  const tasksToSign = registrationTasks.filter(task => !task.isCompleted && task.action === "to sign");
+  const tasksToComplete = registrationTasks.filter(task => !task.isCompleted && task.action === "to complete");
+  const tasksToSend = registrationTasks.filter(task => !task.isCompleted && task.action === "to send");
+  const hasTasks = registrationTasksData?.registrationTaskPresent && registrationTasks.length > 0;
 
   useEffect(() => {
     const fetchRegistrationTasks = async () => {
@@ -53,22 +61,109 @@ export function AccountRegistrationTasks({ accountId }: Props) {
             <DetailItem label="Overall Status" value={registrationTasksData?.description ?? "-"} />
             <DetailItem label="Current State" value={registrationTasksData?.state ?? "-"} />
             <DetailItem label="Tasks Present" value={registrationTasksData?.registrationTaskPresent ? "Yes" : "No"} />
-            {registrationTasksData?.registrationTaskPresent && registrationTasksData.registrationTasks?.length > 0 && (
-              <div className="space-y-3 pt-3">
-                <h4 className="text-md font-semibold text-muted-foreground">Individual Registration Tasks:</h4>
-                {registrationTasksData.registrationTasks.map((task: RegistrationTask, idx: number) => (
-                  <Card key={idx} className="p-3 bg-muted/20 border shadow-sm flex items-center gap-3">
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold mb-1.5">{task.formName} (Form: {task.formName}, Task: {task.isCompleted ? "Completed" : "Not Completed"})</p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                        <DetailItem label="Action Required" value={task.action} />
-                        <DetailItem label="Current Task State" value={task.state} />
-                        <p className="text-xs">{task.isRequiredForApproval ? "Required for Approval" : "Not Required for Approval"}</p>
-                        {task.dateCompleted && <DetailItem label="Date Completed" value={new Date(task.dateCompleted).toLocaleDateString()} />}
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+
+            {hasTasks && (
+              <div className="space-y-6 pt-3">
+
+                {/* Tasks to Sign */}
+                {tasksToSign.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-md font-semibold text-primary flex items-center gap-2">
+                      <PenTool className="h-4 w-4" />
+                      Tasks to Sign ({tasksToSign.length}):
+                    </h4>
+                    {tasksToSign.map((task, idx) => (
+                      <Card key={`sign-${idx}`} className="p-3 bg-primary/10 border-primary/20 shadow-sm">
+                        <div className="flex items-center gap-3">
+                          <PenTool className="h-5 w-5 text-primary" />
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold">{task.formName}</p>
+                            <div className="flex flex-col gap-1 text-xs">
+                              <p>Action: {task.action}</p>
+                              <p>{task.isRequiredForApproval ? "Required for Approval" : "Not Required for Approval"}</p>
+                              <p>State: {task.state}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+
+                {/* Tasks to Complete */}
+                {tasksToComplete.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-md font-semibold text-warning flex items-center gap-2">
+                      <CheckSquare className="h-4 w-4" />
+                      Tasks to Complete ({tasksToComplete.length}):
+                    </h4>
+                    {tasksToComplete.map((task, idx) => (
+                      <Card key={`complete-${idx}`} className="p-3 bg-warning/10 border-warning/20 shadow-sm">
+                        <div className="flex items-center gap-3">
+                          <CheckSquare className="h-5 w-5 text-warning" />
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold">{task.formName}</p>
+                            <div className="flex flex-col gap-1 text-xs">
+                              <p>Action: {task.action}</p>
+                              <p>{task.isRequiredForApproval ? "Required for Approval" : "Not Required for Approval"}</p>
+                              <p>State: {task.state}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+
+                {/* Tasks to Send */}
+                {tasksToSend.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-md font-semibold text-secondary flex items-center gap-2">
+                      <UploadCloud className="h-4 w-4" />
+                      Tasks to Send ({tasksToSend.length}):
+                    </h4>
+                    {tasksToSend.map((task, idx) => (
+                      <Card key={`send-${idx}`} className="p-3 bg-secondary/10 border-secondary/20 shadow-sm">
+                        <div className="flex items-center gap-3">
+                          <UploadCloud className="h-5 w-5 text-secondary" />
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold">{task.formName}</p>
+                            <div className="flex flex-col gap-1 text-xs">
+                              <p>Action: {task.action}</p>
+                              <p>{task.isRequiredForApproval ? "Required for Approval" : "Not Required for Approval"}</p>
+                              <p>State: {task.state}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+
+                {/* Completed Tasks */}
+                {completedTasks.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-md font-semibold text-success flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4" />
+                      Completed Tasks ({completedTasks.length}):
+                    </h4>
+                    {completedTasks.map((task, idx) => (
+                      <Card key={`completed-${idx}`} className="p-3 bg-success/10 border-success/20 shadow-sm">
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-success" />
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold">{task.formName}</p>
+                            <div className="flex flex-col gap-1 text-xs">
+                              {task.dateCompleted && (
+                                <p>Date Completed: {new Date(task.dateCompleted).toLocaleDateString()}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -80,6 +80,11 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       if (!secondHolderExternalId) {
         form.setValue("customer.jointHolders.secondHolderDetails.0.externalId", externalIdRef.current);
       }
+    } else if (accountType === 'ORG') {
+      const orgIndividualExternalId = form.getValues("customer.organization.associatedEntities.associatedIndividuals.0.externalId");
+      if (!orgIndividualExternalId) {
+        form.setValue("customer.organization.associatedEntities.associatedIndividuals.0.externalId", externalIdRef.current);
+      }
     }
 
     // Generate account external ID
@@ -115,17 +120,21 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         newDocs.push(createW8FormDocument(holderName, 'primary'));
       }
     } else if (accountType === 'JOINT') {
+      // Only one W8 form for the account, use both holders' names in signedBy and 'joint' as holderId
       const firstHolder = form.getValues('customer.jointHolders.firstHolderDetails.0');
       const secondHolder = form.getValues('customer.jointHolders.secondHolderDetails.0');
-      
+      const signedBy = [];
       if (firstHolder?.name?.first && firstHolder?.name?.last) {
-        const holderName = `${firstHolder.name.first} ${firstHolder.name.last}`;
-        newDocs.push(createW8FormDocument(holderName, 'first'));
+        signedBy.push(`${firstHolder.name.first} ${firstHolder.name.last}`);
       }
-      
       if (secondHolder?.name?.first && secondHolder?.name?.last) {
-        const holderName = `${secondHolder.name.first} ${secondHolder.name.last}`;
-        newDocs.push(createW8FormDocument(holderName, 'second'));
+        signedBy.push(`${secondHolder.name.first} ${secondHolder.name.last}`);
+      }
+      if (signedBy.length > 0) {
+        // Pass both names to createW8FormDocument, but override signedBy after creation
+        const w8Doc = createW8FormDocument(signedBy[0], 'joint');
+        w8Doc.signedBy = signedBy;
+        newDocs.push(w8Doc);
       }
     } else if (accountType === 'ORG') {
       const associatedIndividual = form.getValues('customer.organization.associatedEntities.associatedIndividuals.0');
@@ -363,7 +372,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`${basePath}.street1` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Street Address 1</FormLabel>
+            <FormLabel>{t('apply.account.account_holder_info.street_address_1')}</FormLabel>
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
@@ -376,7 +385,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`${basePath}.street2` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Street Address 2 (Optional)</FormLabel>
+            <FormLabel>{t('apply.account.account_holder_info.street_address_2')}</FormLabel>
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
@@ -390,7 +399,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.city` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>City</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.city')}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -403,7 +412,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.state` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>State/Province/Region</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.state')}</FormLabel>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -418,7 +427,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.postalCode` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Postal Code</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.zip')}</FormLabel>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -430,7 +439,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           form={form}
           element={{
             name: `${basePath}.country`,
-            title: "Country"
+            title: t('apply.account.account_holder_info.country')
           }}
         />
       </div>
@@ -441,7 +450,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   const renderFinancialInformation = (basePath: string) => (
     <Card className="p-6 space-y-6">
       <CardHeader>
-        <CardTitle>Financial Information</CardTitle>
+        <CardTitle>{t('apply.account.account_holder_info.financial_information')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
       
@@ -452,7 +461,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.0.netWorth` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Net Worth (USD)</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.net_worth')}</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="" 
@@ -469,7 +478,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.0.liquidNetWorth` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Liquid Net Worth (USD)</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.liquid_net_worth')}</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="" 
@@ -486,7 +495,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.0.annualNetIncome` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Annual Net Income (USD)</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.annual_net_income')}</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="" 
@@ -506,7 +515,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`${basePath}.0.investmentObjectives` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Investment Objectives</FormLabel>
+            <FormLabel>{t('apply.account.account_holder_info.investment_objectives')}</FormLabel>
             <div className="flex flex-wrap gap-2">
               {((field.value as string[]) || []).map((obj) => {
                 const label = investmentObjectivesOptions.find((o) => o.id === obj)?.label || obj;
@@ -517,7 +526,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                 );
               })}
               {!(field.value && field.value.length) && (
-                <span className="text-subtitle text-sm">(Selections are made in Account Setup)</span>
+                <span className="text-subtitle text-sm">{t('apply.account.account_holder_info.investment_objectives_description')}</span>
               )}
             </div>
           </FormItem>
@@ -525,11 +534,11 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       />
 
       {/* Investment Experience */}
-      <h4 className="text-lg font-semibold">Investment Experience</h4>
+      <h4 className="text-lg font-semibold">{t('apply.account.account_holder_info.investment_experience')}</h4>
       <InvestmentExperienceFields basePath={basePath} />
 
       {/* Source of Wealth */}
-      <h4 className="text-lg font-semibold">Source of Wealth</h4>
+      <h4 className="text-lg font-semibold">{t('apply.account.account_holder_info.source_of_wealth')}</h4>
       <SourcesOfWealthFields basePath={basePath} />
       </CardContent>
     </Card>
@@ -554,7 +563,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                 <FormItem className="col-span-3">
                   {index === 0 && (
                     <>
-                      <FormLabel>Source Type</FormLabel>
+                      <FormLabel>{t('apply.account.account_holder_info.source_type')}</FormLabel>
                       <FormDescription>
                         If employment type is "Employed", include "Income" as one of your sources.
                       </FormDescription>
@@ -563,7 +572,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select source" />
+                        <SelectValue placeholder="" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -584,7 +593,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               name={`${basePath}.0.sourcesOfWealth.${index}.percentage` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>Percentage (%)</FormLabel>}
+                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.percentage')}</FormLabel>}
                   <FormControl>
                     <Input
                       placeholder=""
@@ -617,7 +626,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           size="sm"
           onClick={() => append({ sourceType: "", percentage: 0 })}
         >
-          <Plus className="h-4 w-4 mr-2" /> Add Source
+          <Plus className="h-4 w-4 mr-2" /> {t('apply.account.account_holder_info.add_source')}
         </Button>
       </div>
     );
@@ -641,11 +650,11 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               name={`${basePath}.0.investmentExperience.${index}.assetClass` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>Asset Class</FormLabel>}
+                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.asset_class')}</FormLabel>}
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select class" />
+                        <SelectValue placeholder="" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -664,7 +673,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               name={`${basePath}.0.investmentExperience.${index}.yearsTrading` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>Years Trading</FormLabel>}
+                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.years_trading')}</FormLabel>}
                   <FormControl>
                     <Input
                       placeholder=""
@@ -684,7 +693,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               name={`${basePath}.0.investmentExperience.${index}.tradesPerYear` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>Trades / Year</FormLabel>}
+                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.trades_per_year')}</FormLabel>}
                   <FormControl>
                     <Input
                       placeholder=""
@@ -704,11 +713,11 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               name={`${basePath}.0.investmentExperience.${index}.knowledgeLevel` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>Knowledge Level</FormLabel>}
+                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.knowledge_level')}</FormLabel>}
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select level" />
+                        <SelectValue placeholder="" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -740,7 +749,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           size="sm"
           onClick={() => append({ assetClass: "", yearsTrading: 0, tradesPerYear: 0, knowledgeLevel: "" })}
         >
-          <Plus className="h-4 w-4 mr-2" /> Add Experience
+          <Plus className="h-4 w-4 mr-2" /> {t('apply.account.account_holder_info.add_experience')}
         </Button>
       </div>
     );
@@ -750,7 +759,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   const renderAccountInformation = () => (
     <Card className="p-6 space-y-6">
       <CardHeader>
-        <CardTitle>Account Setup</CardTitle>
+        <CardTitle>{t('apply.account.account_holder_info.account_setup')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
       
@@ -760,19 +769,19 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name="accounts.0.baseCurrency"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Base Currency</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.base_currency')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select base currency" />
+                    <SelectValue placeholder="" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="USD">USD - US Dollar</SelectItem>
-                  <SelectItem value="EUR">EUR - Euro</SelectItem>
-                  <SelectItem value="GBP">GBP - British Pound</SelectItem>
-                  <SelectItem value="CAD">CAD - Canadian Dollar</SelectItem>
-                  <SelectItem value="AUD">AUD - Australian Dollar</SelectItem>
+                  <SelectItem value="USD">{t('apply.account.account_holder_info.usd')}</SelectItem>
+                  <SelectItem value="EUR">{t('apply.account.account_holder_info.eur')}</SelectItem>
+                  <SelectItem value="GBP">{t('apply.account.account_holder_info.gbp')}</SelectItem>
+                  <SelectItem value="CAD">{t('apply.account.account_holder_info.cad')}</SelectItem>
+                  <SelectItem value="AUD">{t('apply.account.account_holder_info.aud')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -785,16 +794,16 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name="accounts.0.margin"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Account Type</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.account_type')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select account type" />
+                    <SelectValue placeholder="" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Cash">Cash Account</SelectItem>
-                  <SelectItem value="Margin">Margin Account</SelectItem>
+                  <SelectItem value="Cash">{t('apply.account.account_holder_info.cash_account')}</SelectItem>
+                  <SelectItem value="Margin">{t('apply.account.account_holder_info.margin_account')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -808,8 +817,8 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name="accounts.0.investmentObjectives"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Investment Objectives</FormLabel>
-            <FormDescription>Select all that apply to this account</FormDescription>
+            <FormLabel>{t('apply.account.account_holder_info.investment_objectives')}</FormLabel>
+            <FormDescription>{t('apply.account.account_holder_info.investment_objectives_description')}</FormDescription>
             <div className="flex flex-col space-y-2">
               {investmentObjectivesOptions.map((option) => {
                 const checked = (field.value || []).includes(option.id);
@@ -838,9 +847,9 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       />
 
       {/* Trading Permissions */}
-      <h4 className="text-lg font-semibold">Trading Permissions</h4>
+      <h4 className="text-lg font-semibold">{t('apply.account.account_holder_info.trading_permissions')}</h4>
       <p className="text-subtitle text-sm mb-4">
-        Specify which markets and products you want permission to trade
+        {t('apply.account.account_holder_info.trading_permissions_description')}
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField
@@ -848,20 +857,20 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name="accounts.0.tradingPermissions.0.country"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Primary Trading Market</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.primary_trading_market')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select market" />
+                    <SelectValue placeholder="" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="UNITED STATES">United States</SelectItem>
-                  <SelectItem value="CANADA">Canada</SelectItem>
-                  <SelectItem value="UNITED KINGDOM">United Kingdom</SelectItem>
-                  <SelectItem value="GERMANY">Germany</SelectItem>
-                  <SelectItem value="JAPAN">Japan</SelectItem>
-                  <SelectItem value="AUSTRALIA">Australia</SelectItem>
+                  <SelectItem value="UNITED STATES">{t('apply.account.account_holder_info.united_states')}</SelectItem>
+                  <SelectItem value="CANADA">{t('apply.account.account_holder_info.canada')}</SelectItem>
+                  <SelectItem value="UNITED KINGDOM">{t('apply.account.account_holder_info.united_kingdom')}</SelectItem>
+                  <SelectItem value="GERMANY">{t('apply.account.account_holder_info.germany')}</SelectItem>
+                  <SelectItem value="JAPAN">{t('apply.account.account_holder_info.japan')}</SelectItem>
+                  <SelectItem value="AUSTRALIA">{t('apply.account.account_holder_info.australia')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -874,11 +883,11 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name="accounts.0.tradingPermissions.0.product"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Types</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.product_types')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select products" />
+                    <SelectValue placeholder="" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -902,7 +911,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   const renderOrganizationFields = () => (
     <Card className="p-6 space-y-6">
       <CardHeader>
-        <CardTitle>Organization Information</CardTitle>
+        <CardTitle>{t('apply.account.account_holder_info.organization_information')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
       <FormField
@@ -910,7 +919,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`customer.organization.identifications.0.name` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Organization Name</FormLabel>
+            <FormLabel>{t('apply.account.account_holder_info.organization_name')}</FormLabel>
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
@@ -923,22 +932,9 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`customer.organization.identifications.0.businessDescription` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Business Description</FormLabel>
+            <FormLabel>{t('apply.account.account_holder_info.business_description')}</FormLabel>
             <FormControl>
-              <Textarea placeholder="Describe your business activities and operations" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name={`customer.organization.accountSupport.type` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Organization Type</FormLabel>
-            <FormControl>
-              <Input placeholder="LLC, CORPORATION" {...field} />
+              <Textarea placeholder="" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -949,7 +945,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`customer.organization.identifications.0.identification` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Organization Identification Number</FormLabel>
+            <FormLabel>{t('apply.account.account_holder_info.organization_identification_number')}</FormLabel>
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
@@ -962,23 +958,23 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`customer.organization.accountSupport.ownersResideUS` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Owners Reside in US?</FormLabel>
-            <Select onValueChange={(val)=>field.onChange(val==='true')} defaultValue={field.value?.toString() ?? 'false'}>
+            <FormLabel>{t('apply.account.account_holder_info.owners_reside_in_us')}</FormLabel>
+            <Select onValueChange={(val)=>field.onChange(val==='true')} defaultValue={field.value?.toString() ?? null}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select" />
+                  <SelectValue placeholder="" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="true">Yes</SelectItem>
-                <SelectItem value="false">No</SelectItem>
+                <SelectItem value="true">{t('apply.account.account_holder_info.yes')}</SelectItem>
+                <SelectItem value="false">{t('apply.account.account_holder_info.no')}</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
           </FormItem>
         )}
       />
-      <h4 className="text-lg font-semibold pt-4">Place of Business Address</h4>
+      <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.place_of_business_address')}</h4>
       {renderAddressFields('customer.organization.identifications.0.placeOfBusinessAddress')}
       </CardContent>
     </Card>
@@ -1009,7 +1005,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.first_name')}</FormLabel>
                 <FormMessage />
               </div>
               <FormControl>
@@ -1024,7 +1020,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.last_name')}</FormLabel>
                 <FormMessage />
               </div>
               <FormControl>
@@ -1041,7 +1037,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         render={({ field }) => (
           <FormItem>
             <div className='flex flex-row gap-2 items-center'>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.email')}</FormLabel>
               <FormMessage />
             </div>
             <FormControl>
@@ -1059,7 +1055,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>Date of Birth</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.date_of_birth')}</FormLabel>
                 <FormMessage />
               </div>
               <FormControl>
@@ -1078,7 +1074,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           form={form}
           element={{
             name: `${basePath}.countryOfBirth`,
-            title: "Country of Birth"
+            title: t('apply.account.account_holder_info.country_of_birth')
           }}
         />
       </div>
@@ -1091,13 +1087,13 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>Marital Status</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.marital_status')}</FormLabel>
                 <FormMessage />
               </div>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select marital status" />
+                    <SelectValue placeholder="" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -1117,7 +1113,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>Number of Dependents</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.num_dependents')}</FormLabel>
                 <FormMessage />
               </div>
               <FormControl>
@@ -1132,10 +1128,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         />
       </div>
 
-      <h4 className="text-lg font-semibold pt-4">Residence Address</h4>
+      <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.residence_address')}</h4>
       {renderAddressFields(`${basePath}.residenceAddress`)}
 
-      <h4 className="text-lg font-semibold pt-4">Contact Information (Primary Phone)</h4>
+      <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.contact_information')}</h4>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <FormField
           control={form.control}
@@ -1143,7 +1139,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>Phone Type</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.phone_type')}</FormLabel>
                 <FormMessage />
               </div>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -1167,7 +1163,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           form={form}
           element={{
             name: `${basePath}.phones.0.country`,
-            title: "Phone Country Code"
+            title: t('apply.account.account_holder_info.phone_country')
           }}
         />
         <FormField
@@ -1176,7 +1172,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>Phone Number</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.phone_number')}</FormLabel>
                 <FormMessage />
               </div>
               <FormControl>
@@ -1187,7 +1183,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         />
       </div>
 
-      <h4 className="text-lg font-semibold pt-4">Identification</h4>
+      <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.identification')}</h4>
 
       {/* ID Type Selection */}
       <FormField
@@ -1195,11 +1191,11 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`${basePath}.identificationType` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>ID Type</FormLabel>
+            <FormLabel>{t('apply.account.account_holder_info.id_type')}</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select ID type" />
+                  <SelectValue placeholder="" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -1224,7 +1220,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>ID Number</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.id_number')}</FormLabel>
                 <FormMessage />
               </div>
               <FormControl>
@@ -1241,7 +1237,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>Expiration Date</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.expiration_date')}</FormLabel>
                 <FormMessage />
               </div>
               <FormControl>
@@ -1263,25 +1259,25 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           form={form}
           element={{
             name: `${basePath}.identification.issuingCountry`,
-            title: "Issuing Country"
+            title: t('apply.account.account_holder_info.issuing_country')
           }}
         />
         <CountriesFormField
           form={form}
           element={{
             name: `${basePath}.identification.citizenship`,
-            title: "Citizenship"
+            title: t('apply.account.account_holder_info.citizenship')
           }}
         />
       </div>
 
-      <h4 className="text-lg font-semibold pt-4">Tax Residencies</h4>
+      <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.tax_residencies')}</h4>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <CountriesFormField
           form={form}
           element={{
             name: `${basePath}.taxResidencies.0.country`,
-            title: "Tax Residence Country"
+            title: t('apply.account.account_holder_info.tax_residence_country')
           }}
         />
         <FormField
@@ -1290,7 +1286,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>Tax Identification Number (TIN)</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.tax_identification_number')}</FormLabel>
                 <FormMessage />
               </div>
               <FormControl>
@@ -1305,19 +1301,19 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>TIN Type</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.tin_type')}</FormLabel>
                 <FormMessage />
               </div>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select TIN type" />
+                    <SelectValue placeholder="" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="SSN">SSN</SelectItem>
-                  <SelectItem value="EIN">EIN</SelectItem>
-                  <SelectItem value="NonUS_NationalId">Non-US National ID</SelectItem>
+                  <SelectItem value="SSN">{t('apply.account.account_holder_info.ssn')}</SelectItem>
+                  <SelectItem value="EIN">{t('apply.account.account_holder_info.ein')}</SelectItem>
+                  <SelectItem value="NonUS_NationalId">{t('apply.account.account_holder_info.non_us_national_id')}</SelectItem>
                 </SelectContent>
               </Select>
             </FormItem>
@@ -1325,23 +1321,23 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         />
       </div>
 
-      <h4 className="text-lg font-semibold pt-4">Employment Details</h4>
+      <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.employment_details')}</h4>
       <FormField
         control={form.control}
         name={`${basePath}.employmentType` as any}
         render={({ field }) => (
           <FormItem>
             <div className='flex flex-row gap-2 items-center'>
-              <FormLabel>Employment Type</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.employment_type')}</FormLabel>
               <FormMessage />
             </div>
             <FormDescription>
-              <strong>Important:</strong> If you select "Employed", you must include "Income" as one of your sources of wealth in the Financial Information section.
+              <strong>{t('apply.account.account_holder_info.important')}</strong> {t('apply.account.account_holder_info.employment_type_description')}
             </FormDescription>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select employment type" />
+                  <SelectValue placeholder="" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -1361,9 +1357,9 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.employmentDetails.employer` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Employer</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.employer')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter employer name" {...field} />
+                <Input placeholder="" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -1374,9 +1370,9 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           name={`${basePath}.employmentDetails.occupation` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Occupation</FormLabel>
+              <FormLabel>{t('apply.account.account_holder_info.occupation')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter occupation" {...field} />
+                <Input placeholder="" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -1388,16 +1384,16 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         name={`${basePath}.employmentDetails.employerBusiness` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Employer Business</FormLabel>
+            <FormLabel>{t('apply.account.account_holder_info.employer_business')}</FormLabel>
             <FormControl>
-              <Input placeholder="Enter employer business" {...field} />
+              <Input placeholder="" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
 
-      <h5 className="text-md font-semibold pt-4">Employer Address</h5>
+      <h5 className="text-md font-semibold pt-4">{t('apply.account.account_holder_info.employer_address')}</h5>
       {renderAddressFields(`${basePath}.employmentDetails.employerAddress`)}
       </CardContent>
     </Card>
@@ -1410,7 +1406,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       {/* NEW: Primary applicant contact credentials */}
       <Card className="p-6 space-y-6">
         <CardHeader>
-          <CardTitle>Primary Contact Credentials</CardTitle>
+          <CardTitle>{t('apply.account.account_holder_info.primary_contact_credentials')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
         <FormField
@@ -1419,10 +1415,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           render={({ field }) => (
             <FormItem>
               <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>{t('apply.account.account_holder_info.username')}</FormLabel>
                 <FormMessage />
               </div>
-              <FormDescription>Your desired username (3–6 characters).</FormDescription>
+              <FormDescription>{t('apply.account.account_holder_info.username_description')}</FormDescription>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -1433,7 +1429,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           form={form}
           element={{
             name: "customer.legalResidenceCountry",
-            title: "Legal Residence Country"
+            title: t('apply.account.account_holder_info.legal_residence_country')
           }}
         />
         </CardContent>
@@ -1444,7 +1440,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           {/* Joint Account Type Selection */}
           <Card className="p-6">
             <CardHeader>
-              <CardTitle>Joint Account Type</CardTitle>
+              <CardTitle>{t('apply.account.account_holder_info.joint_account_type')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
             <FormField
@@ -1453,21 +1449,21 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className='flex flex-row gap-2 items-center'>
-                    <FormLabel>Joint Account Type</FormLabel>
+                    <FormLabel>{t('apply.account.account_holder_info.joint_account_type')}</FormLabel>
                     <FormMessage />
                   </div>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select joint account type" />
+                        <SelectValue placeholder="" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="community">Community Property</SelectItem>
-                      <SelectItem value="joint_tenants">Joint Tenants with Rights of Survivorship</SelectItem>
-                      <SelectItem value="tenants_common">Tenants in Common</SelectItem>
-                      <SelectItem value="tbe">Tenants by the Entirety</SelectItem>
-                      <SelectItem value="au_joint_account">AU Joint Account</SelectItem>
+                      <SelectItem value="community">{t('apply.account.account_holder_info.community_property')}</SelectItem>
+                      <SelectItem value="joint_tenants">{t('apply.account.account_holder_info.joint_tenants_with_rights_of_survivorship')}</SelectItem>
+                      <SelectItem value="tenants_common">{t('apply.account.account_holder_info.tenants_in_common')}</SelectItem>
+                      <SelectItem value="tbe">{t('apply.account.account_holder_info.tenants_by_the_entirety')}</SelectItem>
+                      <SelectItem value="au_joint_account">{t('apply.account.account_holder_info.au_joint_account')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormItem>
@@ -1477,10 +1473,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           </Card>
 
           {/* First Holder */}
-          {renderAccountHolderFields("customer.jointHolders.firstHolderDetails.0", "First Account Holder")}
+          {renderAccountHolderFields("customer.jointHolders.firstHolderDetails.0", t('apply.account.account_holder_info.first_account_holder'))}
           
           {/* Second Holder */}
-          {renderAccountHolderFields("customer.jointHolders.secondHolderDetails.0", "Second Account Holder")}
+          {renderAccountHolderFields("customer.jointHolders.secondHolderDetails.0", t('apply.account.account_holder_info.second_account_holder'))}
           
           {/* Financial and Regulatory Information for Joint Account */}
           {renderFinancialInformation("customer.jointHolders.financialInformation")}
@@ -1502,7 +1498,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       ) : (
         // Individual Account
         <div className="space-y-6">
-          {renderAccountHolderFields("customer.accountHolder.accountHolderDetails.0", "Account Holder Information")}
+          {renderAccountHolderFields("customer.accountHolder.accountHolderDetails.0", t('apply.account.account_holder_info.account_holder_information'))}
           {renderFinancialInformation("customer.accountHolder.financialInformation")}
         </div>
       )}

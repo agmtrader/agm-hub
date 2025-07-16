@@ -11,6 +11,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { cn } from '@/lib/utils'
 import { Separator } from '../ui/separator'
 import { useSession } from 'next-auth/react'
+import { FaChartBar } from 'react-icons/fa'
 
 const tools = [
   {
@@ -57,6 +58,12 @@ const user_tools = [
     url: '/dashboard/auto-trader',
     icon: Bot,
     id: 'auto_trader',
+  },
+  {
+    name: 'Reporting',
+    url: '/dashboard/reporting',
+    icon: FaChartBar,
+    id: 'reporting',
   }
 ]
 

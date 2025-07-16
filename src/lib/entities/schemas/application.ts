@@ -63,7 +63,7 @@ export const employment_details_schema = z.object({
   occupation: z.string().optional(),
   employerAddress: address_schema.optional(),
   yearsWithEmployer: z.number().int().positive().optional(),
-  employerBusiness: z.string(),
+  employerBusiness: z.string().optional(),
 });
 
 export const investment_experience_schema = z.object({
@@ -167,7 +167,9 @@ export const user_schema = z.object({
   userPrivileges: z.array(user_privilege_schema).optional(),
   externalUserId: z.string().min(1, { message: 'External user ID is required' }),
   externalIndividualId: z.string().min(1, { message: 'External individual ID for user is required' }),
-  prefix: z.string().min(1, { message: 'User prefix is required' }),
+  prefix: z.string().min(1, { 
+    message: 'User prefix is required'
+  }),
   // other user fields
 });
 
@@ -229,8 +231,8 @@ export const account_holder_details_schema = z.object({
   countryOfBirth: z.string().min(2, { message: 'Country of birth is required' }),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date of birth must be YYYY-MM-DD' }),
   gender: z.string().optional(), // e.g., MALE, FEMALE, OTHER
-  maritalStatus: z.string(), // e.g., S, M, D
-  numDependents: z.number().int().min(0),
+  maritalStatus: z.string().optional(), // e.g., S, M, D
+  numDependents: z.number().int().min(0).optional(),
   phones: z.array(phone_schema).min(1, { message: 'At least one phone number is required' }),
   identification: identification_schema, // This might need to be more specific based on individual vs org
   employmentDetails: employment_details_schema,
@@ -294,14 +296,14 @@ export const organization_associated_entities_schema = z.object({
 });
 
 export const organization_account_support_schema = z.object({
-  businessDescription: z.string().min(1, { message: 'Business description required' }),
+  businessDescription: z.string().optional(),
   ownersResideUS: z.boolean().optional(),
-  type: z.string().min(1, { message: 'Organization type required' }),
+  type: z.string().optional(),
 });
 
 export const organization_schema = z.object({
   identifications: z.array(organization_identification_schema).min(1),
-  accountSupport: organization_account_support_schema, // now required minimal fields
+  accountSupport: organization_account_support_schema.optional(),
   associatedEntities: organization_associated_entities_schema.optional(),
   financialInformation: z.array(financial_information_schema).min(1),
   regulatoryInformation: z.array(regulatory_information_schema).min(1),
@@ -315,8 +317,8 @@ export const customer_schema = z.object({
   jointHolders: joint_holders_schema, // For JOINT accounts
   organization: organization_schema, // For ORG accounts
   externalId: z.string().min(1, { message: 'Customer external ID is required' }),
-  type: z.enum(['INDIVIDUAL', 'JOINT', 'ORG']),
-  prefix: z.string().min(3).max(6),
+  type: z.enum(['INDIVIDUAL', 'JOINT', 'ORG'], { message: 'Account type is required' }),
+  prefix: z.string().min(3, { message: 'Prefix must be at least 3 characters' }).max(6, { message: 'Prefix must be at most 6 characters' }),
   email: z.string().email(),
   mdStatusNonPro: z.boolean().optional().default(true),
   meetAmlStandard: z.string().optional().default('true'),
