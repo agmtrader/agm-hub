@@ -1,20 +1,5 @@
 import { accessAPI } from "../api"
 
-export async function ReadAccruedInterest() {
-  const report = await accessAPI('/reporting/get_accrued_interest', 'GET')
-  return report
-}
-
-export async function ReadClientsReport() {
-  const report = await accessAPI('/reporting/get_clients_report', 'GET')
-  return report
-}
-
-export async function CashReport() {
-  const report = await accessAPI('/reporting/get_cash_report', 'GET')
-  return report
-}
-
 export async function ExtractReports() {
   const report = await accessAPI('/reporting/extract', 'GET')
   return report
@@ -22,5 +7,20 @@ export async function ExtractReports() {
 
 export async function TransformReports() {
   const report = await accessAPI('/reporting/transform', 'GET')
+  return report
+}
+
+export async function GetDimensionalTable() {
+  const report = await accessAPI('/reporting/dimensional_table', 'GET')
+  return report
+}
+
+export async function GetClientsReport() {
+  const report = await accessAPI('/reporting/clients', 'GET')
+  return report
+}
+
+export async function GetNAVReport() {
+  const report = await accessAPI('/reporting/nav', 'GET')
   return report
 }

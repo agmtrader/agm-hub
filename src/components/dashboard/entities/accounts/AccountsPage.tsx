@@ -64,6 +64,8 @@ const AccountsPage = () => {
     fetchData()
 
   }, [])
+  
+  console.log(accounts)
 
   if (!accounts || !applications) return <LoadingComponent className='w-full h-full' />
 

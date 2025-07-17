@@ -4,8 +4,7 @@ import { toast } from '@/hooks/use-toast'
 import React, { useEffect, useState } from 'react'
 import { ColumnDefinition, DataTable } from '../../../misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-import DashboardPage from '@/components/misc/DashboardPage'
-import { ReadClientsReport } from '@/utils/tools/reporting'
+import { GetDimensionalTable } from '@/utils/tools/reporting'
 
 const PendingAliases = () => {
   
@@ -49,7 +48,7 @@ const PendingAliases = () => {
     useEffect(() => {
       async function fetchData() {
         try {
-          let report = await ReadClientsReport()
+          let report = await GetDimensionalTable()
           setData(report['consolidated'].filter((item: any) => item.Alias === '' && (item.Status !== 'Rejected' && item.Status !== 'Closed')))
         } catch (error:any) {
           toast({
