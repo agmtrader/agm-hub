@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from '@/hooks/use-toast'
-import { DataTable } from '../../../misc/DataTable'
+import { ColumnDefinition, DataTable } from '../../../misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-import { GetClientFeesReport } from '@/utils/tools/reporting'
+import { GetDimensionalTable } from '@/utils/tools/reporting'
 
 const Clients = () => {
 
@@ -11,8 +11,9 @@ const Clients = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        let report = await GetClientFeesReport()
-        setData(report)
+        let report = await GetDimensionalTable()
+        console.log(report)
+        setData(report['consolidated'])
       } catch (error:any) {
         toast({
           title: 'Error fetching clients',
@@ -24,10 +25,25 @@ const Clients = () => {
     fetchData()
   }, [])
 
+  const columns = [
+    {
+      header: 'Account ID',
+      accessorKey: 'Account ID',
+    },
+    {
+      header: 'Master Account',
+      accessorKey: 'sheet_name',
+    },
+    {
+      header: 'Account Title',
+      accessorKey: 'Title',
+    }
+  ] as ColumnDefinition<any>[]
+
   if (!data) return <LoadingComponent className='h-full w-full'/>
 
 return (
-  <div className='w-full h-full flex flex-col gap-5'>
+  <div className='max-w-7xl h-full flex flex-col gap-5'>
     <DataTable 
         data={data}
         enablePagination
