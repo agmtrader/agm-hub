@@ -1,12 +1,7 @@
 import { accessAPI } from "../api"
 
-export async function ExtractReports() {
-  const report = await accessAPI('/reporting/extract', 'GET')
-  return report
-}
-
-export async function TransformReports() {
-  const report = await accessAPI('/reporting/transform', 'GET')
+export async function GenerateReports() {
+  const report = await accessAPI('/reporting/run', 'GET')
   return report
 }
 
@@ -22,5 +17,10 @@ export async function GetClientsReport() {
 
 export async function GetNAVReport() {
   const report = await accessAPI('/reporting/nav', 'GET')
+  return report
+}
+
+export async function GetClientFeesReport() {
+  const report = await accessAPI('/reporting/client_fees', 'GET')
   return report
 }

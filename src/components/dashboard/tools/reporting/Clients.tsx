@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { toast } from '@/hooks/use-toast'
 import { DataTable } from '../../../misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-import { GetClientsReport } from '@/utils/tools/reporting'
+import { GetClientFeesReport } from '@/utils/tools/reporting'
 
 const Clients = () => {
 
@@ -11,7 +11,7 @@ const Clients = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        let report = await GetClientsReport()
+        let report = await GetClientFeesReport()
         setData(report)
       } catch (error:any) {
         toast({
