@@ -12,6 +12,11 @@ export async function ReadAccountRiskProfiles(): Promise<AccountRiskProfile[] | 
     return account_risk_profiles
 }
 
+export async function ListRiskProfiles(): Promise<RiskProfileType[] | null> {
+    let risk_profiles = await accessAPI('/risk_profiles/list','GET')
+    return risk_profiles
+}
+
 // Find assigned risk profile using the calculated risk score
 export function GetRiskProfile(risk_score: number): RiskProfileType | null {
 

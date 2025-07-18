@@ -37,8 +37,8 @@ export async function DeleteContactByID(id: string) {
 }
 
 // ID functions
-export async function ReadContactReferrerByID(id:string) {
-    let contacts:Contact[] = await accessAPI('/contacts/read', 'POST', {'query': {'id': id}})
+export async function ReadContactByLeadID(lead_id:string) {
+    let contacts:Contact[] = await accessAPI('/contacts/read', 'POST', {'query': {'lead_id': lead_id}})
     if (contacts.length > 1) throw new Error('Multiple contacts found with same ID')
     if (contacts.length === 0) return null
     return contacts[0]

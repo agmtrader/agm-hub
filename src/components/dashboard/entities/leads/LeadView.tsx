@@ -174,7 +174,7 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
               </div>
               <AddFollowUp leadId={lead.id} onSuccess={onSuccess} />
             </Card>
-            {lead && <GenerateApplicationLink lead={lead} followUps={followUps} />}
+            {lead && <GenerateApplicationLink lead={lead} followUps={followUps} contact={contact} />}
           </div>
         </ScrollArea>
       </DialogContent>
