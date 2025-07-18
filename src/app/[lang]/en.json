@@ -325,7 +325,7 @@
                 "username": "Username",
                 "username_description": "Your desired username (3–6 characters).",
                 "legal_residence_country": "Legal Residence Country",
-                "account_holder_info": "Account Holder Information",
+                "account_holder_information": "Account Holder Information",
                 "first_name": "First Name",
                 "last_name": "Last Name",
                 "email": "Email",

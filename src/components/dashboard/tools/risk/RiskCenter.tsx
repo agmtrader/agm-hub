@@ -1,12 +1,12 @@
 "use client"
 import { useEffect, useState } from "react"
 import RiskProfile from "@/components/dashboard/tools/risk/RiskProfile"
-import { AccountRiskProfile } from "@/lib/tools/risk-profile"
+import { AccountRiskProfile, RiskProfile as RiskProfileType } from "@/lib/tools/risk-profile"
 import { useToast } from "@/hooks/use-toast"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 import DashboardPage from "@/components/misc/DashboardPage"
-import { ReadAccountRiskProfiles } from "@/utils/tools/risk-profile"
-import { riskProfiles as riskProfilesDictionary } from "@/lib/tools/risk-profile"
+import { ListRiskProfiles, ReadAccountRiskProfiles } from "@/utils/tools/risk-profile"
+//import { riskProfiles as riskProfilesDictionary } from "@/lib/tools/risk-profile"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
@@ -15,6 +15,7 @@ const RiskCenter = () => {
 
   const [accountRiskProfiles, setAccountRiskProfiles] = useState<AccountRiskProfile[] | null>(null)
   const [accounts, setAccounts] = useState<Account[] | null>(null)
+  const [riskProfiles, setRiskProfiles] = useState<RiskProfileType[] | null>(null)
 
   const [accountRiskProfile, setAccountRiskProfile] = useState<AccountRiskProfile | null>(null)
 
@@ -26,10 +27,12 @@ const RiskCenter = () => {
 
       try {
 
+        const riskProfiles = await ListRiskProfiles()
         const accountRiskProfiles = await ReadAccountRiskProfiles()
         const accounts = await ReadAccounts()
         setAccountRiskProfiles(accountRiskProfiles)
         setAccounts(accounts)
+        setRiskProfiles(riskProfiles)
 
       } catch (error:any) {
 
@@ -47,9 +50,7 @@ const RiskCenter = () => {
 
   }, [])
 
-  if (!accountRiskProfiles || !accounts) return <LoadingComponent className="h-full w-full"/>
-
-  console.log(accountRiskProfiles)
+  if (!accountRiskProfiles || !accounts || !riskProfiles) return <LoadingComponent className="h-full w-full"/>
 
   return (
 
@@ -79,7 +80,7 @@ const RiskCenter = () => {
 
       {accountRiskProfile && (
         (() => {
-          const riskProfile = riskProfilesDictionary.find(profile => profile.id === parseInt(accountRiskProfile.risk_profile_id.toString()))
+          const riskProfile = riskProfiles?.find(profile => profile.id === parseInt(accountRiskProfile.risk_profile_id.toString()))
           return riskProfile ? <RiskProfile riskProfile={riskProfile} /> : (
             <div className="text-center text-subtitle">
               <p>Risk profile not found for ID: {accountRiskProfile.risk_profile_id}</p>

@@ -8,12 +8,14 @@ import { Recycle } from 'lucide-react'
 import PendingAliases from './PendingAliases'
 import { Tabs, TabsTrigger, TabsList, TabsContent } from '@/components/ui/tabs'
 import { GenerateReports } from '@/utils/tools/reporting'
+import ClientFees from './ClientFees'
 
 const ReportingCenter = () => {
 
   const reports: Report[] = [
     { id: 1, name: 'Clients', report: <Clients /> },
-    { id: 2, name: 'Pending Aliases', report: <PendingAliases /> }
+    { id: 2, name: 'Pending Aliases', report: <PendingAliases /> },
+    { id: 3, name: 'Client Fees', report: <ClientFees /> }
   ]
 
   function generateReports() {

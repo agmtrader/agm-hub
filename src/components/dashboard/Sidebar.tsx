@@ -11,7 +11,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { cn } from '@/lib/utils'
 import { Separator } from '../ui/separator'
 import { useSession } from 'next-auth/react'
-import { FaChartBar } from 'react-icons/fa'
+import { FaChartBar, FaShieldVirus } from 'react-icons/fa'
 
 const tools = [
   {
@@ -64,6 +64,12 @@ const user_tools = [
     url: '/dashboard/reporting',
     icon: FaChartBar,
     id: 'reporting',
+  },
+  {
+    name: 'Risk Center',
+    url: '/dashboard/risk',
+    icon: FaShieldVirus,
+    id: 'risk_center',
   }
 ]
 

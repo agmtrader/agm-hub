@@ -32,3 +32,12 @@ export async function sendTwoFactorReminderEmail(content: any, email: string) {
   })
   return response
 }
+
+export async function sendApplicationLinkEmail(content: any, email: string, language: string) {
+  const response = await accessAPI('/email/send_email/application_link', 'POST', {
+    client_email: email,
+    content: content,
+    lang: language,
+  })
+  return response
+}

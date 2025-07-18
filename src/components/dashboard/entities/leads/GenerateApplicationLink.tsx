@@ -9,6 +9,9 @@ import { ReadAdvisors } from '@/utils/entities/advisor'
 import { Advisor } from '@/lib/entities/advisor'
 import { FollowUp, Lead } from '@/lib/entities/lead'
 import LoadingComponent from '@/components/misc/LoadingComponent'
+import { ReadContactByLeadID } from '@/utils/entities/contact'
+import { Contact } from '@/lib/entities/contact'
+import { sendApplicationLinkEmail } from '@/utils/tools/email'
 
 export type AccountType = 'br' | 'ad'
 export type Language = 'en' | 'es'
@@ -16,9 +19,10 @@ export type Language = 'en' | 'es'
 interface Props {
     lead: Lead
     followUps: FollowUp[]
+    contact: Contact
 }
 
-const GenerateApplicationLink = ({ lead, followUps }: Props) => {
+const GenerateApplicationLink = ({ lead, followUps, contact }: Props) => {
 
     const [accountType, setAccountType] = useState<AccountType>('br')
     const [advisorID, setAdvisorID] = useState<string | null>(null)
@@ -28,8 +32,12 @@ const GenerateApplicationLink = ({ lead, followUps }: Props) => {
     const [advisors, setAdvisors] = useState<Advisor[]>([])
     const [isLoading, setIsLoading] = useState(false)
 
+    const [isSendingEmail, setIsSendingEmail] = useState(false)
+
+    console.log(contact)
+
     useEffect(() => {
-        const fetchAdvisors = async () => {
+        const fetchData = async () => {
             try {
                 setIsLoading(true)
                 const advisors = await ReadAdvisors()
@@ -46,9 +54,27 @@ const GenerateApplicationLink = ({ lead, followUps }: Props) => {
         }
 
         if (isOpen) {
-            fetchAdvisors()
+            fetchData()
         }
     }, [isOpen])
+
+    const handleSendEmail = async () => {
+        setIsSendingEmail(true)
+        try {
+            if (!contact.email) {
+                throw new Error('No contact email found')
+            }
+            await sendApplicationLinkEmail({'name': contact.name, 'application_link': generateUrl()}, contact.email, language)
+            setIsSendingEmail(false)
+        } catch (error: any) {
+            toast({
+                title: 'Failed to send email',
+                description: error.message,
+                variant: 'destructive'
+            })
+            setIsSendingEmail(false)
+        }
+    }
 
     const generateUrl = () => {
         const baseUrl = `https://agmtechnology.com/${language}/apply`
@@ -144,9 +170,15 @@ const GenerateApplicationLink = ({ lead, followUps }: Props) => {
                         <p className='text-sm font-mono break-all'>{generateUrl()}</p>
                     </Card>
 
-                    <Button onClick={handleCopyLink}>
-                        Copy Link
-                    </Button>
+                    <div className='flex gap-2'>
+                        <Button onClick={handleCopyLink}>
+                            Copy Link
+                        </Button>
+
+                        <Button onClick={handleSendEmail} disabled={isSendingEmail}>
+                            Send Email
+                        </Button>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>
