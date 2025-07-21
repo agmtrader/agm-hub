@@ -2,6 +2,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Base } from '../entities/base';
 
 export interface AccountRiskProfilePayload {
+  name: string;
   account_id: string | null;
   risk_profile_id: number;
   score: number;

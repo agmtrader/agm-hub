@@ -16,9 +16,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/hooks/use-toast'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Contact } from '@/lib/entities/contact'
 import GenerateApplicationLink from './GenerateApplicationLink'
-import ContactCard from '../contacts/ContactCard'
+import UserCard from './UserCard'
 import { UpdateLeadFollowUpByID, DeleteLeadFollowUpByID } from '@/utils/entities/lead'
 import { ReadApplicationByLeadID } from '@/utils/entities/application'
 import { InternalApplication } from '@/lib/entities/application'
@@ -26,20 +25,21 @@ import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import AddFollowUp from './AddFollowUp'
 import { Trash2 } from 'lucide-react'
+import { User } from 'next-auth'
 
 interface LeadViewProps {
   lead: Lead |  null
   followUps: FollowUp[]
-  contacts: Contact[]
+  users: User[]
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onSuccess?: () => void
 }
 
-const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
+const LeadView = ({ lead, followUps, users, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
 
-  const contact = contacts.find(c => c.id === lead?.contact_id)
-  const referrer = contacts.find(c => c.id === lead?.referrer_id)
+  const user = users.find(u => u.id === lead?.contact_id)
+  const referrer = users.find(u => u.id === lead?.referrer_id)
   const [application, setApplication] = useState<InternalApplication | null>(null)
 
   const { lang } = useTranslationProvider()
@@ -104,7 +104,7 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
     }
   }
 
-  if (!lead || !contact) return null
+  if (!lead || !user) return null
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -139,8 +139,8 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
             )}
 
             {/* Basic Information */}
-            <ContactCard contact={contact} />
-            {referrer && <ContactCard contact={referrer} title="Referrer Information" />}
+            <UserCard user={user} />
+            {referrer && <UserCard user={referrer} title="Referrer Information" />}
 
             {/* Description */}
             <Card className="p-6 space-y-4">
@@ -174,7 +174,7 @@ const LeadView = ({ lead, followUps, contacts, isOpen, onOpenChange, onSuccess }
               </div>
               <AddFollowUp leadId={lead.id} onSuccess={onSuccess} />
             </Card>
-            {lead && <GenerateApplicationLink lead={lead} followUps={followUps} contact={contact} />}
+            {lead && <GenerateApplicationLink lead={lead} followUps={followUps} user={user} />}
           </div>
         </ScrollArea>
       </DialogContent>

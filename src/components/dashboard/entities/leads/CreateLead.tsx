@@ -25,17 +25,16 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Contact } from '@/lib/entities/contact'
-import CreateContact from '@/components/dashboard/entities/contacts/CreateContact'
 import { getDefaults } from '@/utils/form'
+import { User } from 'next-auth'
 
 interface Props {
-  contacts: Contact[]
+  users: User[]
   refreshLeads?: () => void
-  refreshContacts?: () => void
+  refreshUsers?: () => void
 }
 
-const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
+const CreateLead = ({ users, refreshLeads, refreshUsers }: Props) => {
 
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -91,8 +90,8 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
         variant: "success"
       })
 
-      refreshLeads?.()
-      refreshContacts?.()
+      refreshLeads?.()  
+      refreshUsers?.()
 
       form.reset()
       setIsOpen(false)
@@ -143,8 +142,8 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                           className="w-full justify-between"
                         >
                           {field.value
-                            ? contacts.find(
-                                (contact) => contact.id === field.value
+                            ? users.find(
+                                (user) => user.id === field.value
                               )?.name
                             : "Select a contact"}
                         </Button>
@@ -160,20 +159,19 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                             </div>
                           </CommandEmpty>
                           <CommandGroup>
-                            {contacts.map((contact: Contact) => (
+                            {users.map((user: User) => (
                               <CommandItem
-                                value={contact.name}
-                                key={contact.id}
+                                value={user.name || ''}
+                                key={user.id}
                                 onSelect={() => {
-                                  field.onChange(contact.id)
+                                  field.onChange(user.id)
                                 }}
                               >
-                                {contact.name}
+                                {user.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
                         </CommandList>
-                        <CreateContact variant="ghost" onSuccess={refreshContacts} />
                       </Command>
                     </PopoverContent>
                   </Popover>
@@ -199,8 +197,8 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                           className="w-full justify-between"
                         >
                           {field.value
-                            ? contacts.find(
-                                (contact) => contact.id === field.value
+                            ? users.find(
+                                (user) => user.id === field.value
                               )?.name
                             : "Select a referrer"}
                         </Button>
@@ -212,20 +210,19 @@ const CreateLead = ({ contacts, refreshLeads, refreshContacts }: Props) => {
                         <CommandList>
                           <CommandEmpty>No referrers found.</CommandEmpty>
                           <CommandGroup>
-                            {contacts.map((contact: Contact) => (
+                            {users.map((user: User) => (
                               <CommandItem
-                                value={contact.name}
-                                key={contact.id}
+                                value={user.name || ''}
+                                key={user.id}
                                 onSelect={() => {
-                                  field.onChange(contact.id)
+                                  field.onChange(user.id)
                                 }}
                               >
-                                {contact.name}
+                                {user.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
                         </CommandList>
-                        <CreateContact variant="ghost" onSuccess={refreshContacts} />
                       </Command>
                     </PopoverContent>
                   </Popover>

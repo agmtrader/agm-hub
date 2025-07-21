@@ -14,12 +14,13 @@ import { ReadAccounts } from "@/utils/entities/account"
 const RiskCenter = () => {
 
   const [accountRiskProfiles, setAccountRiskProfiles] = useState<AccountRiskProfile[] | null>(null)
-  const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [riskProfiles, setRiskProfiles] = useState<RiskProfileType[] | null>(null)
 
   const [accountRiskProfile, setAccountRiskProfile] = useState<AccountRiskProfile | null>(null)
 
   const { toast } = useToast()
+
+  console.log(accountRiskProfiles)
 
   useEffect(() => {
 
@@ -29,10 +30,8 @@ const RiskCenter = () => {
 
         const riskProfiles = await ListRiskProfiles()
         const accountRiskProfiles = await ReadAccountRiskProfiles()
-        const accounts = await ReadAccounts()
-        setAccountRiskProfiles(accountRiskProfiles)
-        setAccounts(accounts)
         setRiskProfiles(riskProfiles)
+        setAccountRiskProfiles(accountRiskProfiles)
 
       } catch (error:any) {
 
@@ -50,7 +49,7 @@ const RiskCenter = () => {
 
   }, [])
 
-  if (!accountRiskProfiles || !accounts || !riskProfiles) return <LoadingComponent className="h-full w-full"/>
+  if (!accountRiskProfiles || !riskProfiles) return <LoadingComponent className="h-full w-full"/>
 
   return (
 
@@ -66,12 +65,12 @@ const RiskCenter = () => {
           }}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select an account" />
+            <SelectValue placeholder="Select a risk profile" />
           </SelectTrigger>
           <SelectContent>
             {accountRiskProfiles.map((accountRiskProfile) => (
               <SelectItem key={accountRiskProfile.id} value={accountRiskProfile.id.toString()}>
-                {accounts.find((account) => account.id === accountRiskProfile.account_id)?.ibkr_account_number}
+                {accountRiskProfile.name}
               </SelectItem>
             ))}
           </SelectContent>

@@ -5,7 +5,6 @@ import { account_schema } from "./schemas/account"
 
 export type AccountPayload = z.infer<typeof account_schema>
 export type InternalAccount = AccountPayload & {
-  user_id: string,
   ibkr_account_number: string,
   ibkr_username: string | null,
   ibkr_password: string | null,

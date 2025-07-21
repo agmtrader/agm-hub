@@ -128,7 +128,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
       // Assign account # here
       const account: InternalAccount = {
-        user_id: session?.user?.id,
         ibkr_account_number: applicationResponse.fileData.application.accounts[0].value,
         ibkr_username: null,
         ibkr_password: null,
@@ -177,7 +176,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
       // Construct full Account object by combining form values with application/session data
       const account:InternalAccount = {
-        user_id: session?.user?.id,
         ibkr_account_number: values.ibkr_account_number,
         ibkr_username: values.ibkr_username,
         ibkr_password: values.ibkr_password,

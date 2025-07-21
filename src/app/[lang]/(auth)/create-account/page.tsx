@@ -37,6 +37,8 @@ const formSchema = z.object({
     message: "Please enter a valid email address.",
   }),
   country: z.string(),
+  phone: z.string(),
+  company_name: z.string(),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),
@@ -69,6 +71,9 @@ const CreateAccount = () => {
       setCreating(true)
 
       const user:UserPayload = {
+        'country': values.country,
+        'phone': values.phone,
+        'company_name': values.company_name,
         'name': values.name,
         'email': values.email,
         'image': '',

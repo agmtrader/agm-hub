@@ -1,26 +1,25 @@
 'use client'
-import DashboardPage from '@/components/misc/DashboardPage'
 import React, { useEffect, useState } from 'react'
 import CreateLead from './CreateLead'
 import LeadView from './LeadView'
 import { Lead, FollowUp } from '@/lib/entities/lead'
-import { DeleteLeadByID, ReadLeads, ReadFollowUpsByLeadID } from '@/utils/entities/lead'
+import { ReadLeads } from '@/utils/entities/lead'
 import { ColumnDefinition } from '@/components/misc/DataTable'
 import { toast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
 import { formatDateFromTimestamp, getDateObjectFromTimestamp } from '@/utils/dates'
-import { Contact } from '@/lib/entities/contact'
-import { ReadContacts } from '@/utils/entities/contact'
 import ContactsLeadsView from './ContactsLeadsView'
 import FollowUpsLeadsView from './FollowUpsLeadsView'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import LoadingComponent from '@/components/misc/LoadingComponent'
+import { User } from 'next-auth'
+import { ReadUsers } from '@/utils/entities/user'
 
 const LeadsPage = () => {
 
   const [leads, setLeads] = useState<Lead[] | null>(null)
   const [followUps, setFollowUps] = useState<FollowUp[] | null>(null)
-  const [contacts, setContacts] = useState<Contact[] | null>(null)
+  const [users, setUsers] = useState<User[] | null>(null)
   
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
@@ -33,7 +32,7 @@ const LeadsPage = () => {
       try {
         return getDateObjectFromTimestamp(ts).getTime()
       } catch {
-        return 0 // Fallback for malformed timestamps
+        return 0
       }
     }
 
@@ -45,14 +44,14 @@ const LeadsPage = () => {
     setFollowUps(leadsWithFollowUps.follow_ups)
   }
 
-  async function fetchContacts() {
+  async function fetchUsers() {
     try {
-      const fetchedContacts = await ReadContacts()
-      setContacts(fetchedContacts)
+      const fetchedUsers = await ReadUsers()
+      setUsers(fetchedUsers)
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to fetch contacts",
+        description: "Failed to fetch users",
         variant: "destructive"
       })
     }
@@ -61,35 +60,35 @@ const LeadsPage = () => {
   console.log(leads)
 
   async function handleRefreshData() {
-    await fetchContacts()
+    await fetchUsers()
     await handleFetchLeads()
   }
 
   useEffect(() => {
-    fetchContacts()
+    fetchUsers()
   }, [])
 
   useEffect(() => {
     handleFetchLeads()
   }, [])
 
-  if (!leads || !followUps || !contacts) return <LoadingComponent className='w-full h-full' />
+  if (!leads || !followUps || !users) return <LoadingComponent className='w-full h-full' />
   
   const columns = [
     {
       header: 'Contact',
       accessorKey: 'contact_id',
       cell: ({ row }: any) => {
-        const contact = contacts.find(c => c.id === row.original.contact_id)
-        return contact ? contact.name : row.original.contact_id
+        const user = users.find(u => u.id === row.original.contact_id)
+        return user ? user.name : row.original.contact_id
       }
     },
     {
       header: 'Referrer',
       accessorKey: 'referrer_id',
       cell: ({ row }: any) => {
-        const contact = contacts.find(c => c.id === row.original.referrer_id)
-        return contact ? contact.name : row.original.referrer_id
+        const user = users.find(u => u.id === row.original.referrer_id)
+        return user ? user.name : row.original.referrer_id
       }
     },
     {
@@ -180,7 +179,7 @@ const LeadsPage = () => {
             <TabsTrigger value="contacts">Contacts View</TabsTrigger>
             <TabsTrigger value="followups">Follow-ups View</TabsTrigger>
           </TabsList>
-          <CreateLead contacts={contacts} refreshLeads={handleRefreshData} refreshContacts={fetchContacts} />
+          <CreateLead users={users} refreshLeads={handleRefreshData} refreshUsers={fetchUsers} />
           </div>
           <TabsContent value="contacts">
             <ContactsLeadsView
@@ -194,7 +193,7 @@ const LeadsPage = () => {
             <FollowUpsLeadsView
               leads={leads}
               followUps={followUps}
-              contacts={contacts}
+              users={users}
             />
           </TabsContent>
         </Tabs>
@@ -202,7 +201,7 @@ const LeadsPage = () => {
 
       <LeadView
         lead={selectedLead} 
-        contacts={contacts}
+        users={users}
         followUps={followUps.filter(f => f.lead_id === selectedLead?.id)}
         isOpen={isViewDialogOpen} 
         onOpenChange={setIsViewDialogOpen} 

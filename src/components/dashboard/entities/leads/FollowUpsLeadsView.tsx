@@ -5,14 +5,15 @@ import { formatDateFromTimestamp } from '@/utils/dates'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useState } from 'react'
+import { User } from 'next-auth'
 
 interface Props {
   leads: Lead[]
   followUps: FollowUp[]
-  contacts: Contact[]
+  users: User[]
 }
 
-const FollowUpsLeadsView = ({ leads, followUps, contacts}: Props) => {
+const FollowUpsLeadsView = ({ leads, followUps, users}: Props) => {
   const [showCompleted, setShowCompleted] = useState(false)
 
   const columns = [
@@ -21,8 +22,8 @@ const FollowUpsLeadsView = ({ leads, followUps, contacts}: Props) => {
       accessorKey: 'contactName',
       cell: ({ row }: any) => {
         const lead = leads.find(l => l.id === row.original.lead_id)
-        const contact = contacts.find(c => c.id === lead?.contact_id)
-        return contact?.name || "Contact not found"
+          const user = users.find(u => u.id === lead?.contact_id)
+        return user?.name || "Contact not found"
       }
     },
     {

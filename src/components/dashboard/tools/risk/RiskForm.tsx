@@ -111,6 +111,7 @@ const RiskForm = () => {
 
       // Build a user risk profile for the database
       const account_risk_profile:AccountRiskProfilePayload = {
+        name: values.client_name,
         risk_profile_id: assigned_risk_profile.id,
         account_id: values.account_id,
         score: risk_score,

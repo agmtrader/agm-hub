@@ -8,7 +8,7 @@ export async function CreateUser(user:User): Promise<IDResponse> {
 }
 
 export async function ReadUsers() {
-    let users:User[] = await accessAPI('/users/read', 'POST', {})
+    let users:User[] = await accessAPI('/users/read', 'POST', {'query': {}})
     return users.sort((a, b) => (b.id.toString().localeCompare(a.id.toString())))   
 }
 

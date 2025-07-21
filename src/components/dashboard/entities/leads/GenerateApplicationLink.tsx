@@ -9,9 +9,8 @@ import { ReadAdvisors } from '@/utils/entities/advisor'
 import { Advisor } from '@/lib/entities/advisor'
 import { FollowUp, Lead } from '@/lib/entities/lead'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-import { ReadContactByLeadID } from '@/utils/entities/contact'
-import { Contact } from '@/lib/entities/contact'
 import { sendApplicationLinkEmail } from '@/utils/tools/email'
+import { User } from 'next-auth'
 
 export type AccountType = 'br' | 'ad'
 export type Language = 'en' | 'es'
@@ -19,10 +18,10 @@ export type Language = 'en' | 'es'
 interface Props {
     lead: Lead
     followUps: FollowUp[]
-    contact: Contact
+    user: User
 }
 
-const GenerateApplicationLink = ({ lead, followUps, contact }: Props) => {
+const GenerateApplicationLink = ({ lead, followUps, user }: Props) => {
 
     const [accountType, setAccountType] = useState<AccountType>('br')
     const [advisorID, setAdvisorID] = useState<string | null>(null)
@@ -34,7 +33,7 @@ const GenerateApplicationLink = ({ lead, followUps, contact }: Props) => {
 
     const [isSendingEmail, setIsSendingEmail] = useState(false)
 
-    console.log(contact)
+    console.log(user)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,10 +60,10 @@ const GenerateApplicationLink = ({ lead, followUps, contact }: Props) => {
     const handleSendEmail = async () => {
         setIsSendingEmail(true)
         try {
-            if (!contact.email) {
+            if (!user.email) {
                 throw new Error('No contact email found')
             }
-            await sendApplicationLinkEmail({'name': contact.name, 'application_link': generateUrl()}, contact.email, language)
+            await sendApplicationLinkEmail({'name': user.name, 'application_link': generateUrl()}, user.email, language)
             setIsSendingEmail(false)
         } catch (error: any) {
             toast({
