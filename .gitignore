@@ -1,10 +1,16 @@
 # Next.js Gitignore
 
 # Personal
-dev/am-api
-
 *.DS_Store
+.cursorrules
 .env
+
+# API
+cache/*
+src/db/*
+logs/*
+keys/
+dev/
 
 # Logs
 logs

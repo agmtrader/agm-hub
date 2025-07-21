@@ -1,0 +1,35 @@
+name: Daily Cloud Run Refresh
+
+on:
+  schedule:
+    - cron: '0 7 * * *'  # Runs daily at 7 AM UTC
+  workflow_dispatch:        # Manual trigger
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code (if needed)
+        uses: actions/checkout@v4
+
+      - name: Auth to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.GCLOUD_SERVICE_KEY }}'
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: agm-datalake
+
+      - name: Force redeploy existing image
+        run: |
+          gcloud run deploy agm-api \
+            --image $(gcloud run services describe agm-api \
+              --platform managed \
+              --region us-central1 \
+              --format 'value(spec.template.spec.containers[0].image)') \
+            --region us-central1 \
+            --platform managed \
+            --quiet
