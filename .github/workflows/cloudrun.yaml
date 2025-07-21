@@ -25,8 +25,8 @@ jobs:
 
       - name: Force redeploy existing image
         run: |
-          gcloud run deploy agm-api \
-            --image $(gcloud run services describe agm-api \
+          gcloud run deploy agm-hub \
+            --image $(gcloud run services describe agm-hub \
               --platform managed \
               --region us-central1 \
               --format 'value(spec.template.spec.containers[0].image)') \
