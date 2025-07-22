@@ -32,6 +32,7 @@ import {
     w8ben_schema
 } from './schemas/application';
 import { poa_schema, poi_schema, sow_schema } from './schemas/application';
+import { Base } from './base';
 
 export type POADocumentInfo = z.infer<typeof poa_schema>
 export type POIDocumentInfo = z.infer<typeof poi_schema>
@@ -71,14 +72,13 @@ export type TradingPermission = z.infer<typeof trading_permission_schema>;
 
 export type Organization = z.infer<typeof organization_schema>;
 
-export interface InternalApplication {
-    id: string;
+export type InternalApplicationPayload = {
     advisor_id: string | null;
     master_account_id: string | null;
     lead_id: string | null;
     application: Application;
-    created: string;
-    updated: string;
     date_sent_to_ibkr: string | null;
     user_id: string | null;
 }
+
+export type InternalApplication = InternalApplicationPayload & Base

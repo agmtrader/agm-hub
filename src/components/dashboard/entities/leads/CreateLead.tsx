@@ -77,9 +77,9 @@ const CreateLead = ({ users, refreshLeads, refreshUsers }: Props) => {
         contact_id: values.contact_id,
         referrer_id: values.referrer_id,
         description: values.description,
-        status: 'Started',
-        completed: false,
-        contact_date: formatTimestamp(new Date())
+        contact_date: formatTimestamp(new Date()),
+        sent: null,
+        closed: null
       }
 
       await CreateLeadAPI(leadPayload, followUpsPayload)

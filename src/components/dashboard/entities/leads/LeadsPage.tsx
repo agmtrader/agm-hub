@@ -7,6 +7,8 @@ import { ReadLeads } from '@/utils/entities/lead'
 import { ColumnDefinition } from '@/components/misc/DataTable'
 import { toast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import { formatDateFromTimestamp, getDateObjectFromTimestamp } from '@/utils/dates'
 import ContactsLeadsView from './ContactsLeadsView'
 import FollowUpsLeadsView from './FollowUpsLeadsView'
@@ -17,9 +19,12 @@ import { ReadUsers } from '@/utils/entities/user'
 
 const LeadsPage = () => {
 
+  const [allLeads, setAllLeads] = useState<Lead[] | null>(null)
   const [leads, setLeads] = useState<Lead[] | null>(null)
   const [followUps, setFollowUps] = useState<FollowUp[] | null>(null)
   const [users, setUsers] = useState<User[] | null>(null)
+
+  const [showClosed, setShowClosed] = useState(false)
   
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
@@ -36,11 +41,15 @@ const LeadsPage = () => {
       }
     }
 
-    setLeads(
-      leadsWithFollowUps.leads.sort(
-        (a, b) => getTimeSafe(b.contact_date) - getTimeSafe(a.contact_date)
-      )
+    const sortedLeads = leadsWithFollowUps.leads.sort(
+      (a, b) => getTimeSafe(b.contact_date) - getTimeSafe(a.contact_date)
     )
+
+    setAllLeads(sortedLeads)
+
+    const filteredLeads = showClosed ? sortedLeads : sortedLeads.filter(l => l.closed === null)
+
+    setLeads(filteredLeads)
     setFollowUps(leadsWithFollowUps.follow_ups)
   }
 
@@ -57,8 +66,6 @@ const LeadsPage = () => {
     }
   }
 
-  console.log(leads)
-
   async function handleRefreshData() {
     await fetchUsers()
     await handleFetchLeads()
@@ -71,6 +78,13 @@ const LeadsPage = () => {
   useEffect(() => {
     handleFetchLeads()
   }, [])
+
+  // Re-filter leads whenever the showClosed toggle changes or when allLeads updates
+  useEffect(() => {
+    if (!allLeads) return
+    const filtered = showClosed ? allLeads : allLeads.filter(l => l.closed === null)
+    setLeads(filtered)
+  }, [allLeads, showClosed])
 
   if (!leads || !followUps || !users) return <LoadingComponent className='w-full h-full' />
   
@@ -90,10 +104,6 @@ const LeadsPage = () => {
         const user = users.find(u => u.id === row.original.referrer_id)
         return user ? user.name : row.original.referrer_id
       }
-    },
-    {
-      header: 'Status',
-      accessorKey: 'status',
     },
     {
       header: 'Contact Date',
@@ -153,26 +163,42 @@ const LeadsPage = () => {
       }
     },
     {
-      header: 'Application',
-      accessorKey: 'application_id',
+      header: 'Sent?',
+      accessorKey: 'sent',
       cell: ({ row }: any) => {
-        if (!row.original.application_id) return '-'
-        return row.original.application_id ? 'Yes' : 'No'
+        return row.original.sent ? (
+          <Badge variant="success">Sent</Badge>
+        ) : (
+          <Badge variant="outline">Not Sent</Badge>
+        )
       }
     },
     {
-      header: 'Application Date',
-      accessorKey: 'application_date',
+      header: 'Closed?',
+      accessorKey: 'closed',
       cell: ({ row }: any) => {
-        if (!row.original.application_date) return '-'
-        return formatDateFromTimestamp(row.original.application_date)
+        return row.original.closed ? (
+          <Badge variant="success">Closed</Badge>
+        ) : (
+          <Badge variant="outline">Open</Badge>
+        )
       }
-    }
+    },
   ] as ColumnDefinition<Lead>[]
 
   return (
     <div>
       <div className="flex flex-col gap-6">
+        {/* Filters */}
+        <div className="flex items-center space-x-2 mb-4">
+          <Checkbox
+            id="showClosed"
+            checked={showClosed}
+            onCheckedChange={(checked) => setShowClosed(checked as boolean)}
+          />
+          <Label htmlFor="showClosed">Show closed leads</Label>
+        </div>
+
         <Tabs defaultValue="contacts" className="w-full">
           <div className="flex justify-between gap-2">
           <TabsList>

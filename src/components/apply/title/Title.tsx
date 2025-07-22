@@ -9,8 +9,9 @@ import Link from 'next/link'
 import { formatURL } from '@/utils/language/lang'
 import { useSearchParams } from 'next/navigation'
 import { ReadApplicationByLeadID } from '@/utils/entities/application'
-import { ReadLeadByID } from '@/utils/entities/lead'
+import { ReadLeadByID, UpdateLeadByID } from '@/utils/entities/lead'
 import { toast } from '@/hooks/use-toast'
+import { formatTimestamp } from '@/utils/dates'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -36,11 +37,23 @@ const Title = ({ setStarted }:Props) => {
     try {
       // First check if the lead exists
       const leadData = await ReadLeadByID(leadId)
+      console.log(leadData)
       if (!leadData || !leadData.leads || leadData.leads.length === 0) {
         setLeadNotFoundError(true)
         toast({
           title: "Lead Not Found",
           description: "The lead ID provided is invalid or does not exist.",
+          variant: "destructive"
+        })
+        return
+      }
+
+      // Check if the lead is closed
+      if (leadData.leads[0].closed) {
+        setLeadNotFoundError(true)
+        toast({
+          title: "Lead Closed",
+          description: "The lead has already been closed. Please contact support for more information.",
           variant: "destructive"
         })
         return
@@ -69,6 +82,9 @@ const Title = ({ setStarted }:Props) => {
   }
 
   async function handleStartApplication() {
+
+    const leadId = searchParams.get('ld')
+
     if (leadNotFoundError) {
       toast({
         title: "Invalid Lead",
@@ -85,6 +101,12 @@ const Title = ({ setStarted }:Props) => {
         variant: "destructive"
       })
       return
+    }
+
+    if (leadId) {
+      await UpdateLeadByID(leadId, {
+        closed: formatTimestamp(new Date())
+      })
     }
     setStarted(true)
   }

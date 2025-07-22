@@ -15,9 +15,11 @@ import { InternalApplication } from '@/lib/entities/application';
 import { Account } from '@/lib/entities/account';
 import { Advisor } from '@/lib/entities/advisor';
 import { ReadAdvisors } from '@/utils/entities/advisor';
-import { formatDateFromTimestamp } from '@/utils/dates';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
+import { formatDateFromTimestamp } from '@/utils/dates';
+import { ReadUsers } from '@/utils/entities/user';
+import { User } from 'next-auth';
 
 const ApplicationsPage = () => {
 
@@ -27,38 +29,11 @@ const ApplicationsPage = () => {
   const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [advisors, setAdvisors] = useState<Advisor[] | null>(null)
   const [showAll, setShowAll] = useState(false)
-  const [showIncomplete, setShowIncomplete] = useState(true)
+  const [users, setUsers] = useState<User[] | null>(null)
 
   const handleRowClick = (row: InternalApplication) => {
     redirect(formatURL(`/dashboard/applications/${row.id}`, lang))
   }
-
-  // Check if an application is complete based on essential required fields
-  const isApplicationComplete = (app: InternalApplication): boolean => {
-    const application = app.application
-    if (!application) return false
-
-    // Check customer data
-    if (!application.customer?.type || !application.customer?.email) return false
-
-    // Check account holder details based on customer type
-    if (application.customer.type === 'INDIVIDUAL') {
-      const accountHolder = application.customer.accountHolder?.accountHolderDetails?.[0]
-      if (!accountHolder?.name?.first || !accountHolder?.name?.last || !accountHolder?.email) return false
-    } else if (application.customer.type === 'JOINT') {
-      const firstHolder = application.customer.jointHolders?.firstHolderDetails?.[0]
-      const secondHolder = application.customer.jointHolders?.secondHolderDetails?.[0]
-      if (!firstHolder?.name?.first || !firstHolder?.name?.last || !firstHolder?.email) return false
-      if (!secondHolder?.name?.first || !secondHolder?.name?.last || !secondHolder?.email) return false
-    }
-
-    // Check that at least one account and one user exist
-    if (!application.accounts?.length || !application.users?.length) return false
-
-    return true
-  }
-
-
 
   async function fetchAdvisors() {
     try {
@@ -99,11 +74,25 @@ const ApplicationsPage = () => {
     }
   }
 
+  async function fetchUsers() {
+    try {
+      const fetchedUsers = await ReadUsers()
+      setUsers(fetchedUsers)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch users",
+        variant: "destructive"
+      })
+    }
+  }
+
   // Fetch data once on component mount
   useEffect(() => {
     fetchAdvisors()
     fetchAccounts()
     fetchApplications()
+    fetchUsers()
   }, [])
 
   // Filter applications based on showAll and showIncomplete states
@@ -121,12 +110,6 @@ const ApplicationsPage = () => {
       })
     }
 
-    // Then filter by completion status (showIncomplete)
-    if (!showIncomplete) {
-      // Filter out incomplete applications
-      filteredApplications = filteredApplications.filter(app => isApplicationComplete(app))
-    }
-
     // Sort by created date (newest first)
     filteredApplications = filteredApplications.sort((a, b) => {
       if (!a.created && !b.created) return 0
@@ -136,7 +119,7 @@ const ApplicationsPage = () => {
     })
 
     setApplications(filteredApplications)
-  }, [allApplications, accounts, showAll, showIncomplete])
+  }, [allApplications, accounts, showAll])
 
   if (!applications || !advisors) return <LoadingComponent className='w-full h-full' />
 
@@ -147,13 +130,6 @@ const ApplicationsPage = () => {
       cell: ({ row }: any) => {
         const title = row.original.application?.customer?.accountHolder?.accountHolderDetails?.[0]?.name?.first + ' ' + row.original.application?.customer?.accountHolder?.accountHolderDetails?.[0]?.name?.last
         return title ? title : '-'
-      }
-    },
-    {
-      header: 'Application ID',
-      accessorKey: 'id',
-      cell: ({ row }: any) => {
-        return row.original.id ? row.original.id : '-'
       }
     },
     {
@@ -176,6 +152,13 @@ const ApplicationsPage = () => {
       }
     },
     {
+      header: 'Created',
+      accessorKey: 'created',
+      cell: ({ row }: any) => {
+        return row.original.created ? formatDateFromTimestamp(row.original.created) : '-'
+      }
+    },
+    {
       header: 'Has Lead',
       accessorKey: 'lead_id',
       cell: ({ row }: any) => {
@@ -183,40 +166,6 @@ const ApplicationsPage = () => {
           <Badge variant="success">Yes</Badge>
         ) : (
           <Badge variant="outline">No</Badge>
-        )
-      }
-    },
-    {
-      header: 'Created',
-      accessorKey: 'created',
-      cell: ({ row }: any) => {
-        try {
-          return row.original.created ? formatDateFromTimestamp(row.original.created) : '-'
-        } catch (error) {
-          return '-'
-        }
-      }
-    },
-    {
-      header: 'Updated',
-      accessorKey: 'updated',
-      cell: ({ row }: any) => {
-        try {
-          return row.original.updated ? formatDateFromTimestamp(row.original.updated) : '-'
-        } catch (error) {
-          return '-'
-        }
-      }
-    },
-    {
-      header: 'Complete?',
-      accessorKey: 'is_complete',
-      cell: ({ row }: any) => {
-        const isComplete = isApplicationComplete(row.original)
-        return isComplete ? (
-          <Badge variant="success">Complete</Badge>
-        ) : (
-          <Badge variant="outline">Incomplete</Badge>
         )
       }
     },
@@ -242,12 +191,15 @@ const ApplicationsPage = () => {
           <Badge variant="outline">
             {accountType === 'INDIVIDUAL' ? 'Individual' : 
              accountType === 'JOINT' ? 'Joint' : 
+             accountType === 'INSTITUTIONAL' ? 'Institutional' :
              accountType}
           </Badge>
         ) : '-'
       }
     }
   ] as ColumnDefinition<InternalApplication>[]
+
+  console.log(applications)
 
   return (
     <div>
@@ -259,14 +211,6 @@ const ApplicationsPage = () => {
             onCheckedChange={(checked) => setShowAll(checked as boolean)}
           />
           <Label htmlFor="showAll">Show applications with existing accounts</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="showIncomplete"
-            checked={showIncomplete}
-            onCheckedChange={(checked) => setShowIncomplete(checked as boolean)}
-          />
-          <Label htmlFor="showIncomplete">Show incomplete applications</Label>
         </div>
       </div>
       <motion.div variants={itemVariants} className="w-full">
@@ -280,6 +224,15 @@ const ApplicationsPage = () => {
             {
               label: 'View',
               onClick: (row: InternalApplication) => handleRowClick(row)
+            },
+            {
+              label: 'View User',
+              onClick: (row: InternalApplication) => {
+                const user = users?.find(user => user.id === row.user_id)
+                if (user) {
+                  redirect(formatURL(`/dashboard/users/${user.id}`, lang))
+                }
+              }
             },
             {
               label: 'View Account',

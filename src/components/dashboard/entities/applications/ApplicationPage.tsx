@@ -120,15 +120,12 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     try {
       setSubmitting(true)
 
-      console.log('application.application', application.application)
       const applicationResponse = await SendApplicationToIBKR(application.application)
-      console.log('applicationResponse', applicationResponse)
-
-      console.log(applicationResponse.fileData.application.accounts[0].value)
+      const accountNumber = applicationResponse.fileData.data.application.accounts[0].value
 
       // Assign account # here
       const account: InternalAccount = {
-        ibkr_account_number: applicationResponse.fileData.application.accounts[0].value,
+        ibkr_account_number: accountNumber,
         ibkr_username: null,
         ibkr_password: null,
         temporal_email: null,
@@ -138,8 +135,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       }
 
       // TODO: Uncomment this
-      //await CreateAccount(account)
-      //await UpdateApplicationByID(applicationId, { sentToIBKR: true })
+      await CreateAccount(account)
+      await UpdateApplicationByID(applicationId, { date_sent_to_ibkr: formatTimestamp(new Date()) })
 
       toast({
         title: "Application Sent",
@@ -224,11 +221,22 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   const financialInfo = accountHolder?.financialInformation?.[0];
   const regulatoryInfo = accountHolder?.regulatoryInformation?.[0];
   
-  // For joint accounts
-  const firstHolderDetails = jointHolders?.firstHolderDetails?.[0];
-  const secondHolderDetails = jointHolders?.secondHolderDetails?.[0];
-  const jointFinancialInfo = jointHolders?.financialInformation?.[0];
-  const jointRegulatoryInfo = jointHolders?.regulatoryInformation?.[0];
+  // For joint accounts – gracefully handle cases where `jointHolders` is undefined (legacy payloads)
+  const firstHolderDetails = isJointAccount
+    ? (jointHolders?.firstHolderDetails?.[0] ?? accountHolder?.accountHolderDetails?.[0])
+    : undefined;
+
+  const secondHolderDetails = isJointAccount
+    ? (jointHolders?.secondHolderDetails?.[0] ?? accountHolder?.accountHolderDetails?.[1])
+    : undefined;
+
+  const jointFinancialInfo = isJointAccount
+    ? (jointHolders?.financialInformation?.[0] ?? accountHolder?.financialInformation?.[0])
+    : undefined;
+
+  const jointRegulatoryInfo = isJointAccount
+    ? (jointHolders?.regulatoryInformation?.[0] ?? accountHolder?.regulatoryInformation?.[0])
+    : undefined;
 
   // --- Accounts Section ---
   const accounts = application.application.accounts || [];

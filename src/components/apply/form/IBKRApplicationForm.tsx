@@ -7,7 +7,7 @@ import {
   Form,
 } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
-import { Application, InternalApplication } from '@/lib/entities/application';
+import { Application, InternalApplication, InternalApplicationPayload } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import AccountHolderInfoStep from './AccountHolderInfoStep'
@@ -41,7 +41,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -104,19 +104,14 @@ const IBKRApplicationForm = () => {
       });
       const sanitizedValues = { ...values, documents: sanitizedDocuments };
 
-      const internalApplication: InternalApplication = {
+      const internalApplication: InternalApplicationPayload = {
         application: sanitizedValues,
         advisor_id,
         master_account_id,
         lead_id,
-        id: "",
-        created: formatTimestamp(new Date()),
-        updated: formatTimestamp(new Date()),
         date_sent_to_ibkr: null,
         user_id: session?.user?.id,
       }
-
-      console.log('Application ready to submit:', internalApplication.application);
 
       const createResponse = await CreateApplication(internalApplication);
       if (!createResponse) {

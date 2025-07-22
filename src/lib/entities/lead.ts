@@ -3,9 +3,9 @@ import { z } from "zod"
 import { Base } from "./base"
 
 export type LeadPayload = z.infer<typeof lead_schema> & {
-    status: string
-    completed: boolean
     contact_date: string
+    closed: string | null
+    sent: string | null
 }
 export type Lead = Base & LeadPayload
 

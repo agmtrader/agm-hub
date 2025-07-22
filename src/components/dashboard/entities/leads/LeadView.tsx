@@ -17,7 +17,7 @@ import { Separator } from '@/components/ui/separator'
 import { toast } from '@/hooks/use-toast'
 import { Checkbox } from '@/components/ui/checkbox'
 import GenerateApplicationLink from './GenerateApplicationLink'
-import UserCard from './UserCard'
+import UserCard from '../users/UserCard'
 import { UpdateLeadFollowUpByID, DeleteLeadFollowUpByID } from '@/utils/entities/lead'
 import { ReadApplicationByLeadID } from '@/utils/entities/application'
 import { InternalApplication } from '@/lib/entities/application'
@@ -114,13 +114,6 @@ const LeadView = ({ lead, followUps, users, isOpen, onOpenChange, onSuccess }: L
         </DialogHeader>
         <ScrollArea className="h-[60vh] w-full rounded-md">
           <div className="space-y-6 p-4">
-            {/* Lead Status */}
-            <div className="flex justify-between items-center">
-              <Badge variant={followUps.every(f => f.completed) ? "success" : "outline"} className="text-sm">
-                {followUps.filter(f => f.completed).length}/{followUps.length} follow-ups completed
-              </Badge>
-              <Badge variant={lead.status === 'Applied' ? 'success' : 'outline'} className="text-sm"> {lead.status} </Badge>
-            </div>
 
             {/* Application Information */}
             {application && (

@@ -24,7 +24,7 @@ export async function ReadLeadByID(leadID:string) {
     return leadsWithFollowUps
 }
 
-export async function UpdateLeadByID(leadID:string, lead:any): Promise<IDResponse> {
+export async function UpdateLeadByID(leadID:string, lead:Partial<LeadPayload>): Promise<IDResponse> {
     let updateResponse: IDResponse = await accessAPI('/leads/update', 'POST', {'query': {'id': leadID}, 'lead': lead})
     return updateResponse
 }

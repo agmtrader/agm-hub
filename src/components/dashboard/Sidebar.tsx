@@ -15,10 +15,10 @@ import { FaChartBar, FaShieldVirus } from 'react-icons/fa'
 
 const tools = [
   {
-    name: 'Contacts',
-    url: '/dashboard/contacts',
-    icon: Contact,
-    id: 'contacts',
+    name: 'Users',
+    url: '/dashboard/users',
+    icon: Users,
+    id: 'users',
   },
   {
     name: 'Advisors',

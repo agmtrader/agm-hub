@@ -1,9 +1,9 @@
 import { accessAPI } from "../api"
-import { Application, InternalApplication } from "../../lib/entities/application"
+import { Application, InternalApplication, InternalApplicationPayload } from "../../lib/entities/application"
 import { POADocumentInfo } from "@/lib/entities/application"
 import { IDResponse } from "@/lib/entities/base"
 
-export async function CreateApplication(application: InternalApplication): Promise<IDResponse> {
+export async function CreateApplication(application: InternalApplicationPayload): Promise<IDResponse> {
     const createResponse: IDResponse = await accessAPI('/applications/create', 'POST', { 'application': application })
     return createResponse
 }
@@ -27,7 +27,7 @@ export async function ReadApplicationByLeadID(leadID: string): Promise<InternalA
     return applications[0]
 }
 
-export async function UpdateApplicationByID(applicationID: string, application: any): Promise<IDResponse> {
+export async function UpdateApplicationByID(applicationID: string, application: Partial<InternalApplication>): Promise<IDResponse> {
     const updateResponse: IDResponse = await accessAPI('/applications/update', 'POST', { 'query': { 'id': applicationID }, 'application': application })
     return updateResponse
 }

@@ -11,6 +11,8 @@ import { FollowUp, Lead } from '@/lib/entities/lead'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { sendApplicationLinkEmail } from '@/utils/tools/email'
 import { User } from 'next-auth'
+import { UpdateLeadByID } from '@/utils/entities/lead'
+import { formatTimestamp } from '@/utils/dates'
 
 export type AccountType = 'br' | 'ad'
 export type Language = 'en' | 'es'
@@ -92,6 +94,9 @@ const GenerateApplicationLink = ({ lead, followUps, user }: Props) => {
         try {
             const url = generateUrl()
             await navigator.clipboard.writeText(url)
+            await UpdateLeadByID(lead.id, {
+                sent: formatTimestamp(new Date())
+            })
             toast({
                 title: 'Link copied to clipboard',
                 description: 'You can now paste it into your browser'
