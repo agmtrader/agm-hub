@@ -73,7 +73,7 @@ export type TradingPermission = z.infer<typeof trading_permission_schema>;
 export type Organization = z.infer<typeof organization_schema>;
 
 export type InternalApplicationPayload = {
-    advisor_id: string | null;
+    advisor_code: string | null;
     master_account_id: string | null;
     lead_id: string | null;
     application: Application;

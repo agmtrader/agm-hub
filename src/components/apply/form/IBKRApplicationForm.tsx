@@ -93,7 +93,7 @@ const IBKRApplicationForm = () => {
         throw new Error('User not found');
       }
       
-      const advisor_id = searchParams.get('ad') || null;
+      const advisor_code = searchParams.get('ad') || null;
       const master_account_id = searchParams.get('ma') || null;
       const lead_id = searchParams.get('ld') || null;
 
@@ -106,7 +106,7 @@ const IBKRApplicationForm = () => {
 
       const internalApplication: InternalApplicationPayload = {
         application: sanitizedValues,
-        advisor_id,
+        advisor_code,
         master_account_id,
         lead_id,
         date_sent_to_ibkr: null,

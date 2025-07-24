@@ -26,7 +26,7 @@ interface Props {
 const GenerateApplicationLink = ({ lead, followUps, user }: Props) => {
 
     const [accountType, setAccountType] = useState<AccountType>('br')
-    const [advisorID, setAdvisorID] = useState<string | null>(null)
+    const [advisorCode, setAdvisorCode] = useState<string | null>(null)
     const [language, setLanguage] = useState<Language>('en')
 
     const [isOpen, setIsOpen] = useState(false)
@@ -82,8 +82,8 @@ const GenerateApplicationLink = ({ lead, followUps, user }: Props) => {
         const maParam = accountType === 'br' ? 'br' : 'ad'
 
         let string = `${baseUrl}?ma=${maParam}`
-        if (advisorID) {
-            string += `&ad=${advisorID}`
+        if (advisorCode) {
+            string += `&ad=${advisorCode}`
         }
         string += `&ld=${lead.id}`
 
@@ -152,7 +152,7 @@ const GenerateApplicationLink = ({ lead, followUps, user }: Props) => {
 
                     <div className='flex flex-col gap-2'>
                         <label className='text-sm font-medium'>Advisor</label>
-                        <Select value={advisorID || ''} onValueChange={setAdvisorID}>
+                        <Select value={advisorCode || ''} onValueChange={setAdvisorCode}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
@@ -161,7 +161,7 @@ const GenerateApplicationLink = ({ lead, followUps, user }: Props) => {
                                     <SelectItem value="loading" disabled>Loading advisors...</SelectItem>
                                 ) : (
                                     advisors.map((advisor) => (
-                                        <SelectItem key={advisor.id} value={advisor.id.toString()}>
+                                        <SelectItem key={advisor.id} value={advisor.code}>
                                             {advisor.name}
                                         </SelectItem>
                                     ))
