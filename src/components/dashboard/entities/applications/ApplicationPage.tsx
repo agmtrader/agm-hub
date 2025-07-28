@@ -21,8 +21,7 @@ import {
   Dialog, 
   DialogContent, 
   DialogHeader, 
-  DialogTitle,
-  DialogTrigger 
+  DialogTitle
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -33,6 +32,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { formatTimestamp, formatDateFromTimestamp } from "@/utils/dates";
+import { useRouter } from "next/navigation";
+import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
+import { formatURL } from "@/utils/language/lang";
+import { ReadAdvisors } from "@/utils/entities/advisor";
+import { Advisor } from "@/lib/entities/advisor";
+import { AccountType } from "@/lib/entities/lead";
 import {
   Select,
   SelectContent,
@@ -40,10 +46,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatTimestamp, formatDateFromTimestamp } from "@/utils/dates";
-import { useRouter } from "next/navigation";
-import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
-import { formatURL } from "@/utils/language/lang";
 
 interface Props {
   applicationId: string;
@@ -69,6 +71,10 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
   const [isManualAccountDialogOpen, setIsManualAccountDialogOpen] = useState(false);
   const [isManualAccountSubmitting, setIsManualAccountSubmitting] = useState(false);
+  const [advisors, setAdvisors] = useState<Advisor[]>([]);
+  const [isLoadingAdvisors, setIsLoadingAdvisors] = useState(false);
+  const [isUpdatingAdvisor, setIsUpdatingAdvisor] = useState(false);
+  const [isUpdatingMasterAccount, setIsUpdatingMasterAccount] = useState(false);
   const {data:session} = useSession()
 
   const manualAccountForm = useForm({
@@ -98,6 +104,25 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     }
     fetchApplication();
   }, [applicationId]);
+
+  useEffect(() => {
+    async function fetchAdvisors() {
+      try {
+        setIsLoadingAdvisors(true);
+        const fetchedAdvisors = await ReadAdvisors();
+        setAdvisors(fetchedAdvisors);
+      } catch (error) {
+        toast({
+          title: "Error fetching advisors",
+          description: "Please try again later",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingAdvisors(false);
+      }
+    }
+    fetchAdvisors();
+  }, []);
 
   // Update form defaults when application data loads
   useEffect(() => {
@@ -208,6 +233,72 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       });
     } finally {
       setIsManualAccountSubmitting(false);
+    }
+  }
+
+  async function handleUpdateAdvisorCode(advisorCode: string) {
+    if (!application) return;
+    
+    const newAdvisorCode = advisorCode === "none" ? null : advisorCode;
+    
+    try {
+      setIsUpdatingAdvisor(true);
+      await UpdateApplicationByID(application.id, {
+        advisor_code: newAdvisorCode,
+      });
+      
+      // Update local state
+      setApplication(prev => prev ? {
+        ...prev,
+        advisor_code: newAdvisorCode,
+      } : null);
+      
+      toast({
+        title: "Advisor Updated",
+        description: "Advisor code has been updated successfully.",
+        variant: "success",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update advisor code.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdatingAdvisor(false);
+    }
+  }
+
+  async function handleUpdateMasterAccount(masterAccountId: string) {
+    if (!application) return;
+    
+    const newMasterAccountId = masterAccountId === "none" ? null : masterAccountId;
+    
+    try {
+      setIsUpdatingMasterAccount(true);
+      await UpdateApplicationByID(application.id, {
+        master_account_id: newMasterAccountId,
+      });
+      
+      // Update local state
+      setApplication(prev => prev ? {
+        ...prev,
+        master_account_id: newMasterAccountId,
+      } : null);
+      
+      toast({
+        title: "Master Account Updated",
+        description: "Master account ID has been updated successfully.",
+        variant: "success",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update master account ID.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdatingMasterAccount(false);
     }
   }
 
@@ -558,27 +649,66 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
                   )}
                 </div>
 
-                <LabelValue 
-                  label="Advisor Code" 
-                  value={application.advisor_code ? (
-                    <div className="flex items-center gap-2">
-                      <Building className="h-4 w-4" />
-                      <span>{application.advisor_code}</span>
-                    </div>
-                  ) : undefined} 
-                />
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <Building className="h-4 w-4" />
+                    Advisor Code:
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={application.advisor_code || "none"}
+                      onValueChange={handleUpdateAdvisorCode}
+                      disabled={isLoadingAdvisors || isUpdatingAdvisor}
+                    >
+                      <SelectTrigger className="w-[200px] h-8">
+                        <SelectValue placeholder="Select advisor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No advisor</SelectItem>
+                        {isLoadingAdvisors ? (
+                          <SelectItem value="loading" disabled>Loading advisors...</SelectItem>
+                        ) : (
+                          advisors.map((advisor) => (
+                            <SelectItem key={advisor.id} value={advisor.code}>
+                              {advisor.name} ({advisor.code})
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {isUpdatingAdvisor && (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-3">
-                <LabelValue 
-                  label="Master Account ID" 
-                  value={application.master_account_id ? (
-                    <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4" />
-                      <span>{application.master_account_id}</span>
-                    </div>
-                  ) : undefined} 
-                />
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <Briefcase className="h-4 w-4" />
+                    Master Account ID:
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={application.master_account_id || "none"}
+                      onValueChange={handleUpdateMasterAccount}
+                      disabled={isUpdatingMasterAccount}
+                    >
+                      <SelectTrigger className="w-[200px] h-8">
+                        <SelectValue placeholder="Select account type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No master account</SelectItem>
+                        <SelectItem value="br">Broker Account (br)</SelectItem>
+                        <SelectItem value="ad">Advisor Account (ad)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {isUpdatingMasterAccount && (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+                </div>
 
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
                   <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
@@ -606,6 +736,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
                 />
               </div>
             </div>
+
           </CardContent>
         </Card>
       </div>

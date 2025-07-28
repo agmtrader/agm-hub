@@ -2,6 +2,9 @@ import { lead_schema, follow_up_schema } from "@/lib/entities/schemas/lead"
 import { z } from "zod"
 import { Base } from "./base"
 
+export type AccountType = 'br' | 'ad'
+export type Language = 'en' | 'es'
+
 export type LeadPayload = z.infer<typeof lead_schema> & {
     contact_date: string
     closed: string | null

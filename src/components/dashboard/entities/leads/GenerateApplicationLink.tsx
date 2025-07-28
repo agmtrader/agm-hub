@@ -7,15 +7,12 @@ import { Card } from '@/components/ui/card'
 import { Plus } from 'lucide-react'
 import { ReadAdvisors } from '@/utils/entities/advisor'
 import { Advisor } from '@/lib/entities/advisor'
-import { FollowUp, Lead } from '@/lib/entities/lead'
+import { AccountType, FollowUp, Language, Lead } from '@/lib/entities/lead'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { sendApplicationLinkEmail } from '@/utils/tools/email'
 import { User } from 'next-auth'
 import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
-
-export type AccountType = 'br' | 'ad'
-export type Language = 'en' | 'es'
 
 interface Props {
     lead: Lead
