@@ -6,7 +6,7 @@ import LoadingComponent from "@/components/misc/LoadingComponent";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Mail, User, DollarSign, ShieldCheck, Info, Users, Briefcase, FileText, Eye, Loader2 } from 'lucide-react';
+import { Mail, User, DollarSign, ShieldCheck, Info, Users, Briefcase, FileText, Eye, Loader2, ExternalLink, UserCheck, Building, Calendar } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from "@/components/ui/button";
 import { CreateAccount } from "@/utils/entities/account";
@@ -40,13 +40,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatTimestamp } from "@/utils/dates";
+import { formatTimestamp, formatDateFromTimestamp } from "@/utils/dates";
+import { useRouter } from "next/navigation";
+import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
+import { formatURL } from "@/utils/language/lang";
 
 interface Props {
   applicationId: string;
 }
 
 const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
+  const router = useRouter();
+  const { lang } = useTranslationProvider();
 
   const DOCUMENT_TYPE_MAP: { [key: number]: string } = {
     5001: 'W8 Form',
@@ -496,6 +501,111 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
                 ))}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Application Metadata Card */}
+      <div className="mb-8">
+        <Card className="col-span-1 md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-primary"/> 
+              Application Metadata
+            </CardTitle>
+            <CardDescription>Internal application tracking information</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <UserCheck className="h-4 w-4" />
+                    Lead ID:
+                  </span>
+                                     {application.lead_id ? (
+                     <Button
+                       variant="ghost"
+                       size="sm"
+                       className="h-auto p-1 text-primary hover:text-primary/80"
+                       onClick={() => router.push(formatURL(lang, `/dashboard/leads/${application.lead_id}`))}
+                     >
+                       {application.lead_id}
+                       <ExternalLink className="h-3 w-3 ml-1" />
+                     </Button>
+                   ) : (
+                     <span className="text-subtitle">—</span>
+                   )}
+                </div>
+
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    User ID:
+                  </span>
+                  {application.user_id ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-1 text-primary hover:text-primary/80"
+                      onClick={() => router.push(formatURL(lang, `/dashboard/users/${application.user_id}`))}
+                    >
+                      {application.user_id}
+                      <ExternalLink className="h-3 w-3 ml-1" />
+                    </Button>
+                  ) : (
+                    <span className="text-subtitle">—</span>
+                  )}
+                </div>
+
+                <LabelValue 
+                  label="Advisor Code" 
+                  value={application.advisor_code ? (
+                    <div className="flex items-center gap-2">
+                      <Building className="h-4 w-4" />
+                      <span>{application.advisor_code}</span>
+                    </div>
+                  ) : undefined} 
+                />
+              </div>
+
+              <div className="space-y-3">
+                <LabelValue 
+                  label="Master Account ID" 
+                  value={application.master_account_id ? (
+                    <div className="flex items-center gap-2">
+                      <Briefcase className="h-4 w-4" />
+                      <span>{application.master_account_id}</span>
+                    </div>
+                  ) : undefined} 
+                />
+
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Sent to IBKR:
+                  </span>
+                  {application.date_sent_to_ibkr ? (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="success">Sent</Badge>
+                      <span className="text-sm">{formatDateFromTimestamp(application.date_sent_to_ibkr)}</span>
+                    </div>
+                  ) : (
+                    <Badge variant="outline">Not Sent</Badge>
+                  )}
+                </div>
+
+                <LabelValue 
+                  label="Application ID" 
+                  value={
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      <span className="font-mono text-sm">{application.id}</span>
+                    </div>
+                  } 
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
