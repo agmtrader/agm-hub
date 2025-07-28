@@ -1,4 +1,4 @@
-name: CI - Compile Check
+name: Compile Check
 
 on:
   push:

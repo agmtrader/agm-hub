@@ -1,12 +1,10 @@
 name: Trigger Cloud Build
 
 on:
-  # Run automatically when the compile check workflow completes
   workflow_run:
-    workflows: ["CI - Compile Check"]
+    workflows: ["Compile Check"]
     types:
       - completed
-  # Allow manual triggering if needed
   workflow_dispatch:
 
 jobs:
