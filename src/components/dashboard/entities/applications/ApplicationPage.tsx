@@ -38,7 +38,6 @@ import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 import { formatURL } from "@/utils/language/lang";
 import { ReadAdvisors } from "@/utils/entities/advisor";
 import { Advisor } from "@/lib/entities/advisor";
-import { AccountType } from "@/lib/entities/lead";
 import {
   Select,
   SelectContent,

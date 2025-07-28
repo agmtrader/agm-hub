@@ -244,7 +244,7 @@ export const TraderIntroduction: React.FC<IntroductionProps> = ({ title, descrip
           </Link>
         </motion.div>
       </div>
-      {<Iphone15Pro className='h-[40rem]' src='/assets/iphone-app.png' style={{ transform: 'perspective(1000px) rotateY(-15deg) rotateZ(0deg)' }} />}
+      {<Iphone15Pro className='h-[40rem]' src='/assets/phone/iphone-app.png' style={{ transform: 'perspective(1000px) rotateY(-15deg) rotateZ(0deg)' }} />}
     </motion.div>
   )
 }
