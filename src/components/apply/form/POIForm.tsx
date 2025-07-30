@@ -14,9 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { Loader2 } from 'lucide-react'
-import CountriesFormField from '@/components/ui/CountriesFormField'
 
 interface Props {
   onSubmit: (values: any) => void | Promise<void>
@@ -46,34 +44,6 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
         }}
         className="space-y-6"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <FormField
-          control={form.control}
-          name="gender"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Gender</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <CountriesFormField
-          form={form}
-          element={{ name: "country_of_issue", title: "Country of Issue" }}
-        />
-
           <FormField
           control={form.control}
           name="type"
@@ -98,79 +68,6 @@ const POIForm = ({ onSubmit, uploading }:Props) => {
             </FormItem>
           )}
         />
-
-          <FormField
-          control={form.control}
-          name="full_name"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormLabel>Full Name</FormLabel>
-              <Input {...field} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-          <FormField
-          control={form.control}
-          name="id_number"
-          render={({ field }) => (
-            <FormItem className="col-span-2 sm:col-span-1">
-              <FormLabel>ID Number</FormLabel>
-              <Input {...field} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-          <FormField
-          control={form.control}
-          name="issued_date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <div className="flex gap-2">
-                <FormLabel>Issued Date</FormLabel>
-                <FormMessage />
-              </div>
-              <DateTimePicker {...field} granularity="day" />
-            </FormItem>
-          )}
-        />
-
-          <FormField
-          control={form.control}
-          name="date_of_birth"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <div className="flex gap-2">
-                <FormLabel>Date of Birth</FormLabel>
-                <FormMessage />
-              </div>
-              <DateTimePicker {...field} granularity="day" />
-            </FormItem>
-          )}
-        />
-
-          <FormField
-          control={form.control}
-          name="expiration_date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <div className="flex gap-2">
-                <FormLabel>Expiration Date</FormLabel>
-                <FormMessage />
-              </div>
-              <DateTimePicker {...field} granularity="day" />
-            </FormItem>
-          )}
-        />
-
-        <CountriesFormField
-          form={form}
-          element={{ name: "country_of_birth", title: "Country of Birth" }}
-        />
-        </div>
-
         {
           uploading ? (
             <Button className="h-fit w-full sm:w-fit" type="submit">

@@ -1,9 +1,8 @@
 import { NextAuthOptions } from "next-auth"
-import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from "next-auth/providers/credentials"
 import { LoginUserWithCredentials } from "./api"
 
-const defaultScopes = "users/read users/update accounts/create accounts/read accounts/update"
+const defaultScopes = "users/read users/update accounts/create accounts/read accounts/update applications/create applications/read applications/update"
 
 export const authOptions: NextAuthOptions = {
 

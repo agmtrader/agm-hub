@@ -41,7 +41,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: joint_form,
     mode: 'onChange',
     shouldUnregister: false,
   });

@@ -26,17 +26,16 @@ import {
     source_of_wealth_schema,
     regulatory_detail_schema,
     trading_permission_schema,
-
     organization_schema,
     local_tax_form_schema,
     w8ben_schema
 } from './schemas/application';
-import { poa_schema, poi_schema, sow_schema } from './schemas/application';
+
+import { poa_schema, poi_schema } from './schemas/application';
 import { Base } from './base';
 
 export type POADocumentInfo = z.infer<typeof poa_schema>
 export type POIDocumentInfo = z.infer<typeof poi_schema>
-export type SOWDocumentInfo = z.infer<typeof sow_schema>
 
 export type Application = z.infer<typeof application_schema>;
 export type Customer = z.infer<typeof customer_schema>;

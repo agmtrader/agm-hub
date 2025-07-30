@@ -70,20 +70,6 @@ const POAForm = ({ onSubmit, uploading }:Props) => {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="issued_date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <div className="flex gap-2">
-                <FormLabel>Issued Date</FormLabel>
-                <FormMessage />
-              </div>
-              <DateTimePicker {...field} granularity="day" />
-            </FormItem>
-          )}
-        />
-
         {
           uploading ? (
             <Button className="h-fit w-fit" type="submit">
