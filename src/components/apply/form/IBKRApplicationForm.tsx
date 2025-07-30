@@ -19,7 +19,7 @@ import LoaderButton from '@/components/misc/LoaderButton'
 import { formatTimestamp } from '@/utils/dates'
 import { Check } from "lucide-react"
 import { useSession } from 'next-auth/react'
-import { individual_form, joint_form, organizational_form } from './SampleInfo'
+import { individual_form, joint_form, new_form, organizational_form } from './SampleInfo'
 import ApplicationSuccess from './ApplicationSuccess'
 import { getApplicationDefaults } from '@/utils/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
@@ -41,7 +41,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: joint_form,
+    defaultValues: getApplicationDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });

@@ -163,8 +163,10 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         fee_template: null
       }
 
-      // TODO: Uncomment this
       await CreateAccount(account)
+
+      // TODO: Create account documents
+
       await UpdateApplicationByID(applicationId, { date_sent_to_ibkr: formatTimestamp(new Date()) })
 
       toast({

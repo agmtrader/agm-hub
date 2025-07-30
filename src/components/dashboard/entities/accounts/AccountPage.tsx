@@ -8,6 +8,7 @@ export interface AccountDetails {
   associatedPersons: AssociatedPerson[];
   financialInformation: FinancialInformation;
   sourcesOfWealth: SourceOfWealth[];
+  documents?: any[];
 }
 
 export interface Account {
@@ -148,6 +149,7 @@ import { ReadAccountDetailsByAccountID } from '@/utils/entities/account';
 import { toast } from '@/hooks/use-toast';
 import { AccountPendingTasks } from './AccountPendingTasks';
 import { AccountRegistrationTasks } from './AccountRegistrationTasks';
+import AccountDocumentsCard from './AccountDocumentsCard';
 import { Separator } from '@/components/ui/separator';
 
 type Props = {
@@ -175,22 +177,24 @@ const AccountPage = ({ accountId }: Props) => {
 
   const [accountDetails, setAccountDetails] = useState<AccountDetails | null>(null);
 
-  useEffect(() => {
-    const fetchAccountDetails = async () => {
-      try {
-        const accountDetails = await ReadAccountDetailsByAccountID(accountId);
-        if (!accountDetails) throw new Error("Account not found");
-        setAccountDetails(accountDetails); 
-      } catch (e) {
-        toast({
-          title: "Error",
-          description: e instanceof Error ? e.message : "Error fetching account details",
-          variant: "destructive",
-        });
-      }
+  // Fetch account details (also exposed for child refresh)
+  const refreshAccountDetails = async () => {
+    try {
+      const details = await ReadAccountDetailsByAccountID(accountId)
+      if (!details) throw new Error('Account not found')
+      setAccountDetails(details)
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: e instanceof Error ? e.message : 'Error fetching account details',
+        variant: 'destructive'
+      })
     }
-    fetchAccountDetails();
-  }, [accountId]);
+  }
+
+  useEffect(() => {
+    refreshAccountDetails()
+  }, [accountId])
 
   if (!accountDetails) return <LoadingComponent className='w-full h-full' />;
 
@@ -387,16 +391,12 @@ const AccountPage = ({ accountId }: Props) => {
         {/* Documents Tab - Only for open accounts */}
         {account.clearingStatus === 'O' && (
           <TabsContent value="documents">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center"><FileText className="h-5 w-5 mr-2 text-primary"/>Documents</CardTitle>
-                <CardDescription>Manage and view account-related documents.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">Document management features will be implemented here. (e.g., W-8BEN, account statements, trade confirmations, etc.)</p>
-                {/* Placeholder for future document list or upload functionality */}
-              </CardContent>
-            </Card>
+            <AccountDocumentsCard 
+              documents={(accountDetails as any).documents || []}
+              accountId={account.accountId}
+              accountTitle={account.accountTitle}
+              onRefresh={refreshAccountDetails}
+            />
           </TabsContent>
         )}
 
