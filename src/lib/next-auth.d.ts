@@ -12,9 +12,9 @@ export interface CreateUserPayload {
 
 declare module "next-auth" {
   interface User extends DefaultUser {
-    phone: string
+    phone: string | null
     country: string
-    company_name: string
+    company_name: string | null
     created: string
     updated: string
     scopes: string;

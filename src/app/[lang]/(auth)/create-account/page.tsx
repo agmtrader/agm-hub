@@ -37,8 +37,8 @@ const formSchema = z.object({
     message: "Please enter a valid email address.",
   }),
   country: z.string(),
-  phone: z.string(),
-  company_name: z.string(),
+  phone: z.string().optional().nullable(),
+  company_name: z.string().optional().nullable(),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),
@@ -63,6 +63,8 @@ const CreateAccount = () => {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
 
+  console.log(form.formState.errors)
+
   const [creating, setCreating] = useState(false)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -72,8 +74,8 @@ const CreateAccount = () => {
 
       const user:UserPayload = {
         'country': values.country,
-        'phone': values.phone,
-        'company_name': values.company_name,
+        'phone': values.phone || null,
+        'company_name': values.company_name || null,
         'name': values.name,
         'email': values.email,
         'image': '',
