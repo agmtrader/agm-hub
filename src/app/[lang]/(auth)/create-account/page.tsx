@@ -101,6 +101,7 @@ const CreateAccount = () => {
       if (result?.ok) {
         router.push(callbackUrl ? formatURL(callbackUrl, lang) : formatURL('/', lang));
       }
+      
     } catch (error) {
       toast({
         title: 'Error',

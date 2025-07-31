@@ -6,10 +6,9 @@ import { useToast } from "@/hooks/use-toast"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 import DashboardPage from "@/components/misc/DashboardPage"
 import { ListRiskProfiles, ReadAccountRiskProfiles } from "@/utils/tools/risk-profile"
-//import { riskProfiles as riskProfilesDictionary } from "@/lib/tools/risk-profile"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Account } from "@/lib/entities/account"
-import { ReadAccounts } from "@/utils/entities/account"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
 
 const RiskCenter = () => {
 
@@ -19,9 +18,7 @@ const RiskCenter = () => {
   const [accountRiskProfile, setAccountRiskProfile] = useState<AccountRiskProfile | null>(null)
 
   const { toast } = useToast()
-
-  console.log(accountRiskProfiles)
-
+  
   useEffect(() => {
 
     async function fetchData () {
@@ -57,24 +54,38 @@ const RiskCenter = () => {
 
     <div className="flex flex-col gap-20">
       <div className="flex w-96 gap-x-5">
-        <Select
-          value={accountRiskProfile?.id.toString()}
-          onValueChange={(value) => {
-            const selected = accountRiskProfiles.find((profile) => profile.id.toString() === value)
-            setAccountRiskProfile(selected || null)
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a risk profile" />
-          </SelectTrigger>
-          <SelectContent>
-            {accountRiskProfiles.map((accountRiskProfile) => (
-              <SelectItem key={accountRiskProfile.id} value={accountRiskProfile.id.toString()}>
-                {accountRiskProfile.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              className="w-full justify-between"
+            >
+              {accountRiskProfile ? accountRiskProfile.name : "Select a risk profile"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] p-0">
+            <Command>
+              <CommandList>
+                <CommandInput placeholder="Search risk profiles..." />
+                <CommandEmpty>No risk profiles found.</CommandEmpty>
+                <CommandGroup>
+                  {accountRiskProfiles.map((profile) => (
+                    <CommandItem
+                      key={profile.id}
+                      value={profile.name ?? ''}
+                      onSelect={() => {
+                        setAccountRiskProfile(profile)
+                      }}
+                    >
+                      {profile.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {accountRiskProfile && (

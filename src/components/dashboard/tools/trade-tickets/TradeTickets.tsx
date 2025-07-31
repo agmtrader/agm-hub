@@ -123,7 +123,7 @@ export default function TradeTickets() {
       if (!clientMessage) return;
       setSending(true)
       try {
-        let email = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com"
+        let email = "lchavarria@acobo.com, arodriguez@acobo.com, rcontreras@acobo.com, pgonzalez@acobo.com"
         // let email = 'aa@agmtechnology.com'
         await SendToClient(clientMessage, email)
         toast({

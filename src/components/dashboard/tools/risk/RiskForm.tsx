@@ -18,7 +18,6 @@ import { useEffect, useState } from "react"
 import { getDefaults } from '@/utils/form'
 import { risk_assesment_schema } from "@/lib/tools/schemas/risk-profile"
 import { Input } from "@/components/ui/input"
-import { formatTimestamp } from "../../../../utils/dates"
 import RiskProfile from "@/components/dashboard/tools/risk/RiskProfile"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -28,7 +27,7 @@ import {
 } from "@/components/ui/dialog"
 import { GetRiskProfile, CreateAccountRiskProfile } from "@/utils/tools/risk-profile"
 import { ReloadIcon } from "@radix-ui/react-icons"
-import { Command, X } from "lucide-react"
+import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
@@ -36,7 +35,8 @@ import { useSession } from "next-auth/react"
 import { getRiskFormQuestions, weights, RiskProfile as RiskProfileType, AccountRiskProfilePayload } from "@/lib/tools/risk-profile"
 import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
-import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/ui/select"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 
 // Each question in the form has a weight and each answer in the question has a weight
@@ -49,7 +49,7 @@ const RiskForm = () => {
 
   const {toast} = useToast()
   const {data:session} = useSession()
-  const {t} = useTranslationProvider()
+  const { t } = useTranslationProvider()
 
   const [riskProfile, setRiskProfile] = useState<RiskProfileType | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -170,21 +170,50 @@ const RiskForm = () => {
                     <FormMessage />
                   </div>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {accounts.map((account) => (
-                          <SelectItem key={account.id} value={account.id}>
-                            {account.ibkr_account_number}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="w-full justify-between bg-muted"
+                        >
+                          {field.value
+                            ? accounts.find((account) => account.id === field.value)?.ibkr_account_number
+                            : t('forms.none') ?? 'None'
+                          }
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandList>
+                            <CommandInput placeholder={t('forms.search')} />
+                            <CommandEmpty>{t('forms.no_results')}</CommandEmpty>
+                            <CommandGroup>
+                              <CommandItem
+                                key="none"
+                                value="none"
+                                onSelect={() => {
+                                  field.onChange(null)
+                                }}
+                              >
+                                {t('forms.none') ?? 'None'}
+                              </CommandItem>
+                              {accounts.map((account) => (
+                                <CommandItem
+                                  key={account.id}
+                                  value={account.ibkr_account_number}
+                                  onSelect={() => {
+                                    field.onChange(account.id)
+                                  }}
+                                >
+                                  {account.ibkr_account_number}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </FormControl>
                 </FormItem>
               )}

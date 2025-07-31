@@ -788,6 +788,7 @@
         "submitting": "Submitting...",
         "previous_step": "Previous step",
         "finish": "Finish",
+        "none": "None",
         "errors": {
             "email": "Please enter a valid email.",
             "username_length": "Username must be at least 4 characters long.",
