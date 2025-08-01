@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { formatTimestamp, formatDateFromTimestamp } from "@/utils/dates";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 import { formatURL } from "@/utils/language/lang";
 import { ReadAdvisors } from "@/utils/entities/advisor";
@@ -149,16 +149,15 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     try {
       setSubmitting(true)
 
-      //const applicationResponse = await SendApplicationToIBKR(application.application)
-      //console.log(applicationResponse)
-      //const accountNumber = applicationResponse.fileData.data.application.accounts[0].value
-      //if (!accountNumber) {
-      //  throw new Error('Error creating account, please try again later.');
-      //}
+      const applicationResponse = await SendApplicationToIBKR(application.application)
+      console.log(applicationResponse)
+      const accountNumber = applicationResponse.fileData.data.application.accounts[0].value
+      if (!accountNumber) {
+        throw new Error('Error creating account, please try again later.');
+      }
 
-      // Assign account # here
       const account: InternalAccount = {
-        ibkr_account_number: 'test',
+        ibkr_account_number: accountNumber,
         ibkr_username: null,
         ibkr_password: null,
         temporal_email: null,
@@ -172,7 +171,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         throw new Error('Error creating internal account, please try again later.');
       }
 
-      // TODO: Create account documents
       for (const document of application.application.documents || []) {
         if (document && document.attachedFile) {  
           await UploadAccountDocument(
@@ -659,7 +657,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-1 text-primary hover:text-primary/80"
-                      onClick={() => router.push(formatURL(lang, `/dashboard/users/${application.user_id}`))}
+                      onClick={() => redirect(formatURL(`/dashboard/users/${application.user_id}`, lang))}
                     >
                       {application.user_id}
                       <ExternalLink className="h-3 w-3 ml-1" />
@@ -762,8 +760,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       </div>
 
       <div className="flex gap-4">
-        <LoaderButton onClick={handleCreateAccount} isLoading={submitting} text="Send Application to IBKR" className="w-fit"/>
-        <Button onClick={handleCreateManualAccount} variant="outline" className="w-fit">
+        <LoaderButton onClick={handleCreateAccount} isLoading={submitting} disabled={application.date_sent_to_ibkr !== null} text="Send Application to IBKR" className="w-fit"/>
+        <Button onClick={handleCreateManualAccount} disabled={application.date_sent_to_ibkr !== null} variant="outline" className="w-fit">
           Create Manual Account
         </Button>
       </div>
@@ -865,6 +863,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
                 <Button 
                   type="button" 
                   variant="outline" 
+                  disabled={isManualAccountSubmitting}
                   onClick={() => setIsManualAccountDialogOpen(false)}
                 >
                   Cancel

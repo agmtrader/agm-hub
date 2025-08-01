@@ -146,11 +146,24 @@ import {
   ListChecks,      
   ClipboardList
 } from 'lucide-react';
-import { ReadAccountByAccountID, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
+import { ReadAccountByAccountID, ReadAccountDetailsByAccountID, UpdateAccountByID } from '@/utils/entities/account';
 import { toast } from '@/hooks/use-toast';
 import { AccountPendingTasks } from './AccountPendingTasks';
 import { AccountRegistrationTasks } from './AccountRegistrationTasks';
 import AccountDocumentsCard from './AccountDocumentsCard';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Loader2, ExternalLink, Edit, Save, X } from 'lucide-react';
+import { redirect, useRouter } from 'next/navigation';
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
+import { formatURL } from '@/utils/language/lang';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Props = {
   accountId: string;
@@ -173,10 +186,100 @@ export const DetailItem = ({ label, value, icon: Icon }: { label: string; value?
   );
 };
 
+export const EditableDetailItem = ({ 
+  label, 
+  value, 
+  field, 
+  isEditing, 
+  editValue, 
+  isUpdating, 
+  onStartEdit, 
+  onCancelEdit, 
+  onSaveEdit, 
+  onEditValueChange,
+  type = "text",
+  icon: Icon 
+}: { 
+  label: string; 
+  value?: string | null; 
+  field: string;
+  isEditing: boolean;
+  editValue: string;
+  isUpdating: boolean;
+  onStartEdit: () => void;
+  onCancelEdit: () => void;
+  onSaveEdit: () => void;
+  onEditValueChange: (value: string) => void;
+  type?: string;
+  icon?: React.ElementType;
+}) => {
+  return (
+    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+      <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+        {Icon && <Icon className="h-4 w-4" />}
+        {label}:
+      </span>
+      
+      {isEditing ? (
+        <div className="flex items-center gap-2">
+          <Input
+            type={type}
+            value={editValue}
+            onChange={(e) => onEditValueChange(e.target.value)}
+            placeholder={`Enter ${label.toLowerCase()}`}
+            className="w-[200px] h-8"
+          />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onSaveEdit}
+            disabled={isUpdating}
+          >
+            {isUpdating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onCancelEdit}
+            disabled={isUpdating}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <span className="text-subtitle">
+            {value || "—"}
+          </span>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onStartEdit}
+            className="h-auto p-1"
+          >
+            <Edit className="h-3 w-3" />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const AccountPage = ({ accountId }: Props) => {
+  const router = useRouter();
+  const { lang } = useTranslationProvider();
 
   const [internalAccount, setInternalAccount] = useState<AccountFromDB | null>(null)
   const [accountDetails, setAccountDetails] = useState<AccountDetails | null>(null);
+  
+  // State for editing internal account data
+  const [isEditing, setIsEditing] = useState<{ [key: string]: boolean }>({});
+  const [editValues, setEditValues] = useState<{ [key: string]: string }>({});
+  const [isUpdating, setIsUpdating] = useState<{ [key: string]: boolean }>({});
 
   const refreshAccountDetails = async () => {
     try {
@@ -194,6 +297,63 @@ const AccountPage = ({ accountId }: Props) => {
       })
     }
   }
+
+  const handleStartEdit = (field: string, currentValue: string | null) => {
+    setIsEditing(prev => ({ ...prev, [field]: true }));
+    setEditValues(prev => ({ ...prev, [field]: currentValue || '' }));
+  };
+
+  const handleCancelEdit = (field: string) => {
+    setIsEditing(prev => ({ ...prev, [field]: false }));
+    setEditValues(prev => ({ ...prev, [field]: '' }));
+  };
+
+  const handleSaveEdit = async (field: string) => {
+    if (!internalAccount) return;
+    
+    const newValue = editValues[field];
+    
+    try {
+      setIsUpdating(prev => ({ ...prev, [field]: true }));
+      
+      // Create the full account payload with updated field
+      const accountPayload = {
+        ibkr_account_number: field === 'ibkr_account_number' ? (newValue || null) : internalAccount.ibkr_account_number,
+        ibkr_username: field === 'ibkr_username' ? (newValue || null) : internalAccount.ibkr_username,
+        ibkr_password: field === 'ibkr_password' ? (newValue || null) : internalAccount.ibkr_password,
+        temporal_email: field === 'temporal_email' ? (newValue || null) : internalAccount.temporal_email,
+        temporal_password: field === 'temporal_password' ? (newValue || null) : internalAccount.temporal_password,
+      };
+      
+      await UpdateAccountByID(internalAccount.id, accountPayload);
+      
+      // Update local state
+      setInternalAccount(prev => prev ? {
+        ...prev,
+        [field]: newValue || null
+      } : null);
+      
+      setIsEditing(prev => ({ ...prev, [field]: false }));
+      setEditValues(prev => ({ ...prev, [field]: '' }));
+      
+      toast({
+        title: "Account Updated",
+        description: `${field.replace('_', ' ')} has been updated successfully.`,
+        variant: "success",
+      });
+      
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `Failed to update ${field.replace('_', ' ')}.`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(prev => ({ ...prev, [field]: false }));
+    }
+  };
+
+
 
   useEffect(() => {
     refreshAccountDetails()
@@ -237,6 +397,136 @@ const AccountPage = ({ accountId }: Props) => {
         </CardContent>
       </Card>
 
+      {/* Internal Account Data Card */}
+      {internalAccount && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center text-xl font-bold">
+              <Info className="h-5 w-5 mr-2 text-primary" />
+              Internal Account Data
+            </CardTitle>
+            <CardDescription>Editable internal account information</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <EditableDetailItem
+                  label="IBKR Account Number"
+                  value={internalAccount.ibkr_account_number}
+                  field="ibkr_account_number"
+                  isEditing={isEditing.ibkr_account_number || false}
+                  editValue={editValues.ibkr_account_number || ''}
+                  isUpdating={isUpdating.ibkr_account_number || false}
+                  onStartEdit={() => handleStartEdit('ibkr_account_number', internalAccount.ibkr_account_number)}
+                  onCancelEdit={() => handleCancelEdit('ibkr_account_number')}
+                  onSaveEdit={() => handleSaveEdit('ibkr_account_number')}
+                  onEditValueChange={(value) => setEditValues(prev => ({ ...prev, ibkr_account_number: value }))}
+                  icon={Briefcase}
+                />
+
+                <EditableDetailItem
+                  label="IBKR Username"
+                  value={internalAccount.ibkr_username}
+                  field="ibkr_username"
+                  isEditing={isEditing.ibkr_username || false}
+                  editValue={editValues.ibkr_username || ''}
+                  isUpdating={isUpdating.ibkr_username || false}
+                  onStartEdit={() => handleStartEdit('ibkr_username', internalAccount.ibkr_username)}
+                  onCancelEdit={() => handleCancelEdit('ibkr_username')}
+                  onSaveEdit={() => handleSaveEdit('ibkr_username')}
+                  onEditValueChange={(value) => setEditValues(prev => ({ ...prev, ibkr_username: value }))}
+                  icon={User}
+                />
+
+                <EditableDetailItem
+                  label="IBKR Password"
+                  value={internalAccount.ibkr_password ? "••••••••" : null}
+                  field="ibkr_password"
+                  isEditing={isEditing.ibkr_password || false}
+                  editValue={editValues.ibkr_password || ''}
+                  isUpdating={isUpdating.ibkr_password || false}
+                  onStartEdit={() => handleStartEdit('ibkr_password', '')}
+                  onCancelEdit={() => handleCancelEdit('ibkr_password')}
+                  onSaveEdit={() => handleSaveEdit('ibkr_password')}
+                  onEditValueChange={(value) => setEditValues(prev => ({ ...prev, ibkr_password: value }))}
+                  type="password"
+                  icon={ShieldCheck}
+                />
+
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <Receipt className="h-4 w-4" />
+                    Fee Template:
+                  </span>
+                  <span className="text-subtitle">
+                    {internalAccount.fee_template || "—"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <EditableDetailItem
+                  label="Temporal Email"
+                  value={internalAccount.temporal_email}
+                  field="temporal_email"
+                  isEditing={isEditing.temporal_email || false}
+                  editValue={editValues.temporal_email || ''}
+                  isUpdating={isUpdating.temporal_email || false}
+                  onStartEdit={() => handleStartEdit('temporal_email', internalAccount.temporal_email)}
+                  onCancelEdit={() => handleCancelEdit('temporal_email')}
+                  onSaveEdit={() => handleSaveEdit('temporal_email')}
+                  onEditValueChange={(value) => setEditValues(prev => ({ ...prev, temporal_email: value }))}
+                  type="email"
+                  icon={Mail}
+                />
+
+                <EditableDetailItem
+                  label="Temporal Password"
+                  value={internalAccount.temporal_password ? "••••••••" : null}
+                  field="temporal_password"
+                  isEditing={isEditing.temporal_password || false}
+                  editValue={editValues.temporal_password || ''}
+                  isUpdating={isUpdating.temporal_password || false}
+                  onStartEdit={() => handleStartEdit('temporal_password', '')}
+                  onCancelEdit={() => handleCancelEdit('temporal_password')}
+                  onSaveEdit={() => handleSaveEdit('temporal_password')}
+                  onEditValueChange={(value) => setEditValues(prev => ({ ...prev, temporal_password: value }))}
+                  type="password"
+                  icon={ShieldCheck}
+                />
+
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Application ID:
+                  </span>
+                  {internalAccount.application_id ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-1 text-primary hover:text-primary/80"
+                      onClick={() => redirect(formatURL(`/dashboard/applications/${internalAccount.application_id}`, lang))}
+                    >
+                      {internalAccount.application_id}
+                      <ExternalLink className="h-3 w-3 ml-1" />
+                    </Button>
+                  ) : (
+                    <span className="text-subtitle">—</span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    Account ID:
+                  </span>
+                  <span className="font-mono text-sm text-subtitle">{internalAccount.id}</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="persons" className="w-full">
         <TabsList className="mb-4 w-fit overflow-x-auto whitespace-nowrap justify-start sm:justify-center">
