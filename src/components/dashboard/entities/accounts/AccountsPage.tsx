@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { redirect } from 'next/navigation';
 import { formatURL } from '@/utils/language/lang';
-import { InternalAccount } from '@/lib/entities/account';
+import { Account } from '@/lib/entities/account';
 import { InternalApplication } from '@/lib/entities/application';
 import { ReadApplications } from '@/utils/entities/application';
 import { formatDateFromTimestamp } from '@/utils/dates';
@@ -20,12 +20,11 @@ import { Badge } from '@/components/ui/badge';
 const AccountsPage = () => {
 
   const {lang} = useTranslationProvider()
-  const [accounts, setAccounts] = useState<InternalAccount[] | null>(null)
+  const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [applications, setApplications] = useState<InternalApplication[] | null>(null)
 
-  const handleRowClick = (row: InternalAccount) => {
-    return
-    redirect(formatURL(`/dashboard/accounts/${row.ibkr_account_number}`, lang))
+  const handleRowClick = (row: Account) => {
+    redirect(formatURL(`/dashboard/accounts/${row.id}`, lang))
   }
 
   async function fetchApplications() {
@@ -139,7 +138,7 @@ const AccountsPage = () => {
         return row.original.updated ? formatDateFromTimestamp(row.original.updated) : '-'
       }
     }
-  ] as ColumnDefinition<InternalAccount>[]
+  ] as ColumnDefinition<Account>[]
 
   return (
     <div>
@@ -153,11 +152,11 @@ const AccountsPage = () => {
           rowActions={[
             {
               label: 'View',
-              onClick: (row: InternalAccount) => handleRowClick(row)
+              onClick: (row: Account) => handleRowClick(row)
             },
             {
               label: 'View Application',
-              onClick: (row: InternalAccount) => {
+              onClick: (row: Account) => {
                 if (row.application_id) {
                   redirect(formatURL(`/dashboard/applications/${row.application_id}`, lang))
                 }

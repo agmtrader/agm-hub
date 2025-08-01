@@ -53,6 +53,24 @@ export async function UpdateAccountInfoByID(accountID:string, accountInfo: any) 
     return updatedID
 }
 
+export async function UploadAccountDocument(accountID:string, file_name:string, file_length:number, sha1_checksum:string, mime_type:string, data:string) {
+    const updatedID = await accessAPI('/accounts/upload_document', 'POST', {
+        'account_id': accountID,
+        'query': {},
+        'file_name': file_name,
+        'file_length': file_length,
+        'sha1_checksum': sha1_checksum,
+        'mime_type': mime_type,
+        'data': data
+    })
+    return updatedID
+}
+
+export async function ReadAccountDocuments(accountID:string): Promise<any> {
+    const documents:any = await accessAPI('/accounts/read_documents', 'POST', {'account_id': accountID})
+    return documents
+}
+
 // Account Management
 export async function ReadAccountDetailsByAccountID(accountID:string): Promise<any | null> {
     let accounts:any = await accessAPI('/accounts/details', 'POST', {'account_id': accountID})

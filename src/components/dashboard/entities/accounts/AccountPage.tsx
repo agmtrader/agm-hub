@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
+import { Account as AccountFromDB } from '@/lib/entities/account';
 
 // --- Account Details Types ---
 
@@ -145,12 +146,11 @@ import {
   ListChecks,      
   ClipboardList
 } from 'lucide-react';
-import { ReadAccountDetailsByAccountID } from '@/utils/entities/account';
+import { ReadAccountByAccountID, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
 import { toast } from '@/hooks/use-toast';
 import { AccountPendingTasks } from './AccountPendingTasks';
 import { AccountRegistrationTasks } from './AccountRegistrationTasks';
 import AccountDocumentsCard from './AccountDocumentsCard';
-import { Separator } from '@/components/ui/separator';
 
 type Props = {
   accountId: string;
@@ -175,13 +175,16 @@ export const DetailItem = ({ label, value, icon: Icon }: { label: string; value?
 
 const AccountPage = ({ accountId }: Props) => {
 
+  const [internalAccount, setInternalAccount] = useState<AccountFromDB | null>(null)
   const [accountDetails, setAccountDetails] = useState<AccountDetails | null>(null);
 
-  // Fetch account details (also exposed for child refresh)
   const refreshAccountDetails = async () => {
     try {
-      const details = await ReadAccountDetailsByAccountID(accountId)
-      if (!details) throw new Error('Account not found')
+      const account = await ReadAccountByAccountID(accountId)
+      if (!account) throw new Error('Account not found')
+      setInternalAccount(account)
+      const details = await ReadAccountDetailsByAccountID(account.ibkr_account_number)
+      if (!details) throw new Error('Account details not found')
       setAccountDetails(details)
     } catch (e) {
       toast({
@@ -393,7 +396,7 @@ const AccountPage = ({ accountId }: Props) => {
           <TabsContent value="documents">
             <AccountDocumentsCard 
               documents={(accountDetails as any).documents || []}
-              accountId={account.accountId}
+              accountId={internalAccount?.id || null}
               accountTitle={account.accountTitle}
               onRefresh={refreshAccountDetails}
             />

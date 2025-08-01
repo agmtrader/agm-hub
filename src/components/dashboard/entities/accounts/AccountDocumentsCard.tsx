@@ -1,11 +1,12 @@
 'use client'
 
+import { ReadAccountDocuments } from '@/utils/entities/account'
+
 import React, { useEffect, useState } from 'react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { FileText, Eye, Upload } from 'lucide-react'
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
-import DocumentViewer from '../applications/DocumentViewer'
+import DocumentViewer from './DocumentViewer'
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,7 @@ import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import { SubmitAccountDocument } from '@/utils/entities/account'
 import { DocumentSubmissionRequest } from '@/lib/entities/account'
-import { formatTimestamp } from '@/utils/dates'
+import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 
 // Helper to convert bytes to human readable size
 function formatFileSize(bytes?: number) {
@@ -80,13 +81,46 @@ function getDocumentName(formNumber: number) {
 }
 
 interface Props {
-  documents: any[]
-  accountId: string
+  documents?: DatabaseDocument[]
+  accountId: string | null
   accountTitle: string
   onRefresh?: () => void
 }
 
-const AccountDocumentsCard: React.FC<Props> = ({ documents, accountId, accountTitle, onRefresh }) => {
+export interface DatabaseDocument {
+  id: string
+  account_id: string
+  form_number: number
+  file_name: string
+  file_length: number
+  sha1_checksum: string
+  mime_type: string
+  data: string
+}
+
+const AccountDocumentsCard: React.FC<Props> = ({ documents = [], accountId, accountTitle, onRefresh }) => {
+  const [docs, setDocs] = useState<DatabaseDocument[]>(documents)
+  console.log(docs)
+
+  // Sync with documents prop changes
+  useEffect(() => {
+    setDocs(documents)
+  }, [documents])
+
+  // Fetch documents from API when accountId changes
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      if (!accountId) return
+      try {
+        const fetched = await ReadAccountDocuments(accountId)
+        setDocs(fetched || [])
+      } catch (error) {
+        console.error('Failed to fetch account documents', error)
+      }
+    }
+    fetchDocuments()
+  }, [accountId])
+
   const [selectedDocument, setSelectedDocument] = useState<any>(null)
   const [isViewerOpen, setIsViewerOpen] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -96,6 +130,10 @@ const AccountDocumentsCard: React.FC<Props> = ({ documents, accountId, accountTi
 
   // Handle document upload
   async function handleUpload() {
+    if (!accountId) {
+      toast({ title: 'No account ID', description: 'Please choose an account to upload a document', variant: 'warning' })
+      return
+    }
     if (!files || files.length === 0) {
       toast({ title: 'No file selected', description: 'Please choose a file to upload', variant: 'warning' })
       return
@@ -136,12 +174,45 @@ const AccountDocumentsCard: React.FC<Props> = ({ documents, accountId, accountTi
       setIsDialogOpen(false)
       setFiles(null)
       onRefresh?.()
+      // Refresh documents list
+      try {
+        const updatedDocs = await ReadAccountDocuments(accountId)
+        setDocs(updatedDocs || [])
+      } catch (err) {
+        console.error('Failed to refresh documents after upload', err)
+      }
     } catch (error: any) {
       toast({ title: 'Error', description: error?.message || 'Failed to upload document', variant: 'destructive' })
     } finally {
       setIsUploading(false)
     }
   }
+
+  async function handleView(document: any) {
+    setSelectedDocument(document)
+    setIsViewerOpen(true)
+  }
+
+  const columns = [
+    {
+      header: 'File Name',
+      accessorKey: 'file_name'
+    },
+    {
+      header: 'File Size',
+      accessorKey: 'file_length'
+    }
+  ]
+
+  const rowActions = [
+    {
+      label: 'View',
+      icon: Eye,
+      onClick: handleView
+    }
+  ]
+
+  if (!accountId) return null
 
   return (
     <Card>
@@ -192,44 +263,12 @@ const AccountDocumentsCard: React.FC<Props> = ({ documents, accountId, accountTi
         </Dialog>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Document Name</TableHead>
-              <TableHead>File Name</TableHead>
-              <TableHead>File Size</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(!documents || documents.length === 0) && (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">No documents uploaded</TableCell>
-              </TableRow>
-            )}
-            {documents?.map((doc: any, idx: number) => (
-              <TableRow key={idx}>
-                <TableCell>{getDocumentName(doc.formNumber)}</TableCell>
-                <TableCell>{doc.attachedFile?.fileName || 'N/A'}</TableCell>
-                <TableCell>{formatFileSize(doc.attachedFile?.fileLength)}</TableCell>
-                <TableCell>{doc.payload?.mimeType || 'N/A'}</TableCell>
-                <TableCell>
-                  {doc.payload?.data && (
-                    <Button variant="ghost" size="sm" onClick={() => { setSelectedDocument(doc); setIsViewerOpen(true); }}>
-                      <Eye className="h-4 w-4 mr-1"/> View
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTable data={docs} columns={columns as ColumnDefinition<any>[]} rowActions={rowActions} enableRowActions/>
       </CardContent>
 
       <DocumentViewer
         document={selectedDocument}
-        documentName={selectedDocument ? getDocumentName(selectedDocument.formNumber) : ''}
+        documentName={selectedDocument ? getDocumentName(selectedDocument.form_number) : ''}
         isOpen={isViewerOpen}
         onOpenChange={setIsViewerOpen}
       />

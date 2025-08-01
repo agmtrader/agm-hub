@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Mail, User, DollarSign, ShieldCheck, Info, Users, Briefcase, FileText, Eye, Loader2, ExternalLink, UserCheck, Building, Calendar } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from "@/components/ui/button";
-import { CreateAccount } from "@/utils/entities/account";
+import { CreateAccount, UploadAccountDocument } from "@/utils/entities/account";
 import { InternalAccount } from "@/lib/entities/account";
 import { useSession } from "next-auth/react";
 import LoaderButton from "@/components/misc/LoaderButton";
@@ -149,12 +149,16 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     try {
       setSubmitting(true)
 
-      const applicationResponse = await SendApplicationToIBKR(application.application)
-      const accountNumber = applicationResponse.fileData.data.application.accounts[0].value
+      //const applicationResponse = await SendApplicationToIBKR(application.application)
+      //console.log(applicationResponse)
+      //const accountNumber = applicationResponse.fileData.data.application.accounts[0].value
+      //if (!accountNumber) {
+      //  throw new Error('Error creating account, please try again later.');
+      //}
 
       // Assign account # here
       const account: InternalAccount = {
-        ibkr_account_number: accountNumber,
+        ibkr_account_number: 'test',
         ibkr_username: null,
         ibkr_password: null,
         temporal_email: null,
@@ -163,9 +167,24 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         fee_template: null
       }
 
-      await CreateAccount(account)
+      const accountResponse = await CreateAccount(account)
+      if (!accountResponse.id) {
+        throw new Error('Error creating internal account, please try again later.');
+      }
 
       // TODO: Create account documents
+      for (const document of application.application.documents || []) {
+        if (document && document.attachedFile) {  
+          await UploadAccountDocument(
+            accountResponse.id, 
+            document.attachedFile?.fileName, 
+            document.attachedFile?.fileLength, 
+            document.attachedFile?.sha1Checksum, 
+            document.payload?.mimeType || '', 
+            document.payload?.data || ''
+          )
+        }
+      }
 
       await UpdateApplicationByID(applicationId, { date_sent_to_ibkr: formatTimestamp(new Date()) })
 
