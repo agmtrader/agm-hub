@@ -47,6 +47,28 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
   const sourceOfWealthOptions = getSourceOfWealth(t);
   const maritalStatusOptions = getMaritalStatus(t);
 
+  // Regulatory information options with automatic descriptions
+  const regulatoryOptions = [
+    {
+      code: 'AFFILIATION',
+      label: t('apply.account.account_holder_info.affiliation') || 'Affiliation',
+      positive: t('apply.account.account_holder_info.affiliation_yes') || 'Affiliated with Interactive Brokers',
+      negative: t('apply.account.account_holder_info.affiliation_no') || 'Not affiliated with Interactive Brokers',
+    },
+    {
+      code: 'EmployeePubTrade',
+      label: t('apply.account.account_holder_info.employee_pub_trade') || 'Employee Public Trading',
+      positive: t('apply.account.account_holder_info.employee_pub_trade_yes') || 'Employee is trading publicly',
+      negative: t('apply.account.account_holder_info.employee_pub_trade_no') || 'Employee is not trading publicly',
+    },
+    {
+      code: 'ControlPubTraded',
+      label: t('apply.account.account_holder_info.control_pub_traded') || 'Controlled Public Trading',
+      positive: t('apply.account.account_holder_info.control_pub_traded_yes') || 'Controlled trading is allowed',
+      negative: t('apply.account.account_holder_info.control_pub_traded_no') || 'Controlled trading is not allowed',
+    },
+  ];
+
   const accountType = form.watch("customer.type");
 
   // ensure multiCurrency is always true
@@ -542,8 +564,49 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       <SourcesOfWealthFields basePath={basePath} />
       </CardContent>
     </Card>
-  );
+    );
 
+  // Regulatory Information Section
+  const renderRegulatoryInformation = (basePath: string) => (
+    <Card className="p-6 space-y-6">
+      <CardHeader>
+        <CardTitle>{t('apply.account.account_holder_info.regulatory_information') || 'Regulatory Information'}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {regulatoryOptions.map((opt, index) => (
+          <div key={opt.code} className="flex flex-col gap-2">
+            {/* Label */}
+            <p className="text-foreground text-sm">{opt.label}</p>
+
+            {/* Status Checkbox */}
+            <FormField
+              control={form.control}
+              name={`${basePath}.0.regulatoryDetails.${index}.status` as any}
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      // Auto-set description based on status
+                      form.setValue(
+                        `${basePath}.0.regulatoryDetails.${index}.details` as any,
+                        checked ? opt.positive : opt.negative,
+                        { shouldValidate: false, shouldDirty: true }
+                      );
+                    }}
+                  />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+  
   // --- Sub-component: dynamic Sources of Wealth list ---
   const SourcesOfWealthFields = ({ basePath }: { basePath: string }) => {
     const { fields, append, remove } = useFieldArray({
@@ -1131,6 +1194,49 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.residence_address')}</h4>
       {renderAddressFields(`${basePath}.residenceAddress`)}
 
+      {/* Same Mailing Address */}
+      <FormField
+        control={form.control}
+        name={`${basePath}.sameMailAddress` as any}
+        render={({ field }) => (
+          <FormItem>
+            <div className='flex flex-row gap-2 items-center'>
+              <FormLabel>{t('apply.account.account_holder_info.same_mailing_address')}</FormLabel>
+              <FormMessage />
+            </div>
+            <Select
+              onValueChange={(val) => {
+                const boolVal = val === 'true';
+                field.onChange(boolVal);
+                if (boolVal) {
+                  const residenceAddr = form.getValues(`${basePath}.residenceAddress` as any);
+                  form.setValue(`${basePath}.mailingAddress` as any, residenceAddr);
+                }
+              }}
+              defaultValue={field.value?.toString() ?? null}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="true">{t('apply.account.account_holder_info.yes')}</SelectItem>
+                <SelectItem value="false">{t('apply.account.account_holder_info.no')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormItem>
+        )}
+      />
+
+      {/* Mailing Address (only if different) */}
+      {form.watch(`${basePath}.sameMailAddress` as any) === false && (
+        <>
+          <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.mailing_address')}</h4>
+          {renderAddressFields(`${basePath}.mailingAddress`)}
+        </>
+      )}
+
       <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.contact_information')}</h4>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <FormField
@@ -1480,6 +1586,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           
           {/* Financial and Regulatory Information for Joint Account */}
           {renderFinancialInformation("customer.jointHolders.financialInformation")}
+          {renderRegulatoryInformation("customer.jointHolders.regulatoryInformation")}
         </div>
 
       ) : accountType === 'ORG' ? (
@@ -1494,12 +1601,14 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           
           {/* Financial and Regulatory Information for Organization */}
           {renderFinancialInformation("customer.organization.financialInformation")}
+          {renderRegulatoryInformation("customer.organization.regulatoryInformation")}
         </div>
       ) : (
         // Individual Account
         <div className="space-y-6">
           {renderAccountHolderFields("customer.accountHolder.accountHolderDetails.0", t('apply.account.account_holder_info.account_holder_information'))}
           {renderFinancialInformation("customer.accountHolder.financialInformation")}
+          {renderRegulatoryInformation("customer.accountHolder.regulatoryInformation")}
         </div>
       )}
 

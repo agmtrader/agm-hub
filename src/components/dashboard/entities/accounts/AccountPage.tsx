@@ -146,7 +146,7 @@ import {
   ListChecks,      
   ClipboardList
 } from 'lucide-react';
-import { ReadAccountByAccountID, ReadAccountDetailsByAccountID, UpdateAccountByID } from '@/utils/entities/account';
+import { ReadAccountByAccountID, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
 import { toast } from '@/hooks/use-toast';
 import { AccountPendingTasks } from './AccountPendingTasks';
 import { AccountRegistrationTasks } from './AccountRegistrationTasks';
@@ -325,7 +325,7 @@ const AccountPage = ({ accountId }: Props) => {
         temporal_password: field === 'temporal_password' ? (newValue || null) : internalAccount.temporal_password,
       };
       
-      await UpdateAccountByID(internalAccount.id, accountPayload);
+      //await UpdateAccountByID(internalAccount.id, accountPayload);
       
       // Update local state
       setInternalAccount(prev => prev ? {

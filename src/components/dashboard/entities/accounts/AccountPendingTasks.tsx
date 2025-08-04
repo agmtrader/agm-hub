@@ -25,22 +25,6 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
   // Holder names (for joint accounts we expect multiple names)
   const [holderNames, setHolderNames] = useState<string[]>([]);
 
-  console.log(pendingTasks)
-
-  async function fetchData() {
-    try {
-      const data = await GetPendingTasksByAccountID(accountId);
-      setPendingTasks(data);
-    } catch (error) {
-      console.error('Error fetching pending tasks:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch pending tasks. Please try again later.",
-        variant: "destructive",
-      });
-    }
-  }
-
   useEffect(() => {
     fetchData();
   }, [accountId]);
@@ -67,6 +51,20 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
 
     fetchHolderNames();
   }, [accountId]);
+  
+  async function fetchData() {
+    try {
+      const data = await GetPendingTasksByAccountID(accountId);
+      setPendingTasks(data);
+    } catch (error) {
+      console.error('Error fetching pending tasks:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch pending tasks. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  }
 
   async function handleSignTask(task: PendingTask) {
     setIsSubmitting(true);
@@ -133,7 +131,6 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
     }
   }
 
-  // Auto-sign all tasks that can be signed (onlineTask: true, action: "to sign")
   async function handleAutoSignAllSignableTasks() {
     setIsAutoSigning(true);
     try {

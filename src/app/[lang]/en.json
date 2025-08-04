@@ -4,7 +4,9 @@
         "risk": "Fill Risk Profile",
         "learning":"Learning Center",
         "help": "Help Center",
-        "downloads": "Downloads"
+        "downloads": "Downloads",
+        "fees": "Fees",
+        "requirements": "Requirements"
     },
     "protected": {
         "noPermissions": "No permissions",
@@ -305,7 +307,9 @@
                 "title": "IBKR Application Form",
                 "description": "Fill out the form below to apply for an account with AGM.",
                 "account_type": "Account Type",
+                "agreements": "Agreements",
                 "steps": {
+                    "agreements": "Agreements",
                     "account_type": "Account Type",
                     "account_holder_info": "Account Holder Information",
                     "documents": "Documents",
@@ -326,6 +330,12 @@
                 "username_description": "Your desired username (3–6 characters).",
                 "legal_residence_country": "Legal Residence Country",
                 "account_holder_information": "Account Holder Information",
+                "mailing_address": "Mailing Address",
+                "same_mailing_address": "Is mailing address the same as residence address?",
+                "regulatory_information": "Regulatory Information",
+                "affiliation": "Is the applicant or any immediate family member who resides in the same household, registered as a broker-dealer or an employee, director or owner of a securities or commodities brokerage firm?",
+                "employee_pub_trade": "Are the owners of, or other non-owners listed on, the account Employees of a publicly traded company? ",
+                "control_pub_traded": "Do the owners of, or other non-owners listed on, the account Control a publicly traded company?",
                 "first_name": "First Name",
                 "last_name": "Last Name",
                 "email": "Email",
@@ -831,5 +841,36 @@
         "start_conversation": "Start a conversation with Ada",
         "typing": "Ada is typing...",
         "system_prompt": "You are AGM's AI assistant called Ada. You are running on our website (https://agmtechnology.com) as a chatbot, and will be used the most by our customers. When talking about any link inside the website, you need use the following format: [Link Text](https://agmtechnology.com/endpoint). Here's important context about AGM: AGM is a leading International Securities Broker/Dealer since 1995, providing direct access to over 150 financial markets across the USA, Europe, Asia, and Latin America. We specialize in making previously inaccessible markets accessible to traders and investors. Key Services: AGM Trader: For individual traders. AGM Advisor: For managed investment solutions. AGM Institutional: For institutional clients. We offer: Global trading platform for stocks, ETFs, options, futures, bonds, and cryptocurrencies. 24/7 market access. Professional trading tools and dashboard. Dedicated customer support. The website (https://agmtechnology.com) offers a wide range of services, including: Login to the trading platform with endpoint /signin and account creation with /create-account. Services page at /trader, /advisor, /institutional. Learning center at /learning. Help center at /help. These endpoints are available for the user to interact with, but only for registered and signed in users: Application of an AGM account with endpoint /apply. Login directly to our account portal at /portal. Please provide accurate, professional, and helpful responses related to AGM's services, trading capabilities, and financial markets. Always maintain a professional tone and prioritize accuracy in financial information. YOU DO NOT OFFER INVESTMENT ADVICE, YOU ARE NOT A FINANCIAL ADVISOR."
+    },
+    "fees": {
+        "title": "Fees",
+        "description": "All costs are expressed in US dollars (USD) and may change at any time without prior notice.",
+        "managed_accounts": {
+            "title": "Managed accounts",
+            "management_fees_label": "Management Fees",
+            "management_fees_value": "Up to 2.5% per annum, fees are accrued daily over the Net Asset Value of the account and charged monthly.",
+            "execution_costs_label": "Execution Costs",
+            "execution_costs_value": "Stocks/ETFs: $0.075 per share, minimum of $25 per transaction. Bonds: $25 per transaction + 0.005% of the Face value",
+            "custody_fees_label": "Custody Fees",
+            "custody_fees_value": "There are no custody fees.",
+            "other_fees_label": "Other Fees",
+            "other_fees_wires": "Wires",
+            "other_fees_domestic": "Domestic (Inside the USA): First Monthly Wire free, then $10 / wire",
+            "other_fees_international": "International: $25 + any fees charged by the receiving bank."
+        },
+        "self_directed_accounts": {
+            "title": "Self Directed accounts",
+            "management_fees_label": "Management Fees",
+            "management_fees_value": "There are no fees.",
+            "execution_costs_label": "Execution Costs",
+            "execution_costs_value": "Stocks/ETFs: $0.075 per share, minimum of $25 per transaction. Bonds: $25 per transaction + 0.005% of the Face value",
+            "custody_fees_label": "Custody Fees",
+            "custody_fees_value": "There are no custody fees.",
+            "other_fees_label": "Other Fees",
+            "other_fees_wires": "Wires",
+            "other_fees_domestic": "Domestic (Inside the USA): First Monthly Wire free, then $10 / wire",
+            "other_fees_international": "International: $25 + any fees charged by the receiving bank."
+        },
+        "footnote": "All of the costs and fees are in USD and can change at any moment without notice. Other costs or fees may apply. These charges and fees are the most common that apply to the most commonly used products and services. Stocks, ETFs and Bonds (Non Euroclear) might have additional charges."
     }
 }

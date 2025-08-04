@@ -4,7 +4,9 @@
         "risk": "Completar perfil de riesgo",
         "learning": "Centro de Aprendizaje",
         "help": "Centro de Ayuda",
-        "downloads": "Descargas"
+        "downloads": "Descargas",
+        "fees": "Costos",
+        "requirements": "Requisitos"
     },
     "protected": {
         "noPermissions": "Sin permisos",
@@ -304,7 +306,9 @@
                 "title": "Formulario de Solicitud IBKR",
                 "description": "Completa el siguiente formulario para solicitar una cuenta con AGM.",
                 "account_type": "Tipo de Cuenta",
+                "agreements": "Acuerdos",
                 "steps": {
+                    "agreements": "Acuerdos",
                     "account_type": "Tipo de Cuenta",
                     "account_holder_info": "Información del Titular de la Cuenta",
                     "documents": "Documentos",
@@ -325,7 +329,13 @@
                 "username": "Nombre de Usuario",
                 "username_description": "Tu nombre de usuario deseado (3–6 caracteres).",
                 "legal_residence_country": "País de Residencia Legal",
+                "regulatory_information": "Información Regulatoria",
+                "affiliation": "¿Es el solicitante o cualquier miembro de la familia que reside en la misma casa, registrado como broker-dealer o empleado, director o propietario de una firma de valores o derivados?",
+                "employee_pub_trade": "¿Son los propietarios de, o otros no propietarios listados en, la cuenta empleados de una empresa cotizada en bolsa?",
+                "control_pub_traded": "¿Los propietarios de, o otros no propietarios listados en, la cuenta controlan una empresa cotizada en bolsa?",
                 "account_holder_info": "Información del Titular de la Cuenta",
+                "mailing_address": "Dirección de Envío",
+                "same_mailing_address": "¿Es la dirección de envío la misma que la de residencia?",
                 "first_name": "Nombre",
                 "last_name": "Apellido",
                 "email": "Correo Electrónico",
@@ -832,5 +842,36 @@
         "typing": "Ada está escribiendo...",
         "placeholder": "Escribe tu mensaje aquí...",
         "system_prompt": "Eres Ada, la asistente de IA de AGM. Operas en nuestro sitio web (https://agmtechnology.com) como un chatbot y serás utilizado principalmente por nuestros clientes. Cuando hables de cualquier enlace dentro del sitio web, necesitas usar el siguiente formato: [Texto del Enlace](https://agmtechnology.com/endpoint). Aquí tienes información importante sobre AGM: AGM es un corredor/agente de bolsa internacional líder desde 1995, que proporciona acceso directo a más de 150 mercados financieros en EE. UU., Europa, Asia y América Latina. Nos especializamos en hacer accesibles mercados que antes eran inaccesibles para traders e inversionistas. Servicios clave: AGM Trader: Para traders individuales. AGM Advisor: Para soluciones de inversión gestionadas. AGM Institutional: Para clientes institucionales. Ofrecemos: Plataforma global de trading para acciones, ETFs, opciones, futuros, bonos y criptomonedas. Acceso a los mercados 24/7. Herramientas profesionales de trading y panel de control. Atención al cliente dedicada. El sitio web (https://agmtechnology.com) ofrece una amplia gama de servicios, incluyendo: Inicio de sesión en la plataforma de trading con endpoint /signin y creación de cuenta con /create-account. Páginas de servicios en /trader, /advisor, /institutional. Centro de aprendizaje en /learning. Centro de ayuda en /help. Estos endpoints están disponibles para usuarios registrados y con sesión iniciada: Solicitud de una cuenta AGM con endpoint /apply. Acceso directo al portal de cuentas en /portal. Brinda respuestas precisas, profesionales y útiles relacionadas con los servicios de AGM, capacidades de trading y mercados financieros. Mantén siempre un tono profesional y prioriza la precisión en la información financiera. NO OFRECES CONSEJOS DE INVERSIÓN, NO ERES UN ASESOR FINANCIERO."
+    },
+    "fees": {
+        "title": "Costos",
+        "description": "Todos los costos están expresados en dólares estadounidenses (USD) y pueden cambiar en cualquier momento sin previo aviso.",
+        "managed_accounts": {
+            "title": "Cuentas administradas",
+            "management_fees_label": "Costos de administración",
+            "management_fees_value": "Hasta un 2.5% al año, los costos se acumulan diariamente sobre el Valor del activo Neto de la cuenta y se cobran mensualmente.",
+            "execution_costs_label": "Costos de ejecución",
+            "execution_costs_value": "Acciones/ETFs: $0.075 por acción, mínimo de $25 por transacción. Bonos: $25 por transacción + 0.005% del valor nominal",
+            "custody_fees_label": "Costos de custodia",
+            "custody_fees_value": "No se cobran costos de custodia.",
+            "other_fees_label": "Otros costos",
+            "other_fees_wires": "Transferencias bancarias",
+            "other_fees_domestic": "Domésticas (dentro de EE. UU.): primera transferencia mensual sin costo, luego $10 por transferencia.",
+            "other_fees_international": "Internacional: $25 + cualquier cargo aplicado por el banco receptor."
+        },
+        "self_directed_accounts": {
+            "title": "Cuentas Autodirigidas",
+            "management_fees_label": "Costos de administración",
+            "management_fees_value": "No se cobran costos de administración.",
+            "execution_costs_label": "Costos de ejecución",
+            "execution_costs_value": "Acciones/ETFs: $0.075 por acción, mínimo de $25 por transacción. Bonos: $25 por transacción + 0.005% del valor nominal",
+            "custody_fees_label": "Costos de custodia",
+            "custody_fees_value": "No se cobran costos de custodia.",
+            "other_fees_label": "Otros costos",
+            "other_fees_wires": "Transferencias bancarias",
+            "other_fees_domestic": "Domésticas (dentro de EE. UU.): primera transferencia mensual sin costo, luego $10 por transferencia.",
+            "other_fees_international": "Internacional: $25 + cualquier cargo aplicado por el banco receptor."
+        },
+        "footnote": "Todos los costos y tarifas están expresados en USD y pueden cambiar en cualquier momento sin previo aviso. Pueden aplicarse otros costos. Estos cargos y tarifas son los más comunes que aplican a los productos y servicios más utilizados. Las acciones, ETFs y bonos (Non Euroclear) pueden tener cargos adicionales."
     }
 }
