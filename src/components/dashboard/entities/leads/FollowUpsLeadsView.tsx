@@ -1,6 +1,5 @@
 import { DataTable, ColumnDefinition } from '@/components/misc/DataTable'
 import { Lead, FollowUp } from '@/lib/entities/lead'
-import { Contact } from '@/lib/entities/contact'
 import { formatDateFromTimestamp } from '@/utils/dates'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'

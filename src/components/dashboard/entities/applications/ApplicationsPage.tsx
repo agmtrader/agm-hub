@@ -64,7 +64,7 @@ const ApplicationsPage = () => {
   async function fetchApplications() {
     try {
       const fetchedApplications = await ReadApplications()
-      setAllApplications(fetchedApplications)
+      setAllApplications(fetchedApplications.sort((a, b) => b.created.localeCompare(a.created)))
     } catch (error) {
       toast({
         title: "Error",

@@ -10,12 +10,12 @@ export async function CreateLead(lead:LeadPayload, follow_ups:FollowUpPayload[])
 }
 
 export async function ReadLeads() {
-    let leadsWithFollowUps: {leads: Lead[], follow_ups: FollowUp[]} = await accessAPI('/leads/read', 'POST', {'query': {}})
+    let leadsWithFollowUps: {leads: Lead[], follow_ups: FollowUp[]} = await accessAPI('/leads/read', 'GET')
     return leadsWithFollowUps
 }
 
 export async function ReadLeadByID(leadID:string) {
-    let leadsWithFollowUps: {leads: Lead[], follow_ups: FollowUp[]} = await accessAPI('/leads/read', 'POST', {'query': {'id': leadID}})
+    let leadsWithFollowUps: {leads: Lead[], follow_ups: FollowUp[]} = await accessAPI(`/leads/read?id=${leadID}`, 'GET')
     return leadsWithFollowUps
 }
 
@@ -26,7 +26,7 @@ export async function UpdateLeadByID(leadID:string, lead:Partial<LeadPayload>): 
 
 // Create a follow-up for a given lead
 export async function CreateLeadFollowUp(leadID: string, followUp: Omit<FollowUpPayload, 'lead_id'>): Promise<IDResponse> {
-    const createResponse: IDResponse = await accessAPI('/leads/create_follow_up', 'POST', {
+    const createResponse: IDResponse = await accessAPI('/leads/follow_up/create', 'POST', {
         'lead_id': leadID,
         'follow_up': followUp,
     })
@@ -39,7 +39,7 @@ export async function UpdateLeadFollowUpByID(
     followUpID: string,
     followUp: FollowUpPayload,
 ): Promise<IDResponse> {
-    const updateResponse: IDResponse = await accessAPI('/leads/update_follow_up', 'POST', {
+    const updateResponse: IDResponse = await accessAPI('/leads/follow_up/update', 'POST', {
         'lead_id': leadID,
         'follow_up_id': followUpID,
         'follow_up': followUp,
@@ -49,7 +49,7 @@ export async function UpdateLeadFollowUpByID(
 
 // Delete a follow-up by id
 export async function DeleteLeadFollowUpByID(leadID: string, followUpID: string): Promise<IDResponse> {
-    const deleteResponse: IDResponse = await accessAPI('/leads/delete_follow_up', 'POST', {
+    const deleteResponse: IDResponse = await accessAPI('/leads/follow_up/delete', 'POST', {
         'lead_id': leadID,
         'follow_up_id': followUpID,
     })

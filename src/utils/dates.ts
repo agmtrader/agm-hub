@@ -65,23 +65,3 @@ export function formatTimestamp(date: Date) {
 
     return `${year}${month}${day}${hour}${min}${sec}`;
 }
-
-export function getLastWorkingDay() {
-
-  let date = new Date();
-  date.setDate(date.getDate() - 1);
-
-  // Check if today is January 1st
-  if (date.getMonth() === 0 && date.getDate() === 1) {
-      date.setDate(date.getDate() - 1); // Go back 1 day to December 31
-  }
-
-  // Check if today is Saturday (6) or Sunday (0)
-  if (date.getDay() === 6) { // Saturday
-      date.setDate(date.getDate() - 1); // Go back 1 day to Friday
-  } else if (date.getDay() === 0) { // Sunday
-      date.setDate(date.getDate() - 2); // Go back 2 days to Friday
-  }
-
-  return formatDate(date);
-}

@@ -3,17 +3,12 @@ import { accessAPI } from "../api"
 import { sendTradeTicketEmail } from "./email"
 
 export async function ListTradeTickets() {
-    const availableTradeTickets:TradeTicket[] = await accessAPI('/trade_tickets/list', 'POST', {})
+    const availableTradeTickets:TradeTicket[] = await accessAPI('/trade_tickets/list', 'GET')
     return availableTradeTickets
 }
 
-export async function GetTradeTicketDetails(tradeTicketId: string) {
-    const tradeTicket:TradeTicket = await accessAPI('/trade_tickets/details', 'POST', {'id': tradeTicketId})
-    return tradeTicket
-}
-
 export async function FetchTrades(tradeTicketId: string) {
-    const trades:Trade[] = await accessAPI('/trade_tickets/fetch', 'POST', {'query_id': tradeTicketId})
+    const trades:Trade[] = await accessAPI(`/trade_tickets/read?query_id=${tradeTicketId}`, 'GET')
     trades.sort((a: any, b: any) => {
         const dateA = new Date(a['Date/Time']).getTime()
         const dateB = new Date(b['Date/Time']).getTime()
@@ -41,13 +36,11 @@ export async function GenerateTradeTicket(trades: Trade[], selectedTrades: Trade
     ).filter(index => index !== -1);
 
     // Generate the trade ticket using the selected indices
-    let tradeTicket:Trade = await accessAPI('/trade_tickets/generate_trade_ticket', 'POST', {
+    let response:TradeTicketResponse = await accessAPI('/trade_tickets/confirmation_message', 'POST', {
         'flex_query_dict': trades,
         'indices': selectedIndices.join(',')
     });
 
-    // Generate the plain text message
-    const response:TradeTicketResponse = await accessAPI('/trade_tickets/generate_client_confirmation_message', 'POST', {'trade_data': tradeTicket});
     return response['message'];
 }
 

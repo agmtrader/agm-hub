@@ -16,18 +16,8 @@ import {
 import { FileUploader, FileInput, FileUploaderContent, FileUploaderItem } from '@/components/ui/file-upload'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
-import { DocumentSubmissionRequest } from '@/lib/entities/account'
+import { DocumentSubmissionRequest, InternalDocument } from '@/lib/entities/account'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
-
-// Helper to convert bytes to human readable size
-function formatFileSize(bytes?: number) {
-  if (bytes === undefined || bytes === null) return 'N/A'
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
 
 // Convert file to base64
 function getBase64(file: File): Promise<string> {
@@ -79,52 +69,40 @@ function getDocumentName(formNumber: number) {
 }
 
 interface Props {
-  documents?: DatabaseDocument[]
+  documents?: InternalDocument[]
   accountId: string | null
   accountTitle: string
   onRefresh?: () => void
 }
 
-export interface DatabaseDocument {
-  id: string
-  account_id: string
-  form_number: number
-  file_name: string
-  file_length: number
-  sha1_checksum: string
-  mime_type: string
-  data: string
-}
-
 const AccountDocumentsCard: React.FC<Props> = ({ documents = [], accountId, accountTitle, onRefresh }) => {
-  const [docs, setDocs] = useState<DatabaseDocument[]>(documents)
-  console.log(docs)
 
-  // Sync with documents prop changes
-  useEffect(() => {
-    setDocs(documents)
-  }, [documents])
-
-  // Fetch documents from API when accountId changes
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      if (!accountId) return
-      try {
-        const fetched = await ReadAccountDocuments(accountId)
-        setDocs(fetched || [])
-      } catch (error) {
-        console.error('Failed to fetch account documents', error)
-      }
-    }
-    fetchDocuments()
-  }, [accountId])
-
+  const [docs, setDocs] = useState<InternalDocument[]>(documents)
   const [selectedDocument, setSelectedDocument] = useState<any>(null)
   const [isViewerOpen, setIsViewerOpen] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [files, setFiles] = useState<File[] | null>(null)
   const [formNumber, setFormNumber] = useState<number>(5001)
   const [isUploading, setIsUploading] = useState(false)
+
+    // Sync with documents prop changes
+    useEffect(() => {
+      setDocs(documents)
+    }, [documents])
+  
+    // Fetch documents from API when accountId changes
+    useEffect(() => {
+      const fetchDocuments = async () => {
+        if (!accountId) return
+        try {
+          const fetched = await ReadAccountDocuments(accountId)
+          setDocs(fetched || [])
+        } catch (error) {
+          console.error('Failed to fetch account documents', error)
+        }
+      }
+      fetchDocuments()
+    }, [accountId])
 
   // Handle document upload
   async function handleUpload() {

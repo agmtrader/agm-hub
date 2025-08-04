@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { ExternalLink } from 'lucide-react'
-import type { DatabaseDocument } from './AccountDocumentsCard'
+import type { InternalDocument } from '@/lib/entities/account'
 
 interface DocumentViewerProps {
   /**
@@ -23,7 +23,7 @@ interface DocumentViewerProps {
   /**
    * The document record fetched from the database. If `null` nothing is rendered.
    */
-  document: DatabaseDocument | null
+  document: InternalDocument | null
   /**
    * Human-readable name for the document shown in the dialog header
    */

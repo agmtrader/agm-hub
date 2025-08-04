@@ -15,6 +15,16 @@ export type InternalAccount = AccountPayload & {
 }
 export type Account = Base & InternalAccount
 
+// Internal Document Payload
+export interface InternalDocumentPayload {
+  mime_type: string;
+  file_name: string;
+  file_length: number;
+  sha1_checksum: string;
+  data: string;
+}
+export type InternalDocument = InternalDocumentPayload & Base
+
 // Agreement/disclosure form details
 export interface AllForms {
   formDetails: FormDetails[]
@@ -23,7 +33,6 @@ export interface AllForms {
     name: string;
   }
 }
-
 export interface FormDetails {
   formNumber: string;
   sha1Checksum: string;
