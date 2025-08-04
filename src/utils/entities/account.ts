@@ -23,7 +23,7 @@ export async function ReadAccountByUserID(userID:string): Promise<Account[] | nu
 }
 
 export async function UploadAccountDocument(accountID:string, file_name:string, file_length:number, sha1_checksum:string, mime_type:string, data:string) {
-    const updatedID = await accessAPI('/accounts/upload_document', 'POST', {
+    const uploadResponse = await accessAPI('/accounts/upload_document', 'POST', {
         'account_id': accountID,
         'query': {},
         'file_name': file_name,
@@ -32,7 +32,7 @@ export async function UploadAccountDocument(accountID:string, file_name:string, 
         'mime_type': mime_type,
         'data': data
     })
-    return updatedID
+    return uploadResponse
 }
 
 export async function ReadAccountDocuments(accountID:string): Promise<any> {
@@ -71,13 +71,12 @@ export async function GetForms(forms: string[]): Promise<AllForms> {
     return response
 }
 
-export async function SubmitAccountDocument(accountID: string, documentSubmission: DocumentSubmissionRequest) {
+export async function SubmitIBKRDocument(accountID: string, documentSubmission: DocumentSubmissionRequest) {
     const accountManagementRequests: AccountManagementRequests = {
         accountManagementRequests: {
             documentSubmission
         }
     }
-    console.log('accountManagementRequests:', accountManagementRequests)
     const response = await accessAPI('/accounts/update', 'POST', { 'account_id': accountID, 'account_management_requests': accountManagementRequests })
     return response
 }

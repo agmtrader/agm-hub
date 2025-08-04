@@ -1,7 +1,6 @@
 'use client'
 
-import { ReadAccountDocuments } from '@/utils/entities/account'
-
+import { ReadAccountDocuments, SubmitIBKRDocument } from '@/utils/entities/account'
 import React, { useEffect, useState } from 'react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -17,7 +16,6 @@ import {
 import { FileUploader, FileInput, FileUploaderContent, FileUploaderItem } from '@/components/ui/file-upload'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
-import { SubmitAccountDocument } from '@/utils/entities/account'
 import { DocumentSubmissionRequest } from '@/lib/entities/account'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 
@@ -169,7 +167,7 @@ const AccountDocumentsCard: React.FC<Props> = ({ documents = [], accountId, acco
         translation: false
       }
 
-      await SubmitAccountDocument(accountId, docSubmission)
+      await SubmitIBKRDocument(accountId, docSubmission)
       toast({ title: 'Success', description: 'Document uploaded successfully', variant: 'success' })
       setIsDialogOpen(false)
       setFiles(null)

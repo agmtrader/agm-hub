@@ -54,12 +54,6 @@ const user_tools = [
     id: 'trade_tickets',
   },
   {
-    name: 'Auto Trader',
-    url: '/dashboard/auto-trader',
-    icon: Bot,
-    id: 'auto_trader',
-  },
-  {
     name: 'Reporting',
     url: '/dashboard/reporting',
     icon: FaChartBar,

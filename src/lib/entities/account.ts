@@ -1,4 +1,4 @@
-import { IBKRDocument, W8Ben } from "./application"
+import { IBKRDocument } from "./application"
 import { Base } from "./base"
 import { z } from "zod"
 import { account_schema } from "./schemas/account"
@@ -14,7 +14,6 @@ export type InternalAccount = AccountPayload & {
   fee_template: string | null,
 }
 export type Account = Base & InternalAccount
-
 
 // Agreement/disclosure form details
 export interface AllForms {
@@ -84,22 +83,8 @@ export interface DocumentSubmissionRequest {
     translation: boolean;
 }
 
-export interface W8BenSubmissionRequest {
-  documents: IBKRDocument[]
-  taxPayerDetails: TaxPayerDetails;
-  inputLanguage: string;
-  translation: boolean;
-  accountId: string;
-}
-
-export interface TaxPayerDetails {
-  w8ben: W8Ben;
-  userName: string;
-}
-
 export interface AccountManagementRequests {
   accountManagementRequests: {
     documentSubmission?: DocumentSubmissionRequest
-    updateW8Ben?: W8BenSubmissionRequest
   }
 }

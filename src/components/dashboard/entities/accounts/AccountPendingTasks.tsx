@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import { DetailItem } from './AccountPage';
-import { GetForms, GetPendingTasksByAccountID, SubmitAccountDocument, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
+import { GetForms, GetPendingTasksByAccountID, SubmitIBKRDocument, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
 import { DocumentSubmissionRequest, PendingTask, PendingTasksResponse } from '@/lib/entities/account';
 import { ClipboardList, PenTool, CheckSquare, UploadCloud } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -107,7 +107,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
       };
 
       // Submit document
-      const result = await SubmitAccountDocument(accountId, documentSubmission);
+      const result = await SubmitIBKRDocument(accountId, documentSubmission);
       console.log(result);
       if (result.fileData.data.documentSubmission.documents[0].status === 'Accepted') {
         toast({
@@ -193,7 +193,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
         translation: false,
       };
 
-      const result = await SubmitAccountDocument(accountId, documentSubmission);
+      const result = await SubmitIBKRDocument(accountId, documentSubmission);
       console.log('Auto-sign result:', result);
       
       if (result.fileData?.data?.documentSubmission?.documents) {

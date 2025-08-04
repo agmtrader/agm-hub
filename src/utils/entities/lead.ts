@@ -14,11 +14,6 @@ export async function ReadLeads() {
     return leadsWithFollowUps
 }
 
-export async function ReadFollowUpsByLeadID(leadID:string) {
-    let followUps:FollowUp[] = await accessAPI('/leads/read_follow_ups', 'POST', {'query': {'lead_id': leadID}})
-    return followUps
-}
-
 export async function ReadLeadByID(leadID:string) {
     let leadsWithFollowUps: {leads: Lead[], follow_ups: FollowUp[]} = await accessAPI('/leads/read', 'POST', {'query': {'id': leadID}})
     return leadsWithFollowUps
@@ -27,11 +22,6 @@ export async function ReadLeadByID(leadID:string) {
 export async function UpdateLeadByID(leadID:string, lead:Partial<LeadPayload>): Promise<IDResponse> {
     let updateResponse: IDResponse = await accessAPI('/leads/update', 'POST', {'query': {'id': leadID}, 'lead': lead})
     return updateResponse
-}
-
-export async function DeleteLeadByID(leadID:string): Promise<IDResponse> {
-    let deleteResponse: IDResponse = await accessAPI('/leads/delete', 'POST', {'query': {'id': leadID}})
-    return deleteResponse
 }
 
 // Create a follow-up for a given lead

@@ -38,8 +38,3 @@ export async function SendApplicationToIBKR(application: Application) {
     })
     return response
 }
-
-export async function UploadApplicationPOADocument(file: any, documentInfo: POADocumentInfo, userID: string, applicationID: string): Promise<IDResponse> {
-    const poaID: IDResponse = await accessAPI('/applications/upload_poa', 'POST', {'f': file, 'document_info': documentInfo, 'user_id': userID, 'application_id': applicationID})
-    return poaID
-}
