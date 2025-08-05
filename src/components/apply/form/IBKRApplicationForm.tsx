@@ -35,10 +35,9 @@ enum FormStep {
   FEES = 0,
   ACCOUNT_TYPE = 1,
   ACCOUNT_HOLDER_INFO = 2,
-  AGREEMENTS = 3,
-  DOCUMENTS = 4,
-  SUMMARY = 5,
-  SUCCESS = 6
+  //AGREEMENTS = 3,
+  DOCUMENTS = 3,
+  SUCCESS = 4
 }
 
 const IBKRApplicationForm = () => {
@@ -66,7 +65,7 @@ const IBKRApplicationForm = () => {
   const handleEmailConfirmed = () => {
     setEmailConfirmed(true);
     setIsEmailDialogOpen(false);
-    setCurrentStep(FormStep.AGREEMENTS);
+    setCurrentStep(FormStep.DOCUMENTS);
   };
 
   // Handler to view individual form
@@ -87,7 +86,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -128,12 +127,12 @@ const IBKRApplicationForm = () => {
       });
       return;
     }
-
+    
     // After account holder info, trigger email confirmation dialog if not verified
-    if (currentStep === FormStep.ACCOUNT_HOLDER_INFO && !emailConfirmed) {
-      setIsEmailDialogOpen(true);
-      return;
-    }
+    //if (currentStep === FormStep.ACCOUNT_HOLDER_INFO && !emailConfirmed) {
+    //  setIsEmailDialogOpen(true);
+    //  return;
+    //}
 
     setCurrentStep(prev => prev + 1);
   };
@@ -191,9 +190,6 @@ const IBKRApplicationForm = () => {
         description: "Your IBKR application has been successfully submitted.",
         variant: "success"
       });
-
-      // Move to summary step to review JSONs
-      setCurrentStep(FormStep.SUMMARY);
     } catch (error) {
       toast({
         title: "Submission Failed",
@@ -210,10 +206,8 @@ const IBKRApplicationForm = () => {
       { name: t('fees.title'), step: FormStep.FEES },
       { name: t('apply.account.header.steps.account_type'), step: FormStep.ACCOUNT_TYPE },
       { name: t('apply.account.header.steps.account_holder_info'), step: FormStep.ACCOUNT_HOLDER_INFO },
-      
-      { name: t('apply.account.header.steps.agreements'), step: FormStep.AGREEMENTS },
+      //{ name: t('apply.account.header.steps.agreements'), step: FormStep.AGREEMENTS },
       { name: t('apply.account.header.steps.documents'), step: FormStep.DOCUMENTS },
-      { name: t('apply.account.header.steps.summary'), step: FormStep.SUMMARY },
       { name: t('apply.account.header.steps.complete'), step: FormStep.SUCCESS }
     ];
 
@@ -321,7 +315,8 @@ const IBKRApplicationForm = () => {
               </>
             )}
 
-            {currentStep === FormStep.AGREEMENTS && (
+            {/*
+            currentStep === FormStep.AGREEMENTS && (
                 <>
                 <div className="flex flex-col gap-4">
                   <h2 className="text-xl font-semibold mb-2">Agreements and Disclosures</h2>
@@ -367,7 +362,9 @@ const IBKRApplicationForm = () => {
                   </Button>
                 </div>
               </>
-            )}
+            )
+            */
+            }
             {currentStep === FormStep.DOCUMENTS && (
               <>
                 <DocumentsStep form={form} />
@@ -383,27 +380,16 @@ const IBKRApplicationForm = () => {
                 </div>
               </>
             )}
-            {currentStep === FormStep.SUMMARY && (
-              <>
-                <div className="flex flex-col gap-4">
-                  <h2 className="text-xl font-semibold mb-2">Summary</h2>
-                  <p className="text-sm">Application JSON</p>
-                  <div className="flex flex-col gap-2 bg-muted p-4 rounded-md max-h-[50vh] overflow-y-auto">
-                    <p className="text-sm font-mono">{JSON.stringify(sentApplication)}</p>
-                  </div>
-                  <p className="text-sm">Application Response JSON</p>
-                  <div className="flex flex-col gap-2 bg-muted p-4 rounded-md max-h-[50vh] overflow-y-auto">
-                    <p className="text-sm font-mono">{JSON.stringify(sentApplicationResponse)}</p>
-                  </div>
-                </div>
-              </>
-            )}
           </form>
-          <EmailConfirmationDialog
-            isOpen={isEmailDialogOpen}
-            setIsOpen={setIsEmailDialogOpen}
-            onConfirmed={handleEmailConfirmed}
-          />
+          {
+            /*
+            <EmailConfirmationDialog
+              isOpen={isEmailDialogOpen}
+              setIsOpen={setIsEmailDialogOpen}
+              onConfirmed={handleEmailConfirmed}
+            />
+            */
+          }
         </Form>
       </div>
       {/* Form Viewer Dialog */}
