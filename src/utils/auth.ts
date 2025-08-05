@@ -2,7 +2,7 @@ import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { LoginUserWithCredentials } from "./api"
 
-const defaultScopes = "users/read users/update accounts/create accounts/read accounts/update applications/create applications/read applications/update risk_profiles/read risk_profiles/create"
+const defaultScopes = "users/read users/update accounts/create accounts/read accounts/update applications/create applications/read applications/update risk_profiles/read risk_profiles/create accounts/forms"
 
 export const authOptions: NextAuthOptions = {
 
