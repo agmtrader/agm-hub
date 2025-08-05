@@ -8,7 +8,7 @@ import { Trade, TradeTicket } from '@/lib/tools/trade-ticket'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useToast } from '@/hooks/use-toast'
 import DashboardPage from '@/components/misc/DashboardPage'
-import { FetchTrades, GenerateTradeTicket, SendToClient, ListTradeTickets } from '@/utils/tools/trade-tickets'
+import { FetchTradeTicket, GenerateTradeTicketConfirmationMessage, SendToClient, ListTradeTickets } from '@/utils/tools/trade-tickets'
 
 export default function TradeTickets() {
 
@@ -89,7 +89,7 @@ export default function TradeTickets() {
     async function handleFetchTrades() {
       try {
         if (!selectedTradeTicketID) return;
-        const trades = await FetchTrades(selectedTradeTicketID)
+        const trades = await FetchTradeTicket(selectedTradeTicketID)
         setTrades(trades)
       } catch (error: any) {
         toast({
@@ -100,11 +100,11 @@ export default function TradeTickets() {
       }
     }
 
-    async function handleGenerateTradeTicket() {
+    async function handleGenerateTradeTicketConfirmationMessage() {
       if (!trades || !selectedTrades) return;
       setGeneratingMessage(true)
       try {
-        const message = await GenerateTradeTicket(trades, selectedTrades)
+        const message = await GenerateTradeTicketConfirmationMessage(trades, selectedTrades)
         console.log(message)
         setClientMessage(message)
         setConfirmDialogOpen(true)
@@ -182,7 +182,7 @@ export default function TradeTickets() {
             <Button 
               disabled={selectedTrades.length === 0 || generatingMessage} 
               className='w-fit' 
-              onClick={() => handleGenerateTradeTicket()}
+              onClick={() => handleGenerateTradeTicketConfirmationMessage()}
             >
               {generatingMessage ? (
                 <div className="flex items-center gap-2">

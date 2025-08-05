@@ -313,13 +313,9 @@ const IBKRApplicationForm = () => {
                       <LoadingComponent />
                     )}
                 </div>
-                <div className="flex gap-2">
-                  <p className="text-sm">Please enter your signature to continue</p>
-                  {userSignature === null && <p className="text-sm text-primary">Required</p>}
-                </div>
                 <Input
                   type="text"
-                  placeholder=""
+                  placeholder="Please enter your signature"
                   value={userSignature || ""}
                   onChange={(e) => setUserSignature(e.target.value)}
                 />
@@ -334,6 +330,7 @@ const IBKRApplicationForm = () => {
                   <Button 
                     type="button" 
                     onClick={handleNextStep}
+                    disabled={userSignature === null || userSignature === ""}
                     className="bg-primary text-background hover:bg-primary/90"
                   >
                     Next

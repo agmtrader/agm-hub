@@ -886,7 +886,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 };
 
 const LabelValue = ({ label, value }: { label: string, value?: React.ReactNode }) => (
-  <div className="flex items-center gap-2 text-muted-foreground text-sm"><span className="font-medium text-foreground min-w-[140px]">{label}:</span> {value ?? <span className="text-subtitle">—</span>}</div>
+  <div className="flex select-text items-center gap-2 text-muted-foreground text-sm"><span className="font-medium text-foreground min-w-[140px]">{label}:</span> {value ?? <span className="text-subtitle">—</span>}</div>
 );
 
 function formatDate(dateStr?: string) {

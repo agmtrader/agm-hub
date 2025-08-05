@@ -7,7 +7,7 @@ export async function ListTradeTickets() {
     return availableTradeTickets
 }
 
-export async function FetchTrades(tradeTicketId: string) {
+export async function FetchTradeTicket(tradeTicketId: string) {
     const trades:Trade[] = await accessAPI(`/trade_tickets/read?query_id=${tradeTicketId}`, 'GET')
     trades.sort((a: any, b: any) => {
         const dateA = new Date(a['Date/Time']).getTime()
@@ -17,7 +17,7 @@ export async function FetchTrades(tradeTicketId: string) {
     return trades
 }
 
-export async function GenerateTradeTicket(trades: Trade[], selectedTrades: Trade[]) {
+export async function GenerateTradeTicketConfirmationMessage(trades: Trade[], selectedTrades: Trade[]) {
 
     if (!trades || !selectedTrades) throw new Error('Trades or selected trades not found')
 
@@ -46,5 +46,5 @@ export async function GenerateTradeTicket(trades: Trade[], selectedTrades: Trade
 
 export async function SendToClient(clientMessage: string, email: string) {
     if (!clientMessage) return;
-    await sendTradeTicketEmail(clientMessage, email)
+    await sendTradeTicketEmail({'message': clientMessage}, email)
 }
