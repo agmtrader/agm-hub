@@ -86,7 +86,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: individual_form,
+    defaultValues: getApplicationDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -127,7 +127,7 @@ const IBKRApplicationForm = () => {
       });
       return;
     }
-    
+
     // After account holder info, trigger email confirmation dialog if not verified
     //if (currentStep === FormStep.ACCOUNT_HOLDER_INFO && !emailConfirmed) {
     //  setIsEmailDialogOpen(true);
