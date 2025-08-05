@@ -761,7 +761,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
       <div className="flex gap-4">
         <LoaderButton onClick={handleCreateAccount} isLoading={submitting} disabled={application.date_sent_to_ibkr !== null} text="Send Application to IBKR" className="w-fit"/>
-        <Button onClick={handleCreateManualAccount} disabled={application.date_sent_to_ibkr !== null} variant="outline" className="w-fit">
+        <Button onClick={handleCreateManualAccount} variant="outline" className="w-fit">
           Create Manual Account
         </Button>
       </div>
