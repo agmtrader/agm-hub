@@ -7,26 +7,22 @@ import {
   Form,
 } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
-import { Application, InternalApplication } from '@/lib/entities/application';
+import { Application, InternalApplicationPayload } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import AccountHolderInfoStep from './AccountHolderInfoStep'
-import { SendApplicationToIBKR } from '@/utils/entities/application'
+import { CreateApplication } from '@/utils/entities/application'
 import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
 import LoaderButton from '@/components/misc/LoaderButton'
-import { formatTimestamp } from '@/utils/dates'
-import { Check, Eye } from "lucide-react"
+import { Check } from "lucide-react"
 import { individual_form, joint_form, organizational_form } from './SampleInfo'
 import ApplicationSuccess from './ApplicationSuccess'
 import { getApplicationDefaults } from '@/utils/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { Card } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import LoadingComponent from '@/components/misc/LoadingComponent'
 import Fees from '@/components/public/Fees'
-import { Input } from '@/components/ui/input'
 import { FormDetails } from '@/lib/entities/account'
 import { GetForms } from '@/utils/entities/account'
 import EmailConfirmationDialog from '@/components/apply/form/EmailConfirmationDialog'
@@ -42,25 +38,24 @@ enum FormStep {
 
 const IBKRApplicationForm = () => {
 
-  // State for step navigation and data
-  const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.FEES);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fetchedForms, setFetchedForms] = useState<FormDetails[] | null>(null);
-
-  // State for viewing a single form PDF
-  const [isFormViewerOpen, setIsFormViewerOpen] = useState(false);
-  const [selectedFormName, setSelectedFormName] = useState<string | null>(null);
-  const [selectedFormData, setSelectedFormData] = useState<string | null>(null);
-
-  const [emailConfirmed, setEmailConfirmed] = useState(false);
-  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
-
-  const [userSignature, setUserSignature] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const { t } = useTranslationProvider();
 
-  const [sentApplication, setSentApplication] = useState<Application | null>(null);
-  const [sentApplicationResponse, setSentApplicationResponse] = useState<any | null>(null);
+  // State for step navigation and data
+  const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.FEES);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // State for viewing a single form PDF
+  const [fetchedForms, setFetchedForms] = useState<FormDetails[] | null>(null);
+  const [isFormViewerOpen, setIsFormViewerOpen] = useState(false);
+  const [selectedFormName, setSelectedFormName] = useState<string | null>(null);
+  const [selectedFormData, setSelectedFormData] = useState<string | null>(null);
+  const [userSignature, setUserSignature] = useState<string | null>(null);
+
+  // Email confirmation
+  const [emailConfirmed, setEmailConfirmed] = useState(false);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+
 
   const handleEmailConfirmed = () => {
     setEmailConfirmed(true);
@@ -102,17 +97,13 @@ const IBKRApplicationForm = () => {
   
   // Helper to validate the required fields for the current step before moving on
   const validateCurrentStep = async () => {
-    // Account Type step: make sure an account type is selected
     if (currentStep === FormStep.ACCOUNT_TYPE) {
       return await form.trigger('customer.type');
     }
 
-    // Account Holder Information step: validate the full form (all currently registered fields)
     if (currentStep === FormStep.ACCOUNT_HOLDER_INFO) {
       return await form.trigger();
     }
-
-    // No extra validation required for other steps here
     return true;
   };
 
@@ -153,38 +144,25 @@ const IBKRApplicationForm = () => {
       const advisor_id = searchParams.get('ad') || null;
       const master_account_id = searchParams.get('ma') || null;
       const lead_id = searchParams.get('ld') || null;
-
-      // Sanitize documents: remove holderId from each document
+      
       const sanitizedDocuments = (values.documents || []).map((doc: any) => {
         const { holderId, ...rest } = doc;
         return rest;
       });
       const sanitizedValues = { ...values, documents: sanitizedDocuments };
 
-      const internalApplication: InternalApplication = {
+      const internalApplication: InternalApplicationPayload = {
         application: sanitizedValues,
         advisor_code: advisor_id,
         master_account_id,
         lead_id,
-        id: "",
-        created: formatTimestamp(new Date()),
-        updated: formatTimestamp(new Date()),
         date_sent_to_ibkr: null,
         user_id: null,
       }
 
       console.log('Application ready to submit:', internalApplication.application);
+      await CreateApplication(internalApplication);
 
-      setSentApplication(internalApplication.application);
-
-      const sendResponse = await SendApplicationToIBKR(internalApplication.application);
-      
-      if (!sendResponse) {
-        throw new Error('Failed to send application to IBKR');
-      }
-
-      setSentApplicationResponse(sendResponse);
-      
       toast({
         title: "Application Submitted",
         description: "Your IBKR application has been successfully submitted.",
