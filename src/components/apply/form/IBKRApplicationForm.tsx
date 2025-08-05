@@ -7,36 +7,38 @@ import {
   Form,
 } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
-import { Application, InternalApplication, InternalApplicationPayload } from '@/lib/entities/application';
+import { Application, InternalApplication } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import AccountHolderInfoStep from './AccountHolderInfoStep'
-import { CreateApplication } from '@/utils/entities/application'
+import { SendApplicationToIBKR } from '@/utils/entities/application'
 import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
 import LoaderButton from '@/components/misc/LoaderButton'
 import { formatTimestamp } from '@/utils/dates'
 import { Check, Eye } from "lucide-react"
-import { useSession } from 'next-auth/react'
-import { individual_form, joint_form, new_form, organizational_form } from './SampleInfo'
+import { individual_form, joint_form, organizational_form } from './SampleInfo'
 import ApplicationSuccess from './ApplicationSuccess'
 import { getApplicationDefaults } from '@/utils/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import Fees from '@/components/public/Fees'
 import { Input } from '@/components/ui/input'
 import { FormDetails } from '@/lib/entities/account'
 import { GetForms } from '@/utils/entities/account'
+import EmailConfirmationDialog from '@/components/apply/form/EmailConfirmationDialog'
 
 enum FormStep {
   FEES = 0,
   ACCOUNT_TYPE = 1,
   ACCOUNT_HOLDER_INFO = 2,
-  DOCUMENTS = 3,
-  SUCCESS = 4
+  AGREEMENTS = 3,
+  DOCUMENTS = 4,
+  SUMMARY = 5,
+  SUCCESS = 6
 }
 
 const IBKRApplicationForm = () => {
@@ -51,10 +53,21 @@ const IBKRApplicationForm = () => {
   const [selectedFormName, setSelectedFormName] = useState<string | null>(null);
   const [selectedFormData, setSelectedFormData] = useState<string | null>(null);
 
+  const [emailConfirmed, setEmailConfirmed] = useState(false);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+
   const [userSignature, setUserSignature] = useState<string | null>(null);
-  const { data: session } = useSession();
   const searchParams = useSearchParams();
   const { t } = useTranslationProvider();
+
+  const [sentApplication, setSentApplication] = useState<Application | null>(null);
+  const [sentApplicationResponse, setSentApplicationResponse] = useState<any | null>(null);
+
+  const handleEmailConfirmed = () => {
+    setEmailConfirmed(true);
+    setIsEmailDialogOpen(false);
+    setCurrentStep(FormStep.AGREEMENTS);
+  };
 
   // Handler to view individual form
   const handleViewForm = async (formNumber: string, formName: string) => {
@@ -107,15 +120,22 @@ const IBKRApplicationForm = () => {
   const handleNextStep = async () => {
     const isValid = await validateCurrentStep();
 
-    if (isValid) {
-      setCurrentStep(prev => prev + 1);
-    } else {
+    if (!isValid) {
       toast({
         title: 'Form Errors',
         description: 'Please correct the highlighted errors before continuing.',
         variant: 'destructive'
       });
+      return;
     }
+
+    // After account holder info, trigger email confirmation dialog if not verified
+    if (currentStep === FormStep.ACCOUNT_HOLDER_INFO && !emailConfirmed) {
+      setIsEmailDialogOpen(true);
+      return;
+    }
+
+    setCurrentStep(prev => prev + 1);
   };
 
   const handlePreviousStep = () => {
@@ -131,11 +151,7 @@ const IBKRApplicationForm = () => {
       
       setIsSubmitting(true);
 
-      if (!session?.user?.id) {
-        throw new Error('User not found');
-      }
-      
-      const advisor_code = searchParams.get('ad') || null;
+      const advisor_id = searchParams.get('ad') || null;
       const master_account_id = searchParams.get('ma') || null;
       const lead_id = searchParams.get('ld') || null;
 
@@ -146,19 +162,29 @@ const IBKRApplicationForm = () => {
       });
       const sanitizedValues = { ...values, documents: sanitizedDocuments };
 
-      const internalApplication: InternalApplicationPayload = {
+      const internalApplication: InternalApplication = {
         application: sanitizedValues,
-        advisor_code,
+        advisor_code: advisor_id,
         master_account_id,
         lead_id,
+        id: "",
+        created: formatTimestamp(new Date()),
+        updated: formatTimestamp(new Date()),
         date_sent_to_ibkr: null,
-        user_id: session?.user?.id,
+        user_id: null,
       }
 
-      const createResponse = await CreateApplication(internalApplication);
-      if (!createResponse) {
-        throw new Error('Failed to create application');
+      console.log('Application ready to submit:', internalApplication.application);
+
+      setSentApplication(internalApplication.application);
+
+      const sendResponse = await SendApplicationToIBKR(internalApplication.application);
+      
+      if (!sendResponse) {
+        throw new Error('Failed to send application to IBKR');
       }
+
+      setSentApplicationResponse(sendResponse);
       
       toast({
         title: "Application Submitted",
@@ -166,8 +192,8 @@ const IBKRApplicationForm = () => {
         variant: "success"
       });
 
-      // Move to success step
-      setCurrentStep(FormStep.SUCCESS);
+      // Move to summary step to review JSONs
+      setCurrentStep(FormStep.SUMMARY);
     } catch (error) {
       toast({
         title: "Submission Failed",
@@ -184,7 +210,10 @@ const IBKRApplicationForm = () => {
       { name: t('fees.title'), step: FormStep.FEES },
       { name: t('apply.account.header.steps.account_type'), step: FormStep.ACCOUNT_TYPE },
       { name: t('apply.account.header.steps.account_holder_info'), step: FormStep.ACCOUNT_HOLDER_INFO },
+      
+      { name: t('apply.account.header.steps.agreements'), step: FormStep.AGREEMENTS },
       { name: t('apply.account.header.steps.documents'), step: FormStep.DOCUMENTS },
+      { name: t('apply.account.header.steps.summary'), step: FormStep.SUMMARY },
       { name: t('apply.account.header.steps.complete'), step: FormStep.SUCCESS }
     ];
 
@@ -291,7 +320,8 @@ const IBKRApplicationForm = () => {
                 </div>
               </>
             )}
-            {currentStep === null && (
+
+            {currentStep === FormStep.AGREEMENTS && (
                 <>
                 <div className="flex flex-col gap-4">
                   <h2 className="text-xl font-semibold mb-2">Agreements and Disclosures</h2>
@@ -315,7 +345,7 @@ const IBKRApplicationForm = () => {
                 </div>
                 <Input
                   type="text"
-                  placeholder="Please enter your signature"
+                  placeholder="Please enter your signature to continue"
                   value={userSignature || ""}
                   onChange={(e) => setUserSignature(e.target.value)}
                 />
@@ -353,7 +383,27 @@ const IBKRApplicationForm = () => {
                 </div>
               </>
             )}
+            {currentStep === FormStep.SUMMARY && (
+              <>
+                <div className="flex flex-col gap-4">
+                  <h2 className="text-xl font-semibold mb-2">Summary</h2>
+                  <p className="text-sm">Application JSON</p>
+                  <div className="flex flex-col gap-2 bg-muted p-4 rounded-md max-h-[50vh] overflow-y-auto">
+                    <p className="text-sm font-mono">{JSON.stringify(sentApplication)}</p>
+                  </div>
+                  <p className="text-sm">Application Response JSON</p>
+                  <div className="flex flex-col gap-2 bg-muted p-4 rounded-md max-h-[50vh] overflow-y-auto">
+                    <p className="text-sm font-mono">{JSON.stringify(sentApplicationResponse)}</p>
+                  </div>
+                </div>
+              </>
+            )}
           </form>
+          <EmailConfirmationDialog
+            isOpen={isEmailDialogOpen}
+            setIsOpen={setIsEmailDialogOpen}
+            onConfirmed={handleEmailConfirmed}
+          />
         </Form>
       </div>
       {/* Form Viewer Dialog */}
