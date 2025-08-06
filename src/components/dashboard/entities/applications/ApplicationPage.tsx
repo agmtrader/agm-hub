@@ -400,6 +400,19 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           <LabelValue label="Employer Address" value={details?.employmentDetails?.employerAddress ? `${details.employmentDetails.employerAddress.street1}, ${details.employmentDetails.employerAddress.city}, ${details.employmentDetails.employerAddress.state}, ${details.employmentDetails.employerAddress.country} ${details.employmentDetails.employerAddress.postalCode}` : undefined} />
           <LabelValue label="Passport" value={details?.identification?.passport} />
           <LabelValue label="Passport Country" value={details?.identification?.issuingCountry} />
+          <LabelValue label="Citizenship" value={details?.identification?.citizenship} />
+          <LabelValue label="National Card" value={details?.identification?.nationalCard} />
+          <LabelValue label="National Card Expiration" value={formatDate(details?.identification?.expirationDate)} />
+          <LabelValue label="Marital Status" value={details?.maritalStatus} />
+          <LabelValue label="Dependents" value={details?.numDependents !== undefined ? details.numDependents.toString() : undefined} />
+          <LabelValue label="Tax Residencies" value={details?.taxResidencies?.map((tr: any) => `${tr.country} (${tr.tinType}): ${tr.tin}`).join('; ')} />
+          {details?.w8Ben && (
+            <>
+              <LabelValue label="W8Ben Name" value={details.w8Ben.name} />
+              <LabelValue label="W8Ben Cert" value={<Badge variant={details.w8Ben.cert ? 'success' : 'outline'}>{details.w8Ben.cert ? 'Yes' : 'No'}</Badge>} />
+              <LabelValue label="Foreign Tax ID" value={details.w8Ben.foreignTaxId} />
+            </>
+          )}
         </CardContent>
       </Card>
     );

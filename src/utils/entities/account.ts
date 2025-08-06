@@ -22,6 +22,11 @@ export async function ReadAccountByUserID(userID:string): Promise<Account[] | nu
     return accounts
 }
 
+export async function UpdateAccountByAccountID(accountID:string, account:Partial<InternalAccount>): Promise<Account[] | null> {
+    const updateResponse: Account[] = await accessAPI(`/accounts/update`, 'POST', { 'query': { 'id': accountID }, 'account': account })
+    return updateResponse
+}
+
 export async function UploadAccountDocument(accountID:string, file_name:string, file_length:number, sha1_checksum:string, mime_type:string, data:string) {
     const document:InternalDocumentPayload = {
         file_name: file_name,

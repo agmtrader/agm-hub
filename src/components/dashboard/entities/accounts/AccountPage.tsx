@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Account as AccountFromDB } from '@/lib/entities/account';
+import { Account as AccountFromDB, InternalAccount } from '@/lib/entities/account';
 
 // --- Account Details Types ---
 
@@ -146,7 +146,7 @@ import {
   ListChecks,      
   ClipboardList
 } from 'lucide-react';
-import { ReadAccountByAccountID, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
+import { ReadAccountByAccountID, ReadAccountDetailsByAccountID, UpdateAccountByAccountID } from '@/utils/entities/account';
 import { toast } from '@/hooks/use-toast';
 import { AccountPendingTasks } from './AccountPendingTasks';
 import { AccountRegistrationTasks } from './AccountRegistrationTasks';
@@ -270,7 +270,6 @@ export const EditableDetailItem = ({
 };
 
 const AccountPage = ({ accountId }: Props) => {
-  const router = useRouter();
   const { lang } = useTranslationProvider();
 
   const [internalAccount, setInternalAccount] = useState<AccountFromDB | null>(null)
@@ -317,15 +316,15 @@ const AccountPage = ({ accountId }: Props) => {
       setIsUpdating(prev => ({ ...prev, [field]: true }));
       
       // Create the full account payload with updated field
-      const accountPayload = {
-        ibkr_account_number: field === 'ibkr_account_number' ? (newValue || null) : internalAccount.ibkr_account_number,
+      const accountPayload:Partial<InternalAccount> = {
+        ibkr_account_number: field === 'ibkr_account_number' ? (newValue) : internalAccount.ibkr_account_number,
         ibkr_username: field === 'ibkr_username' ? (newValue || null) : internalAccount.ibkr_username,
         ibkr_password: field === 'ibkr_password' ? (newValue || null) : internalAccount.ibkr_password,
         temporal_email: field === 'temporal_email' ? (newValue || null) : internalAccount.temporal_email,
         temporal_password: field === 'temporal_password' ? (newValue || null) : internalAccount.temporal_password,
       };
       
-      //await UpdateAccountByID(internalAccount.id, accountPayload);
+      await UpdateAccountByAccountID(internalAccount.id, accountPayload);
       
       // Update local state
       setInternalAccount(prev => prev ? {
