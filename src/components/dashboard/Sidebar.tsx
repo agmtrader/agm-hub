@@ -11,7 +11,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { cn } from '@/lib/utils'
 import { Separator } from '../ui/separator'
 import { useSession } from 'next-auth/react'
-import { FaChartBar, FaShieldVirus } from 'react-icons/fa'
+import { FaChartBar, FaChartLine, FaShieldVirus, FaTasks } from 'react-icons/fa'
 
 const tools = [
   {
@@ -48,6 +48,12 @@ const tools = [
 
 const user_tools = [
   {
+    name: 'Pending Tasks',
+    url: '/dashboard/pending-tasks',
+    icon: FaTasks,
+    id: 'pending_tasks',
+  },
+  {
     name: 'Trade Tickets',
     url: '/dashboard/trade-tickets',
     icon: Ticket,
@@ -64,6 +70,12 @@ const user_tools = [
     url: '/dashboard/risk',
     icon: FaShieldVirus,
     id: 'risk_center',
+  },
+  {
+    name: 'Investment Proposals',
+    url: '/dashboard/investment-proposals',
+    icon: FaChartLine,
+    id: 'investment_proposals',
   }
 ]
 
