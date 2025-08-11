@@ -112,22 +112,7 @@ const calculateTradingStats = (backtestData: BacktestSnapshot[]): {
 const Backtest = ({backtestData}: Props) => {
   const equityCurveData = calculateEquityCurveData(backtestData);
   const tradingStats = calculateTradingStats(backtestData);
-  
-  // Calculate signal distribution metrics
-  const signalMetrics = {
-    longSignals: backtestData.filter(s => s.Decision === 'LONG').length,
-    shortSignals: backtestData.filter(s => s.Decision === 'SHORT').length,
-    exitSignals: backtestData.filter(s => s.Decision === 'EXIT').length,
-    staySignals: backtestData.filter(s => s.Decision === 'STAY').length,
-    totalSignals: backtestData.length,
-    signalDistribution: {
-      long: backtestData.length > 0 ? ((backtestData.filter(s => s.Decision === 'LONG').length / backtestData.length) * 100).toFixed(1) : '0',
-      short: backtestData.length > 0 ? ((backtestData.filter(s => s.Decision === 'SHORT').length / backtestData.length) * 100).toFixed(1) : '0',
-      exit: backtestData.length > 0 ? ((backtestData.filter(s => s.Decision === 'EXIT').length / backtestData.length) * 100).toFixed(1) : '0',
-      stay: backtestData.length > 0 ? ((backtestData.filter(s => s.Decision === 'STAY').length / backtestData.length) * 100).toFixed(1) : '0'
-    }
-  };
-  
+
   // Calculate equity performance
   const finalEquity = equityCurveData.length > 0 ? equityCurveData[equityCurveData.length - 1].value : 100000;
   const startingEquity = 100000;
@@ -139,11 +124,6 @@ const Backtest = ({backtestData}: Props) => {
   return (
     <div className="rounded-lg p-4 bg-background">
         <div className="space-y-4">
-        <div className="flex items-center justify-between">
-            <Badge variant="outline" className="text-sm">
-            {backtestData.length} days analyzed
-            </Badge>
-        </div>
         
         {backtestData.length > 0 ? (
             <div className="space-y-6">

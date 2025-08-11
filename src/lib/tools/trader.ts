@@ -6,6 +6,20 @@ export interface Contract {
   lastTradeDateOrContractMonth?: string;
 }
 
+export interface BacktestSnapshot {
+  Date: string
+  Open: number
+  High: number
+  Low: number
+  Close: number
+  'Prev Close': number
+  Decision: 'LONG' | 'SHORT' | 'EXIT' | 'STAY'
+  EntryPrice: string | number
+  ExitPrice: string | number
+  'P/L': number
+  'Cum. P/L': number
+}
+
 export interface HistoricalDataPoint {
   date: string;
   open: number;
@@ -19,8 +33,6 @@ export interface ContractData {
   contract: Contract;
   data: HistoricalDataPoint[];
   symbol: string;
-  has_data: boolean;
-  data_points: number;
 }
 
 export interface OrderData {

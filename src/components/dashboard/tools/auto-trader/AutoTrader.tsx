@@ -16,48 +16,47 @@ import {
   ContractData,
   OrderData,
   PositionData,
-  ExtendedTraderResponse
+  ExtendedTraderResponse,
+  BacktestSnapshot
 } from '@/lib/tools/trader';
-
-// New BacktestSnapshot interface to match the Python structure
-interface BacktestSnapshot {
-  Date: string
-  Open: number
-  High: number
-  Low: number
-  Close: number
-  'Prev Close': number
-  Decision: 'LONG' | 'SHORT' | 'EXIT' | 'STAY'
-  EntryPrice: string | number
-  ExitPrice: string | number
-  'P/L': number
-  'Cum. P/L': number
-}
-
 import { toast } from '@/hooks/use-toast';  
 import Backtest from './Backtest';
+
+export const getDecisionColor = (decision: TradingDecision | null): string => {
+  switch(decision) {
+    case 'LONG': return 'bg-green-100 hover:bg-green-200 text-green-800';
+    case 'SHORT': return 'bg-red-100 hover:bg-red-200 text-red-800';
+    case 'STAY': return 'bg-blue-100 hover:bg-blue-200 text-blue-800';
+    case 'EXIT': return 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800';
+    default: return 'bg-gray-100 hover:bg-gray-200 text-gray-800';
+  }
+};
+
+export const getDecisionIcon = (decision: TradingDecision | null) => {
+  switch(decision) {
+    case 'LONG': return <ArrowUpCircle className="h-10 w-10 text-green-500" />;
+    case 'SHORT': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
+    case 'STAY': return <MinusCircle className="h-10 w-10 text-blue-500" />;
+    case 'EXIT': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
+    default: return null;
+  }
+};
 
 const AutoTrader = () => {
   
   const [socket, setSocket] = useState<any>(null);
 
-  const [strategyStarted, setStrategyStarted] = useState(false);
   const [decision, setDecision] = useState<TradingDecision | null>(null);
-
   const [accountSummary, setAccountSummary] = useState<AccountSummaryItem[] | null>(null);
   const [strategy, setStrategy] = useState<Strategy | null>(null);
-  const [backtestData, setBacktestData] = useState<BacktestSnapshot[]>([]);
 
   const [backtestLoading, setBacktestLoading] = useState(false);
-  
-  // Chart display toggles
-  const [showBacktestData, setShowBacktestData] = useState(true);
-  const [showIndicators, setShowIndicators] = useState(true);
+  const [backtestData, setBacktestData] = useState<BacktestSnapshot[]>([]);
 
   const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
 
   const requestBacktestData = () => {
-    if (socket && strategyStarted) {
+    if (socket) {
       setBacktestLoading(true);
       socket.emit('backtest');
     }
@@ -72,7 +71,6 @@ const AutoTrader = () => {
       try {
         console.log('Connected to Trader', data);
         if (!data) throw new Error('Error connecting to Trader');
-        setStrategyStarted(true);
         setDecision(data['decision'] as TradingDecision);
         setStrategy(data['strategy']);
         setAccountSummary(data['account_summary']);
@@ -90,18 +88,6 @@ const AutoTrader = () => {
 
     newSocket.on('disconnected', () => {
       console.log('Disconnected from Trader');
-    });
-
-    newSocket.on('strategy_started', (data: any) => {
-      console.log('Strategy started', data);
-      setStrategyStarted(true);
-      // Request backtest data when strategy starts
-      newSocket.emit('backtest');
-    });
-
-    newSocket.on('strategy_stopped', (data: any) => {
-      console.log('Strategy stopped', data);
-      setStrategyStarted(false);
     });
 
     newSocket.on('pong', (data: ExtendedTraderResponse) => {
@@ -138,7 +124,7 @@ const AutoTrader = () => {
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    if (socket && strategyStarted) {
+    if (socket) {
       interval = setInterval(() => {
         socket.emit('ping');
       }, 1000);
@@ -149,35 +135,9 @@ const AutoTrader = () => {
         clearInterval(interval);
       }
     };
-  }, [socket, strategyStarted]);
+  }, [socket]);
 
-  const getDecisionColor = (decision: TradingDecision | null): string => {
-    switch(decision) {
-      case 'LONG': return 'bg-green-100 hover:bg-green-200 text-green-800';
-      case 'SHORT': return 'bg-red-100 hover:bg-red-200 text-red-800';
-      case 'STAY': return 'bg-blue-100 hover:bg-blue-200 text-blue-800';
-      case 'EXIT': return 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800';
-      default: return 'bg-gray-100 hover:bg-gray-200 text-gray-800';
-    }
-  };
-
-  const getDecisionIcon = (decision: TradingDecision | null) => {
-    switch(decision) {
-      case 'LONG': return <ArrowUpCircle className="h-10 w-10 text-green-500" />;
-      case 'SHORT': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
-      case 'STAY': return <MinusCircle className="h-10 w-10 text-blue-500" />;
-      case 'EXIT': return <ArrowDownCircle className="h-10 w-10 text-red-500" />;
-      default: return null;
-    }
-  };
-
-  if (!socket || !strategyStarted) {
-    return (
-      <div className='w-full h-full flex justify-center items-center'>
-        <LoadingComponent className='w-full h-full'/>
-      </div>
-    )
-  }
+  if (!socket) return <LoadingComponent className='w-full h-full'/>
 
   const executed_order_columns = [
     {
@@ -202,7 +162,7 @@ const AutoTrader = () => {
     }
   ]
 
-  if (strategyStarted) {
+  if (socket && strategy) {
     return (
       <div className='w-full h-full p-4 '>
         <Card className="w-full h-fit p-6 bg-background">
@@ -236,27 +196,20 @@ const AutoTrader = () => {
                 <div className='grid grid-cols-12 gap-4'>
                   <div className='col-span-12 md:col-span-4'>
                     <div className="h-full rounded-lg p-4 bg-background">
-                      <div className="flex items-center mb-4">
-                        <Briefcase className="h-5 w-5 mr-2 text-primary" />
-                        <h2 className="text-lg font-semibold text-foreground">Strategy Details</h2>
-                      </div>
                       {strategy && strategy.params ? (
                         <div className='gap-4 flex flex-col'>
                           {/* Strategy Name */}
-                          <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                            <div className='flex items-center gap-2 text-muted-foreground'>
-                              <Settings className="h-4 w-4" />
-                              <span className='text-sm'>Strategy Name</span>
-                            </div>
-                            <span className='font-bold text-lg text-primary'>
-                              {strategy.name || 'Ichimoku Base'}
-                            </span>
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                              <Briefcase className="h-5 w-5 text-primary"/>
+                              <h1 className='text-lg font-semibold'>
+                                {strategy.name || 'Ichimoku Base'}
+                              </h1>
                           </div>
 
                           {/* Contracts */}
                           <div className='space-y-3'>
                             <div className='flex items-center gap-2 text-muted-foreground'>
-                              <Activity className="h-4 w-4" />
+                              <Activity className="h-4 w-4 text-primary" />
                               <span className='text-sm font-medium'>Trading Contracts</span>
                             </div>
                             <div className='grid grid-cols-2 gap-3'>
@@ -277,7 +230,7 @@ const AutoTrader = () => {
                           {/* Strategy Parameters */}
                           <div className='space-y-3'>
                             <div className='flex items-center gap-2 text-muted-foreground'>
-                              <BarChart3 className="h-4 w-4" />
+                              <BarChart3 className="h-4 w-4 text-primary" />
                               <span className='text-sm font-medium'>Strategy Parameters</span>
                             </div>
                             <div className='grid grid-cols-2 gap-4'>
@@ -287,7 +240,7 @@ const AutoTrader = () => {
                                   <span className='text-sm'>Tenkan</span>
                                 </div>
                                 <span className='font-bold text-lg text-foreground'>
-                                  {strategy.params.tenkan}
+                                  {strategy.params.tenkan.toFixed(2)}
                                 </span>
                               </div>
                               <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
@@ -296,7 +249,7 @@ const AutoTrader = () => {
                                   <span className='text-sm'>Kijun</span>
                                 </div>
                                 <span className='font-bold text-lg text-foreground'>
-                                  {strategy.params.kijun}
+                                  {strategy.params.kijun.toFixed(2)}
                                 </span>
                               </div>
                               <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
@@ -350,7 +303,7 @@ const AutoTrader = () => {
                                 <Activity className="h-4 w-4 text-primary" />
                                 <span className='text-sm font-semibold text-foreground'>{contractData.symbol}</span>
                                 <span className='text-xs text-muted-foreground'>
-                                  ({contractData.data_points} data points)
+                                  ({contractData.data.length} data points)
                                 </span>
                               </div>
                               <div className='grid grid-cols-2 gap-4'>
@@ -360,7 +313,7 @@ const AutoTrader = () => {
                                     <span className='text-sm'>Open</span>
                                   </div>
                                   <span className='font-bold text-lg text-foreground'>
-                                    {contractData.has_data && contractData.data.length > 0 
+                                    {contractData.data.length > 0 
                                       ? contractData.data[contractData.data.length - 1].open.toFixed(2) 
                                       : 'No data'
                                     }
@@ -372,7 +325,7 @@ const AutoTrader = () => {
                                     <span className='text-sm'>High</span>
                                   </div>
                                   <span className='font-bold text-lg text-green-500'>
-                                    {contractData.has_data && contractData.data.length > 0 
+                                    {contractData.data.length > 0 
                                       ? contractData.data[contractData.data.length - 1].high.toFixed(2) 
                                       : 'No data'
                                     }
@@ -384,7 +337,7 @@ const AutoTrader = () => {
                                     <span className='text-sm'>Low</span>
                                   </div>
                                   <span className='font-bold text-lg text-red-500'>
-                                    {contractData.has_data && contractData.data.length > 0 
+                                    {contractData.data.length > 0 
                                       ? contractData.data[contractData.data.length - 1].low.toFixed(2) 
                                       : 'No data'
                                     }
@@ -396,14 +349,14 @@ const AutoTrader = () => {
                                     <span className='text-sm'>Close</span>
                                   </div>
                                   <span className='font-bold text-lg text-foreground'>
-                                    {contractData.has_data && contractData.data.length > 0 
+                                    {contractData.data.length > 0 
                                       ? contractData.data[contractData.data.length - 1].close.toFixed(2) 
                                       : 'No data'
                                     }
                                   </span>
                                 </div>
                               </div>
-                              {contractData.has_data && contractData.data.length > 0 && (
+                              {contractData.data.length > 0 && (
                                 <div className='mt-3 flex items-center gap-4 text-xs text-muted-foreground'>
                                   <span>Volume: {contractData.data[contractData.data.length - 1].volume || 'N/A'}</span>
                                   <span>Date: {contractData.data[contractData.data.length - 1].date}</span>
@@ -451,7 +404,7 @@ const AutoTrader = () => {
                                         : 'text-foreground'
                                     : 'text-foreground'
                                 }`}>
-                                  {summary.currency ? `${summary.value} ${summary.currency}` : summary.value}
+                                  {summary.currency ? `${parseFloat(summary.value).toFixed(2)} ${summary.currency}` : parseFloat(summary.value).toFixed(2)}
                                 </span>
                               </div>
                             ) : null;
@@ -524,17 +477,13 @@ const AutoTrader = () => {
               <TabsContent value="chart" className="mt-0">
                 {strategy && strategy.params && strategy.params.contracts ? (
                   <div className="rounded-lg p-4 bg-background space-y-6">
-                    <div className="flex justify-between items-center">
-                      <h2 className="text-lg font-semibold text-foreground">Historical Data Analysis</h2>
-                    </div>
                     {strategy.params.contracts.map((contract, index) => {
                       const indicator = index === 0 ? strategy.params.psar_mes || [] : strategy.params.psar_mym || [];
                       return (
                         <TraderChart
                           key={contract.symbol}
                           contract={contract}
-                          indicator={showIndicators ? indicator : undefined}
-                          tradingData={showBacktestData ? backtestData : undefined}
+                          indicator={indicator}
                           title={`${contract.symbol} Trading Chart`}
                         />
                       );
@@ -548,17 +497,13 @@ const AutoTrader = () => {
               <TabsContent value="backtest" className="mt-0">
                 {strategy && strategy.params && strategy.params.contracts ? (
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <h2 className="text-lg font-semibold text-foreground">Backtest Analysis</h2>
-                      <Button
-                        onClick={requestBacktestData}
-                        disabled={backtestLoading}
-                        className="bg-primary text-background hover:bg-primary/90"
-                      >
-                        <RefreshCw className={`h-4 w-4 mr-2 ${backtestLoading ? 'animate-spin' : ''}`} />
-                        {backtestLoading ? 'Loading...' : 'Refresh Backtest'}
-                      </Button>
-                    </div>
+                    <Button
+                      onClick={requestBacktestData}
+                      disabled={backtestLoading}
+                      className="bg-primary text-background hover:bg-primary/90"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${backtestLoading ? 'animate-spin' : ''}`} />
+                    </Button>
                     <Backtest backtestData={backtestData} />
                   </div>
                 ) : (
