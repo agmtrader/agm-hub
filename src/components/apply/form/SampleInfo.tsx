@@ -811,3 +811,149 @@ export const new_form: Application = {
     "translation": null,
     "paperAccount": null
 }
+
+export const test_with_changes: Application = {
+    "customer": {
+        "type": "INDIVIDUAL",
+        "externalId": "8k628jkbsw",
+        "prefix": "elen",
+        "email": "aguilarcarboni@gmail.com",
+        "mdStatusNonPro": true,
+        "meetAmlStandard": "true",
+        "directTradingAccess": true,
+        "legalResidenceCountry": "CRI",
+        "accountHolder": {
+            "accountHolderDetails": [
+                {
+                    "w8Ben": {
+                        "localTaxForms": [],
+                        "name": "Andres Aguilar",
+                        "foreignTaxId": "118490741",
+                        "tinOrExplanationRequired": true,
+                        "part29ACountry": "N/A",
+                        "cert": true,
+                        "signatureType": "Electronic",
+                        "blankForm": true,
+                        "taxFormFile": "Form5001.pdf",
+                        "electronicFormat": true
+                    },
+                    "name": {
+                        "first": "Andres",
+                        "last": "Aguilar"
+                    },
+                    "email": "aguilarcarboni@gmail.com",
+                    "dateOfBirth": "2002-07-12",
+                    "countryOfBirth": "CRI",
+                    "maritalStatus": "S",
+                    "numDependents": 0,
+                    "residenceAddress": {
+                        "street1": "Calle San Miguel",
+                        "street2": null,
+                        "city": "La Union",
+                        "state": "CR-C",
+                        "postalCode": "30301",
+                        "country": "CRI"
+                    },
+                    "phones": [
+                        {
+                            "type": "Mobile",
+                            "country": "CRI",
+                            "number": "83027366"
+                        }
+                    ],
+                    "identification": {
+                        "expirationDate": "2031-07-17",
+                        "issuingCountry": "CRI",
+                        "citizenship": "CRI",
+                        "nationalCard": "118490741"
+                    },
+                    "taxResidencies": [
+                        {
+                            "country": "CRI",
+                            "tin": "118490741",
+                            "tinType": "NonUS_NationalId"
+                        }
+                    ],
+                    "employmentType": "UNEMPLOYED",
+                    "employmentDetails": null,
+                    "externalId": "8k628jkbsw"
+                }
+            ],
+            "regulatoryInformation": [
+                {
+                    "regulatoryDetails": [
+                        {
+                            "code": "AFFILIATION",
+                            "status": false,
+                            "details": "Affiliated with Interactive Brokers"
+                        },
+                        {
+                            "code": "EmployeePubTrade",
+                            "status": true,
+                            "details": "AAPL"
+                        },
+                        {
+                            "code": "ControlPubTraded",
+                            "status": false,
+                            "details": "Controlled trading is not allowed"
+                        }
+                    ]
+                }
+            ],
+            "financialInformation": [
+                {
+                    "netWorth": 100000,
+                    "liquidNetWorth": 25000,
+                    "annualNetIncome": 100000,
+                    "investmentObjectives": [
+                        "Growth"
+                    ],
+                    "investmentExperience": [
+                        {
+                            "assetClass": "STK",
+                            "yearsTrading": 3,
+                            "tradesPerYear": 25,
+                            "knowledgeLevel": "Good"
+                        }
+                    ],
+                    "sourcesOfWealth": [
+                        {
+                            "sourceType": "SOW-IND-Income",
+                            "percentage": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "accounts": [
+        {
+            "baseCurrency": "USD",
+            "margin": "Cash",
+            "investmentObjectives": [
+                "Growth"
+            ],
+            "tradingPermissions": [
+                {
+                    "country": "UNITED STATES",
+                    "product": "STOCKS"
+                }
+            ],
+            "multiCurrency": true,
+            "externalId": "8k628jkbsw"
+        }
+    ],
+    "users": [
+        {
+            "externalUserId": "8k628jkbsw",
+            "externalIndividualId": "8k628jkbsw",
+            "prefix": "elen"
+        }
+    ],
+    "additionalAccounts": null,
+    "masterAccountId": null,
+    "id": null,
+    "inputLanguage": null,
+    "translation": null,
+    "paperAccount": null,
+}

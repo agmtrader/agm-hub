@@ -50,6 +50,21 @@ const PendingTasksPage = () => {
       cell: ({ row }: any) => accounts.find(a => a.id === row.original.account_id)?.ibkr_account_number || row.original.account_id,
     },
     {
+      header: 'Tags',
+      accessorKey: 'tags',
+      cell: ({ row }: any) => {
+        const tags: string[] = row.original.tags || []
+        if (!tags.length) return '-'
+        return (
+          <div className="flex flex-wrap gap-1">
+            {tags.map((t: string) => (
+              <span key={t} className="px-2 py-0.5 rounded bg-muted text-xs">{t}</span>
+            ))}
+          </div>
+        )
+      }
+    },
+    {
       header: 'Date',
       accessorKey: 'date',
       cell: ({ row }: any) => formatDateFromTimestamp(row.original.date),

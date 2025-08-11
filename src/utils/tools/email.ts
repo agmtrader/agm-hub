@@ -8,10 +8,11 @@ export async function sendTradeTicketEmail(content: any, email: string) {
   return response
 }
 
-export async function sendEmailConfirmationEmail(content: any, email: string) {
+export async function sendEmailConfirmationEmail(content: any, email: string, lang: string) {
   const response = await accessAPI('/email/send_email/email_confirmation', 'POST', {
     client_email: email,
     content: content,
+    lang: lang,
   })
   return response
 }

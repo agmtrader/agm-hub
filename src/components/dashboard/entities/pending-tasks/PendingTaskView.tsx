@@ -66,6 +66,18 @@ const PendingTaskView = ({ task, followUps, isOpen, onOpenChange, onSuccess }: P
                   <p className="text-foreground font-medium text-md">Date</p>
                   <p className="text-subtitle text-sm">{formatDateFromTimestamp(task.date.toString())}</p>
                 </div>
+                <div className="col-span-2">
+                  <p className="text-foreground font-medium text-md">Tags</p>
+                  {(!task.tags || task.tags.length === 0) ? (
+                    <p className="text-subtitle text-sm">-</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {task.tags.map((t) => (
+                        <span key={t} className="px-2 py-0.5 rounded bg-muted text-xs">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </Card>
             <Card className="p-6 space-y-4">

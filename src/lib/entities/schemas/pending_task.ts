@@ -12,5 +12,6 @@ export const pending_task_schema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
   // UI will provide a JS Date; we convert to timestamp string before sending to API
   date: z.date({ message: "Date is required" }),
-  closed: z.boolean().optional().default(false)
+  closed: z.boolean().optional().default(false),
+  tags: z.array(z.string()).nullable(),
 })

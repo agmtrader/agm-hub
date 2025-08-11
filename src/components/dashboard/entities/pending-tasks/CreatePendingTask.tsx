@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { pending_task_schema, pending_task_follow_up_schema } from '@/lib/entities/schemas/pending_task'
@@ -28,6 +28,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { getDefaults } from '@/utils/form'
 import { Account } from '@/lib/entities/account'
 import { ReadAccounts } from '@/utils/entities/account'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 
 interface Props {
   refreshTasks?: () => void
@@ -38,6 +40,7 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
   const [accounts, setAccounts] = useState<Account[]>([])
+  const [newTag, setNewTag] = useState('')
 
   useEffect(() => {
     ReadAccounts().then(setAccounts).catch(() => null)
@@ -52,6 +55,7 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       ...getDefaults(pending_task_schema),
+      tags: [],
       follow_ups: [
         {
           date: new Date(),
@@ -81,6 +85,7 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
         description: values.description,
         date: values.date,
         closed: false,
+        tags: (values.tags && Array.isArray(values.tags)) ? values.tags : [],
       }
 
       await CreatePendingTaskAPI(pendingTask, followUps)
@@ -93,6 +98,30 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const SUGGESTED_TAGS = useMemo(() => [
+    'funding',
+    'account',
+    'kyc',
+    'documents',
+    'compliance',
+    'misc',
+  ], [])
+
+  const addTag = (tag: string) => {
+    const current = form.getValues('tags') || []
+    const normalized = tag.trim().toLowerCase()
+    if (!normalized) return
+    if (!current.includes(normalized)) {
+      form.setValue('tags', [...current, normalized], { shouldDirty: true, shouldTouch: true })
+    }
+    setNewTag('')
+  }
+
+  const removeTag = (tag: string) => {
+    const current = form.getValues('tags') || []
+    form.setValue('tags', current.filter((t: string) => t !== tag), { shouldDirty: true, shouldTouch: true })
   }
 
   return (
@@ -152,6 +181,50 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
                   <FormControl>
                     <Textarea {...field} className="min-h-[100px]" />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Add a tag (e.g., funding, account)"
+                        value={newTag}
+                        onChange={(e) => setNewTag(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            addTag(newTag)
+                          }
+                        }}
+                      />
+                      <Button type="button" variant="outline" onClick={() => addTag(newTag)}>Add</Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {(field.value || []).map((tag: string) => (
+                        <Badge key={tag} variant="secondary" className="px-2 py-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs">{tag}</span>
+                            <Button type="button" variant="ghost" size="icon" className="h-5 w-5" onClick={() => removeTag(tag)}>×</Button>
+                          </div>
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {SUGGESTED_TAGS.map(t => (
+                        <Button key={t} type="button" variant="outline" size="sm" onClick={() => addTag(t)}>
+                          {t}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

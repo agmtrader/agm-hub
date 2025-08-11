@@ -1,5 +1,20 @@
 import { z } from 'zod';
 
+export const affiliation_details_schema = z.object({
+  isDuplicateStmtRequired: z.boolean().optional().default(true),
+  affiliationRelationship: z.enum(['Other', 'Spouse', 'Parent', 'Child', 'Self'], {
+    required_error: 'Affiliation relationship is required',
+  }),
+  personName: z.string().min(1, { message: 'Affiliated person name is required' }).max(48),
+  company: z.string().min(1, { message: 'Company is required' }).max(400),
+  companyPhone: z.string().min(1, { message: 'Company phone is required' }).max(18),
+  companyEmailAddress: z.string().email({ message: 'Invalid company email' }).max(80),
+  country: z.string().length(3, { message: 'Country must be a 3-letter ISO code' }),
+  state: z.string().min(1, { message: 'State/Province is required' }).max(20),
+  city: z.string().min(1, { message: 'City is required' }).max(100),
+  postalCode: z.string().min(1, { message: 'Postal code is required' }).max(20),
+});
+
 export const poa_schema = z.object({
   type: z.enum(["Utility Bill", "Bank Statement", "Tax Return"]),
 })
@@ -46,11 +61,11 @@ export const identification_schema = z.object({
 });
 
 export const employment_details_schema = z.object({
-  employer: z.string().optional(),
-  occupation: z.string().optional(),
-  employerAddress: address_schema.optional(),
-  yearsWithEmployer: z.number().int().positive().optional(),
-  employerBusiness: z.string().optional(),
+  employer: z.string().optional().nullable(),
+  occupation: z.string().optional().nullable(),
+  employerAddress: address_schema.optional().nullable(),
+  yearsWithEmployer: z.number().int().positive().optional().nullable(),
+  employerBusiness: z.string().optional().nullable(),
 });
 
 export const investment_experience_schema = z.object({
@@ -73,6 +88,7 @@ export const regulatory_detail_schema = z.object({
   details: z.string().optional(),
   detail: z.string().optional(), // IBKR seems to use both 'details' and 'detail'
   externalIndividualId: z.string().optional(),
+  affiliation: affiliation_details_schema.optional(),
 });
 
 export const trading_permission_schema = z.object({
@@ -135,9 +151,77 @@ export const financial_information_schema = z.object({
   accreditedInvestor: z.boolean().optional(),
 });
 
-export const regulatory_information_schema = z.object({
-  regulatoryDetails: z.array(regulatory_detail_schema).min(1, { message: 'At least one regulatory detail is required' }),
-});
+export const regulatory_information_schema = z
+  .object({
+    regulatoryDetails: z
+      .array(regulatory_detail_schema)
+      .min(1, { message: 'At least one regulatory detail is required' }),
+  })
+  .superRefine((val, ctx) => {
+    const detailsList = val.regulatoryDetails || [];
+
+    const requiresTickerCodes = new Set(["EmployeePubTrade", "ControlPubTraded"]);
+
+    detailsList.forEach((detail, index) => {
+      // Normalize
+      const code = detail.code;
+      const isYes = Boolean(detail.status);
+
+      if (!isYes) return; // Only validate details when status is Yes
+
+      // AFFILIATION must include a full affiliation object when Yes
+      if (code === "AFFILIATION") {
+        if (!('affiliation' in detail) || !detail.affiliation) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Affiliation details are required",
+            path: ["regulatoryDetails", index, "affiliation"],
+          });
+          return;
+        }
+        const parsed = affiliation_details_schema.safeParse(detail.affiliation);
+        if (!parsed.success) {
+          parsed.error.issues.forEach((issue) =>
+            ctx.addIssue({ ...issue, path: ["regulatoryDetails", index, "affiliation", ...(issue.path || [])] })
+          );
+        }
+        return;
+      }
+
+      // EmployeePubTrade / ControlPubTraded must have uppercase tickers list
+      if (requiresTickerCodes.has(code)) {
+        const value = (detail.details ?? "").trim();
+        if (!value) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Enter one or more stock symbols, separated by commas",
+            path: ["regulatoryDetails", index, "details"],
+          });
+          return;
+        }
+
+        const tokens = value.split(",").map((s) => s.trim()).filter(Boolean);
+        if (tokens.length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Enter one or more stock symbols, separated by commas",
+            path: ["regulatoryDetails", index, "details"],
+          });
+          return;
+        }
+
+        // Validate uppercase (letters and digits allowed, simple rule)
+        const hasInvalid = tokens.some((t) => t !== t.toUpperCase());
+        if (hasInvalid) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Stock symbols must be UPPER CASE and separated by commas",
+            path: ["regulatoryDetails", index, "details"],
+          });
+        }
+      }
+    });
+  });
 
 export const account_schema = z.object({
   investmentObjectives: z.array(z.string()).min(1, { message: 'At least one account investment objective is required' }),
@@ -222,7 +306,7 @@ export const account_holder_details_schema = z.object({
   numDependents: z.number().int().min(0).optional(),
   phones: z.array(phone_schema).min(1, { message: 'At least one phone number is required' }),
   identification: identification_schema, // This might need to be more specific based on individual vs org
-  employmentDetails: employment_details_schema,
+  employmentDetails: employment_details_schema.optional().nullable(),
   isPEP: z.boolean().optional(), // Politically Exposed Person
   isControlPerson: z.boolean().optional(),
   employmentType: z.string().min(1, { message: 'Employment type is required' }),

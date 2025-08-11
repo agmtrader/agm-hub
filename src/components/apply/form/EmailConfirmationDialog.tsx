@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast'
 import { useFormContext } from 'react-hook-form'
 import { Application } from '@/lib/entities/application'
 import { sendEmailConfirmationEmail } from '@/utils/tools/email'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface EmailConfirmationDialogProps {
   isOpen: boolean
@@ -17,6 +18,8 @@ interface EmailConfirmationDialogProps {
 
 const EmailConfirmationDialog: React.FC<EmailConfirmationDialogProps> = ({ isOpen, setIsOpen, onConfirmed }) => {
   const { getValues } = useFormContext<Application>()
+
+  const { lang } = useTranslationProvider()
 
   // Figure out the primary email based on account type/structure
   const accountType = getValues('customer.type') as 'INDIVIDUAL' | 'JOINT' | 'ORG' | undefined
@@ -59,7 +62,7 @@ const EmailConfirmationDialog: React.FC<EmailConfirmationDialogProps> = ({ isOpe
 
       try {
         setIsSending(true)
-        await sendEmailConfirmationEmail({ pin }, email)
+        await sendEmailConfirmationEmail({ pin }, email, lang)
         setEmailSent(true)
         toast({
           title: 'Confirmation Email Sent',

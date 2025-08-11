@@ -313,6 +313,16 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
             form.setValue("customer.organization.financialInformation.0.sourcesOfWealth.0.sourceType", "SOW-IND-Income");
           }
         }
+
+        // Clear employment details when not EMPLOYED or SELF_EMPLOYED
+        if (employmentType && employmentType !== 'EMPLOYED' && employmentType !== 'SELF_EMPLOYED') {
+          const employmentDetailsPath = name.replace(/employmentType$/, 'employmentDetails');
+          form.setValue(employmentDetailsPath as any, null, {
+            shouldValidate: false,
+            shouldDirty: true,
+            shouldTouch: false,
+          });
+        }
       }
 
       // Ensure only the selected identification number field is kept
@@ -566,43 +576,242 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
     </Card>
     );
 
-  // Regulatory Information Section
+  // Regulatory Information Section (Yes/No + conditional detail inputs)
   const renderRegulatoryInformation = (basePath: string) => (
     <Card className="p-6 space-y-6">
       <CardHeader>
         <CardTitle>{t('apply.account.account_holder_info.regulatory_information') || 'Regulatory Information'}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {regulatoryOptions.map((opt, index) => (
-          <div key={opt.code} className="flex flex-col gap-2">
-            {/* Label */}
-            <p className="text-foreground text-sm">{opt.label}</p>
+      <CardContent className="space-y-6">
+        {regulatoryOptions.map((opt, index) => {
+          const statusPath = `${basePath}.0.regulatoryDetails.${index}.status` as const;
+          const detailsPath = `${basePath}.0.regulatoryDetails.${index}.details` as const;
+          const codePath = `${basePath}.0.regulatoryDetails.${index}.code` as const;
+          const isYes = !!form.watch(statusPath as any);
 
-            {/* Status Checkbox */}
-            <FormField
-              control={form.control}
-              name={`${basePath}.0.regulatoryDetails.${index}.status` as any}
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked);
-                      // Auto-set description based on status
-                      form.setValue(
-                        `${basePath}.0.regulatoryDetails.${index}.details` as any,
-                        checked ? opt.positive : opt.negative,
-                        { shouldValidate: false, shouldDirty: true }
-                      );
-                    }}
+          // Ensure the code is set
+          React.useEffect(() => {
+            form.setValue(codePath as any, opt.code as any, { shouldValidate: false, shouldDirty: false });
+          }, [codePath]);
+
+          return (
+            <div key={opt.code} className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-foreground text-sm">{opt.label}</p>
+                <div className="flex items-center gap-2">
+                  <FormField
+                    control={form.control}
+                    name={statusPath as any}
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={!!field.value === true && false}
+                            onCheckedChange={(checked) => field.onChange(false)}
+                            className="hidden"
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <Select
+                            onValueChange={(val) => {
+                              const next = val === 'true';
+                              field.onChange(next);
+                              // Reset or seed details
+                              form.setValue(detailsPath as any, next ? '' : '', {
+                                shouldDirty: true,
+                                shouldValidate: false,
+                              });
+                            }}
+                            defaultValue={String(!!field.value)}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-[120px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="false">No</SelectItem>
+                              <SelectItem value="true">Yes</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                      </FormItem>
+                    )}
                   />
-                  </FormControl>
-                </FormItem>
+                </div>
+              </div>
+
+              {/* Conditional inputs when YES */}
+              {isYes && (
+                <div className="pl-1 space-y-4">
+                  {opt.code === 'AFFILIATION' ? (
+                    <div className="space-y-4">
+                      {/* Relationship */}
+                      <FormField
+                        control={form.control}
+                        name={`${basePath}.0.regulatoryDetails.${index}.affiliation.affiliationRelationship` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Relationship</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {['Other','Spouse','Parent','Child','Self'].map((opt) => (
+                                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Person Name */}
+                      <FormField
+                        control={form.control}
+                        name={`${basePath}.0.regulatoryDetails.${index}.affiliation.personName` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Affiliated Person Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Company */}
+                      <FormField
+                        control={form.control}
+                        name={`${basePath}.0.regulatoryDetails.${index}.affiliation.company` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Company</FormLabel>
+                            <FormControl>
+                              <Input placeholder="" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Compliance officer phone */}
+                      <FormField
+                        control={form.control}
+                        name={`${basePath}.0.regulatoryDetails.${index}.affiliation.companyPhone` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Compliance Officer Phone</FormLabel>
+                            <FormControl>
+                              <Input placeholder="" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Compliance officer email */}
+                      <FormField
+                        control={form.control}
+                        name={`${basePath}.0.regulatoryDetails.${index}.affiliation.companyEmailAddress` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Compliance Officer Email</FormLabel>
+                            <FormControl>
+                              <Input placeholder="" type="email" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Address */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <CountriesFormField
+                          form={form}
+                          element={{
+                            name: `${basePath}.0.regulatoryDetails.${index}.affiliation.country`,
+                            title: 'Country (3-letter code)'
+                          }}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`${basePath}.0.regulatoryDetails.${index}.affiliation.state` as any}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>State/Province</FormLabel>
+                              <FormControl>
+                                <Input placeholder="" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name={`${basePath}.0.regulatoryDetails.${index}.affiliation.city` as any}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>City</FormLabel>
+                              <FormControl>
+                                <Input placeholder="" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`${basePath}.0.regulatoryDetails.${index}.affiliation.postalCode` as any}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Postal Code</FormLabel>
+                              <FormControl>
+                                <Input placeholder="" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <FormField
+                      control={form.control}
+                      name={detailsPath as any}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company Stock Symbols</FormLabel>
+                          <FormDescription>
+                            Enter one or more stock symbols separated by commas. Symbols must be UPPER CASE.
+                          </FormDescription>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g. AAPL, MSFT"
+                              value={field.value || ''}
+                              onChange={(e) => {
+                                // Normalize to uppercase as user types
+                                field.onChange(e.target.value.toUpperCase());
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
               )}
-            />
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </CardContent>
     </Card>
   );
@@ -1457,50 +1666,55 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           </FormItem>
         )}
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name={`${basePath}.employmentDetails.employer` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('apply.account.account_holder_info.employer')}</FormLabel>
-              <FormControl>
-                <Input placeholder="" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name={`${basePath}.employmentDetails.occupation` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('apply.account.account_holder_info.occupation')}</FormLabel>
-              <FormControl>
-                <Input placeholder="" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-      <FormField
-        control={form.control}
-        name={`${basePath}.employmentDetails.employerBusiness` as any}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t('apply.account.account_holder_info.employer_business')}</FormLabel>
-            <FormControl>
-              <Input placeholder="" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {['EMPLOYED', 'SELF_EMPLOYED'].includes(form.watch(`${basePath}.employmentType` as any)) && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name={`${basePath}.employmentDetails.employer` as any}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('apply.account.account_holder_info.employer')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name={`${basePath}.employmentDetails.occupation` as any}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('apply.account.account_holder_info.occupation')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-      <h5 className="text-md font-semibold pt-4">{t('apply.account.account_holder_info.employer_address')}</h5>
-      {renderAddressFields(`${basePath}.employmentDetails.employerAddress`)}
+          <FormField
+            control={form.control}
+            name={`${basePath}.employmentDetails.employerBusiness` as any}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('apply.account.account_holder_info.employer_business')}</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <h5 className="text-md font-semibold pt-4">{t('apply.account.account_holder_info.employer_address')}</h5>
+          {renderAddressFields(`${basePath}.employmentDetails.employerAddress`)}
+        </>
+      )}
       </CardContent>
     </Card>
     );
