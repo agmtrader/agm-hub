@@ -54,6 +54,7 @@ const AutoTrader = () => {
   const [backtestData, setBacktestData] = useState<BacktestSnapshot[]>([]);
 
   const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
+  //const socketURL = 'http://167.71.94.59:3333'
 
   const requestBacktestData = () => {
     if (socket) {
