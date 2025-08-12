@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { DataTable } from '@/components/misc/DataTable'
 import AdvisorApplicationLinks from './AdvisorApplicationLinks'
+import CreateAdvisor from './CreateAdvisor'
 import { ReadAdvisors } from '@/utils/entities/advisor'
 
 type Props = {}
@@ -20,28 +21,25 @@ const AdvisorsPage = (props: Props) => {
 
     const { lang } = useTranslationProvider()
 
-    useEffect(() => {
-        async function handleReadAdvisors() {
-            try {
-                const advisors = await ReadAdvisors()
-                setAdvisors(advisors)
-            } catch (error: any) {
-                toast({
-                    title: 'Error',
-                    description: 'Failed to fetch advisors',
-                    variant: 'destructive',
-                })
-            }
+    async function handleReadAdvisors() {
+        try {
+            const advisors = await ReadAdvisors()
+            setAdvisors(advisors)
+        } catch (error: any) {
+            toast({
+                title: 'Error',
+                description: 'Failed to fetch advisors',
+                variant: 'destructive',
+            })
         }
+    }
+
+    useEffect(() => {
         handleReadAdvisors()
     }, [])
 
 
     const columns = [
-        {
-            accessorKey: 'id',
-            header: 'Advisor ID',
-        },
         {
             accessorKey: 'name',
             header: 'Advisor Name',
@@ -66,6 +64,9 @@ const AdvisorsPage = (props: Props) => {
 
   return (
     <div>
+        <div className='flex justify-end mb-4'>
+            <CreateAdvisor onSuccess={handleReadAdvisors} />
+        </div>
         {advisors ? 
             <DataTable
                 data={advisors}

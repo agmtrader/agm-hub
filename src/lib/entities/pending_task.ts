@@ -2,7 +2,9 @@ import { pending_task_schema, pending_task_follow_up_schema } from "@/lib/entiti
 import { z } from "zod"
 import { Base } from "./base"
 
-export type PendingTaskPayload = z.infer<typeof pending_task_schema>
+export type PendingTaskPayload = z.infer<typeof pending_task_schema> & {
+  date: string
+}
 export type PendingTask = Base & PendingTaskPayload
 
 export type PendingTaskFollowUpPayload = z.infer<typeof pending_task_follow_up_schema> & {

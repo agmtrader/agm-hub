@@ -30,6 +30,7 @@ import { Account } from '@/lib/entities/account'
 import { ReadAccounts } from '@/utils/entities/account'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Select, SelectValue, SelectTrigger } from '@/components/ui/select'
 
 interface Props {
   refreshTasks?: () => void
@@ -81,9 +82,10 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
       }))
 
       const pendingTask: PendingTaskPayload = {
+        priority: values.priority,
         account_id: values.account_id,
         description: values.description,
-        date: values.date,
+        date: formatTimestamp(new Date()),
         closed: false,
         tags: (values.tags && Array.isArray(values.tags)) ? values.tags : [],
       }
@@ -188,6 +190,20 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
 
             <FormField
               control={form.control}
+              name="priority"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Priority</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} min={1} max={3} />
+                  </FormControl>  
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="tags"
               render={({ field }) => (
                 <FormItem>
@@ -225,20 +241,6 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
                       ))}
                     </div>
                   </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <DateTimePicker value={field.value || new Date()} onChange={field.onChange} granularity="minute" />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

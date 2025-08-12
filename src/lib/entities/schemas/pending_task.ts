@@ -10,8 +10,7 @@ export const pending_task_follow_up_schema = z.object({
 export const pending_task_schema = z.object({
   account_id: z.string().min(1, { message: "Account is required" }),
   description: z.string().min(1, { message: "Description is required" }),
-  // UI will provide a JS Date; we convert to timestamp string before sending to API
-  date: z.date({ message: "Date is required" }),
   closed: z.boolean().optional().default(false),
   tags: z.array(z.string()).nullable(),
+  priority: z.number().min(1, { message: "Priority is required" }).max(3, { message: "Priority must be between 1 and 3" }).default(1),
 })
