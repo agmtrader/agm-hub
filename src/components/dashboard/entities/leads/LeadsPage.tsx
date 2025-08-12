@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import CreateLead from './CreateLead'
-import LeadView from './LeadView'
+import LeadDialog from './LeadDialog' 
 import { Lead, FollowUp } from '@/lib/entities/lead'
 import { ReadLeads } from '@/utils/entities/lead'
 import { ColumnDefinition } from '@/components/misc/DataTable'
@@ -225,7 +225,7 @@ const LeadsPage = () => {
         </Tabs>
       </div>
 
-      <LeadView
+      <LeadDialog
         lead={selectedLead} 
         users={users}
         followUps={followUps.filter(f => f.lead_id === selectedLead?.id)}

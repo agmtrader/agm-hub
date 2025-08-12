@@ -6,8 +6,7 @@ import LoadingComponent from '@/components/misc/LoadingComponent'
 import { DataTable } from '@/components/misc/DataTable'
 import CreateAdvisor from './CreateAdvisor'
 import { ReadAdvisors } from '@/utils/entities/advisor'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
-import AdvisorPage from './AdvisorPage'
+import AdvisorDialog from './AdvisorDialog'
 
 const AdvisorsPage = () => {
 
@@ -67,13 +66,10 @@ const AdvisorsPage = () => {
             enableRowActions
             rowActions={rowActions}
         /> 
-        <Dialog open={selectedAdvisor !== null}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                {selectedAdvisor && (
-                    <AdvisorPage advisorId={selectedAdvisor.id} />
-                )}
-            </DialogContent>
-        </Dialog>
+        <AdvisorDialog advisor={selectedAdvisor} isOpen={selectedAdvisor !== null} onOpenChange={(open) => {
+            if (!open) setSelectedAdvisor(null)
+        }}
+        />
     </div>
   )
 }

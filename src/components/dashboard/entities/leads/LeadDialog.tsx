@@ -27,7 +27,7 @@ import AddFollowUp from './AddFollowUp'
 import { Trash2 } from 'lucide-react'
 import { User } from 'next-auth'
 
-interface LeadViewProps {
+interface Props {
   lead: Lead |  null
   followUps: FollowUp[]
   users: User[]
@@ -36,7 +36,7 @@ interface LeadViewProps {
   onSuccess?: () => void
 }
 
-const LeadView = ({ lead, followUps, users, isOpen, onOpenChange, onSuccess }: LeadViewProps) => {
+const LeadDialog = ({ lead, followUps, users, isOpen, onOpenChange, onSuccess }: Props) => {
 
   const user = users.find(u => u.id === lead?.contact_id)
   const referrer = users.find(u => u.id === lead?.referrer_id)
@@ -175,4 +175,4 @@ const LeadView = ({ lead, followUps, users, isOpen, onOpenChange, onSuccess }: L
   )
 }
 
-export default LeadView 
+export default LeadDialog

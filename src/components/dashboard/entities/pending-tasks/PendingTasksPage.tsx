@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { toast } from '@/hooks/use-toast'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import CreatePendingTask from './CreatePendingTask'
-import PendingTaskView from './PendingTaskView'
+import PendingTaskDialog from './PendingTaskDialog'
 import { ReadAccounts } from '@/utils/entities/account'
 import { Account } from '@/lib/entities/account'
 
@@ -117,7 +117,7 @@ const PendingTasksPage = () => {
           },
         ]}
       />
-      <PendingTaskView
+      <PendingTaskDialog
         task={selectedTask}
         followUps={followUps}
         isOpen={isViewOpen}

@@ -25,7 +25,7 @@ interface Props {
   onSuccess?: () => void
 }
 
-const PendingTaskView = ({ task, followUps, isOpen, onOpenChange, onSuccess }: Props) => {
+const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }: Props) => {
   if (!task) return null
 
   const taskFollowUps = followUps.filter(f => f.pending_task_id === task.id)
@@ -108,4 +108,4 @@ const PendingTaskView = ({ task, followUps, isOpen, onOpenChange, onSuccess }: P
   )
 }
 
-export default PendingTaskView
+export default PendingTaskDialog
