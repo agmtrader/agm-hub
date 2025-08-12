@@ -62,7 +62,7 @@ const GenerateApplicationLink = ({ lead, followUps, user }: Props) => {
             if (!user.email) {
                 throw new Error('No contact email found')
             }
-            await sendApplicationLinkEmail({'name': user.name, 'application_link': generateUrl()}, user.email, language)
+            await sendApplicationLinkEmail({'name': user.name || 'client', 'application_link': generateUrl()}, user.email, language)
             setIsSendingEmail(false)
         } catch (error: any) {
             toast({

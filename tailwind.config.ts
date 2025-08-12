@@ -28,11 +28,11 @@ module.exports = {
   				DEFAULT: '#f26c0d',
   				dark: '#d46010'
   			},
-  			secondary: {
-  				light: '#5996C0',
-  				DEFAULT: '#2571A5',
-  				dark: '#062D47'
-  			},
+            secondary: {
+                light: '#60A5FA',     // vivid blue-400
+                DEFAULT: '#3B82F6',  // vivid blue-500
+                dark: '#1D4ED8'      // vivid blue-700
+            },
   			muted: {
   				DEFAULT: '#F1F5F9'
   			},

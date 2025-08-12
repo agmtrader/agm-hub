@@ -18,26 +18,28 @@ import { useEffect, useState } from "react"
 import { getDefaults } from '@/utils/form'
 import { risk_assesment_schema } from "@/lib/tools/schemas/risk-profile"
 import { Input } from "@/components/ui/input"
-import RiskProfile from "@/components/dashboard/tools/risk/RiskProfile"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import {
   Dialog,
-  DialogClose,
-  DialogContent
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog"
-import { GetRiskProfile, CreateAccountRiskProfile } from "@/utils/tools/risk-profile"
+import { GetRiskProfile } from "@/utils/tools/risk-profile"
 import { ReloadIcon } from "@radix-ui/react-icons"
-import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
 import { useSession } from "next-auth/react"
-import { getRiskFormQuestions, weights, RiskProfile as RiskProfileType, AccountRiskProfilePayload } from "@/lib/tools/risk-profile"
+import { getRiskFormQuestions, weights } from "@/lib/tools/risk-profile"
 import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
 import LoadingComponent from "@/components/misc/LoadingComponent"
+import { GenerateInvestmentProposal } from "@/utils/tools/investment_proposals"
+import InvestmentProposalView from "@/components/dashboard/tools/investment-center/InvestmentProposal"
+import { InvestmentProposal as InvestmentProposalType } from "@/lib/tools/investment-proposals"
 
 // Each question in the form has a weight and each answer in the question has a weight
 // The risk score is calculated by summing the weighted values of the answers
@@ -51,10 +53,12 @@ const RiskForm = () => {
   const {data:session} = useSession()
   const { t } = useTranslationProvider()
 
-  const [riskProfile, setRiskProfile] = useState<RiskProfileType | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   const [accounts, setAccounts] = useState<Account[] | null>(null)
+
+  const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType[] | null>(null)
+  const [isProposalOpen, setIsProposalOpen] = useState(false)
 
   const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
 
@@ -109,19 +113,11 @@ const RiskForm = () => {
       const assigned_risk_profile = GetRiskProfile(risk_score)
       if (!assigned_risk_profile) throw new Error('No risk profile found')
 
-      // Build a user risk profile for the database
-      const account_risk_profile:AccountRiskProfilePayload = {
-        name: values.client_name,
-        risk_profile_id: assigned_risk_profile.id,
-        account_id: values.account_id,
-        score: risk_score,
-      }
-      await CreateAccountRiskProfile(account_risk_profile)
+      // Generate the investment proposal for the assigned risk profile
+      const proposal = await GenerateInvestmentProposal(assigned_risk_profile.id.toString())
 
-      if (!session?.user?.name) throw new Error('User name not found')
-
-      // Display the assigned risk profile
-      setRiskProfile(assigned_risk_profile)
+      setInvestmentProposal(proposal)
+      setIsProposalOpen(true)
 
       // Reset the form after submission
       form.reset(initialFormValues)
@@ -129,17 +125,13 @@ const RiskForm = () => {
     } catch (error:any) {
       toast({
         title: 'Error',
-        description: error.message,
+        description: error.message || 'Failed to generate investment proposal',
         variant: 'destructive'
       })
     } finally {
       setSubmitting(false)
     }
 
-  }
-
-  const handleDialogClose = () => {
-    setRiskProfile(null);
   }
 
   if (!accounts) return <LoadingComponent />
@@ -436,47 +428,21 @@ const RiskForm = () => {
               )}
             </Button>
 
+            <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Investment Proposal</DialogTitle>
+                </DialogHeader>
+                {investmentProposal && (
+                  <div className="pt-2">
+                    <InvestmentProposalView investmentProposal={investmentProposal} />
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
 
         </motion.form>
       </Form>
-
-      <AnimatePresence>
-          {riskProfile && (
-            <Dialog open={!!riskProfile} onOpenChange={handleDialogClose}>
-              <DialogContent className="max-w-fit w-full">
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ duration: 0.1 }}
-                  className="w-full h-full flex flex-col gap-y-5 justify-center items-center"
-                >
-                  <DialogClose className="absolute right-4 top-4" asChild>
-                    <Button type="button" variant="ghost" size="icon">
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </DialogClose>
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <RiskProfile riskProfile={riskProfile}/>
-                  </motion.div>
-                  <motion.p 
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="text-sm text-red-500 font-bold"
-                  >
-                    {t('apply.risk.result.warning')}
-                  </motion.p>
-                </motion.div>
-              </DialogContent>
-            </Dialog>
-          )}
-        </AnimatePresence>
-
     </motion.div>
   )
 

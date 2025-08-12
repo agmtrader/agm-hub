@@ -8,7 +8,7 @@ export async function CreateAccountRiskProfile(account_risk_profile:AccountRiskP
 }
 
 export async function ReadAccountRiskProfiles(): Promise<AccountRiskProfile[] | null> {
-    let account_risk_profiles = await accessAPI('/risk_profiles/read','POST', {'query': {}})
+    let account_risk_profiles = await accessAPI('/risk_profiles/read','GET')
     return account_risk_profiles
 }
 

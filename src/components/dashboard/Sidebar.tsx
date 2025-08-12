@@ -66,16 +66,10 @@ const user_tools = [
     id: 'reporting',
   },
   {
-    name: 'Risk Center',
-    url: '/dashboard/risk',
-    icon: FaShieldVirus,
-    id: 'risk_center',
-  },
-  {
-    name: 'Investment Proposals',
-    url: '/dashboard/investment-proposals',
+    name: 'Investment Center',
+    url: '/dashboard/investment-center',
     icon: FaChartLine,
-    id: 'investment_proposals',
+    id: 'investment_center',
   }
 ]
 
