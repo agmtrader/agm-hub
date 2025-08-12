@@ -15,22 +15,7 @@ export async function ReadClientsReport() {
   return report
 }
 
-export async function GetNAVReport() {
-  const report = await accessAPI('/reporting/nav', 'GET')
-  return report
-}
-
 export async function GetClientFeesReport() {
   const report = await accessAPI('/reporting/client_fees', 'GET')
-  return report
-}
-
-export async function GetOpenPositionsReport() {
-  const report = await accessAPI('/reporting/open_positions', 'GET')
-  return report
-}
-
-export async function GetProposalsEquityReport() {
-  const report = await accessAPI('/reporting/proposals_equity', 'GET')
   return report
 }
