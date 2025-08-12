@@ -379,6 +379,21 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
     updateW8Documents();
   }, [accountType]);
 
+  // Ensure financialInformation.0.investmentObjectives is initialized from accounts.0.investmentObjectives
+  React.useEffect(() => {
+    const objectives = (form.getValues("accounts.0.investmentObjectives") || []).filter(Boolean) as string[];
+    const type = form.getValues("customer.type");
+    if (objectives && objectives.length) {
+      if (type === 'INDIVIDUAL') {
+        form.setValue("customer.accountHolder.financialInformation.0.investmentObjectives", objectives, { shouldValidate: false, shouldDirty: false });
+      } else if (type === 'JOINT') {
+        form.setValue("customer.jointHolders.financialInformation.0.investmentObjectives", objectives, { shouldValidate: false, shouldDirty: false });
+      } else if (type === 'ORG') {
+        form.setValue("customer.organization.financialInformation.0.investmentObjectives", objectives, { shouldValidate: false, shouldDirty: false });
+      }
+    }
+  }, [accountType, form]);
+
   // Ensure customer.email is initialized/synced with the appropriate holder email when account type changes
   React.useEffect(() => {
     let email: string | undefined;
@@ -621,6 +636,18 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                                 shouldDirty: true,
                                 shouldValidate: false,
                               });
+                              // If selecting "No", remove any lingering affiliation object so it won't be validated
+                              if (!next) {
+                                const affiliationBasePath = `${basePath}.0.regulatoryDetails.${index}.affiliation` as const;
+                                try {
+                                  // Unregister removes nested fields from RHF state if they exist
+                                  form.unregister(affiliationBasePath as any, { keepValue: false });
+                                } catch {}
+                                form.setValue(affiliationBasePath as any, undefined as any, {
+                                  shouldDirty: true,
+                                  shouldValidate: false,
+                                });
+                              }
                             }}
                             defaultValue={String(!!field.value)}
                           >

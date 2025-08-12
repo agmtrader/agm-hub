@@ -28,11 +28,11 @@ import { GetForms } from '@/utils/entities/account'
 import EmailConfirmationDialog from '@/components/apply/form/EmailConfirmationDialog'
 
 enum FormStep {
-  FEES = 0,
-  ACCOUNT_TYPE = 1,
-  ACCOUNT_HOLDER_INFO = 2,
-  //AGREEMENTS = 3,
-  DOCUMENTS = 3,
+  ACCOUNT_TYPE = 0,
+  ACCOUNT_HOLDER_INFO = 1,
+  //AGREEMENTS = 2,
+  DOCUMENTS = 2,
+  FEES = 3,
   SUCCESS = 4
 }
 
@@ -42,7 +42,7 @@ const IBKRApplicationForm = () => {
   const { t } = useTranslationProvider();
 
   // State for step navigation and data
-  const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.FEES);
+  const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // State for viewing a single form PDF
@@ -55,7 +55,6 @@ const IBKRApplicationForm = () => {
   // Email confirmation
   const [emailConfirmed, setEmailConfirmed] = useState(false);
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
-
 
   const handleEmailConfirmed = () => {
     setEmailConfirmed(true);
@@ -119,7 +118,7 @@ const IBKRApplicationForm = () => {
       return;
     }
 
-    // After account holder info, trigger email confirmation dialog if not verified
+    // TODO: After account holder info, trigger email confirmation dialog if not verified
     //if (currentStep === FormStep.ACCOUNT_HOLDER_INFO && !emailConfirmed) {
     //  setIsEmailDialogOpen(true);
     //  return;
@@ -181,11 +180,11 @@ const IBKRApplicationForm = () => {
 
   const renderProgress = () => {
     const steps = [
-      { name: t('fees.title'), step: FormStep.FEES },
       { name: t('apply.account.header.steps.account_type'), step: FormStep.ACCOUNT_TYPE },
       { name: t('apply.account.header.steps.account_holder_info'), step: FormStep.ACCOUNT_HOLDER_INFO },
-      //{ name: t('apply.account.header.steps.agreements'), step: FormStep.AGREEMENTS },
+      // TODO: { name: t('apply.account.header.steps.agreements'), step: FormStep.AGREEMENTS },
       { name: t('apply.account.header.steps.documents'), step: FormStep.DOCUMENTS },
+      { name: t('fees.title'), step: FormStep.FEES },
       { name: t('apply.account.header.steps.complete'), step: FormStep.SUCCESS }
     ];
 
@@ -294,6 +293,7 @@ const IBKRApplicationForm = () => {
             )}
 
             {/*
+            TODO: Add agreements and disclosures step
             currentStep === FormStep.AGREEMENTS && (
                 <>
                 <div className="flex flex-col gap-4">
@@ -360,6 +360,7 @@ const IBKRApplicationForm = () => {
             )}
           </form>
           {
+            // TODO: Add email confirmation dialog
             /*
             <EmailConfirmationDialog
               isOpen={isEmailDialogOpen}
