@@ -3,11 +3,9 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { DataTable, ColumnDefinition } from '@/components/misc/DataTable';
 import { itemVariants } from '@/lib/anims';
-import { Checkbox } from '@/components/ui/checkbox';
 import { ReadAccounts } from '@/utils/entities/account';
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { redirect } from 'next/navigation';
 import { formatURL } from '@/utils/language/lang';
@@ -16,41 +14,28 @@ import { InternalApplication } from '@/lib/entities/application';
 import { ReadApplications } from '@/utils/entities/application';
 import { formatDateFromTimestamp } from '@/utils/dates';
 import { Badge } from '@/components/ui/badge';
+import { ReadClientsReport } from '@/utils/tools/reporting';
 
 const AccountsPage = () => {
 
   const {lang} = useTranslationProvider()
   const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [applications, setApplications] = useState<InternalApplication[] | null>(null)
-
-  const handleRowClick = (row: Account) => {
-    redirect(formatURL(`/dashboard/accounts/${row.id}`, lang))
-  }
-
-  async function fetchApplications() {
-    try {
-      const fetchedApplications = await ReadApplications()
-      setApplications(fetchedApplications)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch applications",
-        variant: "destructive"
-      })
-    }
-  }
-
-  useEffect(() => {
-    fetchApplications()
-  }, [])
+  const [clients, setClients] = useState<any[] | null>(null)
 
   useEffect(() => {
 
     async function fetchData () {
 
       try {
-        const accounts = await ReadAccounts()
+        const [accounts, applications, clients] = await Promise.all([
+          ReadAccounts(),
+          ReadApplications(),
+          ReadClientsReport()
+        ])
         setAccounts(accounts)
+        setApplications(applications)
+        setClients(clients)
       } catch (error) {
         toast({
           title: "Error",
@@ -63,12 +48,20 @@ const AccountsPage = () => {
     fetchData()
 
   }, [])
-  
-  console.log(accounts)
 
-  if (!accounts || !applications) return <LoadingComponent className='w-full h-full' />
+  console.log(clients)
+
+  if (!accounts || !applications || !clients) return <LoadingComponent className='w-full h-full' />
 
   const columns = [
+    {
+      header: 'Master Account',
+      accessorKey: 'master_account_id',
+      cell: ({ row }: any) => {
+        const client = clients.find(client => client['Account ID'] === row.original.ibkr_account_number)
+        return client ? client['sheet_name'] : '-'
+      }
+    },
     {
       header: 'Account Number',
       accessorKey: 'ibkr_account_number',
@@ -152,7 +145,9 @@ const AccountsPage = () => {
           rowActions={[
             {
               label: 'View',
-              onClick: (row: Account) => handleRowClick(row)
+              onClick: (row: Account) => {
+                redirect(formatURL(`/dashboard/accounts/${row.id}`, lang))
+              }
             },
             {
               label: 'View Application',

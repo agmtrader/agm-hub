@@ -10,7 +10,7 @@ export async function GetDimensionalTable() {
   return report
 }
 
-export async function GetClientsReport() {
+export async function ReadClientsReport() {
   const report = await accessAPI('/reporting/clients', 'GET')
   return report
 }

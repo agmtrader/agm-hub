@@ -113,13 +113,9 @@ export interface SourceOfWealth {
   annual_percentage: number;
 }
 
-// --- End Account Details Types ---
-
-import DashboardPage from '@/components/misc/DashboardPage';
 import LoadingComponent from '@/components/misc/LoadingComponent';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Added CardDescription
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import {
   FileText,
   Receipt,
@@ -128,15 +124,12 @@ import {
   Info,             
   DollarSign,       
   CandlestickChart, 
-  BarChartBig,      
-  ShieldAlert,      
   Briefcase,        
   CalendarDays,     
   Mail,             
   Building,         
   Landmark,         
   FileBadge,        
-  BookUser,         
   CircleDollarSign, 
   TrendingUp,       
   ShieldCheck,      
@@ -154,16 +147,9 @@ import AccountDocumentsCard from './AccountDocumentsCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, ExternalLink, Edit, Save, X } from 'lucide-react';
-import { redirect, useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { formatURL } from '@/utils/language/lang';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 type Props = {
   accountId: string;
@@ -270,8 +256,10 @@ export const EditableDetailItem = ({
 };
 
 const AccountPage = ({ accountId }: Props) => {
+
   const { lang } = useTranslationProvider();
 
+  // State for internal account data
   const [internalAccount, setInternalAccount] = useState<AccountFromDB | null>(null)
   const [accountDetails, setAccountDetails] = useState<AccountDetails | null>(null);
   
@@ -352,13 +340,11 @@ const AccountPage = ({ accountId }: Props) => {
     }
   };
 
-
-
   useEffect(() => {
     refreshAccountDetails()
   }, [accountId])
 
-  if (!accountDetails) return <LoadingComponent className='w-full h-full' />;
+  if (!accountDetails || !internalAccount) return <LoadingComponent className='w-full h-full' />;
 
   const { 
     account,
@@ -366,8 +352,6 @@ const AccountPage = ({ accountId }: Props) => {
     financialInformation,
     sourcesOfWealth,
   } = accountDetails;
-
-  if (!account) return <LoadingComponent className='w-full h-full' />;
 
   return (
     <div>

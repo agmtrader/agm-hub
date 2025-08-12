@@ -17,7 +17,7 @@ import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
 import LoaderButton from '@/components/misc/LoaderButton'
 import { Check } from "lucide-react"
-import { individual_form, joint_form, organizational_form } from './SampleInfo'
+import { individual_form, joint_form, organizational_form } from './samples'
 import ApplicationSuccess from './ApplicationSuccess'
 import { getApplicationDefaults } from '@/utils/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
