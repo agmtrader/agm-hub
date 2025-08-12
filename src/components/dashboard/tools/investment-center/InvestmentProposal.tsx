@@ -15,14 +15,12 @@ type Props = {
 }
 
 const InvestmentProposal = ({investmentProposal}: Props) => {
-    // Rating color map must be defined before usage
     const RATING_COLORS = {
-        // Vivid blue shades aligned with updated secondary palette
-        'AAA/AA/A': '#1D4ED8',   // secondary.dark
-        'BBB': '#3B82F6',        // secondary.DEFAULT
-        'BB': '#60A5FA',         // secondary.light
-        'ETFs': '#93C5FD',       // blue-300 for differentiation
-        'Other': '#2563EB',      // blue-600 as fallback
+        'AAA/AA/A': '#1D4ED8',
+        'BBB': '#3B82F6',
+        'BB': '#60A5FA',
+        'ETFs': '#93C5FD',
+        'Other': '#2563EB',
     } as const
 
     const [showPortfolioOverview, setShowPortfolioOverview] = useState(false)
