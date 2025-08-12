@@ -1,25 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { Advisor } from '@/lib/entities/advisor'
 import { ColumnDefinition } from '@/components/misc/DataTable'
-import { redirect } from 'next/navigation'
-import { formatURL } from '@/utils/language/lang'
 import { toast } from '@/hooks/use-toast'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { DataTable } from '@/components/misc/DataTable'
-import AdvisorApplicationLinks from './AdvisorApplicationLinks'
 import CreateAdvisor from './CreateAdvisor'
 import { ReadAdvisors } from '@/utils/entities/advisor'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import AdvisorPage from './AdvisorPage'
 
-type Props = {}
-
-const AdvisorsPage = (props: Props) => {
+const AdvisorsPage = () => {
 
     const [advisors, setAdvisors] = useState<Advisor[] | null>(null)
-    const [selectedAdvisorForLink, setSelectedAdvisorForLink] = useState<Advisor | null>(null)
-    const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
-
-    const { lang } = useTranslationProvider()
+    const [selectedAdvisor, setSelectedAdvisor] = useState<Advisor | null>(null)
 
     async function handleReadAdvisors() {
         try {
@@ -44,51 +37,43 @@ const AdvisorsPage = (props: Props) => {
             accessorKey: 'name',
             header: 'Advisor Name',
         },
+        {
+            accessorKey: 'code',
+            header: 'Code',
+        },
     ] as ColumnDefinition<Advisor>[]
 
     const rowActions = [
         {
             label: 'View profile',
             onClick: (row: Advisor) => {
-                redirect(formatURL(`/dashboard/advisors/${row.id}`, lang))
-            }
-        }, 
-        {
-            label: 'Generate application link',
-            onClick: (row: Advisor) => {
-                setSelectedAdvisorForLink(row)
-                setIsLinkDialogOpen(true)
+                setSelectedAdvisor(row)
             }
         }
     ]
+
+    if (!advisors) return <LoadingComponent className='h-full w-full'/>
 
   return (
     <div>
         <div className='flex justify-end mb-4'>
             <CreateAdvisor onSuccess={handleReadAdvisors} />
         </div>
-        {advisors ? 
-            <DataTable
-                data={advisors}
-                infiniteScroll
-                enableFiltering
-                columns={columns}
-                enableRowActions
-                rowActions={rowActions}
-            /> 
-            : 
-            <LoadingComponent className='h-full w-full'/>
-        }
-        <AdvisorApplicationLinks
-            advisor={selectedAdvisorForLink}
-            isOpen={isLinkDialogOpen}
-            setIsOpen={(open) => {
-                setIsLinkDialogOpen(open)
-                if (!open) {
-                    setSelectedAdvisorForLink(null)
-                }
-            }}
-        />
+        <DataTable
+            data={advisors}
+            infiniteScroll
+            enableFiltering
+            columns={columns}
+            enableRowActions
+            rowActions={rowActions}
+        /> 
+        <Dialog open={selectedAdvisor !== null}>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                {selectedAdvisor && (
+                    <AdvisorPage advisorId={selectedAdvisor.id} />
+                )}
+            </DialogContent>
+        </Dialog>
     </div>
   )
 }

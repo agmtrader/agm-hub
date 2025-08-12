@@ -320,8 +320,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     }
   }
 
-  console.log(application)
-
   // --- Customer Section ---
   const customer = application.application.customer;
   const isJointAccount = customer.type === 'JOINT';
