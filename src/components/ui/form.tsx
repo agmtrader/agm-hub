@@ -55,11 +55,7 @@ const useFormField = () => {
 
   React.useEffect(() => {
     if (formState.errors && Object.keys(formState.errors).length > 0) {
-      toast({
-        title: "Form validation failed",
-        description: "Please check the form for errors and try again.",
-        variant: "destructive",
-      })
+      console.log(formState.errors)
     }
   }, [formState.errors])
 
