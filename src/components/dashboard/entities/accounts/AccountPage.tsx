@@ -137,7 +137,8 @@ import {
   Package,
   AlertTriangle,    
   ListChecks,      
-  ClipboardList
+  ClipboardList,
+  Eye,
 } from 'lucide-react';
 import { ReadAccountByAccountID, ReadAccountDetailsByAccountID, UpdateAccountByAccountID } from '@/utils/entities/account';
 import { toast } from '@/hooks/use-toast';
@@ -150,6 +151,18 @@ import { Loader2, ExternalLink, Edit, Save, X } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { formatURL } from '@/utils/language/lang';
+import { ReadApplicationByID } from '@/utils/entities/application';
+import LeadDialog from '../leads/LeadDialog';
+import UserDialog from '../users/UserDialog';
+import { Lead, FollowUp } from '@/lib/entities/lead';
+import { ReadLeadByID } from '@/utils/entities/lead';
+import { ReadUserByID } from '@/utils/entities/user';
+import { ReadRiskProfiles } from '@/utils/tools/risk-profile';
+import { RiskProfile } from '@/lib/tools/risk-profile';
+import { CreateInvestmentProposal, ReadInvestmentProposalsByRiskProfile, ReadInvestmentProposalsByAccount } from '@/utils/tools/investment_proposals';
+import { InvestmentProposal as InvestmentProposalType } from '@/lib/tools/investment-proposals';
+import InvestmentProposal from '../../tools/investment-center/InvestmentProposal';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Props = {
   accountId: string;
@@ -262,6 +275,7 @@ const AccountPage = ({ accountId }: Props) => {
   // State for internal account data
   const [internalAccount, setInternalAccount] = useState<AccountFromDB | null>(null)
   const [accountDetails, setAccountDetails] = useState<AccountDetails | null>(null);
+  const [application, setApplication] = useState<any | null>(null)
   
   // State for editing internal account data
   const [isEditing, setIsEditing] = useState<{ [key: string]: boolean }>({});
@@ -276,6 +290,17 @@ const AccountPage = ({ accountId }: Props) => {
       const details = await ReadAccountDetailsByAccountID(account.ibkr_account_number)
       if (!details) throw new Error('Account details not found')
       setAccountDetails(details)
+      // Load linked application for dialogs/links
+      if (account.application_id) {
+        try {
+          const app = await ReadApplicationByID(account.application_id)
+          setApplication(app)
+        } catch (e) {
+          setApplication(null)
+        }
+      } else {
+        setApplication(null)
+      }
     } catch (e) {
       toast({
         title: 'Error',
@@ -344,6 +369,136 @@ const AccountPage = ({ accountId }: Props) => {
     refreshAccountDetails()
   }, [accountId])
 
+  // Lead/User dialogs state
+  const [isLeadDialogOpen, setIsLeadDialogOpen] = useState(false)
+  const [leadDialogLead, setLeadDialogLead] = useState<Lead | null>(null)
+  const [leadDialogFollowUps, setLeadDialogFollowUps] = useState<FollowUp[]>([])
+  const [leadDialogUsers, setLeadDialogUsers] = useState<any[]>([])
+  const [isLoadingLeadDialog, setIsLoadingLeadDialog] = useState(false)
+
+  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false)
+  const [userDialogUser, setUserDialogUser] = useState<any | null>(null)
+  const [isLoadingUserDialog, setIsLoadingUserDialog] = useState(false)
+
+  async function openLeadDialog() {
+    if (!application?.lead_id) return
+    try {
+      setIsLoadingLeadDialog(true)
+      const leadData = await ReadLeadByID(application.lead_id)
+      if (!leadData || !leadData.leads || leadData.leads.length === 0) {
+        throw new Error('Lead not found')
+      }
+      const lead = leadData.leads[0]
+      const followUps = (leadData.follow_ups || []).filter((fu: any) => fu.lead_id === lead.id)
+      const [contactUser, referrerUser] = await Promise.all([
+        lead.contact_id ? ReadUserByID(lead.contact_id) : Promise.resolve(null),
+        lead.referrer_id ? ReadUserByID(lead.referrer_id) : Promise.resolve(null),
+      ])
+      setLeadDialogLead(lead)
+      setLeadDialogFollowUps(followUps)
+      setLeadDialogUsers([contactUser, referrerUser].filter(Boolean))
+      setIsLeadDialogOpen(true)
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: e instanceof Error ? e.message : 'Error loading lead',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoadingLeadDialog(false)
+    }
+  }
+
+  async function openUserDialog() {
+    if (!application?.user_id) return
+    try {
+      setIsLoadingUserDialog(true)
+      const user = await ReadUserByID(application.user_id)
+      if (!user) throw new Error('User not found')
+      setUserDialogUser(user)
+      setIsUserDialogOpen(true)
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: e instanceof Error ? e.message : 'Error loading user',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoadingUserDialog(false)
+    }
+  }
+
+  const handleLeadDialogSuccess = async () => {
+    await openLeadDialog()
+  }
+
+  // Risk Profiles and Investment Proposal state
+  const [riskProfiles, setRiskProfiles] = useState<RiskProfile[] | null>(null)
+  const [selectedRiskProfile, setSelectedRiskProfile] = useState<string | null>(null)
+  const [generatingProposal, setGeneratingProposal] = useState(false)
+  const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
+
+  useEffect(() => {
+    async function fetchRiskProfiles() {
+      try {
+        const all = await ReadRiskProfiles()
+        if (!all) { setRiskProfiles([]); return }
+        const currentAccountId = internalAccount?.id
+        if (!currentAccountId) { setRiskProfiles([]); return }
+        setRiskProfiles(all.filter(rp => rp.account_id === currentAccountId))
+      } catch (e) {
+        toast({ title: 'Error', description: 'Failed to fetch risk profiles', variant: 'destructive' })
+      }
+    }
+    if (internalAccount?.id) fetchRiskProfiles()
+  }, [internalAccount?.id])
+
+  useEffect(() => {
+    if (!riskProfiles || riskProfiles.length === 0) return
+    setSelectedRiskProfile(riskProfiles[0].id)
+  }, [riskProfiles])
+
+  // Load existing investment proposal when risk profile selection changes
+  useEffect(() => {
+    async function fetchExistingProposal() {
+      try {
+        setInvestmentProposal(null)
+        if (selectedRiskProfile) {
+          const proposals = await ReadInvestmentProposalsByRiskProfile(selectedRiskProfile)
+          if (proposals && proposals.length > 0) {
+            setInvestmentProposal(proposals[0])
+            return
+          }
+        }
+        // Fallback by account if not found by risk profile
+        const accountId = internalAccount?.id
+        if (!accountId) return
+        const byAccount = await ReadInvestmentProposalsByAccount(accountId)
+        if (byAccount && byAccount.length > 0) {
+          setInvestmentProposal(byAccount[0])
+        }
+      } catch (e) {
+        // Silent; section will show generator
+      }
+    }
+    fetchExistingProposal()
+  }, [selectedRiskProfile, internalAccount?.id])
+
+  async function handleGenerateProposal() {
+    if (!selectedRiskProfile || !riskProfiles) return
+    const profile = riskProfiles.find(p => p.id === selectedRiskProfile)
+    if (!profile) return
+    try {
+      setGeneratingProposal(true)
+      const proposal = await CreateInvestmentProposal(profile)
+      setInvestmentProposal(proposal as InvestmentProposalType)
+    } catch (e) {
+      toast({ title: 'Error', description: 'Failed to create investment proposal', variant: 'destructive' })
+    } finally {
+      setGeneratingProposal(false)
+    }
+  }
+
   if (!accountDetails || !internalAccount) return <LoadingComponent className='w-full h-full' />;
 
   const { 
@@ -352,7 +507,7 @@ const AccountPage = ({ accountId }: Props) => {
     financialInformation,
     sourcesOfWealth,
   } = accountDetails;
-
+  
   return (
     <div>
       {/* Account Summary Card */}
@@ -493,6 +648,68 @@ const AccountPage = ({ accountId }: Props) => {
                       {internalAccount.application_id}
                       <ExternalLink className="h-3 w-3 ml-1" />
                     </Button>
+                  ) : (
+                    <span className="text-subtitle">—</span>
+                  )}
+                </div>
+
+                {/* Lead ID (from application) */}
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    Lead ID:
+                  </span>
+                  {application?.lead_id ? (
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs text-subtitle">{application.lead_id}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto p-1 text-primary hover:text-primary/80"
+                        onClick={openLeadDialog}
+                        disabled={isLoadingLeadDialog}
+                      >
+                        {isLoadingLeadDialog ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <>
+                            <Eye className="h-3 w-3 mr-1" />
+                            View
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  ) : (
+                    <span className="text-subtitle">—</span>
+                  )}
+                </div>
+
+                {/* User ID (from application) */}
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    User ID:
+                  </span>
+                  {application?.user_id ? (
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs text-subtitle">{application.user_id}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto p-1 text-primary hover:text-primary/80"
+                        onClick={openUserDialog}
+                        disabled={isLoadingUserDialog}
+                      >
+                        {isLoadingUserDialog ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <>
+                            <Eye className="h-3 w-3 mr-1" />
+                            View
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   ) : (
                     <span className="text-subtitle">—</span>
                   )}
@@ -687,6 +904,60 @@ const AccountPage = ({ accountId }: Props) => {
         </TabsContent>
 
       </Tabs>
+
+      {/* Risk Profile and Investment Proposal Section */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center text-xl font-bold">
+            <TrendingUp className="h-5 w-5 mr-2 text-primary" />
+            Risk Profiles & Investment Proposal
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {(!riskProfiles || riskProfiles.length === 0) ? (
+            <p className="text-muted-foreground">No risk profiles for this account.</p>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Select value={selectedRiskProfile || undefined} onValueChange={setSelectedRiskProfile}>
+                <SelectTrigger className="w-[260px]">
+                  <SelectValue placeholder="Select risk profile" />
+                </SelectTrigger>
+                <SelectContent>
+                  {riskProfiles.map(rp => (
+                    <SelectItem key={rp.id} value={rp.id}>
+                      {rp.name} (score {rp.score})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={handleGenerateProposal} disabled={generatingProposal || !selectedRiskProfile} className="bg-primary text-background hover:bg-primary/90">
+                {generatingProposal ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Generating...</>) : 'Generate Proposal'}
+              </Button>
+            </div>
+          )}
+
+          {generatingProposal ? (
+            <LoadingComponent className="h-[150px] w-full" />
+          ) : investmentProposal ? (
+            <InvestmentProposal investmentProposal={investmentProposal} />
+          ) : null}
+        </CardContent>
+      </Card>
+
+      {/* Lead & User dialogs */}
+      <LeadDialog 
+        lead={leadDialogLead}
+        followUps={leadDialogFollowUps}
+        users={leadDialogUsers}
+        isOpen={isLeadDialogOpen}
+        onOpenChange={setIsLeadDialogOpen}
+        onSuccess={handleLeadDialogSuccess}
+      />
+      <UserDialog 
+        user={userDialogUser}
+        isOpen={isUserDialogOpen}
+        onOpenChange={setIsUserDialogOpen}
+      />
     </div>
   )
 }
