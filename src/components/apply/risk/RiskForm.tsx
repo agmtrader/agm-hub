@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { GetRiskProfile } from "@/utils/tools/risk-profile"
+import { CreateAccountRiskProfile, GetRiskProfile } from "@/utils/tools/risk-profile"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
@@ -37,7 +37,7 @@ import { ReadAccounts } from "@/utils/entities/account"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
 import LoadingComponent from "@/components/misc/LoadingComponent"
-import { GenerateInvestmentProposal } from "@/utils/tools/investment_proposals"
+import { CreateInvestmentProposal } from "@/utils/tools/investment_proposals" 
 import InvestmentProposalView from "@/components/dashboard/tools/investment-center/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/tools/investment-proposals"
 
@@ -63,13 +63,10 @@ const RiskForm = () => {
   const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
 
   // Define the form schema and initial values
-  let formSchema:any;
-  let initialFormValues:any = {};
-  formSchema = risk_assesment_schema(t)
-  initialFormValues = getDefaults(formSchema)
+  let formSchema:any = risk_assesment_schema(t)
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
-      values: initialFormValues,
+      values: getDefaults(formSchema),
   })
 
   useEffect(() => {
@@ -113,14 +110,23 @@ const RiskForm = () => {
       const assigned_risk_profile = GetRiskProfile(risk_score)
       if (!assigned_risk_profile) throw new Error('No risk profile found')
 
-      // Generate the investment proposal for the assigned risk profile
-      const proposal = await GenerateInvestmentProposal(assigned_risk_profile.id.toString())
+      // Create the account risk profile
+      const account_risk_profile = await CreateAccountRiskProfile({
+        name: values.client_name,
+        account_id: values.account_id,
+        risk_profile_id: assigned_risk_profile.id,
+        score: risk_score
+      })
+      if (!account_risk_profile) throw new Error('Failed to create account risk profile')
 
+      // Generate the investment proposal for the assigned risk profile
+      const proposal = await CreateInvestmentProposal(assigned_risk_profile.id.toString())
+      if (!proposal) throw new Error('Failed to create investment proposal')
       setInvestmentProposal(proposal)
       setIsProposalOpen(true)
 
       // Reset the form after submission
-      form.reset(initialFormValues)
+      form.reset(getDefaults(formSchema))
 
     } catch (error:any) {
       toast({
@@ -239,7 +245,7 @@ const RiskForm = () => {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="flex flex-col"
                     >
                       {types.map((type) => (
@@ -268,7 +274,7 @@ const RiskForm = () => {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="flex flex-col"
                     >
                       {losses.map((loss) => (
@@ -297,7 +303,7 @@ const RiskForm = () => {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="flex flex-col"
                     >
 
@@ -328,7 +334,7 @@ const RiskForm = () => {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="flex flex-col"
                     >
 
@@ -360,7 +366,7 @@ const RiskForm = () => {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="flex flex-col"
                     >
 
@@ -394,7 +400,7 @@ const RiskForm = () => {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="flex flex-col"
                     >
 

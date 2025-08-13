@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useMemo, useState } from 'react'
-import { GenerateInvestmentProposal } from '@/utils/tools/investment_proposals'
+import { CreateInvestmentProposal } from '@/utils/tools/investment_proposals'
 import { ReadAccountRiskProfiles, ListRiskProfiles } from '@/utils/tools/risk-profile'
 import { AccountRiskProfile, RiskProfile } from '@/lib/tools/risk-profile'
 import LoadingComponent from '@/components/misc/LoadingComponent'
@@ -77,7 +77,7 @@ const InvestmentCenter = () => {
         if (!matchedRiskProfile) throw new Error('Matched risk profile not found')
 
         // Generate the investment proposal
-        const data = await GenerateInvestmentProposal(matchedRiskProfile.id.toString())
+        const data = await CreateInvestmentProposal(matchedRiskProfile.id.toString())
 
         // Set the proposal groups
         setInvestmentProposal(data)
