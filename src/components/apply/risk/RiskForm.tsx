@@ -58,7 +58,7 @@ const RiskForm = () => {
   const [riskArchetypes, setRiskArchetypes] = useState<RiskArchetype[] | null>(null)
 
   const [submitting, setSubmitting] = useState(false)
-  const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType[] | null>(null)
+  const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
 
   const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
