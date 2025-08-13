@@ -21,6 +21,7 @@ import ApplicationSuccess from './ApplicationSuccess'
 import { getApplicationDefaults } from '@/utils/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { individual_form } from './samples'
+import { useSession } from 'next-auth/react'
 
 enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -33,7 +34,8 @@ const IBKRApplicationForm = () => {
 
   const searchParams = useSearchParams();
   const { t } = useTranslationProvider();
-
+  const { data: session } = useSession();
+  
   // State for step navigation and data
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,6 +80,9 @@ const IBKRApplicationForm = () => {
 
   async function onSubmit(values: Application) {
     try {
+
+      if (!session?.user) throw new Error('User not found')
+
       if (currentStep !== FormStep.DOCUMENTS) {
         setCurrentStep(currentStep + 1);
         return;
@@ -101,7 +106,7 @@ const IBKRApplicationForm = () => {
         master_account_id,
         lead_id,
         date_sent_to_ibkr: null,
-        user_id: null,
+        user_id: session?.user.id,
       }
       
       await CreateApplication(internalApplication);
