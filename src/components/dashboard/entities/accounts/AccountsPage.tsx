@@ -33,7 +33,7 @@ const AccountsPage = () => {
           ReadApplications(),
           ReadClientsReport()
         ])
-        setAccounts(accounts)
+        setAccounts(accounts.sort((a, b) => b.created.localeCompare(a.created)))
         setApplications(applications)
         setClients(clients)
       } catch (error) {
