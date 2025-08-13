@@ -1,8 +1,8 @@
 'use client'
 import React, { useEffect, useMemo, useState } from 'react'
 import { CreateInvestmentProposal } from '@/utils/tools/investment_proposals'
-import { ReadAccountRiskProfiles, ListRiskProfiles } from '@/utils/tools/risk-profile'
-import { AccountRiskProfile, RiskProfile } from '@/lib/tools/risk-profile'
+import { ReadRiskProfiles, ListRiskArchetypes } from '@/utils/tools/risk-profile'
+import { RiskProfile, RiskArchetype } from '@/lib/tools/risk-profile'  
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import DashboardPage from '@/components/misc/DashboardPage'
 import { toast } from '@/hooks/use-toast'
@@ -17,28 +17,27 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 const InvestmentCenter = () => {
 
   const [accounts, setAccounts] = useState<Account[] | null>(null)
+  const [riskArchetypes, setRiskArchetypes] = useState<RiskArchetype[] | null>(null)
 
-  const [accountRiskProfiles, setAccountRiskProfiles] = useState<AccountRiskProfile[] | null>(null)
-  const [riskProfilesList, setRiskProfilesList] = useState<RiskProfile[] | null>(null)
+  const [riskProfiles, setRiskProfiles] = useState<RiskProfile[] | null>(null)
   const [selectedRiskProfile, setSelectedRiskProfile] = useState<string | null>(null)
 
   const [generatingInvestmentProposal, setGeneratingInvestmentProposal] = useState(false)
-  const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType[] | null>(null)
+  const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
 
   // Initial fetch for risk profiles only
   useEffect(() => {
     async function fetchRiskProfiles() {
       try {
         // Fetch both account risk profiles and the master risk profiles list
-        const [accounts, accountProfiles, riskProfiles] = await Promise.all([
+        const [accounts, riskProfiles, riskArchetypes] = await Promise.all([
           ReadAccounts(),
-          ReadAccountRiskProfiles(),
-          ListRiskProfiles()
+          ReadRiskProfiles(),
+          ListRiskArchetypes()  
         ])
-
         setAccounts(accounts)
-        setAccountRiskProfiles(accountProfiles)
-        setRiskProfilesList(riskProfiles)
+        setRiskProfiles(riskProfiles)
+        setRiskArchetypes(riskArchetypes)
       } catch (error) {
         toast({
           title: 'Error',
@@ -59,28 +58,21 @@ const InvestmentCenter = () => {
       try {
         setGeneratingInvestmentProposal(true)
         // Check if account risk profiles are loaded
-        if (!accountRiskProfiles) throw new Error('Account risk profiles not found')
+        if (!riskProfiles) throw new Error('Risk profiles not found')
 
         // Find the selected account risk profile
-        const selectedAccountProfile = accountRiskProfiles.find(
+        const selectedAccountProfile = riskProfiles.find(
           profile => profile.id.toString() === selectedRiskProfile
         )
 
         // Check if the selected account risk profile is found
         if (!selectedAccountProfile) throw new Error('Selected account risk profile not found')
-
-        // Find the matched risk profile
-        const matchedRiskProfile = riskProfilesList?.find(
-          riskProfile => riskProfile.id.toString() === selectedAccountProfile.risk_profile_id.toString()
-        )
-
-        if (!matchedRiskProfile) throw new Error('Matched risk profile not found')
-
+          
         // Generate the investment proposal
-        const data = await CreateInvestmentProposal(matchedRiskProfile.id.toString())
+        const data = await CreateInvestmentProposal(selectedAccountProfile)
 
-        // Set the proposal groups
-        setInvestmentProposal(data)
+        // Set the proposal
+        setInvestmentProposal(data as InvestmentProposalType)
       } catch (error) {
         toast({
           title: 'Error',
@@ -93,27 +85,26 @@ const InvestmentCenter = () => {
     }
 
     fetchProposal()
-  }, [selectedRiskProfile, accountRiskProfiles, riskProfilesList])
-
+  }, [selectedRiskProfile, riskProfiles, riskArchetypes])
 
   const accountOptions = useMemo(() => {
-    if (!accounts || !accountRiskProfiles) return []
+    if (!accounts || !riskProfiles) return []
 
     const accountIdToNumber = new Map(accounts.map((a) => [a.id.toString(), a.ibkr_account_number]))
-    return accountRiskProfiles
+    return riskProfiles
       .filter((arp) => arp.account_id)
       .map((arp) => ({
         value: arp.id.toString(),
         label: accountIdToNumber.get(arp.account_id as string) || `Account ${arp.account_id}`,
       }))
       .sort((a, b) => a.label.localeCompare(b.label))
-  }, [accounts, accountRiskProfiles])
+  }, [accounts, riskProfiles])
 
   const selectedLabel = useMemo(() => {
     return accountOptions.find((o) => o.value === (selectedRiskProfile || ''))?.label || ''
   }, [accountOptions, selectedRiskProfile])
 
-  if (!accounts || !accountRiskProfiles || !riskProfilesList) return <LoadingComponent className="h-full w-full" />
+  if (!accounts || !riskProfiles || !riskArchetypes) return <LoadingComponent className="h-full w-full" />
 
   return (
     <DashboardPage title="Investment Center" description="Keep track of your investment portfolio and risk profile">
@@ -127,9 +118,9 @@ const InvestmentCenter = () => {
                 className="w-full mt-2"
                 role="combobox"
                 aria-expanded={false}
-                disabled={!accountRiskProfiles || !riskProfilesList}
+                disabled={!riskProfiles || !riskArchetypes}
               >
-                {selectedLabel || (!accountRiskProfiles || !riskProfilesList ? 'Loading accounts...' : 'Select an account')}
+                {selectedLabel || (!riskProfiles || !riskArchetypes ? 'Loading accounts...' : 'Select an account')}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0">
@@ -158,10 +149,11 @@ const InvestmentCenter = () => {
       {generatingInvestmentProposal ?
         <LoadingComponent className="h-full w-full" />
         : 
-        investmentProposal &&
+        investmentProposal && (
           <InvestmentProposal
             investmentProposal={investmentProposal}
           />
+        )
       }
     </DashboardPage>
   )

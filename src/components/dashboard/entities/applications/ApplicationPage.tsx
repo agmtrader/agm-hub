@@ -38,6 +38,11 @@ import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 import { formatURL } from "@/utils/language/lang";
 import { ReadAdvisors } from "@/utils/entities/advisor";
 import { Advisor } from "@/lib/entities/advisor";
+import { Lead, FollowUp } from "@/lib/entities/lead";
+import { ReadLeadByID } from "@/utils/entities/lead";
+import { ReadUserByID } from "@/utils/entities/user";
+import LeadDialog from "../leads/LeadDialog";
+import UserDialog from "../users/UserDialog";
 import {
   Select,
   SelectContent,
@@ -75,6 +80,17 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   const [isUpdatingAdvisor, setIsUpdatingAdvisor] = useState(false);
   const [isUpdatingMasterAccount, setIsUpdatingMasterAccount] = useState(false);
   const {data:session} = useSession()
+
+  // Dialog state for Lead and User views
+  const [isLeadDialogOpen, setIsLeadDialogOpen] = useState(false)
+  const [leadDialogLead, setLeadDialogLead] = useState<Lead | null>(null)
+  const [leadDialogFollowUps, setLeadDialogFollowUps] = useState<FollowUp[]>([])
+  const [leadDialogUsers, setLeadDialogUsers] = useState<any[]>([])
+  const [isLoadingLeadDialog, setIsLoadingLeadDialog] = useState(false)
+
+  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false)
+  const [userDialogUser, setUserDialogUser] = useState<any | null>(null)
+  const [isLoadingUserDialog, setIsLoadingUserDialog] = useState(false)
 
   const manualAccountForm = useForm({
     resolver: zodResolver(account_schema),
@@ -202,6 +218,61 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       setSubmitting(false)
     }
 
+  }
+
+  async function openLeadDialog() {
+    if (!application?.lead_id) return
+    try {
+      setIsLoadingLeadDialog(true)
+      const leadData = await ReadLeadByID(application.lead_id)
+      if (!leadData || !leadData.leads || leadData.leads.length === 0) {
+        throw new Error("Lead not found")
+      }
+      const lead = leadData.leads[0]
+      const followUps = (leadData.follow_ups || []).filter((fu: any) => fu.lead_id === lead.id)
+
+      // Fetch only the necessary users for the dialog (contact and referrer)
+      const [contactUser, referrerUser] = await Promise.all([
+        lead.contact_id ? ReadUserByID(lead.contact_id) : Promise.resolve(null),
+        lead.referrer_id ? ReadUserByID(lead.referrer_id) : Promise.resolve(null),
+      ])
+
+      setLeadDialogLead(lead)
+      setLeadDialogFollowUps(followUps)
+      setLeadDialogUsers([contactUser, referrerUser].filter(Boolean))
+      setIsLeadDialogOpen(true)
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: e instanceof Error ? e.message : "Error loading lead",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoadingLeadDialog(false)
+    }
+  }
+
+  async function openUserDialog() {
+    if (!application?.user_id) return
+    try {
+      setIsLoadingUserDialog(true)
+      const user = await ReadUserByID(application.user_id)
+      if (!user) throw new Error("User not found")
+      setUserDialogUser(user)
+      setIsUserDialogOpen(true)
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: e instanceof Error ? e.message : "Error loading user",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoadingUserDialog(false)
+    }
+  }
+
+  const handleLeadDialogSuccess = async () => {
+    await openLeadDialog()
   }
 
   async function handleCreateManualAccount() {
@@ -631,7 +702,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Info className="h-5 w-5 text-primary"/> 
-              Application Metadata
+              Application Internals
             </CardTitle>
             <CardDescription>Internal application tracking information</CardDescription>
           </CardHeader>
@@ -643,19 +714,29 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
                     <UserCheck className="h-4 w-4" />
                     Lead ID:
                   </span>
-                                     {application.lead_id ? (
-                     <Button
-                       variant="ghost"
-                       size="sm"
-                       className="h-auto p-1 text-primary hover:text-primary/80"
-                       onClick={() => router.push(formatURL(lang, `/dashboard/leads/${application.lead_id}`))}
-                     >
-                       {application.lead_id}
-                       <ExternalLink className="h-3 w-3 ml-1" />
-                     </Button>
-                   ) : (
-                     <span className="text-subtitle">—</span>
-                   )}
+                  {application.lead_id ? (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="font-mono text-xs">{application.lead_id}</Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto p-1 text-primary hover:text-primary/80"
+                        onClick={openLeadDialog}
+                        disabled={isLoadingLeadDialog}
+                      >
+                        {isLoadingLeadDialog ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <>
+                            <Eye className="h-3 w-3 mr-1" />
+                            View
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  ) : (
+                    <span className="text-subtitle">—</span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -664,15 +745,25 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
                     User ID:
                   </span>
                   {application.user_id ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-auto p-1 text-primary hover:text-primary/80"
-                      onClick={() => redirect(formatURL(`/dashboard/users/${application.user_id}`, lang))}
-                    >
-                      {application.user_id}
-                      <ExternalLink className="h-3 w-3 ml-1" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="font-mono text-xs">{application.user_id}</Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto p-1 text-primary hover:text-primary/80"
+                        onClick={openUserDialog}
+                        disabled={isLoadingUserDialog}
+                      >
+                        {isLoadingUserDialog ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <>
+                            <Eye className="h-3 w-3 mr-1" />
+                            View
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   ) : (
                     <span className="text-subtitle">—</span>
                   )}
@@ -890,6 +981,21 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         documentName={selectedDocument ? getDocumentName(selectedDocument.formNumber) : ''}
         isOpen={isDocumentViewerOpen}
         onOpenChange={setIsDocumentViewerOpen}
+      />
+
+      {/* Lead and User dialogs */}
+      <LeadDialog 
+        lead={leadDialogLead}
+        followUps={leadDialogFollowUps}
+        users={leadDialogUsers}
+        isOpen={isLeadDialogOpen}
+        onOpenChange={setIsLeadDialogOpen}
+        onSuccess={handleLeadDialogSuccess}
+      />
+      <UserDialog 
+        user={userDialogUser}
+        isOpen={isUserDialogOpen}
+        onOpenChange={setIsUserDialogOpen}
       />
 
     </div>

@@ -25,13 +25,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { CreateAccountRiskProfile, GetRiskProfile } from "@/utils/tools/risk-profile"
+import { CreateRiskProfile, ListRiskArchetypes } from "@/utils/tools/risk-profile"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
 import { useSession } from "next-auth/react"
-import { getRiskFormQuestions, weights } from "@/lib/tools/risk-profile"
+import { getRiskFormQuestions, RiskArchetype, weights } from "@/lib/tools/risk-profile"
 import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
@@ -40,6 +40,7 @@ import LoadingComponent from "@/components/misc/LoadingComponent"
 import { CreateInvestmentProposal } from "@/utils/tools/investment_proposals" 
 import InvestmentProposalView from "@/components/dashboard/tools/investment-center/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/tools/investment-proposals"
+import { RiskProfilePayload } from "@/lib/tools/risk-profile"
 
 // Each question in the form has a weight and each answer in the question has a weight
 // The risk score is calculated by summing the weighted values of the answers
@@ -53,16 +54,15 @@ const RiskForm = () => {
   const {data:session} = useSession()
   const { t } = useTranslationProvider()
 
-  const [submitting, setSubmitting] = useState(false)
-
   const [accounts, setAccounts] = useState<Account[] | null>(null)
+  const [riskArchetypes, setRiskArchetypes] = useState<RiskArchetype[] | null>(null)
 
+  const [submitting, setSubmitting] = useState(false)
   const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType[] | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
 
   const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
 
-  // Define the form schema and initial values
   let formSchema:any = risk_assesment_schema(t)
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -70,11 +70,23 @@ const RiskForm = () => {
   })
 
   useEffect(() => {
-    const fetchAccounts = async () => {
-      const accounts = await ReadAccounts()
-      setAccounts(accounts)
+    const fetchData = async () => {
+      try {
+        const [accounts, riskArchetypes] = await Promise.all([
+          ReadAccounts(),
+          ListRiskArchetypes()
+        ])
+        setAccounts(accounts)
+        setRiskArchetypes(riskArchetypes)
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch accounts',
+          variant: 'destructive',
+        })
+      }
     }
-    fetchAccounts()
+    fetchData()
   }, [])
 
   function CalculateRiskScore(values: z.infer<typeof formSchema>): number {
@@ -104,24 +116,30 @@ const RiskForm = () => {
     try {
 
       if (!session?.user) throw new Error('User not found')
+      if (!riskArchetypes) throw new Error('Risk archetypes not found')
         
       // Calculate the risk score and find the assigned risk profile
       const risk_score = CalculateRiskScore(values)
-      const assigned_risk_profile = GetRiskProfile(risk_score)
-      if (!assigned_risk_profile) throw new Error('No risk profile found')
+      const assigned_risk_archetype = riskArchetypes.find(archetype => risk_score >= archetype.min_score && risk_score < archetype.max_score)
+      if (!assigned_risk_archetype) throw new Error('No risk profile found')
 
       // Create the account risk profile
-      const account_risk_profile = await CreateAccountRiskProfile({
+      const riskProfile: any = {
         name: values.client_name,
         account_id: values.account_id,
-        risk_profile_id: assigned_risk_profile.id,
+        risk_profile_id: assigned_risk_archetype.id,
         score: risk_score
-      })
-      if (!account_risk_profile) throw new Error('Failed to create account risk profile')
+      }
+
+      const riskProfileResponse = await CreateRiskProfile(riskProfile)
+      if (!riskProfileResponse) throw new Error('Failed to create risk profile')
+
+      riskProfile['id'] = riskProfileResponse.id
 
       // Generate the investment proposal for the assigned risk profile
-      const proposal = await CreateInvestmentProposal(assigned_risk_profile.id.toString())
+      const proposal = await CreateInvestmentProposal(riskProfile)
       if (!proposal) throw new Error('Failed to create investment proposal')
+      
       setInvestmentProposal(proposal)
       setIsProposalOpen(true)
 
@@ -139,6 +157,8 @@ const RiskForm = () => {
     }
 
   }
+
+  console.log(investmentProposal)
 
   if (!accounts) return <LoadingComponent />
 

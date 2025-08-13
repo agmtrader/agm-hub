@@ -6,73 +6,91 @@ import { TrendingUp } from 'lucide-react'
 import { PieChart, Pie, Cell } from 'recharts'
 import { useMemo, useState } from 'react'
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart'
-import { InvestmentProposal as InvestmentProposalType } from '@/lib/tools/investment-proposals'
+import { Bond, InvestmentProposal as InvestmentProposalType } from '@/lib/tools/investment-proposals'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/misc/DataTable'
+import type { ColumnDefinition } from '@/components/misc/DataTable'
 
 type Props = {
-  investmentProposal: InvestmentProposalType[]
+  investmentProposal: InvestmentProposalType
 }
 
-const InvestmentProposal = ({investmentProposal}: Props) => {
+const InvestmentProposal = ({ investmentProposal }: Props) => {
+    
     const RATING_COLORS = {
-        'AAA/AA/A': '#1D4ED8',
-        'BBB': '#3B82F6',
-        'BB': '#60A5FA',
-        'ETFs': '#93C5FD',
-        'Other': '#2563EB',
+          'AAA/AA/A': '#1D4ED8',
+          'BBB': '#3B82F6',
+          'BB': '#60A5FA',
+          'ETFs': '#93C5FD',
+          'Other': '#2563EB',
     } as const
 
-    const [showPortfolioOverview, setShowPortfolioOverview] = useState(false)
+  const [showPortfolioOverview, setShowPortfolioOverview] = useState(false)
+
+    const GROUPS = [
+      { key: 'aaa_a', label: 'AAA/AA/A', color: RATING_COLORS['AAA/AA/A'] },
+      { key: 'bbb', label: 'BBB', color: RATING_COLORS['BBB'] },
+      { key: 'bb', label: 'BB', color: RATING_COLORS['BB'] },
+      { key: 'etfs', label: 'ETFs', color: RATING_COLORS['ETFs'] },
+    ]
 
     const chartData = useMemo(() => {
-        if (!investmentProposal) return { pieData: [], summaryStats: null as any }
-    
-        const pieData = investmentProposal.map(group => {
-          const ratingLabel = group.name === 'bonds_aaa_a' ? 'AAA/AA/A' : 
-                            group.name === 'bonds_bbb' ? 'BBB' :
-                            group.name === 'bonds_bb' ? 'BB' : 'ETFs'
-          
-          return {
-            name: ratingLabel,
-            count: group.bonds.length,
-            color: RATING_COLORS[ratingLabel as keyof typeof RATING_COLORS] || RATING_COLORS.Other,
-            bonds: group.bonds
-          }
-        })
-    
-        const totalBonds = pieData.reduce((sum, item) => sum + item.count, 0)
-    
-        // Weighted overall average yield across all bonds
-        const allBonds = investmentProposal.flatMap(group => group.bonds)
-        const averageYield = allBonds.length
-          ? allBonds.reduce((sum, bond) => sum + (bond['Current Yield'] || 0), 0) / allBonds.length
-          : 0
-    
-        // Per-rating breakdown
-        const perRating = pieData.map(item => {
-          const avgYield = item.bonds.length
-            ? item.bonds.reduce((s, b) => s + (b['Current Yield'] || 0), 0) / item.bonds.length
-            : 0
-          const percentage = totalBonds ? (item.count / totalBonds) * 100 : 0
-          return {
-            name: item.name,
-            count: item.count,
-            avgYield,
-            percentage,
-            color: item.color,
-          }
-        })
-    
-        const summaryStats = {
-          totalBonds,
-          averageYield,
-          perRating,
+      if (!investmentProposal) return { pieData: [], summaryStats: null as any }
+      const proposal = investmentProposal
+      const pieData = GROUPS.map(group => {
+        const bonds = proposal[group.key as keyof typeof proposal] as any[]
+        return {
+          name: group.label,
+          count: bonds.length,
+          color: group.color,
+          bonds,
         }
+      })
+      const totalBonds = pieData.reduce((sum, item) => sum + item.count, 0)
+      const allBonds = GROUPS.flatMap(group => (proposal[group.key as keyof typeof proposal] as any[]))
+      const averageYield = allBonds.length
+        ? allBonds.reduce((sum, bond) => sum + (bond['current_yield'] || 0), 0) / allBonds.length
+        : 0
+      const perRating = pieData.map(item => {
+        const avgYield = item.bonds.length
+          ? item.bonds.reduce((s: number, b: any) => s + (b['current_yield'] || 0), 0) / item.bonds.length
+          : 0
+        const percentage = totalBonds ? (item.count / totalBonds) * 100 : 0
+        return {
+          name: item.name,
+          count: item.count,
+          avgYield,
+          percentage,
+          color: item.color,
+        }
+      })
+      const summaryStats = {
+        totalBonds,
+        averageYield,
+        perRating,
+      }
+      return { pieData, summaryStats }
+    }, [investmentProposal])
     
-        return { pieData, summaryStats }
-      }, [investmentProposal])
-    
+
+  const bondColumns: ColumnDefinition<Bond>[] = [
+    {
+      header: 'Symbol',
+      accessorKey: 'symbol',
+    },
+    {
+      header: 'Current Yield',
+      accessorKey: 'current_yield',
+      cell: ({ getValue }) => `${Number(getValue() ?? 0).toFixed(2)}%`,
+    },
+    {
+      header: 'Equivalent',
+      accessorKey: 'equivalent',
+      cell: ({ getValue }) => (
+        <Badge variant="secondary">{String(getValue() ?? '')}</Badge>
+      ),
+    },
+  ]
 
   return (
     <div className="flex flex-col gap-6">
@@ -109,7 +127,7 @@ const InvestmentProposal = ({investmentProposal}: Props) => {
                   ))}
                 </Pie>
                 <ChartTooltip
-                  content={({ active, payload }) => {
+                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload
                       return (
@@ -122,9 +140,9 @@ const InvestmentProposal = ({investmentProposal}: Props) => {
                               />
                               <span className="font-semibold">{data.name}</span>
                             </div>
-                            <div className="grid gap-1 text-sm">
-                              <div>Bonds: {data.count}</div>
-                            </div>
+                             <div className="grid gap-1 text-sm">
+                               <div>Bonds: {data.count}</div>
+                             </div>
                           </div>
                         </div>
                       )
@@ -169,7 +187,7 @@ const InvestmentProposal = ({investmentProposal}: Props) => {
             </div>
           </div>
           <Separator />
-          <div className="space-y-2">
+           <div className="space-y-2">
             {chartData.summaryStats?.perRating?.map((item: any) => (
               <div key={item.name} className="flex items-center gap-3">
                 <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
@@ -184,46 +202,39 @@ const InvestmentProposal = ({investmentProposal}: Props) => {
       </Card>
     </div>
 
-    {showPortfolioOverview && (       
+    {showPortfolioOverview && (
       <div className="space-y-6">
         <h2 className="text-2xl font-bold text-foreground">Detailed Bond Analysis</h2>
-        {investmentProposal.map((group) => (
-          <Card key={group.name} className="p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div 
-                  className="h-4 w-4 rounded-full" 
-                  style={{ 
-                    backgroundColor: RATING_COLORS[
-                      group.name === 'bonds_aaa_a' ? 'AAA/AA/A' : 
-                      group.name === 'bonds_bbb' ? 'BBB' :
-                      group.name === 'bonds_bb' ? 'BB' : 'Other'
-                    ]
-                  }}
-                />
-                <h3 className="text-xl font-semibold text-foreground">
-                  {group.name === 'bonds_aaa_a' ? 'AAA/AA/A Rated Bonds' : 
-                  group.name === 'bonds_bbb' ? 'BBB Rated Bonds' :
-                  group.name === 'bonds_bb' ? 'BB Rated Bonds' : 
-                  group.equivalents.join(', ') + ' Rated Bonds'}
-                </h3>
+        {GROUPS.map((group) => {
+          const bonds = investmentProposal ? (investmentProposal[group.key as keyof typeof investmentProposal] as any[]) : []
+          return (
+            <Card key={group.key} className="p-6 space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="h-4 w-4 rounded-full"
+                    style={{ backgroundColor: group.color }}
+                  />
+                  <h3 className="text-xl font-semibold text-foreground">
+                    {group.label} Rated Bonds
+                  </h3>
+                </div>
+                <Badge variant="secondary">
+                  {bonds.length} bonds
+                </Badge>
               </div>
-              <Badge variant="secondary">
-                {group.bonds.length} bonds
-              </Badge>
-            </div>
-
-            <Separator />
-
-            <DataTable
-              data={group.bonds}
-              enablePagination
-              pageSize={10}
-              enableFiltering
-            />
-          </Card>
-        ))}
-      </div>   
+              <Separator />
+              <DataTable
+                data={bonds}
+                columns={bondColumns as unknown as ColumnDefinition<any>[]}
+                enablePagination
+                pageSize={10}
+                enableFiltering
+              />
+            </Card>
+          )
+        })}
+      </div>
     )}
 
     <p className="text-sm text-error">
@@ -231,7 +242,7 @@ const InvestmentProposal = ({investmentProposal}: Props) => {
     </p>
     
   </div>
-  )
+  ) 
 }
 
 export default InvestmentProposal
