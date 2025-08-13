@@ -30,7 +30,7 @@ import { Account } from '@/lib/entities/account'
 import { ReadAccounts } from '@/utils/entities/account'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectValue, SelectTrigger } from '@/components/ui/select'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface Props {
   refreshTasks?: () => void
@@ -42,6 +42,7 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
   const { toast } = useToast()
   const [accounts, setAccounts] = useState<Account[]>([])
   const [newTag, setNewTag] = useState('')
+  const { t } = useTranslationProvider()
 
   useEffect(() => {
     ReadAccounts().then(setAccounts).catch(() => null)
@@ -144,24 +145,35 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
               name="account_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Account</FormLabel>
+                  <div className="flex gap-2 items-center">
+                    <FormLabel>Account</FormLabel>
+                    <FormMessage />
+                  </div>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button variant="outline" role="combobox" className="w-full justify-between">
-                          {field.value ? accounts.find(a => a.id === field.value)?.ibkr_account_number || field.value : 'Select account'}
+                        <Button role="combobox" variant="form">
+                          {field.value
+                            ? (accounts.find(a => a.id === field.value)?.ibkr_account_number || field.value)
+                            : ''}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
+                    <PopoverContent>
                       <Command>
-                        <CommandInput placeholder="Search accounts..." />
                         <CommandList>
-                          <CommandEmpty>No accounts found.</CommandEmpty>
+                          <CommandInput placeholder={t('forms.search')} />
+                          <CommandEmpty>{t('forms.no_results')}</CommandEmpty>
                           <CommandGroup>
                             {accounts.map(acc => (
-                              <CommandItem key={acc.id} value={acc.id} onSelect={() => field.onChange(acc.id)}>
-                                {acc.ibkr_account_number}
+                              <CommandItem
+                                key={acc.id}
+                                value={acc.ibkr_account_number || acc.id}
+                                onSelect={() => {
+                                  form.setValue('account_id', acc.id)
+                                }}
+                              >
+                                {acc.ibkr_account_number || acc.id}
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -169,7 +181,6 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  <FormMessage />
                 </FormItem>
               )}
             />
