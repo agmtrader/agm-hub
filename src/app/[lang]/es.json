@@ -800,6 +800,7 @@
         "previous_step": "Paso anterior",
         "finish": "Finalizar",
         "true_required": "Requiere una respuesta verdadera",
+        "none": "Ninguno",
         "errors": {
             "email": "Por favor, ingrese un correo electrónico válido.",
             "username_length": "El nombre de usuario debe tener al menos 4 caracteres.",
