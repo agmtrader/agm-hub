@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -11,7 +11,7 @@ import { Application, InternalApplicationPayload } from '@/lib/entities/applicat
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import AccountHolderInfoStep from './AccountHolderInfoStep'
-import { CreateApplication } from '@/utils/entities/application'
+import { CreateApplication, ReadApplicationByID, UpdateApplicationByID } from '@/utils/entities/application'
 import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
@@ -39,6 +39,7 @@ const IBKRApplicationForm = () => {
   // State for step navigation and data
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [applicationId, setApplicationId] = useState<string | null>(null);
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
@@ -46,6 +47,64 @@ const IBKRApplicationForm = () => {
     mode: 'onChange',
     shouldUnregister: false,
   });
+
+  // Load existing draft (if any) from localStorage and hydrate the form
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const draftId = window.localStorage.getItem('agm_application_draft_id');
+    if (!draftId) return;
+    (async () => {
+      try {
+        const existing = await ReadApplicationByID(draftId);
+        if (existing?.application) {
+          form.reset(existing.application);
+          setApplicationId(existing.id);
+        }
+      } catch (err) {
+        // If fetch fails, clear invalid draft id
+        window.localStorage.removeItem('agm_application_draft_id');
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const sanitizeDocuments = (values: Application) => {
+    const sanitizedDocuments = (values.documents || []).map((doc: any) => {
+      const { holderId, ...rest } = doc;
+      return rest;
+    });
+    return { ...values, documents: sanitizedDocuments };
+  };
+
+  // Create/update draft on every step
+  const saveProgress = async () => {
+    if (!session?.user) throw new Error('User not found');
+
+    const advisor_id = searchParams.get('ad') || null;
+    const master_account_id = searchParams.get('ma') || null;
+    const lead_id = searchParams.get('ld') || null;
+
+    const currentValues = form.getValues();
+    const sanitizedValues = sanitizeDocuments(currentValues);
+
+    if (!applicationId) {
+      const internalApplication: InternalApplicationPayload = {
+        application: sanitizedValues,
+        advisor_code: advisor_id,
+        master_account_id,
+        lead_id,
+        date_sent_to_ibkr: null,
+        user_id: session?.user.id,
+      };
+      const createResp = await CreateApplication(internalApplication);
+      setApplicationId(createResp.id);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('agm_application_draft_id', createResp.id);
+      }
+    } else {
+      await UpdateApplicationByID(applicationId, { application: sanitizedValues });
+    }
+  };
   
   // Helper to validate the required fields for the current step before moving on
   const validateCurrentStep = async () => {
@@ -71,7 +130,21 @@ const IBKRApplicationForm = () => {
       return;
     }
 
-    setCurrentStep(prev => prev + 1);
+    try {
+      await saveProgress();
+      setCurrentStep(prev => prev + 1);
+      toast({
+        title: 'Saved',
+        description: 'Progress saved.',
+        variant: 'success'
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to save progress.',
+        variant: 'destructive'
+      });
+    }
   };
 
   const handlePreviousStep = () => {
@@ -84,38 +157,22 @@ const IBKRApplicationForm = () => {
       if (!session?.user) throw new Error('User not found')
 
       if (currentStep !== FormStep.DOCUMENTS) {
-        setCurrentStep(currentStep + 1);
+        await handleNextStep();
         return;
       }
       
       setIsSubmitting(true);
 
-      const advisor_id = searchParams.get('ad') || null;
-      const master_account_id = searchParams.get('ma') || null;
-      const lead_id = searchParams.get('ld') || null;
-      
-      const sanitizedDocuments = (values.documents || []).map((doc: any) => {
-        const { holderId, ...rest } = doc;
-        return rest;
-      });
-      const sanitizedValues = { ...values, documents: sanitizedDocuments };
-
-      const internalApplication: InternalApplicationPayload = {
-        application: sanitizedValues,
-        advisor_code: advisor_id,
-        master_account_id,
-        lead_id,
-        date_sent_to_ibkr: null,
-        user_id: session?.user.id,
-      }
-      
-      await CreateApplication(internalApplication);
+      // Final save (create if needed, otherwise update)
+      await saveProgress();
 
       toast({
         title: "Application Submitted",
         description: "Your IBKR application has been successfully submitted.",
         variant: "success"
       });
+
+      setCurrentStep(FormStep.SUCCESS);
 
       // After a successful submission on the Documents step, continue to the next step (Success)
       setCurrentStep(FormStep.SUCCESS);
