@@ -95,16 +95,15 @@ const Sidebar = () => {
   }, [session?.user?.scopes])
 
   const filteredTools = useMemo(() => {
-    // If user has "all" scope, return all tools
+    // Admins (with "all" scope) can see admin tools; others cannot
     if (userScopes.has('all')) return tools
-    
-    return tools.filter(tool => userScopes.has(tool.id))
+    return []
   }, [userScopes])
 
   const filteredUserTools = useMemo(() => {
-    // If user has "all" scope, return all tools
+    // If user has "all" scope, return all user tools
     if (userScopes.has('all')) return user_tools
-    
+    // Otherwise, only user tools that match user's scopes (by id)
     return user_tools.filter(tool => userScopes.has(tool.id))
   }, [userScopes])
 
@@ -117,18 +116,6 @@ const Sidebar = () => {
           </Link>
         </Button>
         <NavigationMenuList className="w-full flex flex-col gap-2">
-          <NavigationMenuItem key={'dashboard'} className="flex w-full h-fit">
-            <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
-              <NavigationMenuLink className={cn(
-                navigationMenuTriggerStyle(),
-                "text-start justify-start w-full",
-              )}>
-                <BellIcon className="h-4 w-4" />
-                {!isCollapsed && <span className="ml-2">Overview</span>}
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <Separator />
           {filteredTools.map((item, index) => (
             <NavigationMenuItem key={index} className="flex w-full h-fit">
               <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
