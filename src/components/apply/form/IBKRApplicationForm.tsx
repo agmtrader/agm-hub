@@ -52,6 +52,14 @@ const IBKRApplicationForm = () => {
     shouldUnregister: false,
   });
 
+  // Always start with a clean slate — remove any previously saved draft/step
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(LOCAL_STORAGE_APP_ID);
+      window.localStorage.removeItem(LOCAL_STORAGE_APP_STEP);
+    }
+  }, []);
+
   // Load existing draft (if any) from localStorage and hydrate the form
   useEffect(() => {
     if (typeof window === 'undefined') return;
