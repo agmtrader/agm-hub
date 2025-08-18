@@ -47,7 +47,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -75,8 +75,9 @@ const IBKRApplicationForm = () => {
   // Load existing step (if any) from localStorage so the user resumes where they left off
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    const draftId = window.localStorage.getItem(LOCAL_STORAGE_APP_ID);
     const storedStep = window.localStorage.getItem(LOCAL_STORAGE_APP_STEP);
-    if (storedStep !== null) {
+    if (draftId && storedStep !== null) {
       const stepNum = parseInt(storedStep, 10);
       if (!isNaN(stepNum) && stepNum >= FormStep.ACCOUNT_TYPE && stepNum <= FormStep.SUCCESS) {
         setCurrentStep(stepNum as FormStep);
@@ -103,6 +104,11 @@ const IBKRApplicationForm = () => {
     const currentValues = form.getValues();
     const sanitizedValues = sanitizeDocuments(currentValues);
 
+    let status = 'Started';
+    if (currentStep === FormStep.DOCUMENTS) {
+      status = 'Completed';
+    }
+
     if (!applicationId) {
       const internalApplication: InternalApplicationPayload = {
         application: sanitizedValues,
@@ -111,6 +117,7 @@ const IBKRApplicationForm = () => {
         lead_id,
         date_sent_to_ibkr: null,
         user_id: session?.user.id,
+        status,
       };
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
@@ -119,7 +126,7 @@ const IBKRApplicationForm = () => {
         window.localStorage.setItem(LOCAL_STORAGE_APP_STEP, currentStep.toString());
       }
     } else {
-      await UpdateApplicationByID(applicationId, { application: sanitizedValues });
+      await UpdateApplicationByID(applicationId, { application: sanitizedValues, status: status });
     }
   };
   
@@ -199,8 +206,10 @@ const IBKRApplicationForm = () => {
 
       setCurrentStep(FormStep.SUCCESS);
       if (typeof window !== 'undefined') {
-        window.localStorage.setItem(LOCAL_STORAGE_APP_STEP, FormStep.SUCCESS.toString());
+        window.localStorage.removeItem(LOCAL_STORAGE_APP_STEP);
+        window.localStorage.removeItem(LOCAL_STORAGE_APP_ID);
       }
+      setApplicationId(null);
     } catch (error) {
       toast({
         title: "Submission Failed",

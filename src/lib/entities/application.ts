@@ -78,6 +78,7 @@ export type InternalApplicationPayload = {
     application: Application;
     date_sent_to_ibkr: string | null;
     user_id: string | null;
+    status: string | null;
 }
 
 export type InternalApplication = InternalApplicationPayload & Base
