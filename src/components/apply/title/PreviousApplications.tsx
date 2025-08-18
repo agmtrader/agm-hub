@@ -2,69 +2,70 @@ import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useSession } from 'next-auth/react'
-import { Account } from '@/lib/entities/account'
+import { InternalApplication } from '@/lib/entities/application'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { ReadAccountByUserID } from '@/utils/entities/account'
+import { ReadApplicationByUserID, ReadApplications } from '@/utils/entities/application'
 import { formatDateFromTimestamp } from '@/utils/dates'
 
 type Props = {
-    setAccount: React.Dispatch<React.SetStateAction<Account | null>>
     setStarted: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const PreviousApplications = ({setAccount, setStarted}:Props) => {
+const PreviousApplications = ({ setStarted }: Props) => {
 
     const [dialogOpen, setDialogOpen] = useState(false)
 
     const { t } = useTranslationProvider()
 
-    const {data:session} = useSession()
-    const [previousAccounts, setPreviousAccounts] = useState<Account[]>([])
+    const { data: session } = useSession();
+    const [previousApplications, setPreviousApplications] = useState<InternalApplication[]>([]);
 
     useEffect(() => {
-        async function getPreviousAccounts() {
-            if (!session?.user?.id) throw new Error('User not found')
-            let accounts = await ReadAccountByUserID(session?.user?.id)
-            if (!accounts) return
-            setPreviousAccounts(accounts)
-        }   
-        getPreviousAccounts()
-    }, [session])
+        async function getPreviousApplications() {
+            if (!session?.user?.id) return;
+            try {
+                const allApplications = await ReadApplicationByUserID(session.user.id);
+                setPreviousApplications(allApplications);
+            } catch (error) {
+                console.error('Failed to fetch applications', error);
+            }
+        }
+        getPreviousApplications();
+    }, [session]);
 
 
-    if (!previousAccounts) return null
+    if (!previousApplications) return null
 
     const columns = [
         {
             header: t('apply.account.title.previous_applications.status'),
-            accessorKey: 'status',
+            accessorKey: 'date_sent_to_ibkr',
+            cell: ({ row }: any) => row.original.date_sent_to_ibkr ? 'Submitted' : 'Draft',
         },
         {
             header: t('apply.account.title.previous_applications.date'),
             accessorKey: 'created',
-            cell: ({row}: {row: {original: Account}}) => formatDateFromTimestamp(row.original.created)
-        },
-        {
-            header: t('apply.account.title.previous_applications.advisor'),
-            accessorKey: 'id',
+            cell: ({ row }: any) => formatDateFromTimestamp(row.original.created),
         }
-    ] as ColumnDefinition<Account>[]
+    ] as ColumnDefinition<InternalApplication>[];
 
     const rowActions = [
         {
             label: t('apply.account.title.previous_applications.resume'),
-            onClick: (account: Account) => {
-                setDialogOpen(false)
-                setAccount(account)
-                setStarted(false)
+            onClick: (application: InternalApplication) => {
+                if (typeof window !== 'undefined') {
+                    window.localStorage.setItem('agm_application_draft_id', application.id);
+                    window.localStorage.setItem('agm_application_current_step', '0');
+                }
+                setDialogOpen(false);
+                setStarted(false);
                 setTimeout(() => {
-                    setAccount(account)
-                    setStarted(true)
-                }, 100)
-            }
-        }
-    ]
+                    setStarted(true);
+                }, 100);
+            },
+        },
+    ];
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -80,7 +81,7 @@ const PreviousApplications = ({setAccount, setStarted}:Props) => {
             <DialogHeader>
                 <DialogTitle>{t('apply.account.title.previous_applications.title')}</DialogTitle>
             </DialogHeader>
-            <DataTable data={previousAccounts} columns={columns} rowActions={rowActions} enableRowActions/>
+            <DataTable data={previousApplications} columns={columns} rowActions={rowActions} enableRowActions/>
         </DialogContent>
     </Dialog>
   )

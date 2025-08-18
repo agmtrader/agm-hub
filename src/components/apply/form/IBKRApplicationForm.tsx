@@ -23,6 +23,10 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { individual_form } from './samples'
 import { useSession } from 'next-auth/react'
 
+// Local storage keys used for saving progress
+const LOCAL_STORAGE_APP_ID = 'agm_application_draft_id';
+const LOCAL_STORAGE_APP_STEP = 'agm_application_current_step';
+
 enum FormStep {
   ACCOUNT_TYPE = 0,
   ACCOUNT_HOLDER_INFO = 1,
@@ -51,7 +55,7 @@ const IBKRApplicationForm = () => {
   // Load existing draft (if any) from localStorage and hydrate the form
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const draftId = window.localStorage.getItem('agm_application_draft_id');
+    const draftId = window.localStorage.getItem(LOCAL_STORAGE_APP_ID);
     if (!draftId) return;
     (async () => {
       try {
@@ -62,10 +66,22 @@ const IBKRApplicationForm = () => {
         }
       } catch (err) {
         // If fetch fails, clear invalid draft id
-        window.localStorage.removeItem('agm_application_draft_id');
+        window.localStorage.removeItem(LOCAL_STORAGE_APP_ID);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Load existing step (if any) from localStorage so the user resumes where they left off
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storedStep = window.localStorage.getItem(LOCAL_STORAGE_APP_STEP);
+    if (storedStep !== null) {
+      const stepNum = parseInt(storedStep, 10);
+      if (!isNaN(stepNum) && stepNum >= FormStep.ACCOUNT_TYPE && stepNum <= FormStep.SUCCESS) {
+        setCurrentStep(stepNum as FormStep);
+      }
+    }
   }, []);
 
   const sanitizeDocuments = (values: Application) => {
@@ -99,7 +115,8 @@ const IBKRApplicationForm = () => {
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
       if (typeof window !== 'undefined') {
-        window.localStorage.setItem('agm_application_draft_id', createResp.id);
+        window.localStorage.setItem(LOCAL_STORAGE_APP_ID, createResp.id);
+        window.localStorage.setItem(LOCAL_STORAGE_APP_STEP, currentStep.toString());
       }
     } else {
       await UpdateApplicationByID(applicationId, { application: sanitizedValues });
@@ -132,7 +149,11 @@ const IBKRApplicationForm = () => {
 
     try {
       await saveProgress();
-      setCurrentStep(prev => prev + 1);
+      const next = currentStep + 1;
+      setCurrentStep(next as FormStep);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(LOCAL_STORAGE_APP_STEP, next.toString());
+      }
       toast({
         title: 'Saved',
         description: 'Progress saved.',
@@ -148,7 +169,11 @@ const IBKRApplicationForm = () => {
   };
 
   const handlePreviousStep = () => {
-    setCurrentStep(currentStep - 1);
+    const prev = currentStep - 1;
+    setCurrentStep(prev as FormStep);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(LOCAL_STORAGE_APP_STEP, prev.toString());
+    }
   };
 
   async function onSubmit(values: Application) {
@@ -173,9 +198,9 @@ const IBKRApplicationForm = () => {
       });
 
       setCurrentStep(FormStep.SUCCESS);
-
-      // After a successful submission on the Documents step, continue to the next step (Success)
-      setCurrentStep(FormStep.SUCCESS);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(LOCAL_STORAGE_APP_STEP, FormStep.SUCCESS.toString());
+      }
     } catch (error) {
       toast({
         title: "Submission Failed",

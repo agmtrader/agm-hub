@@ -33,9 +33,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { formatTimestamp, formatDateFromTimestamp } from "@/utils/dates";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
-import { formatURL } from "@/utils/language/lang";
 import { ReadAdvisors } from "@/utils/entities/advisor";
 import { Advisor } from "@/lib/entities/advisor";
 import { Lead, FollowUp } from "@/lib/entities/lead";
@@ -50,6 +49,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DataTable } from "@/components/misc/DataTable";
 
 interface Props {
   applicationId: string;
@@ -453,11 +453,11 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
             {title}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
           <LabelValue label="Name" value={details?.name ? `${details.name.first} ${details.name.last}` : undefined} />
           <LabelValue label="Email" value={details?.email} />
           <LabelValue label="Country of Birth" value={details?.countryOfBirth} />
-          <LabelValue label="Date of Birth" value={formatDate(details?.dateOfBirth)} />
+          <LabelValue label="Date of Birth" value={details?.dateOfBirth} />
           <LabelValue label="Employment Type" value={details?.employmentType} />
           <LabelValue label="External ID" value={details?.externalId} />
           <LabelValue label="Same Mail Address" value={<Badge variant={details?.sameMailAddress ? 'success' : 'outline'}>{details?.sameMailAddress ? 'Yes' : 'No'}</Badge>} />
@@ -471,7 +471,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           <LabelValue label="Passport Country" value={details?.identification?.issuingCountry} />
           <LabelValue label="Citizenship" value={details?.identification?.citizenship} />
           <LabelValue label="National Card" value={details?.identification?.nationalCard} />
-          <LabelValue label="National Card Expiration" value={formatDate(details?.identification?.expirationDate)} />
+          <LabelValue label="National Card Expiration" value={details?.identification?.expirationDate} />
           <LabelValue label="Marital Status" value={details?.maritalStatus} />
           <LabelValue label="Dependents" value={details?.numDependents !== undefined ? details.numDependents.toString() : undefined} />
           <LabelValue label="Tax Residencies" value={details?.taxResidencies?.map((tr: any) => `${tr.country} (${tr.tinType}): ${tr.tin}`).join('; ')} />
@@ -489,111 +489,190 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
   return (
     <div className="flex flex-col"> 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {/* Customer Card */}
-        <Card className="col-span-1">
+
+      {/* Application Metadata Section */}
+      <div className="mb-8">
+        <Card className="col-span-1 md:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><User className="h-5 w-5 text-primary"/> Customer</CardTitle>
-            <CardDescription>ID: <span className="text-muted-foreground">{customer.externalId}</span></CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-primary"/> 
+              Application Internals
+            </CardTitle>
+            <CardDescription>Internal application tracking information</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <LabelValue label="Name" value={
-              isJointAccount 
-                ? firstHolderDetails?.name ? `${firstHolderDetails.name.first} ${firstHolderDetails.name.last}` : undefined
-                : accountHolderDetails?.name ? `${accountHolderDetails.name.first} ${accountHolderDetails.name.last}` : undefined
-            } />
-            <LabelValue label="Type" value={<Badge>{customer.type}</Badge>} />
-            <LabelValue label="Email" value={<span className="flex items-center gap-1"><Mail className="h-4 w-4"/>{customer.email}</span>} />
-            <LabelValue label="Legal Residence" value={customer.legalResidenceCountry} />
-            <LabelValue label="AML Standard" value={<Badge variant={customer.meetAmlStandard === 'true' ? 'success' : 'destructive'}>{customer.meetAmlStandard === 'true' ? 'Yes' : 'No'}</Badge>} />
-            <LabelValue label="Direct Trading Access" value={<Badge variant={customer.directTradingAccess ? 'success' : 'outline'}>{customer.directTradingAccess ? 'Yes' : 'No'}</Badge>} />
-            <LabelValue label="Prefix" value={customer.prefix} />
-            <LabelValue label="Non-Pro" value={<Badge variant={customer.mdStatusNonPro ? 'success' : 'outline'}>{customer.mdStatusNonPro ? 'Yes' : 'No'}</Badge>} />
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <LabelValue 
+                  label="Lead ID"
+                  value={application.lead_id || '-'}
+                />
+
+                <LabelValue 
+                  label="User ID"
+                  value={application.user_id}
+                />
+
+                <LabelValue 
+                  label="Application ID" 
+                  value={application.id} 
+                />
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <Briefcase className="h-4 w-4" />
+                    Master Account ID:
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={application.master_account_id || "none"}
+                      onValueChange={handleUpdateMasterAccount}
+                      disabled={isUpdatingMasterAccount}
+                    >
+                      <SelectTrigger className="w-[200px] h-8">
+                        <SelectValue placeholder="Select account type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No master account</SelectItem>
+                        <SelectItem value="br">Broker Account (br)</SelectItem>
+                        <SelectItem value="ad">Advisor Account (ad)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {isUpdatingMasterAccount && (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
+                    <Building className="h-4 w-4" />
+                    Advisor Code:
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={application.advisor_code || "none"}
+                      onValueChange={handleUpdateAdvisorCode}
+                      disabled={isLoadingAdvisors || isUpdatingAdvisor}
+                    >
+                      <SelectTrigger className="w-[200px] h-8">
+                        <SelectValue placeholder="Select advisor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No advisor</SelectItem>
+                        {isLoadingAdvisors ? (
+                          <SelectItem value="loading" disabled>Loading advisors...</SelectItem>
+                        ) : (
+                          advisors.map((advisor) => (
+                            <SelectItem key={advisor.id} value={advisor.code}>
+                              {advisor.name} ({advisor.code})
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {isUpdatingAdvisor && (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+                </div>
+
+                <LabelValue 
+                  label="Sent to IBKR"
+                  value={
+                    <Badge variant={application.date_sent_to_ibkr ? 'success' : 'outline'}>
+                      {application.date_sent_to_ibkr ? 'Sent' : 'Not Sent'}
+                    </Badge>
+                  }
+                />
+
+              </div>
+            </div>
+
           </CardContent>
         </Card>
-
-        {/* Account Holder Details Card(s) */}
-        {isJointAccount ? (
-          renderAccountHolderCard("First Account Holder", firstHolderDetails, true)
-        ) : (
-          renderAccountHolderCard("Account Holder Details", accountHolderDetails, true)
-        )}
       </div>
 
-      {/* Second Account Holder for Joint Accounts */}
-      {isJointAccount && secondHolderDetails && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {renderAccountHolderCard("Second Account Holder", secondHolderDetails, false)}
-          <div></div> {/* Empty div for grid spacing */}
-        </div>
-      )}
-
+      {/* Accounts Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {/* Accounts Table */}
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Briefcase className="h-5 w-5 text-primary"/> Accounts</CardTitle>
           </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>External ID</TableHead>
-                  <TableHead>Margin</TableHead>
-                  <TableHead>Base Currency</TableHead>
-                  <TableHead>Multi-Currency</TableHead>
-                  <TableHead>Objectives</TableHead>
-                  <TableHead>Trading Permissions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {accounts.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">No accounts</TableCell></TableRow>}
-                {accounts.map((acc: any, idx: any) => (
-                  <TableRow key={acc.externalId || idx}>
-                    <TableCell>{acc.externalId}</TableCell>
-                    <TableCell>{acc.margin}</TableCell>
-                    <TableCell>{acc.baseCurrency}</TableCell>
-                    <TableCell>{acc.multiCurrency ? 'Yes' : 'No'}</TableCell>
-                    <TableCell>{acc.investmentObjectives?.join(', ')}</TableCell>
-                    <TableCell>{acc.tradingPermissions?.map((tp: any) => `${tp.product} (${tp.country})`).join(', ')}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <CardContent className="space-y-2">
+            <DataTable
+              data={accounts}
+              columns={[
+                {
+                  header: 'External ID',
+                  accessorKey: 'externalId',
+                },
+                {
+                  header: 'Margin',
+                  accessorKey: 'margin',
+                },
+                {
+                  header: 'Base Currency',
+                  accessorKey: 'baseCurrency',
+                },
+                {
+                  header: 'Multi-Currency',
+                  accessorKey: 'multiCurrency',
+                },
+                {
+                  header: 'Objectives',
+                  accessorKey: 'investmentObjectives',
+                },
+                {
+                  header: 'Trading Permissions',
+                  accessorKey: 'tradingPermissions',
+                },
+              ]}
+            />
           </CardContent>
         </Card>
-
-        {/* Users Table */}
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5 text-primary"/> Users</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Prefix</TableHead>
-                  <TableHead>External User ID</TableHead>
-                  <TableHead>External Individual ID</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.length === 0 && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No users</TableCell></TableRow>}
-                {users.map((user: any, idx: any) => (
-                  <TableRow key={user.externalUserId || idx}>
-                    <TableCell>{user.prefix}</TableCell>
-                    <TableCell>{user.externalUserId}</TableCell>
-                    <TableCell>{user.externalIndividualId}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable
+              data={users}
+              columns={[
+                {
+                  header: 'Prefix',
+                  accessorKey: 'prefix',
+                },
+                {
+                  header: 'External User ID',
+                  accessorKey: 'externalUserId',
+                },
+                {
+                  header: 'External Individual ID',
+                  accessorKey: 'externalIndividualId',
+                },
+              ]}
+            />
           </CardContent>
         </Card>
       </div>
 
+      {/* Account Holder Details */}
+      {isJointAccount ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {renderAccountHolderCard("First Account Holder", firstHolderDetails, true)}
+          {secondHolderDetails ? renderAccountHolderCard("Second Account Holder", secondHolderDetails, false) : <div></div>}
+        </div>
+      ) : (
+        <div className="mb-8">
+          {renderAccountHolderCard("Account Holder Details", accountHolderDetails, true)}
+        </div>
+      )}
+
+      {/* Financial Information and Regulatory */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {/* Financial Information Card */}
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><DollarSign className="h-5 w-5 text-primary"/> Financial Information</CardTitle>
@@ -614,8 +693,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
             })()}
           </CardContent>
         </Card>
-
-        {/* Regulatory Information Card */}
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-primary"/> Regulatory Information</CardTitle>
@@ -648,8 +725,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         </Card>
       </div>
 
+      {/* Documents Section */}
       <div className="mb-8">
-        {/* Documents Card */}
         <Card className="col-span-1 md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/> Documents</CardTitle>
@@ -696,173 +773,15 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         </Card>
       </div>
 
-      {/* Application Metadata Card */}
-      <div className="mb-8">
-        <Card className="col-span-1 md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Info className="h-5 w-5 text-primary"/> 
-              Application Internals
-            </CardTitle>
-            <CardDescription>Internal application tracking information</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
-                    <UserCheck className="h-4 w-4" />
-                    Lead ID:
-                  </span>
-                  {application.lead_id ? (
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="font-mono text-xs">{application.lead_id}</Badge>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-auto p-1 text-primary hover:text-primary/80"
-                        onClick={openLeadDialog}
-                        disabled={isLoadingLeadDialog}
-                      >
-                        {isLoadingLeadDialog ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <>
-                            <Eye className="h-3 w-3 mr-1" />
-                            View
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  ) : (
-                    <span className="text-subtitle">—</span>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    User ID:
-                  </span>
-                  {application.user_id ? (
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="font-mono text-xs">{application.user_id}</Badge>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-auto p-1 text-primary hover:text-primary/80"
-                        onClick={openUserDialog}
-                        disabled={isLoadingUserDialog}
-                      >
-                        {isLoadingUserDialog ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <>
-                            <Eye className="h-3 w-3 mr-1" />
-                            View
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  ) : (
-                    <span className="text-subtitle">—</span>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
-                    <Building className="h-4 w-4" />
-                    Advisor Code:
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Select
-                      value={application.advisor_code || "none"}
-                      onValueChange={handleUpdateAdvisorCode}
-                      disabled={isLoadingAdvisors || isUpdatingAdvisor}
-                    >
-                      <SelectTrigger className="w-[200px] h-8">
-                        <SelectValue placeholder="Select advisor" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No advisor</SelectItem>
-                        {isLoadingAdvisors ? (
-                          <SelectItem value="loading" disabled>Loading advisors...</SelectItem>
-                        ) : (
-                          advisors.map((advisor) => (
-                            <SelectItem key={advisor.id} value={advisor.code}>
-                              {advisor.name} ({advisor.code})
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    {isUpdatingAdvisor && (
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
-                    <Briefcase className="h-4 w-4" />
-                    Master Account ID:
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Select
-                      value={application.master_account_id || "none"}
-                      onValueChange={handleUpdateMasterAccount}
-                      disabled={isUpdatingMasterAccount}
-                    >
-                      <SelectTrigger className="w-[200px] h-8">
-                        <SelectValue placeholder="Select account type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No master account</SelectItem>
-                        <SelectItem value="br">Broker Account (br)</SelectItem>
-                        <SelectItem value="ad">Advisor Account (ad)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {isUpdatingMasterAccount && (
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <span className="font-medium text-foreground min-w-[140px] flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    Sent to IBKR:
-                  </span>
-                  {application.date_sent_to_ibkr ? (
-                    <div className="flex items-center gap-2">
-                      <Badge variant="success">Sent</Badge>
-                      <span className="text-sm">{formatDateFromTimestamp(application.date_sent_to_ibkr)}</span>
-                    </div>
-                  ) : (
-                    <Badge variant="outline">Not Sent</Badge>
-                  )}
-                </div>
-
-                <LabelValue 
-                  label="Application ID" 
-                  value={
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      <span className="font-mono text-sm">{application.id}</span>
-                    </div>
-                  } 
-                />
-              </div>
-            </div>
-
-          </CardContent>
-        </Card>
-      </div>
-
+      {/* Buttons Section */}
       <div className="flex gap-4">
-        <LoaderButton onClick={handleCreateAccount} isLoading={submitting} disabled={application.date_sent_to_ibkr !== null} text="Send Application to IBKR" className="w-fit"/>
+        <LoaderButton 
+          onClick={handleCreateAccount} 
+          isLoading={submitting} 
+          disabled={application.date_sent_to_ibkr !== null} 
+          text="Send Application to IBKR" className="w-fit"
+        />
+        
         <Button onClick={handleCreateManualAccount} variant="outline" className="w-fit">
           Create Manual Account
         </Button>
@@ -983,7 +902,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         onOpenChange={setIsDocumentViewerOpen}
       />
 
-      {/* Lead and User dialogs */}
       <LeadDialog 
         lead={leadDialogLead}
         followUps={leadDialogFollowUps}
@@ -1002,13 +920,19 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   );
 };
 
-const LabelValue = ({ label, value }: { label: string, value?: React.ReactNode }) => (
-  <div className="flex select-text items-center gap-2 text-muted-foreground text-sm"><span className="font-medium text-foreground min-w-[140px]">{label}:</span> {value ?? <span className="text-subtitle">—</span>}</div>
-);
-
-function formatDate(dateStr?: string) {
-  if (!dateStr) return "—";
-  try { return new Date(dateStr).toLocaleDateString(); } catch { return dateStr; }
-}
+const LabelValue = ({ label, value }: { label: string, value?: React.ReactNode }) => {
+  if (
+    value === undefined ||
+    value === null ||
+    (typeof value === 'string' && value.trim() === '')
+  ) {
+    return null;
+  }
+  return (
+    <div className="flex select-text items-center gap-2 text-muted-foreground text-sm">
+      <span className="font-medium text-foreground min-w-[140px]">{label}:</span> {value}
+    </div>
+  );
+};
 
 export default ApplicationPage;

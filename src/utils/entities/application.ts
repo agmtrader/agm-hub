@@ -27,6 +27,11 @@ export async function ReadApplicationByLeadID(leadID: string): Promise<InternalA
     return applications[0]
 }
 
+export async function ReadApplicationByUserID(userID: string): Promise<InternalApplication[]> { 
+    const applications: InternalApplication[] = await accessAPI(`/applications/read?user_id=${userID}`, 'GET')
+    return applications
+}
+
 export async function UpdateApplicationByID(applicationID: string, application: Partial<InternalApplication>): Promise<IDResponse> {
     const updateResponse: IDResponse = await accessAPI('/applications/update', 'POST', { 'query': { 'id': applicationID }, 'application': application })
     return updateResponse
