@@ -8,7 +8,7 @@ import LoadingComponent from '@/components/misc/LoadingComponent'
 
 const UsersPage = () => {
   const [users, setUsers] = useState<User[]>([])
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [selectedUserID, setSelectedUserID] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -45,7 +45,7 @@ const UsersPage = () => {
     {
       label: 'View',
       onClick: (user: User) => {
-        setSelectedUser(user)
+        setSelectedUserID(user.id)
       },
     },
   ]
@@ -62,9 +62,11 @@ const UsersPage = () => {
         rowActions={rowActions}
         infiniteScroll
       />
-      <UserDialog user={selectedUser} isOpen={selectedUser !== null} onOpenChange={(open) => {
-        if (!open) setSelectedUser(null)
-      }} />
+      <UserDialog 
+        userID={selectedUserID} 
+        isOpen={!!selectedUserID} 
+        onOpenChange={() => setSelectedUserID(null)} 
+      />
     </div>
   )
 }

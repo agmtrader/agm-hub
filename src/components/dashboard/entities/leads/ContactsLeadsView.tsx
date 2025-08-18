@@ -6,11 +6,10 @@ import { ColumnDefinition } from '@/components/misc/DataTable'
 interface Props {
   leads: Lead[]
   columns: ColumnDefinition<Lead>[]
-  setSelectedLead: (lead: Lead) => void
-  setIsViewDialogOpen: (open: boolean) => void
+  setSelectedLeadID: (leadID: string) => void
 }
 
-const ContactsLeadsView = ({ leads, columns, setSelectedLead, setIsViewDialogOpen }: Props) => {
+const ContactsLeadsView = ({ leads, columns, setSelectedLeadID }: Props) => {
   return (
     <div className="w-full">
     <DataTable 
@@ -23,8 +22,7 @@ const ContactsLeadsView = ({ leads, columns, setSelectedLead, setIsViewDialogOpe
         {
           label: 'View',
           onClick: (row: Lead) => {
-            setSelectedLead(row)
-            setIsViewDialogOpen(true)
+            setSelectedLeadID(row.id)
           }
         }
       ]}

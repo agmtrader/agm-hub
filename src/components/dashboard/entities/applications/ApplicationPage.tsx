@@ -6,14 +6,13 @@ import LoadingComponent from "@/components/misc/LoadingComponent";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Mail, User, DollarSign, ShieldCheck, Info, Users, Briefcase, FileText, Eye, Loader2, ExternalLink, UserCheck, Building, Calendar } from 'lucide-react';
+import { DollarSign, ShieldCheck, Info, Users, Briefcase, Loader2, Building } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Button } from "@/components/ui/button";
 import { CreateAccount, UploadAccountDocument } from "@/utils/entities/account";
 import { InternalAccount } from "@/lib/entities/account";
 import { useSession } from "next-auth/react";
 import LoaderButton from "@/components/misc/LoaderButton";
-import DocumentViewer from "./DocumentViewer";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { account_schema } from "@/lib/entities/schemas/account";
@@ -32,14 +31,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { formatTimestamp, formatDateFromTimestamp } from "@/utils/dates";
-import { useRouter } from "next/navigation";
-import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
+import { formatTimestamp } from "@/utils/dates";
 import { ReadAdvisors } from "@/utils/entities/advisor";
 import { Advisor } from "@/lib/entities/advisor";
 import { Lead, FollowUp } from "@/lib/entities/lead";
-import { ReadLeadByID } from "@/utils/entities/lead";
-import { ReadUserByID } from "@/utils/entities/user";
 import LeadDialog from "../leads/LeadDialog";
 import UserDialog from "../users/UserDialog";
 import {
@@ -50,48 +45,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DataTable } from "@/components/misc/DataTable";
+import ApplicationDocuments from "./ApplicationDocuments";
+import { ReadUserByID } from "@/utils/entities/user";
 
 interface Props {
   applicationId: string;
 }
 
 const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
-  const router = useRouter();
-  const { lang } = useTranslationProvider();
-
-  const DOCUMENT_TYPE_MAP: { [key: number]: string } = {
-    5001: 'W8 Form',
-    8001: 'Proof of Identity',
-    8002: 'Proof of Address',
-  };
-
-  const getDocumentName = (formNumber: number) => {
-    return DOCUMENT_TYPE_MAP[formNumber] || 'Unknown Document';
-  };
-
-  const [application, setApplication] = useState<InternalApplication | null>(null);
-  const [submitting, setSubmitting] = useState(false)
-  const [selectedDocument, setSelectedDocument] = useState<any>(null);
-  const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
-  const [isManualAccountDialogOpen, setIsManualAccountDialogOpen] = useState(false);
-  const [isManualAccountSubmitting, setIsManualAccountSubmitting] = useState(false);
-  const [advisors, setAdvisors] = useState<Advisor[]>([]);
-  const [isLoadingAdvisors, setIsLoadingAdvisors] = useState(false);
-  const [isUpdatingAdvisor, setIsUpdatingAdvisor] = useState(false);
-  const [isUpdatingMasterAccount, setIsUpdatingMasterAccount] = useState(false);
+    
   const {data:session} = useSession()
 
-  // Dialog state for Lead and User views
-  const [isLeadDialogOpen, setIsLeadDialogOpen] = useState(false)
-  const [leadDialogLead, setLeadDialogLead] = useState<Lead | null>(null)
-  const [leadDialogFollowUps, setLeadDialogFollowUps] = useState<FollowUp[]>([])
-  const [leadDialogUsers, setLeadDialogUsers] = useState<any[]>([])
-  const [isLoadingLeadDialog, setIsLoadingLeadDialog] = useState(false)
+  // Application
+  const [application, setApplication] = useState<InternalApplication | null>(null);
+  const [submitting, setSubmitting] = useState(false)  
 
-  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false)
-  const [userDialogUser, setUserDialogUser] = useState<any | null>(null)
-  const [isLoadingUserDialog, setIsLoadingUserDialog] = useState(false)
-
+  // Manual Account
+  const [isManualAccountDialogOpen, setIsManualAccountDialogOpen] = useState(false);
+  const [isManualAccountSubmitting, setIsManualAccountSubmitting] = useState(false);
   const manualAccountForm = useForm({
     resolver: zodResolver(account_schema),
     defaultValues: {
@@ -102,7 +73,81 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       temporal_password: "",
     }
   });
+  useEffect(() => {
+    if (application && session?.user?.id) {
+      manualAccountForm.reset({
+        ibkr_account_number: "",
+        ibkr_username: "",
+        ibkr_password: "",
+        temporal_email: "",
+        temporal_password: "",
+      });
+    }
+  }, [application, session?.user?.id, manualAccountForm]);
+  async function handleCreateManualAccount() {
+    if (!application) return;
+    setIsManualAccountDialogOpen(true);
+  }
+  async function handleManualAccountSubmit(values: any) {
+    if (!application) return;
 
+    if (!session?.user?.id) {
+      throw new Error('User not found');
+    }
+
+    try {
+      setIsManualAccountSubmitting(true);
+
+      // Construct full Account object by combining form values with application/session data
+      const account:InternalAccount = {
+        ibkr_account_number: values.ibkr_account_number,
+        ibkr_username: values.ibkr_username,
+        ibkr_password: values.ibkr_password,
+        temporal_email: values.temporal_email,
+        temporal_password: values.temporal_password,
+        application_id: application.id,
+        fee_template: null
+      };
+
+      await CreateAccount(account);
+
+      await UpdateApplicationByID(applicationId, { date_sent_to_ibkr: formatTimestamp(new Date()) })
+      
+      toast({
+        title: "Account Created",
+        description: "Manual account created successfully.",
+        variant: "success",
+      });
+
+      setIsManualAccountDialogOpen(false);
+      manualAccountForm.reset();
+
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: e instanceof Error ? e.message : "Error creating manual account, please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsManualAccountSubmitting(false);
+    }
+  }
+
+  // Advisor
+  const [advisors, setAdvisors] = useState<Advisor[]>([]);
+  const [isLoadingAdvisors, setIsLoadingAdvisors] = useState(false);
+  const [isUpdatingAdvisor, setIsUpdatingAdvisor] = useState(false);
+
+  // Master Account
+  const [isUpdatingMasterAccount, setIsUpdatingMasterAccount] = useState(false);
+
+  // Lead
+  const [selectedLeadID, setSelectedLeadID] = useState<string | null>(null)
+
+  // User
+  const [selectedUserID, setSelectedUserID] = useState<string | null>(null)
+
+  // Fetch application details
   useEffect(() => {
     async function fetchApplication() {
       try {
@@ -120,6 +165,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     fetchApplication();
   }, [applicationId]);
 
+  // Fetch advisors
   useEffect(() => {
     async function fetchAdvisors() {
       try {
@@ -138,21 +184,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     }
     fetchAdvisors();
   }, []);
-
-  // Update form defaults when application data loads
-  useEffect(() => {
-    if (application && session?.user?.id) {
-      manualAccountForm.reset({
-        ibkr_account_number: "",
-        ibkr_username: "",
-        ibkr_password: "",
-        temporal_email: "",
-        temporal_password: "",
-      });
-    }
-  }, [application, session?.user?.id, manualAccountForm]);
-
-  if (!application) return <LoadingComponent className="w-full h-full" />;
 
   async function handleCreateAccount() {
 
@@ -218,111 +249,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       setSubmitting(false)
     }
 
-  }
-
-  async function openLeadDialog() {
-    if (!application?.lead_id) return
-    try {
-      setIsLoadingLeadDialog(true)
-      const leadData = await ReadLeadByID(application.lead_id)
-      if (!leadData || !leadData.leads || leadData.leads.length === 0) {
-        throw new Error("Lead not found")
-      }
-      const lead = leadData.leads[0]
-      const followUps = (leadData.follow_ups || []).filter((fu: any) => fu.lead_id === lead.id)
-
-      // Fetch only the necessary users for the dialog (contact and referrer)
-      const [contactUser, referrerUser] = await Promise.all([
-        lead.contact_id ? ReadUserByID(lead.contact_id) : Promise.resolve(null),
-        lead.referrer_id ? ReadUserByID(lead.referrer_id) : Promise.resolve(null),
-      ])
-
-      setLeadDialogLead(lead)
-      setLeadDialogFollowUps(followUps)
-      setLeadDialogUsers([contactUser, referrerUser].filter(Boolean))
-      setIsLeadDialogOpen(true)
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: e instanceof Error ? e.message : "Error loading lead",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoadingLeadDialog(false)
-    }
-  }
-
-  async function openUserDialog() {
-    if (!application?.user_id) return
-    try {
-      setIsLoadingUserDialog(true)
-      const user = await ReadUserByID(application.user_id)
-      if (!user) throw new Error("User not found")
-      setUserDialogUser(user)
-      setIsUserDialogOpen(true)
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: e instanceof Error ? e.message : "Error loading user",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoadingUserDialog(false)
-    }
-  }
-
-  const handleLeadDialogSuccess = async () => {
-    await openLeadDialog()
-  }
-
-  async function handleCreateManualAccount() {
-    if (!application) return;
-    setIsManualAccountDialogOpen(true);
-  }
-
-  async function handleManualAccountSubmit(values: any) {
-    if (!application) return;
-
-    if (!session?.user?.id) {
-      throw new Error('User not found');
-    }
-
-    try {
-      setIsManualAccountSubmitting(true);
-
-      // Construct full Account object by combining form values with application/session data
-      const account:InternalAccount = {
-        ibkr_account_number: values.ibkr_account_number,
-        ibkr_username: values.ibkr_username,
-        ibkr_password: values.ibkr_password,
-        temporal_email: values.temporal_email,
-        temporal_password: values.temporal_password,
-        application_id: application.id,
-        fee_template: null
-      };
-
-      await CreateAccount(account);
-
-      await UpdateApplicationByID(applicationId, { date_sent_to_ibkr: formatTimestamp(new Date()) })
-      
-      toast({
-        title: "Account Created",
-        description: "Manual account created successfully.",
-        variant: "success",
-      });
-
-      setIsManualAccountDialogOpen(false);
-      manualAccountForm.reset();
-
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: e instanceof Error ? e.message : "Error creating manual account, please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsManualAccountSubmitting(false);
-    }
   }
 
   async function handleUpdateAdvisorCode(advisorCode: string) {
@@ -391,6 +317,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     }
   }
 
+  if (!application) return <LoadingComponent className="w-full h-full" />;
+
   // --- Customer Section ---
   const customer = application.application.customer;
   const isJointAccount = customer.type === 'JOINT';
@@ -428,15 +356,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
   // --- Documents Section ---
   const documents = application.application.documents || [];
-
-  const formatFileSize = (bytes?: number) => {
-    if (bytes === undefined || bytes === null) return 'N/A';
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   const renderAccountHolderCard = (
     title: string, 
@@ -503,19 +422,34 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
+              <LabelValue 
+                  label="Application ID" 
+                  value={application.id}
+                />
                 <LabelValue 
                   label="Lead ID"
-                  value={application.lead_id || '-'}
+                  value={
+                    application.lead_id ? (
+                      <Button variant="outline" size="sm" onClick={() => setSelectedLeadID(application.lead_id)} className="w-fit">
+                        {application.lead_id}
+                      </Button>
+                    ) : (
+                      '-'
+                    )
+                  }
                 />
 
                 <LabelValue 
                   label="User ID"
-                  value={application.user_id}
-                />
-
-                <LabelValue 
-                  label="Application ID" 
-                  value={application.id} 
+                  value={
+                    application.user_id ? (
+                      <Button variant="outline" size="sm" onClick={() => setSelectedUserID(application.user_id)} className="w-fit">
+                        {application.user_id}
+                      </Button>
+                    ) : (
+                      '-'
+                    )
+                  }
                 />
               </div>
 
@@ -725,53 +659,9 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         </Card>
       </div>
 
-      {/* Documents Section */}
-      <div className="mb-8">
-        <Card className="col-span-1 md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/> Documents</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Document Name</TableHead>
-                  <TableHead>File Name</TableHead>
-                  <TableHead>File Size</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {documents.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">No documents uploaded</TableCell></TableRow>}
-                {documents.map((doc: any, idx: number) => (
-                  <TableRow key={idx}>
-                    <TableCell>{getDocumentName(doc.formNumber)}</TableCell>
-                    <TableCell>{doc.attachedFile?.fileName || 'N/A'}</TableCell>
-                    <TableCell>{formatFileSize(doc.attachedFile?.fileLength)}</TableCell>
-                    <TableCell>{doc.payload?.mimeType || 'N/A'}</TableCell>
-                    <TableCell>
-                      {doc.payload?.data && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedDocument(doc);
-                            setIsDocumentViewerOpen(true);
-                          }}
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          View
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+      <ApplicationDocuments
+        documents={documents}
+      />
 
       {/* Buttons Section */}
       <div className="flex gap-4">
@@ -895,32 +785,23 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         </DialogContent>
       </Dialog>
 
-      <DocumentViewer 
-        document={selectedDocument}
-        documentName={selectedDocument ? getDocumentName(selectedDocument.formNumber) : ''}
-        isOpen={isDocumentViewerOpen}
-        onOpenChange={setIsDocumentViewerOpen}
-      />
-
       <LeadDialog 
-        lead={leadDialogLead}
-        followUps={leadDialogFollowUps}
-        users={leadDialogUsers}
-        isOpen={isLeadDialogOpen}
-        onOpenChange={setIsLeadDialogOpen}
-        onSuccess={handleLeadDialogSuccess}
+        leadID={selectedLeadID}
+        isOpen={!!selectedLeadID}
+        onOpenChange={() => setSelectedLeadID(null)}
       />
+      
       <UserDialog 
-        user={userDialogUser}
-        isOpen={isUserDialogOpen}
-        onOpenChange={setIsUserDialogOpen}
+        userID={selectedUserID}
+        isOpen={!!selectedUserID}
+        onOpenChange={() => setSelectedUserID(null)}
       />
 
     </div>
   );
 };
 
-const LabelValue = ({ label, value }: { label: string, value?: React.ReactNode }) => {
+export const LabelValue = ({ label, value }: { label: string, value?: React.ReactNode }) => {
   if (
     value === undefined ||
     value === null ||

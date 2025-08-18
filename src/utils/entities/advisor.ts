@@ -11,6 +11,13 @@ export async function ReadAdvisors(): Promise<Advisor[]> {
     return advisors
 }
 
+export async function ReadAdvisorByCode(code: string): Promise<Advisor | null> {
+    const advisors: Advisor[] = await accessAPI(`/advisors/read?code=${code}`, 'GET')
+    if (!advisors || advisors.length === 0) return null
+    if (advisors.length > 1) throw new Error('Multiple advisors found with same code')
+    return advisors[0]
+}
+
 export async function ReadAdvisorCommissions() {
     const commissions = await accessAPI('/advisors/commissions', 'GET')
     return commissions

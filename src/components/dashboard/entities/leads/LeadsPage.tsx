@@ -23,11 +23,8 @@ const LeadsPage = () => {
   const [leads, setLeads] = useState<Lead[] | null>(null)
   const [followUps, setFollowUps] = useState<FollowUp[] | null>(null)
   const [users, setUsers] = useState<User[] | null>(null)
-
   const [showClosed, setShowClosed] = useState(false)
-  
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
+  const [selectedLeadID, setSelectedLeadID] = useState<string | null>(null)
 
   async function handleFetchLeads() {
 
@@ -211,8 +208,7 @@ const LeadsPage = () => {
             <ContactsLeadsView
               leads={leads} 
               columns={columns} 
-              setSelectedLead={setSelectedLead} 
-              setIsViewDialogOpen={setIsViewDialogOpen} 
+              setSelectedLeadID={setSelectedLeadID} 
             />
           </TabsContent>
           <TabsContent value="followups">
@@ -226,11 +222,9 @@ const LeadsPage = () => {
       </div>
 
       <LeadDialog
-        lead={selectedLead} 
-        users={users}
-        followUps={followUps.filter(f => f.lead_id === selectedLead?.id)}
-        isOpen={isViewDialogOpen} 
-        onOpenChange={setIsViewDialogOpen} 
+        leadID={selectedLeadID}
+        isOpen={!!selectedLeadID}
+        onOpenChange={() => setSelectedLeadID(null)}
         onSuccess={handleFetchLeads}
       />
     </div>

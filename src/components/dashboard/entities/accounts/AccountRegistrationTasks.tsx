@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import LoadingComponent from '@/components/misc/LoadingComponent';
-import { DetailItem } from './AccountPage';
+import { LabelValue } from '../applications/ApplicationPage';
 import { GetRegistrationTasksByAccountID } from '@/utils/entities/account';
 import { RegistrationTask, RegistrationTasksResponse } from '@/lib/entities/account';
 import { ListChecks, PenTool, CheckSquare, UploadCloud, CheckCircle } from 'lucide-react';
@@ -58,10 +58,10 @@ export function AccountRegistrationTasks({ accountId }: Props) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <DetailItem label="Overall Status" value={registrationTasksData?.description ?? "-"} />
-            <DetailItem label="Current State" value={registrationTasksData?.state ?? "-"} />
-            <DetailItem label="Tasks Present" value={registrationTasksData?.registrationTaskPresent ? "Yes" : "No"} />
-
+            <LabelValue label="Overall Status" value={registrationTasksData?.description ?? "-"} />
+            <LabelValue label="Current State" value={registrationTasksData?.state ?? "-"} />
+            <LabelValue label="Tasks Present" value={registrationTasksData?.registrationTaskPresent ? "Yes" : "No"} />
+    
             {hasTasks && (
               <div className="space-y-6 pt-3">
 

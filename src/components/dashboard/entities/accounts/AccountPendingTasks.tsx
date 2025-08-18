@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import LoadingComponent from '@/components/misc/LoadingComponent';
-import { DetailItem } from './AccountPage';
+import { LabelValue } from '../applications/ApplicationPage';
 import { GetForms, GetPendingTasksByAccountID, SubmitIBKRDocument, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
 import { DocumentSubmissionRequest, PendingTask, PendingTasksResponse } from '@/lib/entities/account';
 import { ClipboardList, PenTool, CheckSquare, UploadCloud } from 'lucide-react';
@@ -255,9 +255,9 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
         </CardHeader>
         <CardContent>
         <div className="space-y-4">
-          <DetailItem label="Overall Status" value={pendingTasks.description} />
-          <DetailItem label="Current State" value={pendingTasks.state} />
-          <DetailItem label="Tasks Present" value={pendingTasks.pendingTaskPresent ? "Yes" : "No"} />
+          <LabelValue label="Overall Status" value={pendingTasks.description} />
+          <LabelValue label="Current State" value={pendingTasks.state} />
+          <LabelValue label="Tasks Present" value={pendingTasks.pendingTaskPresent ? "Yes" : "No"} />
           
           {/* Auto-sign All Signable Tasks Button */}
           {signableTasks.length > 0 && (

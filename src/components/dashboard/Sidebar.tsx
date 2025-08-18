@@ -64,12 +64,6 @@ const user_tools = [
     url: '/dashboard/reporting',
     icon: FaChartBar,
     id: 'reporting',
-  },
-  {
-    name: 'Investment Center',
-    url: '/dashboard/investment-center',
-    icon: FaChartLine,
-    id: 'investment_center',
   }
 ]
 

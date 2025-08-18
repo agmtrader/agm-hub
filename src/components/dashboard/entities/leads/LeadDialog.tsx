@@ -18,7 +18,7 @@ import { toast } from '@/hooks/use-toast'
 import { Checkbox } from '@/components/ui/checkbox'
 import GenerateApplicationLink from './GenerateApplicationLink'
 import UserCard from '../users/UserCard'
-import { UpdateLeadFollowUpByID, DeleteLeadFollowUpByID } from '@/utils/entities/lead'
+import { UpdateLeadFollowUpByID, DeleteLeadFollowUpByID, ReadLeadByID } from '@/utils/entities/lead'
 import { ReadApplicationByLeadID } from '@/utils/entities/application'
 import { InternalApplication } from '@/lib/entities/application'
 import { formatURL } from '@/utils/language/lang'
@@ -26,42 +26,50 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import AddFollowUp from './AddFollowUp'
 import { Trash2 } from 'lucide-react'
 import { User } from 'next-auth'
+import { ReadUserByID } from '@/utils/entities/user'
+import LoadingComponent from '@/components/misc/LoadingComponent'
 
 interface Props {
-  lead: Lead |  null
-  followUps: FollowUp[]
-  users: User[]
+  leadID: string | null
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onSuccess?: () => void
 }
 
-const LeadDialog = ({ lead, followUps, users, isOpen, onOpenChange, onSuccess }: Props) => {
+const LeadDialog = ({ leadID, isOpen, onOpenChange, onSuccess }: Props) => {
 
-  const user = users.find(u => u.id === lead?.contact_id)
-  const referrer = users.find(u => u.id === lead?.referrer_id)
-  const [application, setApplication] = useState<InternalApplication | null>(null)
+  const [lead, setLead] = useState<Lead | null>(null)
+  const [followUps, setFollowUps] = useState<FollowUp[]>([])
+  const [contact, setContact] = useState<User | null>(null)
+  const [referrer, setReferrer] = useState<User | null>(null)
 
-  const { lang } = useTranslationProvider()
-
-  // Fetch application when lead changes
   useEffect(() => {
-    const fetchApplication = async () => {
-      if (lead?.id) {
-        try {
-          const app = await ReadApplicationByLeadID(lead.id)
-          setApplication(app)
-        } catch (error) {
-          console.error('Error fetching application:', error)
-          setApplication(null)
-        }
-      } else {
-        setApplication(null)
+    const fetchLead = async () => {
+      if (!leadID) return
+      try { 
+        // Fetch lead and follow-ups
+        const leadWithFollowUps = await ReadLeadByID(leadID)
+        if (!leadWithFollowUps.leads) throw new Error('Leads not found')
+        if (leadWithFollowUps.follow_ups) throw new Error('Follow-ups not found')
+        setLead(leadWithFollowUps.leads[0])
+        setFollowUps(leadWithFollowUps.follow_ups)
+
+        // Fetch contact and referrer
+        const [contact, referrer] = await Promise.all([ReadUserByID(leadWithFollowUps.leads[0].contact_id), ReadUserByID(leadWithFollowUps.leads[0].referrer_id)])
+        if (!contact) throw new Error('Contact not found')
+        if (!referrer) throw new Error('Referrer not found')
+        setContact(contact)
+        setReferrer(referrer)
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: error instanceof Error ? error.message : 'Failed to fetch lead',
+          variant: 'destructive'
+        })
       }
     }
-
-    fetchApplication()
-  }, [lead?.id])
+    fetchLead()
+  }, [leadID])
 
   async function handleCompleteFollowUp(followUp: FollowUp) {
     if (!lead) return
@@ -104,8 +112,6 @@ const LeadDialog = ({ lead, followUps, users, isOpen, onOpenChange, onSuccess }:
     }
   }
 
-  if (!lead || !user) return null
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh]">
@@ -113,62 +119,50 @@ const LeadDialog = ({ lead, followUps, users, isOpen, onOpenChange, onSuccess }:
           <DialogTitle className="text-2xl font-bold">Lead View</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[60vh] w-full rounded-md">
-          <div className="space-y-6 p-4">
+          {lead && contact ? (
+            <div className="space-y-6 p-4">
 
-            {/* Application Information */}
-            {application && (
+              {/* Basic Information */}
+              <UserCard user={contact} />
+              {referrer && <UserCard user={referrer} title="Referrer Information" />}
+
+              {/* Description */}
               <Card className="p-6 space-y-4">
-                <h3 className="text-lg font-semibold">Application Information</h3>
+                <h3 className="text-lg font-semibold">Description</h3>
                 <div>
-                  <p className="text-foreground font-medium text-md">Application ID</p>
-                  <Link 
-                    href={formatURL(`/dashboard/applications/${application.id}`, lang)}
-                    className="text-primary hover:text-primary/80 underline text-sm transition-colors"
-                  >
-                    {application.id}
-                  </Link>
+                  <p className="text-foreground font-medium text-md">Contact Date</p>
+                  <p className="text-subtitle text-sm">{formatDateFromTimestamp(lead.contact_date || '')}</p>
                 </div>
+                <p className="text-subtitle text-sm whitespace-pre-wrap">{lead.description}</p>
               </Card>
-            )}
 
-            {/* Basic Information */}
-            <UserCard user={user} />
-            {referrer && <UserCard user={referrer} title="Referrer Information" />}
-
-            {/* Description */}
-            <Card className="p-6 space-y-4">
-              <h3 className="text-lg font-semibold">Description</h3>
-              <div>
-                <p className="text-foreground font-medium text-md">Contact Date</p>
-                <p className="text-subtitle text-sm">{formatDateFromTimestamp(lead.contact_date || '')}</p>
-              </div>
-              <p className="text-subtitle text-sm whitespace-pre-wrap">{lead.description}</p>
-            </Card>
-
-            {/* Follow-ups */}
-            <Card className="p-6 space-y-4">
-              <h3 className="text-lg font-semibold">Follow-ups</h3>
-              <div className="space-y-4">
-                {followUps.map((followUp) => (
-                    <div key={followUp.id} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <p className="text-sm font-medium text-foreground">{formatDateFromTimestamp(followUp.date.toString())}</p>
-                        <div className="flex items-center gap-2">
-                          <Checkbox checked={followUp.completed} onCheckedChange={() => handleCompleteFollowUp(followUp)} />
-                          <button onClick={() => handleDeleteFollowUp(followUp)} className="text-destructive hover:text-destructive/80">
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+              {/* Follow-ups */}
+              <Card className="p-6 space-y-4">
+                <h3 className="text-lg font-semibold">Follow-ups</h3>
+                <div className="space-y-4">
+                  {followUps.map((followUp) => (
+                      <div key={followUp.id} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <p className="text-sm font-medium text-foreground">{formatDateFromTimestamp(followUp.date.toString())}</p>
+                          <div className="flex items-center gap-2">
+                            <Checkbox checked={followUp.completed} onCheckedChange={() => handleCompleteFollowUp(followUp)} />
+                            <button onClick={() => handleDeleteFollowUp(followUp)} className="text-destructive hover:text-destructive/80">
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
                         </div>
+                        <p className="text-sm text-subtitle whitespace-pre-wrap">{followUp.description}</p>
+                        <Separator className="w-full" orientation="horizontal" />
                       </div>
-                      <p className="text-sm text-subtitle whitespace-pre-wrap">{followUp.description}</p>
-                      <Separator className="w-full" orientation="horizontal" />
-                    </div>
-                  ))}
-              </div>
-              <AddFollowUp leadId={lead.id} onSuccess={onSuccess} />
-            </Card>
-            {lead && <GenerateApplicationLink lead={lead} followUps={followUps} user={user} />}
-          </div>
+                    ))}
+                </div>
+                <AddFollowUp leadId={lead.id} onSuccess={onSuccess} />
+              </Card>
+                {lead && <GenerateApplicationLink lead={lead} followUps={followUps} user={contact} />}
+            </div>
+          ): (
+            <LoadingComponent />
+          )}
         </ScrollArea>
       </DialogContent>
     </Dialog>
