@@ -54,20 +54,20 @@ const RiskForm = () => {
   const {data:session} = useSession()
   const { t } = useTranslationProvider()
 
+  const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
+
+  const formSchema = risk_assesment_schema(t)
+  const form = useForm<z.infer<typeof formSchema>>({
+      resolver: zodResolver(formSchema),
+      defaultValues: getDefaults(formSchema),
+  })
+
   const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [riskArchetypes, setRiskArchetypes] = useState<RiskArchetype[] | null>(null)
 
   const [submitting, setSubmitting] = useState(false)
   const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
-
-  const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
-
-  let formSchema:any = risk_assesment_schema(t)
-  const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-      values: getDefaults(formSchema),
-  })
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,20 +120,31 @@ const RiskForm = () => {
         
       // Calculate the risk score and find the assigned risk profile
       const risk_score = CalculateRiskScore(values)
+      
+      // Find the assigned risk archetype
       const assigned_risk_archetype = riskArchetypes.find(archetype => risk_score >= archetype.min_score && risk_score < archetype.max_score)
       if (!assigned_risk_archetype) throw new Error('No risk profile found')
+
+      const answers = {
+        type: types.find((q) => q.value === values.type)?.label,
+        loss: losses.find((q) => q.value === values.loss)?.label,
+        gain: gains.find((q) => q.value === values.gain)?.label,
+        period: periods.find((q) => q.value === values.period)?.label,
+        diversification: diversifications.find((q) => q.value === values.diversification)?.label,
+        goals: goals.find((q) => q.value === values.goals)?.label
+      }
 
       // Create the account risk profile
       const riskProfile: any = {
         name: values.client_name,
         account_id: values.account_id,
         risk_profile_id: assigned_risk_archetype.id,
-        score: risk_score
+        score: risk_score,
+        answers: answers
       }
-
+      
       const riskProfileResponse = await CreateRiskProfile(riskProfile)
       if (!riskProfileResponse) throw new Error('Failed to create risk profile')
-
       riskProfile['id'] = riskProfileResponse.id
 
       // Generate the investment proposal for the assigned risk profile
@@ -157,8 +168,6 @@ const RiskForm = () => {
     }
 
   }
-
-  console.log(investmentProposal)
 
   if (!accounts) return <LoadingComponent />
 

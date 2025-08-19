@@ -183,4 +183,4 @@ export const getRiskFormQuestions = () => {
   ]
 
   return { types, losses, gains, periods, diversifications, goals }
-} 
+}

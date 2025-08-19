@@ -19,7 +19,7 @@ export const risk_assesment_schema = (t: (key: string) => string) => z.object({
     gain: z.enum(["1", "2", "3", "4"], {
         errorMap: (issue, ctx) => {
         return {message: t('forms.errors.select_required')};
-        },
+    },
     }),
     period: z.enum(["1", "2", "3", "4"], {
         errorMap: (issue, ctx) => {
@@ -36,4 +36,4 @@ export const risk_assesment_schema = (t: (key: string) => string) => z.object({
         return {message: t('forms.errors.select_required')};
         },
     }),
-  })
+})
