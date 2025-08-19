@@ -1,6 +1,6 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { LoginUserWithCredentials } from "./api"
+import { LoginUserWithCredentials } from "./entities/user"
 
 const defaultScopes = "users/read users/update accounts/create accounts/read accounts/update applications/create applications/read applications/update risk_profiles/read risk_profiles/create risk_profiles/list accounts/forms investment_proposals/read investment_proposals/create leads/read leads/update"
 

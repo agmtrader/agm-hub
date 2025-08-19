@@ -25,9 +25,10 @@ import { ArrowLeft } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { CreateUser } from '@/utils/api'
+import { CreateUser } from '@/utils/entities/user'
 import { UserPayload } from '@/lib/entities/user'
 import LoaderButton from '@/components/misc/LoaderButton'
+import Image from 'next/image'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -47,7 +48,7 @@ const formSchema = z.object({
   }),
 })
 
-const CreateAccount = () => {
+const RegisterForm = () => {
 
   const { toast } = useToast()
 
@@ -87,7 +88,7 @@ const CreateAccount = () => {
 
       toast({
         title: 'Success',
-        description: 'Account created successfully',
+        description: 'User created successfully',
         variant: 'success'
       })
 
@@ -123,12 +124,8 @@ const CreateAccount = () => {
     >
       <Card className="w-full max-w-xl p-8">
         <motion.div variants={itemVariants}>
-          <CardHeader>
-            <Button className='w-fit' variant="ghost" asChild>
-              <Link href={formatURL('/signin', lang)}>
-                <ArrowLeft/>
-              </Link>
-            </Button>
+          <CardHeader className='flex flex-col justify-center items-center gap-2'>
+            <Image src='/assets/brand/agm-logo.png' alt='AGM Logo' width={200} height={200} />
             <CardTitle>{t('createAccount.title')}</CardTitle>
             <CardDescription>{t('createAccount.message')}</CardDescription>
           </CardHeader>
@@ -200,8 +197,10 @@ const CreateAccount = () => {
 
                 <div className="flex flex-col gap-2">
                   <LoaderButton isLoading={creating} text={t('createAccount.createAccount')} />
-                  <Button variant="ghost" className="w-full" asChild>
-                    <Link href={formatURL('/', lang)}>{t('createAccount.goBackHome')}</Link>
+                  <Button variant="ghost" asChild>
+                    <Link href={formatURL('/signin', lang)}>
+                      Go Back
+                    </Link>
                   </Button>
                 </div>
               </motion.form>
@@ -214,4 +213,4 @@ const CreateAccount = () => {
   )
 }
 
-export default CreateAccount
+export default RegisterForm

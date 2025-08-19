@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "../../../globals.css";
 
 export const metadata: Metadata = {
-  title: "AGM Create Account",
-  description: "Create Account",
+  title: "AGM Registration",
+  description: "Register for an AGM User",
 };
 
 export default function Layout({

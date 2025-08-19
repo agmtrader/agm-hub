@@ -1,9 +1,9 @@
-import SignIn from '@/components/auth/SignIn'
+import RegisterForm from '@/components/auth/RegisterForm'
 import React from 'react'
 
 const page = () => {
   return (
-    <SignIn />
+    <RegisterForm />
   )
 }
 

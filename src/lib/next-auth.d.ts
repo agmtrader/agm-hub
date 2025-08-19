@@ -2,14 +2,6 @@ import NextAuth, { DefaultUser, DefaultSession } from "next-auth"
 import { DefaultJWT } from "next-auth/jwt";
 import { JWT } from "next-auth/jwt"
 
-export interface CreateUserPayload {
-  name: string
-  email: string
-  image: string
-  password: string
-  scopes: string
-}
-
 declare module "next-auth" {
   interface User extends DefaultUser {
     phone: string | null

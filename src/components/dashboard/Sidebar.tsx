@@ -5,13 +5,13 @@ import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
 import { formatURL } from '@/utils/language/lang'
-import { BellIcon, Bot, ChevronLeft, ChevronRight, Contact, FileText, Plus, RefreshCcw, Ticket, TrendingUp, Users } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Ticket, TrendingUp, Users } from 'lucide-react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 import { cn } from '@/lib/utils'
 import { Separator } from '../ui/separator'
 import { useSession } from 'next-auth/react'
-import { FaChartBar, FaChartLine, FaShieldVirus, FaTasks } from 'react-icons/fa'
+import { FaChartBar, FaTasks } from 'react-icons/fa'
 
 const tools = [
   {
