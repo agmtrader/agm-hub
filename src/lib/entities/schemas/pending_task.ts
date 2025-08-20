@@ -12,5 +12,5 @@ export const pending_task_schema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
   closed: z.boolean().optional().default(false),
   tags: z.array(z.string()).nullable(),
-  priority: z.number().min(1, { message: "Priority is required" }).max(3, { message: "Priority must be between 1 and 3" }).default(1),
+  priority: z.number().min(1, { message: "Priority is required" }).max(3, { message: "Priority must be between 1 and 3" }),
 })

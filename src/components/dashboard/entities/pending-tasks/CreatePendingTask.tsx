@@ -206,7 +206,13 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
                 <FormItem>
                   <FormLabel>Priority</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} min={1} max={3} />
+                    <Input
+                      {...field}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        field.onChange(value === "" ? undefined : Number(value))
+                      }}
+                    />
                   </FormControl>  
                   <FormMessage />
                 </FormItem>
