@@ -41,7 +41,7 @@ const AutoTrader = () => {
 
     newSocket.on('connected', (data: ExtendedTraderResponse) => {
       try {
-        console.log('Connected to Trader', data);
+        console.log('Connected to Trader');
         newSocket.emit('ping');
         newSocket.emit('backtest');
       } catch (error) {
@@ -175,6 +175,7 @@ const AutoTrader = () => {
                             <span className='text-sm font-medium'>Strategy Parameters</span>
                           </div>
                           <div className='grid grid-cols-2 gap-4'>
+                            {strategy.params.tenkan && (
                             <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
                               <div className='flex items-center gap-2 text-muted-foreground'>
                                 <TrendingUp className="h-4 w-4" />
@@ -184,6 +185,8 @@ const AutoTrader = () => {
                                 {strategy.params.tenkan.toFixed(2)}
                               </span>
                             </div>
+                          )}
+                          {strategy.params.kijun && (
                             <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
                               <div className='flex items-center gap-2 text-muted-foreground'>
                                 <Activity className="h-4 w-4" />
@@ -193,24 +196,23 @@ const AutoTrader = () => {
                                 {strategy.params.kijun.toFixed(2)}
                               </span>
                             </div>
-                            <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                              <div className='flex items-center gap-2 text-muted-foreground'>
-                                <Zap className="h-4 w-4" />
-                                <span className='text-sm'>PSAR MES</span>
+                          )}
+                          {['MES', 'MYM'].map((symbol, idx) => {
+                            const contract = strategy.params.contracts[idx];
+                            const psarArr = contract?.indicators?.psar || [];
+                            const lastPsar = psarArr.length > 0 ? psarArr[psarArr.length - 1].toFixed(2) : 'N/A';
+                            return (
+                              <div key={symbol} className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                                <div className='flex items-center gap-2 text-muted-foreground'>
+                                  <Zap className="h-4 w-4" />
+                                  <span className='text-sm'>PSAR {symbol}</span>
+                                </div>
+                                <span className='font-bold text-lg text-foreground'>
+                                  {lastPsar}
+                                </span>
                               </div>
-                              <span className='font-bold text-lg text-foreground'>
-                                {strategy.params.psar_mes.length > 0 ? strategy.params.psar_mes[strategy.params.psar_mes.length - 1].toFixed(2) : 'N/A'}
-                              </span>
-                            </div>
-                            <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                              <div className='flex items-center gap-2 text-muted-foreground'>
-                                <Zap className="h-4 w-4" />
-                                <span className='text-sm'>PSAR MYM</span>
-                              </div>
-                              <span className='font-bold text-lg text-foreground'>
-                                {strategy.params.psar_mym.length > 0 ? strategy.params.psar_mym[strategy.params.psar_mym.length - 1].toFixed(2) : 'N/A'}
-                              </span>
-                            </div>
+                            )
+                          })}
                             <div className='flex w-full flex-col p-4 bg-muted rounded-lg col-span-2'>
                               <div className='flex items-center gap-2 text-muted-foreground'>
                                 <Hash className="h-4 w-4" />
@@ -418,12 +420,13 @@ const AutoTrader = () => {
               {strategy && strategy.params && strategy.params.contracts ? (
                 <div className="rounded-lg p-4 bg-background space-y-6">
                   {strategy.params.contracts.map((contract, index) => {
-                    const indicator = index === 0 ? strategy.params.psar_mes || [] : strategy.params.psar_mym || [];
+                    const psar_indicator = contract.indicators?.psar || [];
+                    const sma_indicator = contract.indicators?.sma || [];
                     return (
                       <TraderChart
                         key={contract.symbol}
                         contract={contract}
-                        indicator={indicator}
+                        indicator={sma_indicator}
                         title={`${contract.symbol} Trading Chart`}
                       />
                     );

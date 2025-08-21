@@ -4,19 +4,18 @@ import { ArrowDownCircle, ArrowUpCircle, TrendingUp, TrendingDown, Percent, Targ
 import React from 'react'
 import EquityCurveChart from './EquityCurveChart'
 
-// New BacktestSnapshot interface to match the Python structure
+// Updated BacktestSnapshot interface to align with back-end changes
 interface BacktestSnapshot {
-  Date: string
-  Open: number
-  High: number
-  Low: number
-  Close: number
-  'Prev Close': number
-  Decision: 'LONG' | 'SHORT' | 'EXIT' | 'STAY'
-  EntryPrice: string | number
-  ExitPrice: string | number
-  'P/L': number
-  'Cum. P/L': number
+  Date: string;
+  Open: number;
+  High: number;
+  Low: number;
+  Close: number;
+  'Prev Close': number;
+  Decision: 'LONG' | 'SHORT' | 'EXIT' | 'STAY';
+  Position: number;
+  'Portfolio Value': number;
+  Returns: number;
 }
 
 type Props = {
@@ -26,36 +25,29 @@ type Props = {
 // Function to calculate equity curve data from backtest snapshots
 const calculateEquityCurveData = (backtestData: BacktestSnapshot[]): Array<{ date: string; value: number; pnl: number; position: string }> => {
   if (backtestData.length === 0) return []
-  
+
   const equityData: Array<{ date: string; value: number; pnl: number; position: string }> = []
-  const startingEquity = 100000 // Starting equity $100,000
-  
+
   for (let i = 0; i < backtestData.length; i++) {
     const snapshot = backtestData[i]
-    
-    // Use cumulative P/L to calculate current equity value
-    const currentEquity = startingEquity + snapshot['Cum. P/L']
-    
-    // Determine position string based on decision and entry/exit prices
+
+    // Use reported portfolio value directly
+    const currentEquity = snapshot['Portfolio Value']
+
+    // Determine position string based on Decision and Position size
     let positionStr = 'NONE'
-    if (snapshot.Decision === 'LONG' && (snapshot.EntryPrice !== '' && snapshot.EntryPrice !== 0)) {
-      positionStr = 'LONG'
-    } else if (snapshot.Decision === 'SHORT' && (snapshot.EntryPrice !== '' && snapshot.EntryPrice !== 0)) {
-      positionStr = 'SHORT'
-    } else if (snapshot.Decision === 'EXIT') {
-      positionStr = 'EXIT'
-    } else if (snapshot.Decision === 'STAY') {
-      positionStr = 'STAY'
-    }
-    
+    if (snapshot.Position > 0) positionStr = 'LONG'
+    else if (snapshot.Position < 0) positionStr = 'SHORT'
+    else positionStr = snapshot.Decision // could be STAY/EXIT
+
     equityData.push({
       date: snapshot.Date,
       value: currentEquity,
-      pnl: snapshot['P/L'],
-      position: positionStr
+      pnl: snapshot.Returns,
+      position: positionStr,
     })
   }
-  
+
   return equityData
 }
 
@@ -75,29 +67,21 @@ const calculateTradingStats = (backtestData: BacktestSnapshot[]): {
       winningTrades: 0,
       losingTrades: 0,
       winRate: 0,
-      averageTradeReturn: 0
+      averageTradeReturn: 0,
     }
   }
 
-  // Count completed trades (those with exit prices)
-  const completedTrades = backtestData.filter(s => 
-    s.ExitPrice !== '' && s.ExitPrice !== 0 && s['P/L'] !== 0
-  ).length
+  // Define a trade as a non-zero Position
+  const tradeSnapshots = backtestData.filter((s) => s.Position !== 0)
+  const completedTrades = tradeSnapshots.length
+  const winningTrades = tradeSnapshots.filter((s) => s.Returns > 0).length
+  const losingTrades = tradeSnapshots.filter((s) => s.Returns < 0).length
 
-  // Count winning and losing trades
-  const winningTrades = backtestData.filter(s => s['P/L'] > 0).length
-  const losingTrades = backtestData.filter(s => s['P/L'] < 0).length
+  const totalTradeReturn = tradeSnapshots.reduce((sum, s) => sum + s.Returns, 0)
+  const totalTrades = backtestData.filter((s) => s.Decision === 'LONG' || s.Decision === 'SHORT').length
 
-  // Calculate total return from all trades
-  const totalTradeReturn = backtestData.reduce((sum, s) => sum + s['P/L'], 0)
-
-  // Count total signals (LONG and SHORT entries)
-  const totalTrades = backtestData.filter(s => 
-    s.Decision === 'LONG' || s.Decision === 'SHORT'
-  ).length
-
-  const winRate = completedTrades > 0 ? (winningTrades / completedTrades * 100) : 0
-  const averageTradeReturn = completedTrades > 0 ? (totalTradeReturn / completedTrades) : 0
+  const winRate = completedTrades > 0 ? (winningTrades / completedTrades) * 100 : 0
+  const averageTradeReturn = completedTrades > 0 ? totalTradeReturn / completedTrades : 0
 
   return {
     totalTrades,
@@ -105,7 +89,7 @@ const calculateTradingStats = (backtestData: BacktestSnapshot[]): {
     winningTrades,
     losingTrades,
     winRate: Math.round(winRate * 100) / 100,
-    averageTradeReturn: Math.round(averageTradeReturn * 100) / 100
+    averageTradeReturn: Math.round(averageTradeReturn * 100) / 100,
   }
 }
 
@@ -114,8 +98,8 @@ const Backtest = ({backtestData}: Props) => {
   const tradingStats = calculateTradingStats(backtestData);
 
   // Calculate equity performance
-  const finalEquity = equityCurveData.length > 0 ? equityCurveData[equityCurveData.length - 1].value : 100000;
-  const startingEquity = 100000;
+  const finalEquity = equityCurveData.length > 0 ? equityCurveData[equityCurveData.length - 1].value : (equityCurveData[0]?.value ?? 100000);
+  const startingEquity = equityCurveData.length > 0 ? equityCurveData[0].value : 100000;
   const totalReturn = ((finalEquity - startingEquity) / startingEquity * 100).toFixed(2);
   const maxEquity = Math.max(...equityCurveData.map(d => d.value));
   const minEquity = Math.min(...equityCurveData.map(d => d.value));
