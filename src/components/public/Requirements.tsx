@@ -3,7 +3,6 @@ import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, Home, Wallet, ClipboardCheck } from "lucide-react"
-import Image from 'next/image'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import Link from 'next/link'
 import { formatURL } from '@/utils/language/lang'
@@ -20,8 +19,8 @@ const RequirementsPage = () => {
             <p className="text-muted-foreground text-center">{t('apply.requirements.description')}</p>
         </div>
 
-        <Tabs defaultValue="personal" className="w-full max-w-7xl">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+        <Tabs defaultValue="personal" className="w-full max-w-7xl flex flex-col gap-6">
+            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 mb-6">
             <TabsTrigger value="personal">{t('apply.requirements.personal.title')}</TabsTrigger>
             <TabsTrigger value="institutional">{t('apply.requirements.institutional.title')}</TabsTrigger>
             </TabsList>
