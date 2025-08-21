@@ -7,6 +7,11 @@ export async function CreateInvestmentProposal(risk_profile: RiskProfilePayload)
   return report
 }
 
+export async function ReadInvestmentProposals(): Promise<InvestmentProposal[] | null> {
+  const proposals: InvestmentProposal[] = await accessAPI('/investment_proposals/read', 'GET')
+  return proposals || null
+}
+
 export async function ReadInvestmentProposalsByRiskProfile(risk_profile_id: string): Promise<InvestmentProposal[] | null> {
   const proposals: InvestmentProposal[] = await accessAPI(`/investment_proposals/read?risk_profile_id=${risk_profile_id}`, 'GET')
   return proposals || null

@@ -64,6 +64,12 @@ const user_tools = [
     url: '/dashboard/reporting',
     icon: FaChartBar,
     id: 'reporting',
+  },
+  {
+    name: 'Investment Proposals',
+    url: '/dashboard/investment-proposals',
+    icon: FaChartBar,
+    id: 'investment_proposals',
   }
 ]
 

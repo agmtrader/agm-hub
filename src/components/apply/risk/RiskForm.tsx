@@ -464,14 +464,12 @@ const RiskForm = () => {
             </Button>
 
             <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Investment Proposal</DialogTitle>
                 </DialogHeader>
                 {investmentProposal && (
-                  <div className="pt-2">
-                    <InvestmentProposalView investmentProposal={investmentProposal} />
-                  </div>
+                  <InvestmentProposalView investmentProposal={investmentProposal} />
                 )}
               </DialogContent>
             </Dialog>

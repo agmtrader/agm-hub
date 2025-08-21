@@ -93,11 +93,11 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
   ]
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 w-full">
 
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Card className="lg:col-span-2 p-6">
-        <div className="space-y-4">
+    <div className="flex flex-col lg:flex-row items-center p-5 gap-6">
+      <Card className='w-full'>
+        <div className="space-y-4 p-6">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-semibold text-foreground">Portfolio Distribution by Rating</h3>
@@ -163,23 +163,19 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
                   style={{ backgroundColor: item.color }}
                 />
                 <span className="text-sm font-medium">{item.name}</span>
-                <span className="text-xs text-subtitle ml-auto">
-                  {((item.count / chartData.summaryStats?.totalBonds!) * 100).toFixed(1)}%
-                </span>
               </div>
             ))}
           </div>
         </div>
       </Card>
 
-      {/* Side stats card */}
-      <Card className="p-6">
+      <Card className="p-6 w-fit">
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Portfolio Stats</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <p className="text-subtitle text-xs">Average Yield</p>
-              <p className="text-2xl font-bold text-foreground">{chartData.summaryStats?.averageYield?.toFixed(2)}%</p>
+              <p className="text-subtitle text-xs">Expected Average Yield</p>
+              <p className="text-2xl font-bold text-primary">{chartData.summaryStats?.averageYield?.toFixed(2)}%</p>
             </div>
             <div>
               <p className="text-subtitle text-xs">Total Assets</p>
@@ -188,15 +184,39 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
           </div>
           <Separator />
            <div className="space-y-2">
-            {chartData.summaryStats?.perRating?.map((item: any) => (
-              <div key={item.name} className="flex items-center gap-3">
-                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                <span className="text-sm text-foreground w-16">{item.name}</span>
+           <DataTable data={chartData.summaryStats?.perRating} columns={[
+            {
+              header: 'Description',
+              accessorKey: 'name',
+            },
+            {
+              header: '# Assets',
+              accessorKey: 'count',
+              cell: ({ getValue }) => (
                 <span className="text-xs text-subtitle ml-auto">
-                  {item.count} • {item.percentage.toFixed(1)}% • {item.avgYield.toFixed(2)}%
+                  {String(getValue() ?? '')}
                 </span>
-              </div>
-            ))}
+              ),
+            },
+            {
+              header: '%',
+              accessorKey: 'percentage',
+              cell: ({ getValue }) => (
+                <span className="text-xs text-subtitle ml-auto">
+                  {((getValue())).toFixed(1) || 0}%
+                </span>
+              ),
+            },
+            {
+              header: 'Expected Yield',
+              accessorKey: 'avgYield',
+              cell: ({ getValue }) => (
+                <span className="text-xs text-subtitle ml-auto">
+                  {((getValue())).toFixed(1) || 0 }%
+                </span>
+              ),
+            }
+           ]} />
           </div>
         </div>
       </Card>
