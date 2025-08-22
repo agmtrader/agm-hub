@@ -123,14 +123,46 @@ const ApplicationsPage = () => {
 
   if (!applications || !advisors) return <LoadingComponent className='w-full h-full' />
 
+  const getApplicationTitle = (application: InternalApplication) => {
+    const customer = application.application?.customer
+    if (!customer) return '-'
+
+    switch (customer.type) {
+      case 'INDIVIDUAL': {
+        const holder = customer.accountHolder?.accountHolderDetails?.[0]
+        if (!holder) return '-'
+        const first = holder.name?.first ?? ''
+        const last = holder.name?.last ?? ''
+        return `${first} ${last}`.trim() || '-'
+      }
+      case 'JOINT': {
+        const firstHolder = customer.jointHolders?.firstHolderDetails?.[0]?.name
+        const secondHolder = customer.jointHolders?.secondHolderDetails?.[0]?.name
+        if (firstHolder && secondHolder) {
+          return `${firstHolder.first} ${firstHolder.last} & ${secondHolder.first} ${secondHolder.last}`
+        }
+        if (firstHolder) {
+          return `${firstHolder.first} ${firstHolder.last}`
+        }
+        if (secondHolder) {
+          return `${secondHolder.first} ${secondHolder.last}`
+        }
+        return '-'
+      }
+      case 'ORG': {
+        const orgName = customer.organization?.identifications?.[0]?.name
+        return orgName ?? '-'
+      }
+      default:
+        return '-'
+    }
+  }
+
   const columns = [
     {
       header: 'Title',
-      accessorKey: 'title',
-      cell: ({ row }: any) => {
-        const title = row.original.application?.customer?.accountHolder?.accountHolderDetails?.[0]?.name?.first + ' ' + row.original.application?.customer?.accountHolder?.accountHolderDetails?.[0]?.name?.last
-        return title ? title : '-'
-      }
+      accessorFn: (row: InternalApplication) => getApplicationTitle(row),
+      cell: ({ row }: any) => getApplicationTitle(row.original)
     },
     {
       header: 'Advisor',
@@ -191,7 +223,7 @@ const ApplicationsPage = () => {
           <Badge variant="outline">
             {accountType === 'INDIVIDUAL' ? 'Individual' : 
              accountType === 'JOINT' ? 'Joint' : 
-             accountType === 'INSTITUTIONAL' ? 'Institutional' :
+             accountType === 'ORG' ? 'Institutional' :
              accountType}
           </Badge>
         ) : '-'
