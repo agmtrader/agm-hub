@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { PendingTask, PendingTaskFollowUp } from '@/lib/entities/pending_task'
 import {
   Dialog,
@@ -16,6 +16,12 @@ import { Separator } from '@/components/ui/separator'
 import { UpdatePendingTaskFollowUpByID } from '@/utils/entities/pending_task'
 import { toast } from '@/hooks/use-toast'
 import { Checkbox } from '@/components/ui/checkbox'
+import { CreatePendingTaskFollowUp } from '@/utils/entities/pending_task'
+import { DateTimePicker } from '@/components/ui/datetime-picker'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { formatTimestamp } from '@/utils/dates'
+import { Plus, Loader2 } from 'lucide-react'
 
 interface Props {
   task: PendingTask | null
@@ -27,6 +33,12 @@ interface Props {
 
 const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }: Props) => {
   if (!task) return null
+
+  // ----------------- New state for creating follow-ups -----------------
+  const [fuDate, setFuDate] = React.useState<Date>(new Date())
+  const [fuDescription, setFuDescription] = React.useState('')
+  const [isCreating, setIsCreating] = React.useState(false)
+  // --------------------------------------------------------------------
 
   const taskFollowUps = followUps.filter(f => f.pending_task_id === task.id)
   const completed = taskFollowUps.filter(f => f.completed).length
@@ -41,6 +53,30 @@ const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }:
       onSuccess?.()
     } catch (e) {
       toast({ title: 'Error', description: 'Failed to update', variant: 'destructive' })
+    }
+  }
+
+  async function handleCreateFollowUp() {
+    if (!fuDescription.trim()) {
+      toast({ title: 'Description required', description: 'Please add a description', variant: 'warning' })
+      return
+    }
+    try {
+      setIsCreating(true)
+      await CreatePendingTaskFollowUp(task!.id, {
+        date: fuDate,
+        description: fuDescription,
+        completed: false,
+      })
+      toast({ title: 'Created', description: 'Follow-up added successfully', variant: 'success' })
+      // reset form
+      setFuDate(new Date())
+      setFuDescription('')
+      onSuccess?.()
+    } catch (e) {
+      toast({ title: 'Error', description: 'Failed to create follow-up', variant: 'destructive' })
+    } finally {
+      setIsCreating(false)
     }
   }
 
@@ -65,6 +101,28 @@ const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }:
                 <div>
                   <p className="text-foreground font-medium text-md">Date</p>
                   <p className="text-subtitle text-sm">{formatDateFromTimestamp(task.date.toString())}</p>
+                </div>
+                <div>
+                  <p className="text-foreground font-medium text-md">Priority</p>
+                  <p className="text-subtitle text-sm">
+                    {task.priority === 1 && 'High'}
+                    {task.priority === 2 && 'Medium'}
+                    {task.priority === 3 && 'Low'}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-foreground font-medium text-md">Emails to notify</p>
+                  {(!task.emails_to_notify || task.emails_to_notify.length === 0) ? (
+                    <p className="text-subtitle text-sm">-</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {task.emails_to_notify.map((email) => (
+                        <span key={email} className="px-2 py-0.5 rounded bg-muted text-xs break-all">
+                          {email}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="col-span-2">
                   <p className="text-foreground font-medium text-md">Tags</p>
@@ -99,6 +157,34 @@ const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }:
                       <Separator />
                     </div>
                   ))}
+              </div>
+              {/* Create new follow-up */}
+              <Separator className="my-4" />
+              <div className="space-y-4">
+                <DateTimePicker value={fuDate} onChange={d => d && setFuDate(d)} granularity="minute" />
+                <Textarea
+                  placeholder="Describe the follow-up action"
+                  value={fuDescription}
+                  onChange={e => setFuDescription(e.target.value)}
+                  className="min-h-[80px]"
+                />
+                <Button
+                  onClick={handleCreateFollowUp}
+                  disabled={isCreating}
+                  className="bg-primary text-background hover:bg-primary/90"
+                >
+                  {isCreating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Follow-up
+                    </>
+                  )}
+                </Button>
               </div>
             </Card>
           </div>

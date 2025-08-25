@@ -49,8 +49,9 @@ const LeadDialog = ({ leadID, isOpen, onOpenChange, onSuccess }: Props) => {
       try { 
         // Fetch lead and follow-ups
         const leadWithFollowUps = await ReadLeadByID(leadID)
+        console.log(leadWithFollowUps)
         if (!leadWithFollowUps.leads) throw new Error('Leads not found')
-        if (leadWithFollowUps.follow_ups) throw new Error('Follow-ups not found')
+        if (!leadWithFollowUps.follow_ups) throw new Error('Follow-ups not found')
         setLead(leadWithFollowUps.leads[0])
         setFollowUps(leadWithFollowUps.follow_ups)
 

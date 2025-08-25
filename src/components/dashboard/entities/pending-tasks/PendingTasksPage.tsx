@@ -107,6 +107,7 @@ const PendingTasksPage = () => {
         columns={columns}
         enableFiltering
         enableRowActions
+        infiniteScroll
         rowActions={[
           {
             label: 'View',
