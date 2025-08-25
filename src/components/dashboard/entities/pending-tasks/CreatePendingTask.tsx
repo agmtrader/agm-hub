@@ -31,22 +31,44 @@ import { ReadAccounts } from '@/utils/entities/account'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import { Select, SelectItem, SelectContent, SelectValue, SelectTrigger } from '@/components/ui/select'
+import { User } from 'next-auth'
+import { ReadUsers } from '@/utils/entities/user'
+import { ReadClientsReport } from '@/utils/tools/reporting'
 
 interface Props {
   refreshTasks?: () => void
 }
 
 const CreatePendingTask = ({ refreshTasks }: Props) => {
+
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
+  
   const [accounts, setAccounts] = useState<Account[]>([])
+  const [AGMUsers, setAGMUsers] = useState<User[]>([])
+  const [clients, setClients] = useState<any[]>([])
+
   const [newTag, setNewTag] = useState('')
   const { t } = useTranslationProvider()
 
   useEffect(() => {
-    ReadAccounts().then(setAccounts).catch(() => null)
+    async function fetchData() {
+      try {
+        const [accounts, users, clients] = await Promise.all([ReadAccounts(), ReadUsers(), ReadClientsReport()])
+        const agmUsers = users.filter(u => u.email?.includes('@agmtechnology.com'))
+        setAccounts(accounts)
+        setAGMUsers(agmUsers)
+        setClients(clients)
+      } catch (error) {
+        toast({ title: 'Error', description: 'Failed to fetch data', variant: 'destructive' })
+      }
+    }
+    fetchData()
   }, [])
+
+  console.log(clients, accounts)
 
   const formSchema = z.object({
     ...pending_task_schema.shape,
@@ -58,6 +80,7 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
     defaultValues: {
       ...getDefaults(pending_task_schema),
       tags: [],
+      emails_to_notify: [],
       follow_ups: [
         {
           date: new Date(),
@@ -89,6 +112,7 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
         date: formatTimestamp(new Date()),
         closed: false,
         tags: (values.tags && Array.isArray(values.tags)) ? values.tags : [],
+        emails_to_notify: values.emails_to_notify || [],
       }
 
       await CreatePendingTaskAPI(pendingTask, followUps)
@@ -125,6 +149,20 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
   const removeTag = (tag: string) => {
     const current = form.getValues('tags') || []
     form.setValue('tags', current.filter((t: string) => t !== tag), { shouldDirty: true, shouldTouch: true })
+  }
+
+  const addEmail = (email: string) => {
+    const current = form.getValues('emails_to_notify') || []
+    const normalized = email.trim().toLowerCase()
+    if (!normalized) return
+    if (!current.includes(normalized)) {
+      form.setValue('emails_to_notify', [...current, normalized], { shouldDirty: true, shouldTouch: true })
+    }
+  }
+
+  const removeEmail = (email: string) => {
+    const current = form.getValues('emails_to_notify') || []
+    form.setValue('emails_to_notify', current.filter((e: string) => e !== email), { shouldDirty: true, shouldTouch: true })
   }
 
   return (
@@ -201,19 +239,57 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
 
             <FormField
               control={form.control}
+              name="emails_to_notify"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Emails to notify</FormLabel>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-wrap gap-2">
+                      {(field.value || []).map((email: string) => (
+                        <Badge key={email} variant="secondary" className="px-2 py-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs">{email}</span>
+                            <Button type="button" variant="ghost" size="icon" className="h-5 w-5" onClick={() => removeEmail(email)}>×</Button>
+                          </div>
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {AGMUsers.map(user => (
+                        <Button key={user.id} type="button" variant="outline" size="sm" onClick={() => addEmail(user.email || '')}>
+                          {user.email}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <FormControl />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="priority"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Priority</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        field.onChange(value === "" ? undefined : Number(value))
-                      }}
-                    />
-                  </FormControl>  
+                    <Select
+                      value={field.value?.toString() ?? ""}
+                      onValueChange={(val) => field.onChange(Number(val))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select priority" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">High</SelectItem>
+                        <SelectItem value="2">Medium</SelectItem>
+                        <SelectItem value="3">Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
