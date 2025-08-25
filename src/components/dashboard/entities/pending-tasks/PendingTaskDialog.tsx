@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { PendingTask, PendingTaskFollowUp } from '@/lib/entities/pending_task'
 import {
   Dialog,
@@ -13,15 +13,12 @@ import { formatDateFromTimestamp } from '@/utils/dates'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { UpdatePendingTaskFollowUpByID } from '@/utils/entities/pending_task'
+import { UpdatePendingTaskFollowUpByID, DeletePendingTaskFollowUpByID } from '@/utils/entities/pending_task'
 import { toast } from '@/hooks/use-toast'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CreatePendingTaskFollowUp } from '@/utils/entities/pending_task'
-import { DateTimePicker } from '@/components/ui/datetime-picker'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { formatTimestamp } from '@/utils/dates'
-import { Plus, Loader2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
+import AddFollowUp from './AddFollowUp'
 
 interface Props {
   task: PendingTask | null
@@ -33,12 +30,6 @@ interface Props {
 
 const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }: Props) => {
   if (!task) return null
-
-  // ----------------- New state for creating follow-ups -----------------
-  const [fuDate, setFuDate] = React.useState<Date>(new Date())
-  const [fuDescription, setFuDescription] = React.useState('')
-  const [isCreating, setIsCreating] = React.useState(false)
-  // --------------------------------------------------------------------
 
   const taskFollowUps = followUps.filter(f => f.pending_task_id === task.id)
   const completed = taskFollowUps.filter(f => f.completed).length
@@ -56,27 +47,14 @@ const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }:
     }
   }
 
-  async function handleCreateFollowUp() {
-    if (!fuDescription.trim()) {
-      toast({ title: 'Description required', description: 'Please add a description', variant: 'warning' })
-      return
-    }
+  async function handleDeleteFollowUp(fu: PendingTaskFollowUp) {
     try {
-      setIsCreating(true)
-      await CreatePendingTaskFollowUp(task!.id, {
-        date: fuDate,
-        description: fuDescription,
-        completed: false,
-      })
-      toast({ title: 'Created', description: 'Follow-up added successfully', variant: 'success' })
-      // reset form
-      setFuDate(new Date())
-      setFuDescription('')
+      if (!task || !fu.id) throw new Error('Task or follow-up ID not found')
+      await DeletePendingTaskFollowUpByID(task.id, fu.id)
+      toast({ title: 'Deleted', description: 'Follow-up removed successfully', variant: 'success' })
       onSuccess?.()
     } catch (e) {
-      toast({ title: 'Error', description: 'Failed to create follow-up', variant: 'destructive' })
-    } finally {
-      setIsCreating(false)
+      toast({ title: 'Error', description: 'Failed to delete follow-up', variant: 'destructive' })
     }
   }
 
@@ -151,41 +129,19 @@ const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }:
                     <div key={fu.id} className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span>{formatDateFromTimestamp(fu.date.toString())}</span>
-                        <Checkbox checked={fu.completed} onCheckedChange={() => handleToggleFollowUp(fu)} />
+                        <div className="flex items-center gap-2">
+                          <Checkbox checked={fu.completed} onCheckedChange={() => handleToggleFollowUp(fu)} />
+                          <button onClick={() => handleDeleteFollowUp(fu)} className="text-destructive hover:text-destructive/80">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
                       <p className="text-sm text-subtitle whitespace-pre-wrap">{fu.description}</p>
                       <Separator />
                     </div>
                   ))}
               </div>
-              {/* Create new follow-up */}
-              <Separator className="my-4" />
-              <div className="space-y-4">
-                <DateTimePicker value={fuDate} onChange={d => d && setFuDate(d)} granularity="minute" />
-                <Textarea
-                  placeholder="Describe the follow-up action"
-                  value={fuDescription}
-                  onChange={e => setFuDescription(e.target.value)}
-                  className="min-h-[80px]"
-                />
-                <Button
-                  onClick={handleCreateFollowUp}
-                  disabled={isCreating}
-                  className="bg-primary text-background hover:bg-primary/90"
-                >
-                  {isCreating ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Follow-up
-                    </>
-                  )}
-                </Button>
-              </div>
+              <AddFollowUp taskId={task.id} onSuccess={onSuccess} />
             </Card>
           </div>
         </ScrollArea>
