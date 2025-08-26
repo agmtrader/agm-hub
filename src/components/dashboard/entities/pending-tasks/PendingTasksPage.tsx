@@ -61,6 +61,24 @@ const PendingTasksPage = () => {
       cell: ({ row }: any) => accounts.find(a => a.id === row.original.account_id)?.ibkr_account_number || row.original.account_id,
     },
     {
+      header: 'Emails',
+      accessorKey: 'emails_to_notify',
+      cell: ({ row }: any) => {
+        const emails: string[] = row.original.emails_to_notify || []
+        if (!emails.length) return '-'
+        const prefixes = emails.map((e: string) =>
+          e.endsWith('@agmtechnology.com') ? e.replace('@agmtechnology.com', '') : e.split('@')[0]
+        )
+        return (
+          <div className="flex flex-wrap gap-1">
+            {prefixes.map((p: string) => (
+              <span key={p} className="px-2 py-0.5 rounded bg-muted text-xs">{p}</span>
+            ))}
+          </div>
+        )
+      },
+    },
+    {
       header: 'Tags',
       accessorKey: 'tags',
       cell: ({ row }: any) => {
