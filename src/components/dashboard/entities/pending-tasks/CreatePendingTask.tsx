@@ -50,6 +50,9 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
   const [AGMUsers, setAGMUsers] = useState<User[]>([])
   const [clients, setClients] = useState<any[]>([])
 
+  // Popover state for adding notification emails
+  const [isEmailPopoverOpen, setIsEmailPopoverOpen] = useState(false)
+   
   const [newTag, setNewTag] = useState('')
   const { t } = useTranslationProvider()
 
@@ -255,13 +258,34 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
                       ))}
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      {AGMUsers.map(user => (
-                        <Button key={user.id} type="button" variant="outline" size="sm" onClick={() => addEmail(user.email || '')}>
-                          {user.email}
-                        </Button>
-                      ))}
-                    </div>
+                    {/* Add email button with dropdown */}
+                    <Popover open={isEmailPopoverOpen} onOpenChange={setIsEmailPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <Button type="button" variant="outline" size="sm">Add email</Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-0 w-[300px]">
+                        <Command>
+                          <CommandInput placeholder="Search email" />
+                          <CommandList>
+                            <CommandEmpty>No results</CommandEmpty>
+                            <CommandGroup>
+                              {AGMUsers.map(user => (
+                                <CommandItem
+                                  key={user.id}
+                                  value={user.email || ''}
+                                  onSelect={(val) => {
+                                    addEmail(val)
+                                    setIsEmailPopoverOpen(false)
+                                  }}
+                                >
+                                  {user.email}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <FormControl />
                   <FormMessage />
