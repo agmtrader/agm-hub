@@ -11,19 +11,21 @@ import CreatePendingTask from './CreatePendingTask'
 import PendingTaskDialog from './PendingTaskDialog'
 import { ReadAccounts } from '@/utils/entities/account'
 import { Account } from '@/lib/entities/account'
+import { ReadClientsReport } from '@/utils/tools/reporting'
 
 const PendingTasksPage = () => {
   const [tasks, setTasks] = useState<PendingTask[]>([])
   const [followUps, setFollowUps] = useState<PendingTaskFollowUp[]>([])
   const [accounts, setAccounts] = useState<Account[]>([])
-
+  const [clients, setClients] = useState<any[]>([])
   const [selectedTask, setSelectedTask] = useState<PendingTask | null>(null)
   const [isViewOpen, setIsViewOpen] = useState(false)
 
-  async function fetchAccounts() {
+  async function fetchData() {
     try {
-      const accs = await ReadAccounts()
-      setAccounts(accs)
+      const [accounts, clients] = await Promise.all([ReadAccounts(), ReadClientsReport()])
+      setAccounts(accounts)
+      setClients(clients)
     } catch (e) {
       toast({ title: 'Error', description: 'Failed to fetch accounts', variant: 'destructive' })
     }
@@ -34,16 +36,25 @@ const PendingTasksPage = () => {
     setTasks(res.pending_tasks)
     setFollowUps(res.follow_ups)
   }
-  console.log(tasks, followUps)
 
   useEffect(() => {
-    fetchAccounts()
+    fetchData()
     fetchTasks()
   }, [])
 
   if (!accounts.length) return <LoadingComponent className="w-full h-full" />
 
-  const columns: ColumnDefinition<PendingTask>[] = [
+  const columns = [
+    {
+      header: 'Title',
+      accessorKey: 'title',
+      cell: ({ row }: any) => {
+        const account = accounts.find(a => a.id === row.original.account_id)
+        if (!account) return 'No account record'
+        const client = clients.find(c => c['Account ID'] === account.ibkr_account_number)
+        return client?.Alias || 'No alias'
+      }
+    },
     {
       header: 'Account',
       accessorKey: 'account_id',
@@ -90,6 +101,7 @@ const PendingTasksPage = () => {
         const fus = followUps.filter(f => f.pending_task_id === row.original.id)
         const completed = fus.filter(f => f.completed).length
         const total = fus.length
+        if (total === 0) return <Badge variant="outline">Not started</Badge>
         return <Badge variant={completed === total ? 'success' : 'outline'}>{completed}/{total}</Badge>
       },
     },

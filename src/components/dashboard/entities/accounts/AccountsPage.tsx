@@ -49,8 +49,6 @@ const AccountsPage = () => {
 
   }, [])
 
-  console.log(clients)
-
   if (!accounts || !applications || !clients) return <LoadingComponent className='w-full h-full' />
 
   const columns = [

@@ -66,9 +66,13 @@ const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }:
         </DialogHeader>
         <ScrollArea className="h-[60vh] w-full rounded-md">
           <div className="space-y-6 p-4">
-            <Badge variant={completed === taskFollowUps.length ? 'success' : 'outline'}>
-              {completed}/{taskFollowUps.length} follow-ups completed
-            </Badge>
+            {taskFollowUps.length === 0 ? (
+              <Badge variant="warning">Not started</Badge>
+            ) : (
+              <Badge variant={completed === taskFollowUps.length ? 'success' : 'outline'}>
+                {completed}/{taskFollowUps.length} follow-ups completed
+              </Badge>
+            )}
             <Card className="p-6 space-y-4">
               <h3 className="text-lg font-semibold">Basic Information</h3>
               <div className="grid grid-cols-2 gap-4">
