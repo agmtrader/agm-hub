@@ -25,3 +25,11 @@ export async function sendApplicationLinkEmail(content: {name: string, applicati
   })
   return response
 }
+
+export async function sendTaskReminderEmail(content: {task_name: string}, email: string) {
+  const response = await accessAPI('/email/send_email/task_reminder', 'POST', {
+    agm_user_email: email,
+    content: content,
+  })
+  return response
+}

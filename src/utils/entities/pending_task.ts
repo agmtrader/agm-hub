@@ -24,7 +24,7 @@ export async function ReadPendingTaskByID(taskID: string) {
 export async function UpdatePendingTaskByID(taskID: string, task: Partial<PendingTaskPayload>): Promise<IDResponse> {
   const updateResponse: IDResponse = await accessAPI('/pending_tasks/update', 'POST', {
     'query': { 'id': taskID },
-    'pending_task': task,
+    'task': task,
   })
   return updateResponse
 }

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { PendingTask, PendingTaskFollowUp } from '@/lib/entities/pending_task'
 import { ReadPendingTasks } from '@/utils/entities/pending_task'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
-import { formatDateFromTimestamp } from '@/utils/dates'
+import { formatDateFromTimestamp, getDateObjectFromTimestamp } from '@/utils/dates'
 import { Badge } from '@/components/ui/badge'
 import { toast } from '@/hooks/use-toast'
 import LoadingComponent from '@/components/misc/LoadingComponent'
@@ -33,7 +33,12 @@ const PendingTasksPage = () => {
 
   async function fetchTasks() {
     const res = await ReadPendingTasks()
-    setTasks(res.pending_tasks)
+    // Sort tasks by date in descending order (most recent first)
+    setTasks(
+      res.pending_tasks.sort(
+        (a, b) => getDateObjectFromTimestamp(a.date).getTime() - getDateObjectFromTimestamp(b.date).getTime()
+      )
+    )
     setFollowUps(res.follow_ups)
   }
 

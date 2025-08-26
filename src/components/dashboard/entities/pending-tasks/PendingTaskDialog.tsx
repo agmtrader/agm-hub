@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { PendingTask, PendingTaskFollowUp } from '@/lib/entities/pending_task'
 import {
   Dialog,
@@ -13,12 +13,16 @@ import { formatDateFromTimestamp } from '@/utils/dates'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { UpdatePendingTaskFollowUpByID, DeletePendingTaskFollowUpByID } from '@/utils/entities/pending_task'
+import { UpdatePendingTaskByID, UpdatePendingTaskFollowUpByID, DeletePendingTaskFollowUpByID } from '@/utils/entities/pending_task'
 import { toast } from '@/hooks/use-toast'
 import { Checkbox } from '@/components/ui/checkbox'
-import { CreatePendingTaskFollowUp } from '@/utils/entities/pending_task'
-import { Trash2 } from 'lucide-react'
+import { Mail, Trash2 } from 'lucide-react'
 import AddFollowUp from './AddFollowUp'
+import { Button } from '@/components/ui/button'
+import { Command, CommandInput, CommandList, CommandGroup, CommandItem, CommandEmpty } from '@/components/ui/command'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { ReadUsers } from '@/utils/entities/user'
+import { sendTaskReminderEmail } from '@/utils/tools/email'
 
 interface Props {
   task: PendingTask | null
@@ -33,6 +37,58 @@ const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }:
 
   const taskFollowUps = followUps.filter(f => f.pending_task_id === task.id)
   const completed = taskFollowUps.filter(f => f.completed).length
+
+  // Emails to notify editing state
+  const [isEditingEmails, setIsEditingEmails] = useState(false)
+  const [emails, setEmails] = useState<string[]>(task.emails_to_notify || [])
+  const [AGMUsers, setAGMUsers] = useState<{ id: string; email: string | null }[]>([])
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+
+  // Keep local state in sync when task changes
+  useEffect(() => {
+    setEmails(task.emails_to_notify || [])
+    setIsEditingEmails(false)
+  }, [task])
+
+  // Fetch AGM users for suggestions
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const users = await ReadUsers()
+        const agm = users
+          .filter((u: any) => u.email?.includes('@agmtechnology.com'))
+          .map((u: any) => ({ id: u.id, email: u.email ?? null }))
+        setAGMUsers(agm)
+      } catch (e) {
+        console.error('Failed to fetch users')
+      }
+    }
+    fetchUsers()
+  }, [])
+
+  const addEmail = (candidate: string) => {
+    const normalized = candidate.trim().toLowerCase()
+    if (!normalized) return
+    if (!emails.includes(normalized)) {
+      setEmails([...emails, normalized])
+    }
+  }
+
+  const removeEmail = (email: string) => {
+    setEmails(emails.filter(e => e !== email))
+  }
+
+  const saveEmails = async () => {
+    if (!task) return
+    try {
+      await UpdatePendingTaskByID(task.id, { emails_to_notify: emails })
+      toast({ title: 'Updated', description: 'Emails updated successfully', variant: 'success' })
+      setIsEditingEmails(false)
+      onSuccess?.()
+    } catch (e) {
+      toast({ title: 'Error', description: 'Failed to update emails', variant: 'destructive' })
+    }
+  }
 
   async function handleToggleFollowUp(fu: PendingTaskFollowUp) {
     try {
@@ -55,6 +111,19 @@ const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }:
       onSuccess?.()
     } catch (e) {
       toast({ title: 'Error', description: 'Failed to delete follow-up', variant: 'destructive' })
+    }
+  }
+
+  async function handleSendReminderEmail(task: PendingTask) {
+    try {
+      if (!task) throw new Error('Task not found')
+      const emails = task.emails_to_notify || []
+      for (const email of emails) {
+        await sendTaskReminderEmail({ task_name: task.description + ' for account ' + task.account_id }, email)
+      }
+      toast({ title: 'Sent', description: `Reminder email sent to ${emails.length} users`, variant: 'success' })
+    } catch (e) {
+      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Failed to send reminder email', variant: 'destructive' })
     }
   }
 
@@ -93,16 +162,69 @@ const PendingTaskDialog = ({ task, followUps, isOpen, onOpenChange, onSuccess }:
                   </p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-foreground font-medium text-md">Emails to notify</p>
-                  {(!task.emails_to_notify || task.emails_to_notify.length === 0) ? (
-                    <p className="text-subtitle text-sm">-</p>
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-2">
+                      <p className="text-foreground font-medium text-md">Emails to notify</p>
+                      <Button className="bg-transparent hover:bg-transparent text-foreground" size="icon" onClick={() => handleSendReminderEmail(task)}>
+                        <Mail className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    {!isEditingEmails && (
+                      <Button variant="ghost" size="sm" onClick={() => setIsEditingEmails(true)}>Edit</Button>
+                    )}
+                  </div>
+                  {isEditingEmails ? (
+                    <div className="mt-2 space-y-3 w-full">
+                      <div className="flex flex-wrap gap-2">
+                        {emails.length === 0 && <p className="text-subtitle text-sm">-</p>}
+                        {emails.map(email => (
+                          <span key={email} className="px-2 py-0.5 rounded bg-muted text-xs flex items-center gap-1 break-all">
+                            {email}
+                            <button onClick={() => removeEmail(email)} className="ml-1 text-destructive hover:text-destructive/80">×</button>
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                          <PopoverTrigger asChild>
+                            <Button type="button" variant="outline" size="sm">Add email</Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="p-0 w-[300px]">
+                            <Command>
+                              <CommandInput placeholder="Search email" />
+                              <CommandList>
+                                <CommandEmpty>No results</CommandEmpty>
+                                <CommandGroup>
+                                  {AGMUsers.map(u => (
+                                    <CommandItem key={u.id} value={u.email || ''} onSelect={(val) => {
+                                      addEmail(val)
+                                      setIsPopoverOpen(false)
+                                    }}>
+                                      {u.email}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button type="button" size="sm" className="bg-primary text-background hover:bg-primary/90" onClick={saveEmails}>Save</Button>
+                        <Button type="button" variant="outline" size="sm" onClick={() => { setIsEditingEmails(false); setEmails(task.emails_to_notify || []) }}>Cancel</Button>
+                      </div>
+                    </div>
                   ) : (
                     <div className="flex flex-wrap gap-2 mt-1">
-                      {task.emails_to_notify.map((email) => (
-                        <span key={email} className="px-2 py-0.5 rounded bg-muted text-xs break-all">
-                          {email}
-                        </span>
-                      ))}
+                      {(!emails || emails.length === 0) ? (
+                        <p className="text-subtitle text-sm">-</p>
+                      ) : (
+                        emails.map((email) => (
+                          <span key={email} className="flex items-center gap-2 text-xs break-all">
+                            {email}
+                          </span>
+                        ))
+                      )}
                     </div>
                   )}
                 </div>
