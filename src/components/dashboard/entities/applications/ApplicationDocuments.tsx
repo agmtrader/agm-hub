@@ -13,7 +13,6 @@ type Props = {
 const ApplicationDocuments = ({ documents }: Props) => {
 
     const [selectedDocument, setSelectedDocument] = useState<any>(null)
-    const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false)
 
     const DOCUMENT_TYPE_MAP: { [key: number]: string } = {
         5001: 'W8 Form',
@@ -48,8 +47,8 @@ const ApplicationDocuments = ({ documents }: Props) => {
     <DocumentViewer 
         document={selectedDocument}
         documentName={selectedDocument ? getDocumentName(selectedDocument.formNumber) : ''}
-        isOpen={isDocumentViewerOpen}
-        onOpenChange={setIsDocumentViewerOpen}
+        isOpen={!!selectedDocument}
+        onOpenChange={() => setSelectedDocument(null)}
     />
     </div>
   )
