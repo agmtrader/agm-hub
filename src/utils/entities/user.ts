@@ -15,7 +15,7 @@ export async function CreateUser(userData:UserPayload) {
             body: JSON.stringify({'user': userData}),
         });
   
-        if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+        if (!response.ok) throw new Error(`Unable to create user`);
   
         const user = await response.json()
         return user

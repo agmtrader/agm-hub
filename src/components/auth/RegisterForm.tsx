@@ -64,8 +64,6 @@ const RegisterForm = () => {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
 
-  console.log(form.formState.errors)
-
   const [creating, setCreating] = useState(false)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -84,7 +82,10 @@ const RegisterForm = () => {
         'scopes': ''
       }
 
-      await CreateUser(user)
+      const userCreated = await CreateUser(user)
+      if (!userCreated) {
+        throw new Error('User not created')
+      }
 
       toast({
         title: 'Success',

@@ -560,4 +560,3 @@ export const organizational_form: Application = {
     "translation": null,
     "paperAccount": null
 }
-
