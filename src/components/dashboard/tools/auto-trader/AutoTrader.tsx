@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { Card } from "@/components/ui/card";
 import LoadingComponent from '@/components/misc/LoadingComponent';
-import { ColumnDefinition, DataTable } from '@/components/misc/DataTable';
+import { DataTable } from '@/components/misc/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpCircle, ArrowDownCircle, MinusCircle, DollarSign, BarChart3, TrendingUp, Briefcase, Settings, Target, Activity, Hash, Zap, RefreshCw } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -15,7 +15,7 @@ import {
   ContractData,
   OrderData,
   PositionData,
-  ExtendedTraderResponse,
+  TraderResponse,
   BacktestSnapshot
 } from '@/lib/tools/trader';
 import { toast } from '@/hooks/use-toast';  
@@ -39,7 +39,7 @@ const AutoTrader = () => {
     const newSocket = io(socketURL);
     setSocket(newSocket)
 
-    newSocket.on('connected', (data: ExtendedTraderResponse) => {
+    newSocket.on('connected', (data: TraderResponse) => {
       try {
         console.log('Connected to Trader');
         newSocket.emit('ping');
@@ -57,7 +57,7 @@ const AutoTrader = () => {
       console.log('Disconnected from Trader');
     });
 
-    newSocket.on('pong', (data: ExtendedTraderResponse) => {
+    newSocket.on('pong', (data: TraderResponse) => {
       console.log('Pong', data);
       setDecision(data['decision'] as TradingDecision);
       setStrategy(data['strategy']);
@@ -102,7 +102,7 @@ const AutoTrader = () => {
     };
   }, [socket]);
 
-  if (!socket || !socket.connected || !strategy) return <LoadingComponent className='w-full h-full'/>
+  if (!socket || !socket.connected || !strategy || !accountSummary || !backtest || !decision) return <LoadingComponent className='w-full h-full'/>
 
   return (
     <div className='w-full h-full p-4 '>
@@ -114,7 +114,7 @@ const AutoTrader = () => {
               <div className='flex items-center'>
                 <BarChart3 className="h-8 w-8 mr-3 text-primary" />
                 <div>
-                  <h1 className='text-2xl font-bold text-foreground'>AGM Trader Dashboard</h1>
+                  <h1 className='text-2xl font-bold text-foreground'>{strategy.name || 'AGM Trader'}</h1>
                 </div>
               </div>
               <div>
@@ -135,193 +135,15 @@ const AutoTrader = () => {
 
             <TabsContent value="overview" className="mt-0">
               <div className='grid grid-cols-12 gap-4'>
-                <div className='col-span-12 md:col-span-4'>
-                  <div className="h-full rounded-lg p-4 bg-background">
-                    {strategy && strategy.params ? (
-                      <div className='gap-4 flex flex-col'>
-                        {/* Strategy Name */}
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                            <Briefcase className="h-5 w-5 text-primary"/>
-                            <h1 className='text-lg font-semibold'>
-                              {strategy.name || 'Ichimoku Base'}
-                            </h1>
-                        </div>
-
-                        {/* Contracts */}
-                        <div className='space-y-3'>
-                          <div className='flex items-center gap-2 text-muted-foreground'>
-                            <Activity className="h-4 w-4 text-primary" />
-                            <span className='text-sm font-medium'>Trading Contracts</span>
-                          </div>
-                          <div className='grid grid-cols-2 gap-3'>
-                            {strategy.params.contracts.map((contractData: ContractData) => (
-                              <div key={contractData.symbol} className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                                <div className='flex items-center gap-2 text-muted-foreground'>
-                                  <Target className="h-4 w-4" />
-                                  <span className='text-sm'>Contract</span>
-                                </div>
-                                <span className='font-bold text-lg text-foreground'>
-                                  {contractData.symbol}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Strategy Parameters */}
-                        <div className='space-y-3'>
-                          <div className='flex items-center gap-2 text-muted-foreground'>
-                            <BarChart3 className="h-4 w-4 text-primary" />
-                            <span className='text-sm font-medium'>Strategy Parameters</span>
-                          </div>
-                          <div className='grid grid-cols-2 gap-4'>
-                            {strategy.params.tenkan && (
-                            <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                              <div className='flex items-center gap-2 text-muted-foreground'>
-                                <TrendingUp className="h-4 w-4" />
-                                <span className='text-sm'>Tenkan</span>
-                              </div>
-                              <span className='font-bold text-lg text-foreground'>
-                                {strategy.params.tenkan.toFixed(2)}
-                              </span>
-                            </div>
-                          )}
-                          {strategy.params.kijun && (
-                            <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                              <div className='flex items-center gap-2 text-muted-foreground'>
-                                <Activity className="h-4 w-4" />
-                                <span className='text-sm'>Kijun</span>
-                              </div>
-                              <span className='font-bold text-lg text-foreground'>
-                                {strategy.params.kijun.toFixed(2)}
-                              </span>
-                            </div>
-                          )}
-                          {['MES', 'MYM'].map((symbol, idx) => {
-                            const contract = strategy.params.contracts[idx];
-                            const psarArr = contract?.indicators?.psar || [];
-                            const lastPsar = psarArr.length > 0 ? psarArr[psarArr.length - 1].toFixed(2) : 'N/A';
-                            return (
-                              <div key={symbol} className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                                <div className='flex items-center gap-2 text-muted-foreground'>
-                                  <Zap className="h-4 w-4" />
-                                  <span className='text-sm'>PSAR {symbol}</span>
-                                </div>
-                                <span className='font-bold text-lg text-foreground'>
-                                  {lastPsar}
-                                </span>
-                              </div>
-                            )
-                          })}
-                            <div className='flex w-full flex-col p-4 bg-muted rounded-lg col-span-2'>
-                              <div className='flex items-center gap-2 text-muted-foreground'>
-                                <Hash className="h-4 w-4" />
-                                <span className='text-sm'>Number of Contracts</span>
-                              </div>
-                              <span className='font-bold text-lg text-foreground'>
-                                {strategy.params.number_of_contracts}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <LoadingComponent className='w-full h-full'/>
-                    )}
-                  </div>
-                </div>
-
-                {/* Market Data */}
-                <div className='col-span-12 md:col-span-4'>
-                  <div className="h-full w-full flex flex-col rounded-lg p-4 bg-background">
-                    <div className="flex items-center mb-4">
-                      <TrendingUp className="h-5 w-5 mr-2 text-primary" />
-                      <h2 className="text-lg font-semibold text-foreground">Last Market Data</h2>
-                    </div>
-                    {strategy && strategy.params && strategy.params.contracts.length > 0 ? (
-                      <div className='w-full flex flex-col gap-4'>
-                        {strategy.params.contracts.map((contractData: ContractData) => (
-                          <div key={contractData.symbol} className='w-full'>
-                            <div className='flex items-center gap-2 mb-3'>
-                              <Activity className="h-4 w-4 text-primary" />
-                              <span className='text-sm font-semibold text-foreground'>{contractData.symbol}</span>
-                              <span className='text-xs text-muted-foreground'>
-                                ({contractData.data.length} data points)
-                              </span>
-                            </div>
-                            <div className='grid grid-cols-2 gap-4'>
-                              <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                                <div className='flex items-center gap-2 text-muted-foreground'>
-                                  <ArrowUpCircle className="h-4 w-4" />
-                                  <span className='text-sm'>Open</span>
-                                </div>
-                                <span className='font-bold text-lg text-foreground'>
-                                  {contractData.data.length > 0 
-                                    ? contractData.data[contractData.data.length - 1].open.toFixed(2) 
-                                    : 'No data'
-                                  }
-                                </span>
-                              </div>
-                              <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                                <div className='flex items-center gap-2 text-muted-foreground'>
-                                  <TrendingUp className="h-4 w-4" />
-                                  <span className='text-sm'>High</span>
-                                </div>
-                                <span className='font-bold text-lg text-green-500'>
-                                  {contractData.data.length > 0 
-                                    ? contractData.data[contractData.data.length - 1].high.toFixed(2) 
-                                    : 'No data'
-                                  }
-                                </span>
-                              </div>
-                              <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                                <div className='flex items-center gap-2 text-muted-foreground'>
-                                  <ArrowDownCircle className="h-4 w-4" />
-                                  <span className='text-sm'>Low</span>
-                                </div>
-                                <span className='font-bold text-lg text-red-500'>
-                                  {contractData.data.length > 0 
-                                    ? contractData.data[contractData.data.length - 1].low.toFixed(2) 
-                                    : 'No data'
-                                  }
-                                </span>
-                              </div>
-                              <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
-                                <div className='flex items-center gap-2 text-muted-foreground'>
-                                  <MinusCircle className="h-4 w-4" />
-                                  <span className='text-sm'>Close</span>
-                                </div>
-                                <span className='font-bold text-lg text-foreground'>
-                                  {contractData.data.length > 0 
-                                    ? contractData.data[contractData.data.length - 1].close.toFixed(2) 
-                                    : 'No data'
-                                  }
-                                </span>
-                              </div>
-                            </div>
-                            {contractData.data.length > 0 && (
-                              <div className='mt-3 flex items-center gap-4 text-xs text-muted-foreground'>
-                                <span>Volume: {contractData.data[contractData.data.length - 1].volume || 'N/A'}</span>
-                                <span>Date: {contractData.data[contractData.data.length - 1].date}</span>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <LoadingComponent className='w-full h-full'/>
-                    )}
-                  </div>
-                </div>
 
                 {/* Account Summary */}
                 <div className='col-span-12 md:col-span-4'>
-                  <div className='flex flex-col h-full rounded-lg p-4 bg-background'>
+                  <div className='flex flex-col h-full rounded-lg p-4'>
                     <div className="flex items-center mb-4">
                       <DollarSign className="h-5 w-5 mr-2 text-primary" />
                       <h2 className="text-lg font-semibold text-foreground">Account Summary</h2>
                     </div>
-                    {accountSummary ? (
+                    {accountSummary && (
                       <div className='grid grid-cols-2 md:grid-cols-2 gap-4'>
                         {[
                           { tag: 'BuyingPower', icon: <DollarSign className="h-4 w-4" /> },
@@ -353,10 +175,87 @@ const AutoTrader = () => {
                           ) : null;
                         })}
                       </div>
-                    ) : (
-                      <LoadingComponent className='w-full h-full'/>
                     )}
                   </div>
+                </div>
+
+                {/* Contract Parameters */}
+                <div className='col-span-12 md:col-span-4'>
+                  <div className='flex flex-col h-full rounded-lg p-4'>
+                    {strategy.params.contracts.map((contractData: ContractData) => (
+                      <div key={contractData.symbol} className='w-full'>
+                        <div className='flex items-center gap-2 mb-3'>
+                          <DollarSign className="h-5 w-5 mr-2 text-primary" />
+                          <h2 className="text-lg font-semibold text-foreground">{contractData.symbol}</h2>
+                        </div>
+                        <div className='grid grid-cols-2 gap-4'>
+                          <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                            <div className='flex items-center gap-2 text-muted-foreground'>
+                              <ArrowUpCircle className="h-4 w-4" />
+                              <span className='text-sm'>Open</span>
+                            </div>
+                            <span className='font-bold text-lg text-foreground'>
+                              {contractData.data.length > 0 
+                                ? contractData.data[contractData.data.length - 1].open.toFixed(2) 
+                                : 'No data'
+                              }
+                            </span>
+                          </div>
+                          <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                            <div className='flex items-center gap-2 text-muted-foreground'>
+                              <TrendingUp className="h-4 w-4" />
+                              <span className='text-sm'>High</span>
+                            </div>
+                            <span className='font-bold text-lg text-green-500'>
+                              {contractData.data.length > 0 
+                                ? contractData.data[contractData.data.length - 1].high.toFixed(2) 
+                                : 'No data'
+                              }
+                            </span>
+                          </div>
+                          <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                            <div className='flex items-center gap-2 text-muted-foreground'>
+                              <ArrowDownCircle className="h-4 w-4" />
+                              <span className='text-sm'>Low</span>
+                            </div>
+                            <span className='font-bold text-lg text-red-500'>
+                              {contractData.data.length > 0 
+                                ? contractData.data[contractData.data.length - 1].low.toFixed(2) 
+                                : 'No data'
+                              }
+                            </span>
+                          </div>
+                          <div className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                            <div className='flex items-center gap-2 text-muted-foreground'>
+                              <MinusCircle className="h-4 w-4" />
+                              <span className='text-sm'>Close</span>
+                            </div>
+                            <span className='font-bold text-lg text-foreground'>
+                              {contractData.data.length > 0 
+                                ? contractData.data[contractData.data.length - 1].close.toFixed(2) 
+                                : 'No data'
+                              }
+                            </span>
+                          </div>
+                          {Object.entries(strategy.params.indicators).map(([name, value]) => (
+                            <div key={name} className='flex w-full flex-col p-4 bg-muted rounded-lg'>
+                              <div className='flex items-center gap-2 text-muted-foreground'>
+                                <Hash className="h-4 w-4" />
+                                <span className='text-sm'>{name.toLocaleUpperCase()}</span>
+                              </div>
+                              <span className='font-bold text-lg text-foreground'>
+                                {value.toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className='mt-3 flex items-center gap-4 text-xs text-muted-foreground'>
+                          <span>Volume: {contractData.data[contractData.data.length - 1].volume || 'N/A'}</span>
+                          <span>Date: {contractData.data[contractData.data.length - 1].date}</span>
+                        </div>
+                      </div>
+                    ))}
+                    </div>
                 </div>
 
                 {/* Open Orders */}
@@ -366,12 +265,10 @@ const AutoTrader = () => {
                       <Briefcase className="h-5 w-5 mr-2 text-primary" />
                       <h2 className="text-lg font-semibold text-foreground">Open Orders</h2>
                     </div>
-                    {strategy && strategy.params && strategy.params.open_orders ? (
+                    {strategy && strategy.params && strategy.params.open_orders && (
                       <div className="overflow-x-auto w-full">
                         <DataTable<OrderData> data={strategy.params.open_orders || []} />
                       </div>
-                    ) : (
-                      <LoadingComponent className='w-full h-full'/>
                     )}
                   </div>
                 </div>
@@ -413,36 +310,29 @@ const AutoTrader = () => {
                     )}
                   </div>
                 </div>
+
               </div>
             </TabsContent>
 
             <TabsContent value="chart" className="mt-0">
-              {strategy && strategy.params && strategy.params.contracts ? (
-                <div className="rounded-lg p-4 bg-background space-y-6">
-                  {strategy.params.contracts.map((contract, index) => {
-                    const psar_indicator = contract.indicators?.psar || [];
-                    const sma_indicator = contract.indicators?.sma || [];
-                    return (
-                      <TraderChart
-                        key={contract.symbol}
-                        contract={contract}
-                        indicator={sma_indicator}
-                        title={`${contract.symbol} Trading Chart`}
-                      />
-                    );
-                  })}
-                </div>
-              ) : (
-                <LoadingComponent className='w-full h-[600px]'/>
-              )}
+              <div className="rounded-lg p-4 bg-background space-y-6">
+                {strategy.params.contracts.map((contract, index) => {
+                  const psar_indicator = contract.indicators?.psar || [];
+                  const sma_indicator = contract.indicators?.sma || [];
+                  return (
+                    <TraderChart
+                      key={contract.symbol}
+                      contract={contract}
+                      indicator={sma_indicator}
+                      title={`${contract.symbol} Trading Chart`}
+                    />
+                  );
+                })}
+              </div>
             </TabsContent>
 
             <TabsContent value="backtest" className="mt-0">
-              {strategy && strategy.params && strategy.params.contracts ? (
-                <Backtest backtestData={backtest} />
-              ) : (
-                <LoadingComponent className='w-full h-[600px]'/>
-              )}
+              <Backtest trades={backtest} />
             </TabsContent>
           </Tabs>
         </div>

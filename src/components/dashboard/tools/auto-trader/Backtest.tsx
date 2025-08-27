@@ -1,185 +1,205 @@
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
-import { ArrowDownCircle, ArrowUpCircle, TrendingUp, TrendingDown, Percent, Target, DollarSign, Activity } from 'lucide-react'
-import React from 'react'
-import EquityCurveChart from './EquityCurveChart'
+'use client'
 
-// Updated BacktestSnapshot interface to align with back-end changes
-interface BacktestSnapshot {
-  Date: string;
-  Open: number;
-  High: number;
-  Low: number;
-  Close: number;
-  'Prev Close': number;
-  Decision: 'LONG' | 'SHORT' | 'EXIT' | 'STAY';
-  Position: number;
-  'Portfolio Value': number;
-  Returns: number;
-}
+import React from 'react'
+import {
+  Table,
+  TableHeader,
+  TableHead,
+  TableRow,
+  TableBody,
+  TableCell,
+} from '@/components/ui/table'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { BacktestSnapshot } from '@/lib/tools/trader'
+import { ChartContainer, ChartTooltip } from '@/components/ui/chart'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
 
 type Props = {
-    backtestData: BacktestSnapshot[]
+  trades: BacktestSnapshot[]
 }
 
-// Function to calculate equity curve data from backtest snapshots
-const calculateEquityCurveData = (backtestData: BacktestSnapshot[]): Array<{ date: string; value: number; pnl: number; position: string }> => {
-  if (backtestData.length === 0) return []
+// Helper to format percentage (e.g. 0.105 -> 10.5%)
+const formatPercent = (decimal: number) => `${(decimal * 100).toFixed(2)}%`
 
-  const equityData: Array<{ date: string; value: number; pnl: number; position: string }> = []
+// Helper to format currency
+const formatCurrency = (value: number) => `$${value.toFixed(2)}`
 
-  for (let i = 0; i < backtestData.length; i++) {
-    const snapshot = backtestData[i]
-
-    // Use reported portfolio value directly
-    const currentEquity = snapshot['Portfolio Value']
-
-    // Determine position string based on Decision and Position size
-    let positionStr = 'NONE'
-    if (snapshot.Position > 0) positionStr = 'LONG'
-    else if (snapshot.Position < 0) positionStr = 'SHORT'
-    else positionStr = snapshot.Decision // could be STAY/EXIT
-
-    equityData.push({
-      date: snapshot.Date,
-      value: currentEquity,
-      pnl: snapshot.Returns,
-      position: positionStr,
-    })
-  }
-
-  return equityData
-}
-
-// Function to calculate trading statistics
-const calculateTradingStats = (backtestData: BacktestSnapshot[]): {
-  totalTrades: number;
-  completedTrades: number;
-  winningTrades: number;
-  losingTrades: number;
-  winRate: number;
-  averageTradeReturn: number;
-} => {
-  if (backtestData.length === 0) {
-    return {
-      totalTrades: 0,
-      completedTrades: 0,
-      winningTrades: 0,
-      losingTrades: 0,
-      winRate: 0,
-      averageTradeReturn: 0,
-    }
-  }
-
-  // Define a trade as a non-zero Position
-  const tradeSnapshots = backtestData.filter((s) => s.Position !== 0)
-  const completedTrades = tradeSnapshots.length
-  const winningTrades = tradeSnapshots.filter((s) => s.Returns > 0).length
-  const losingTrades = tradeSnapshots.filter((s) => s.Returns < 0).length
-
-  const totalTradeReturn = tradeSnapshots.reduce((sum, s) => sum + s.Returns, 0)
-  const totalTrades = backtestData.filter((s) => s.Decision === 'LONG' || s.Decision === 'SHORT').length
-
-  const winRate = completedTrades > 0 ? (winningTrades / completedTrades) * 100 : 0
-  const averageTradeReturn = completedTrades > 0 ? totalTradeReturn / completedTrades : 0
+// Derive high-level statistics from trades
+const calculateStats = (trades: BacktestSnapshot[]) => {
+  const totalTrades = trades.length
+  const winningTrades = trades.filter((t) => t['PNL $'] > 0).length
+  const losingTrades = trades.filter((t) => t['PNL $'] < 0).length
+  const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0
+  const totalPnl = trades.reduce((sum, t) => sum + t['PNL $'], 0)
+  const avgPnl = totalTrades > 0 ? totalPnl / totalTrades : 0
 
   return {
     totalTrades,
-    completedTrades,
     winningTrades,
     losingTrades,
-    winRate: Math.round(winRate * 100) / 100,
-    averageTradeReturn: Math.round(averageTradeReturn * 100) / 100,
+    winRate: winRate.toFixed(2),
+    totalPnl,
+    avgPnl,
   }
 }
 
-const Backtest = ({backtestData}: Props) => {
-  const equityCurveData = calculateEquityCurveData(backtestData);
-  const tradingStats = calculateTradingStats(backtestData);
+const Backtest = ({ trades }: Props) => {
+  // Calculate equity curve (cumulative P&L over time)
+  const equityCurve = React.useMemo(() => {
+    // Sort trades by Exit Date chronologically
+    const sorted = [...trades].sort(
+      (a, b) => new Date(a['Exit Date']).getTime() - new Date(b['Exit Date']).getTime()
+    )
 
-  // Calculate equity performance
-  const finalEquity = equityCurveData.length > 0 ? equityCurveData[equityCurveData.length - 1].value : (equityCurveData[0]?.value ?? 100000);
-  const startingEquity = equityCurveData.length > 0 ? equityCurveData[0].value : 100000;
-  const totalReturn = ((finalEquity - startingEquity) / startingEquity * 100).toFixed(2);
-  const maxEquity = Math.max(...equityCurveData.map(d => d.value));
-  const minEquity = Math.min(...equityCurveData.map(d => d.value));
-  const maxDrawdown = (((maxEquity - minEquity) / maxEquity) * 100).toFixed(2);
+    let cumulative = 0
+    return sorted.map((t) => {
+      cumulative += t['PNL $']
+      return {
+        date: t['Exit Date'],
+        equity: Number(cumulative.toFixed(2)),
+      }
+    })
+  }, [trades])
+
+  const stats = calculateStats(trades)
 
   return (
-    <div className="rounded-lg p-4 bg-background">
-        <div className="space-y-4">
-        
-        {backtestData.length > 0 ? (
-            <div className="space-y-6">
-            
-            {/* Strategy Summary */}
-            <div className="p-4">
-                <h3 className="text-lg font-semibold mb-4 text-foreground">Strategy Performance</h3>
-                
-                {/* First row - Overall Performance Metrics */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                            <DollarSign className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-subtitle">Total Return</span>
-                        </div>
-                        <span className={`text-2xl font-bold ${parseFloat(totalReturn) >= 0 ? 'text-success' : 'text-error'}`}>
-                            {parseFloat(totalReturn) >= 0 ? '+' : ''}{totalReturn}%
-                        </span>
-                    </div>
-                    <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                            <TrendingDown className="h-4 w-4 text-error" />
-                            <span className="text-sm text-subtitle">Max Drawdown</span>
-                        </div>
-                        <span className="text-2xl font-bold text-error">
-                            -{maxDrawdown}%
-                        </span>
-                    </div>
-                    <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                            <DollarSign className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-subtitle">Final Equity</span>
-                        </div>
-                        <span className="text-2xl font-bold text-foreground">
-                            ${finalEquity.toLocaleString()}
-                        </span>
-                    </div>
-                    <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Activity className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-subtitle">Trading Days</span>
-                        </div>
-                        <span className="text-2xl font-bold text-foreground">
-                            {backtestData.length}
-                        </span>
-                    </div>
-                    <div className="bg-muted p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Percent className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-subtitle">Win Rate</span>
-                        </div>
-                        <span className={`text-2xl font-bold text-success`}>
-                            {tradingStats.winRate.toFixed(1)}%
-                        </span>
-                    </div>
-                </div>
+    <div className="space-y-6">
+      {/* Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <p className="text-sm text-subtitle mb-1">Total Trades</p>
+          <p className="text-2xl font-bold text-foreground">{stats.totalTrades}</p>
+        </Card>
+        <Card className="p-4">
+          <p className="text-sm text-subtitle mb-1">Winning Trades</p>
+          <p className="text-2xl font-bold text-success">{stats.winningTrades}</p>
+        </Card>
+        <Card className="p-4">
+          <p className="text-sm text-subtitle mb-1">Losing Trades</p>
+          <p className="text-2xl font-bold text-error">{stats.losingTrades}</p>
+        </Card>
+        <Card className="p-4">
+          <p className="text-sm text-subtitle mb-1">Win Rate</p>
+          <p className="text-2xl font-bold text-primary">{stats.winRate}%</p>
+        </Card>
+        <Card className="p-4">
+          <p className="text-sm text-subtitle mb-1">Total P&L</p>
+          <p
+            className={`text-2xl font-bold ${
+              stats.totalPnl >= 0 ? 'text-success' : 'text-error'
+            }`}
+          >
+            {formatCurrency(stats.totalPnl)}
+          </p>
+        </Card>
+        <Card className="p-4">
+          <p className="text-sm text-subtitle mb-1">Average P&L / Trade</p>
+          <p
+            className={`text-2xl font-bold ${
+              stats.avgPnl >= 0 ? 'text-success' : 'text-error'
+            }`}
+          >
+            {formatCurrency(stats.avgPnl)}
+          </p>
+        </Card>
+      </div>
 
-            </div>
+      {/* Equity curve chart */}
+      {equityCurve.length > 0 && (
+        <Card className="p-4">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Equity Curve</h3>
+          <div className="h-64 w-full">
+            <ChartContainer
+              config={{
+                equity: {
+                  label: 'Equity',
+                  color: '#f97316', // Tailwind orange-500 (primary)
+                },
+              }}
+              className="h-full w-full"
+            >
+              <LineChart data={equityCurve} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" hide />
+                <YAxis domain={['dataMin', 'dataMax']} tickFormatter={(v) => `$${v}`}/>
+                <Line
+                  type="monotone"
+                  dataKey="equity"
+                  stroke="var(--color-equity)"
+                  dot={false}
+                  strokeWidth={2}
+                  name="Equity"
+                />
+                <ChartTooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const { equity, date } = payload[0].payload as any
+                      return (
+                        <div className="rounded-lg border bg-background p-3 shadow-lg">
+                          <p className="text-xs text-subtitle">{date}</p>
+                          <p className="text-sm font-medium text-foreground">${equity.toFixed(2)}</p>
+                        </div>
+                      )
+                    }
+                    return null
+                  }}
+                />
+              </LineChart>
+            </ChartContainer>
+          </div>
+        </Card>
+      )}
 
-            {/* Equity Curve Chart */}
-            {equityCurveData.length > 0 && (
-                <EquityCurveChart data={equityCurveData} />
-            )}
-
-            </div>
-        ) : (
-            <div className="text-center py-8">
-            <p className="text-muted-foreground">No backtest data available</p>
-            <p className="text-sm text-subtitle mt-2">Run the strategy to generate backtest results</p>
-            </div>
-        )}
-        </div>
+      {/* Trades table */}
+      <Card className="p-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Side</TableHead>
+              <TableHead>Qty</TableHead>
+              <TableHead>Entry Date</TableHead>
+              <TableHead>Entry Price</TableHead>
+              <TableHead>Exit Date</TableHead>
+              <TableHead>Exit Price</TableHead>
+              <TableHead>PNL $</TableHead>
+              <TableHead>PNL %</TableHead>
+              <TableHead>Reason</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {trades.map((trade, idx) => (
+              <TableRow key={idx}>
+                <TableCell>
+                  <Badge
+                    variant={trade.Side === 'LONG' ? 'success' : 'destructive'}
+                    className="px-2 py-1"
+                  >
+                    {trade.Side}
+                  </Badge>
+                </TableCell>
+                <TableCell>{trade.Qty}</TableCell>
+                <TableCell>{trade['Entry Date']}</TableCell>
+                <TableCell>{formatCurrency(trade['Entry Price'])}</TableCell>
+                <TableCell>{trade['Exit Date']}</TableCell>
+                <TableCell>{formatCurrency(trade['Exit Price'])}</TableCell>
+                <TableCell
+                  className={trade['PNL $'] >= 0 ? 'text-success' : 'text-error'}
+                >
+                  {formatCurrency(trade['PNL $'])}
+                </TableCell>
+                <TableCell
+                  className={trade['PNL %'] >= 0 ? 'text-success' : 'text-error'}
+                >
+                  {formatPercent(trade['PNL %'])}
+                </TableCell>
+                <TableCell>{trade['Exit Reason']}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
     </div>
   )
 }

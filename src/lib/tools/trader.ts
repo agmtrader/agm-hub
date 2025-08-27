@@ -1,34 +1,11 @@
+import { Map } from "../public/types";
+
 export interface Contract {
   symbol: string;
   secType: string;
   exchange: string;
   currency: string;
   lastTradeDateOrContractMonth?: string;
-}
-
-export interface BacktestSnapshot {
-  /** ISO date string (e.g. 2024-09-23) */
-  Date: string;
-  /** OHLC values for the trading session */
-  Open: number;
-  High: number;
-  Low: number;
-  Close: number;
-  /** Previous close to calculate returns */
-  'Prev Close': number;
-  /** Trading decision produced by the strategy for this snapshot */
-  Decision: TradingDecision;
-  /** Current open position size (can be 0 when flat) */
-  Position: number;
-  /** Portfolio value after applying the snapshot returns */
-  'Portfolio Value': number;
-  /** Percentage returns for this snapshot */
-  Returns: number;
-  /** The following legacy fields are kept optional for backward compatibility */
-  EntryPrice?: string | number;
-  ExitPrice?: string | number;
-  'P/L'?: number;
-  'Cum. P/L'?: number;
 }
 
 export interface HistoricalDataPoint {
@@ -44,16 +21,18 @@ export interface HistoricalDataPoint {
 }
 
 export interface IndicatorData {
-  /** Generic indicator list ‑ keyed by indicator name (e.g. "psar") */
   [indicatorName: string]: number[];
+}
+
+export interface SingleIndicatorData {
+  [indicatorName: string]: number;
 }
 
 export interface ContractData {
   contract: Contract;
   data: HistoricalDataPoint[];
-  symbol: string;
-  /** Optional container for any indicators calculated for this contract */
   indicators?: IndicatorData;
+  symbol: string;
 }
 
 export interface OrderData {
@@ -94,22 +73,24 @@ export interface AccountSummaryItem {
   modelCode: string;
 }
 
-// NOTE: keep the interface flexible so the front-end does not break if the
-// back-end sends additional optional fields.
-
 export interface IchimokuBaseParams {
   tenkan: number;
   kijun: number;
   number_of_contracts: number;
 
-  /* Trading objects */
+  indicators: Map;
   contracts: ContractData[];
   open_orders: OrderData[];
   executed_orders: OrderData[];
   positions: PositionData[];
+}
 
-  /* Optional historical dump */
-  historical_data?: { [symbol: string]: HistoricalDataPoint[] };
+export interface SMACrossoverParams {
+  indicators: Map;
+  contracts: ContractData[];
+  open_orders: OrderData[];
+  executed_orders: OrderData[];
+  positions: PositionData[];
 }
 
 export interface Strategy {
@@ -118,14 +99,23 @@ export interface Strategy {
 }
 
 export interface TraderResponse {
-  status: string;
-  strategy: Strategy;
+  current_time: string;
   decision: string;
+  strategy: Strategy;
   account_summary: AccountSummaryItem[];
+  indicators: SingleIndicatorData;
 }
 
-export interface ExtendedTraderResponse extends TraderResponse {
-  backtest?: BacktestSnapshot[];
+export interface BacktestSnapshot {
+  Side: 'LONG' | 'SHORT'
+  Qty: number
+  'Entry Date': string
+  'Entry Price': number
+  'Exit Date': string
+  'Exit Price': number
+  'Exit Reason': string
+  'PNL $': number
+  'PNL %': number
 }
 
 export type TradingDecision = 'LONG' | 'SHORT' | 'STAY' | 'EXIT';
