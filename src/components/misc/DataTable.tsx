@@ -296,16 +296,22 @@ export const DataTable = <TData,>({
 
   return (
     <div className="w-full rounded-md text-foreground relative border p-5">
-      {enableFiltering && (
-        <div className="flex items-center gap-4 py-4">
-          <Input
-            placeholder="Search all columns..."
-            value={globalFilter}
-            onChange={(event) => setGlobalFilter(event.target.value)}
-            className="max-w-sm"
-          />
+        <div className="flex justify-between items-center gap-4 py-4">
+          {enableFiltering && (
+            <Input
+              placeholder="Search all columns..."
+              value={globalFilter}
+              onChange={(event) => setGlobalFilter(event.target.value)}
+              className="max-w-sm"
+            />
+          )}
+          {data.length > 0 && (
+            <span className="text-foreground text-xs">
+              {data.length} row(s)
+            </span>
+          )}
         </div>
-      )}
+
       <div className={infiniteScroll ? "max-h-[600px] overflow-y-auto" : ""}>
         <Table>
           <TableHeader>

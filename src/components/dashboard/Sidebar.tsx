@@ -115,7 +115,7 @@ const Sidebar = () => {
             <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[50px] object-contain" width={150} height={50} /> 
           </Link>
         </Button>
-        <NavigationMenuList className="w-full flex flex-col gap-2">
+        <NavigationMenuList className="w-full flex flex-col gap-2 items-start justify-center">
           {filteredTools.map((item, index) => (
             <NavigationMenuItem key={index} className="flex w-full h-fit">
               <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
@@ -140,16 +140,15 @@ const Sidebar = () => {
               </Link>
             </NavigationMenuItem>
           ))}
+          <Button
+            variant="ghost"
+            className="w-fit h-fit"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+              {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
         </NavigationMenuList>
       </div>
-      <Button
-          variant="ghost"
-          size="icon"
-          className="p-0"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-        >
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-      </Button>
     </NavigationMenu>
   )
 }

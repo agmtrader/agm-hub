@@ -10,8 +10,6 @@ import { toast } from '@/hooks/use-toast';
 import { redirect } from 'next/navigation';
 import { formatURL } from '@/utils/language/lang';
 import { Account } from '@/lib/entities/account';
-import { InternalApplication } from '@/lib/entities/application';
-import { ReadApplications } from '@/utils/entities/application';
 import { formatDateFromTimestamp } from '@/utils/dates';
 import { Badge } from '@/components/ui/badge';
 import { ReadClientsReport } from '@/utils/tools/reporting';
@@ -20,7 +18,6 @@ const AccountsPage = () => {
 
   const {lang} = useTranslationProvider()
   const [accounts, setAccounts] = useState<Account[] | null>(null)
-  const [applications, setApplications] = useState<InternalApplication[] | null>(null)
   const [clients, setClients] = useState<any[] | null>(null)
 
   useEffect(() => {
@@ -28,13 +25,11 @@ const AccountsPage = () => {
     async function fetchData () {
 
       try {
-        const [accounts, applications, clients] = await Promise.all([
+        const [accounts, clients] = await Promise.all([
           ReadAccounts(),
-          ReadApplications(),
           ReadClientsReport()
         ])
         setAccounts(accounts.sort((a, b) => b.created.localeCompare(a.created)))
-        setApplications(applications)
         setClients(clients)
       } catch (error) {
         toast({
@@ -49,7 +44,7 @@ const AccountsPage = () => {
 
   }, [])
 
-  if (!accounts || !applications || !clients) return <LoadingComponent className='w-full h-full' />
+  if (!accounts || !clients) return <LoadingComponent className='w-full h-full' />
 
   const columns = [
     {
@@ -93,18 +88,6 @@ const AccountsPage = () => {
       }
     },
     {
-      header: 'Has Application',
-      accessorKey: 'application_id',
-      cell: ({ row }: any) => {
-        const application = applications.find(app => app.id === row.original.application_id)
-        return application ? (
-          <Badge variant="success">Yes</Badge>
-        ) : (
-          <Badge variant="outline">No</Badge>
-        )
-      }
-    },
-    {
       header: 'Fee Template',
       accessorKey: 'fee_template',
       cell: ({ row }: any) => {
@@ -121,44 +104,30 @@ const AccountsPage = () => {
       cell: ({ row }: any) => {
         return row.original.created ? formatDateFromTimestamp(row.original.created) : '-'
       }
-    },
-    {
-      header: 'Updated',
-      accessorKey: 'updated',
-      cell: ({ row }: any) => {
-        return row.original.updated ? formatDateFromTimestamp(row.original.updated) : '-'
-      }
     }
   ] as ColumnDefinition<Account>[]
 
+
+  const rowActions: any[] = [
+    {
+      label: 'View',
+      onClick: (row: Account) => {
+        redirect(formatURL(`/dashboard/accounts/${row.id}`, lang))
+      }
+    }
+  ]
+
   return (
-    <div>
-      <motion.div variants={itemVariants} className="w-full">
-        <DataTable 
-          data={accounts}
-          columns={columns}
-          infiniteScroll
-          enableFiltering
-          enableRowActions
-          rowActions={[
-            {
-              label: 'View',
-              onClick: (row: Account) => {
-                redirect(formatURL(`/dashboard/accounts/${row.id}`, lang))
-              }
-            },
-            {
-              label: 'View Application',
-              onClick: (row: Account) => {
-                if (row.application_id) {
-                  redirect(formatURL(`/dashboard/applications/${row.application_id}`, lang))
-                }
-              },
-            }
-          ]}
-        />
-      </motion.div>
-    </div>
+    <motion.div variants={itemVariants} className="w-full">
+      <DataTable 
+        data={accounts}
+        columns={columns}
+        infiniteScroll
+        enableFiltering
+        enableRowActions
+        rowActions={rowActions}
+      />
+    </motion.div>
   )
 }
 
