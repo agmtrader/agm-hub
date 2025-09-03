@@ -560,3 +560,164 @@ export const organizational_form: Application = {
     "translation": null,
     "paperAccount": null
 }
+
+export const beto_form: Application = {
+    "customer": {
+        "type": "INDIVIDUAL",
+        "externalId": "8921e44a-0262-423b-a671-1d52b82bf64c",
+        "prefix": "betofx",
+        "email": "acdotit@gmail.com",
+        "mdStatusNonPro": true,
+        "meetAmlStandard": "true",
+        "directTradingAccess": true,
+        "legalResidenceCountry": "CRI",
+        "accountHolder": {
+            "accountHolderDetails": [
+                {
+                    "w8Ben": {
+                        "localTaxForms": [],
+                        "name": "Alberto Castro",
+                        "foreignTaxId": "119780992",
+                        "tinOrExplanationRequired": true,
+                        "part29ACountry": "N/A",
+                        "cert": true,
+                        "signatureType": "Electronic",
+                        "blankForm": true,
+                        "taxFormFile": "Form5001.pdf",
+                        "electronicFormat": true
+                    },
+                    "name": {
+                        "first": "Alberto",
+                        "last": "Castro"
+                    },
+                    "email": "acdotit@gmail.com",
+                    "dateOfBirth": "2006-10-01",
+                    "countryOfBirth": "CRI",
+                    "maritalStatus": "S",
+                    "numDependents": 0,
+                    "residenceAddress": {
+                        "street1": "150N Antena Tigo",
+                        "street2": null,
+                        "city": "Escazu",
+                        "state": "San Jose",
+                        "postalCode": "10203",
+                        "country": "CRI"
+                    },
+                    "sameMailAddress": true,
+                    "phones": [
+                        {
+                            "type": "Mobile",
+                            "country": "CRI",
+                            "number": "71508305"
+                        }
+                    ],
+                    "identification": {
+                        "expirationDate": "2034-10-14",
+                        "issuingCountry": "CRI",
+                        "citizenship": "CRI",
+                        "nationalCard": "119780992"
+                    },
+                    "taxResidencies": [
+                        {
+                            "country": "CRI",
+                            "tin": "119780992",
+                            "tinType": "NonUS_NationalId"
+                        }
+                    ],
+                    "employmentType": "STUDENT",
+                    "externalId": "8921e44a-0262-423b-a671-1d52b82bf64c",
+                    "mailingAddress": {
+                        "street1": "150N Antena Tigo",
+                        "street2": null,
+                        "city": "Escazu",
+                        "state": "San Jose",
+                        "postalCode": "10203",
+                        "country": "CRI"
+                    },
+                    "employmentDetails": null
+                }
+            ],
+            "regulatoryInformation": [
+                {
+                    "regulatoryDetails": [
+                        {
+                            "code": "AFFILIATION",
+                            "status": false,
+                            "details": "Affiliated with Interactive Brokers"
+                        },
+                        {
+                            "code": "EmployeePubTrade",
+                            "status": false,
+                            "details": "Employee is not trading publicly"
+                        },
+                        {
+                            "code": "ControlPubTraded",
+                            "status": false,
+                            "details": "Controlled trading is not allowed"
+                        }
+                    ]
+                }
+            ],
+            "financialInformation": [
+                {
+                    "netWorth": 10000,
+                    "liquidNetWorth": 5000,
+                    "annualNetIncome": 5000,
+                    "investmentObjectives": [
+                        "Income",
+                        "Trading",
+                        "Growth"
+                    ],
+                    "investmentExperience": [
+                        {
+                            "assetClass": "STK",
+                            "yearsTrading": 0,
+                            "tradesPerYear": 12,
+                            "knowledgeLevel": "Good"
+                        }
+                    ],
+                    "sourcesOfWealth": [
+                        {
+                            "sourceType": "SOW-IND-Allowance",
+                            "percentage": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "accounts": [
+        {
+            "baseCurrency": "USD",
+            "margin": "Cash",
+            "investmentObjectives": [
+                "Income",
+                "Trading",
+                "Growth"
+            ],
+            "tradingPermissions": [
+                {
+                    "country": "UNITED STATES",
+                    "product": "STOCKS"
+                }
+            ],
+            "multiCurrency": true,
+            "externalId": "8921e44a-0262-423b-a671-1d52b82bf64c"
+        }
+    ],
+    "users": [
+        {
+            "externalUserId": "8921e44a-0262-423b-a671-1d52b82bf64c",
+            "externalIndividualId": "8921e44a-0262-423b-a671-1d52b82bf64c",
+            "prefix": "betofx"
+        }
+    ],
+    "documents": [
+    ],
+    "additionalAccounts": null,
+    "masterAccountId": null,
+    "id": null,
+    "inputLanguage": null,
+    "translation": null,
+    "paperAccount": null
+}

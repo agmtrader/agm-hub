@@ -20,7 +20,7 @@ import { Check } from "lucide-react"
 import ApplicationSuccess from './ApplicationSuccess'
 import { getApplicationDefaults } from '@/utils/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { individual_form } from './samples'
+import { beto_form, individual_form } from './samples'
 import { useSession } from 'next-auth/react'
 
 // Local storage keys used for saving progress
@@ -47,7 +47,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: beto_form,
     mode: 'onChange',
     shouldUnregister: false,
   });

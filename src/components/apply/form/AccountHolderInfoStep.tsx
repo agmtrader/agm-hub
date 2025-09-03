@@ -979,10 +979,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   <FormControl>
                     <Input
                       placeholder=""
+                      type="number"
+                      inputMode="numeric"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? null : parseInt(e.target.value))
-                      }
+                      onChange={(e) => field.onChange(e.target.value)}
                     />
                   </FormControl>
                 </FormItem>
@@ -999,10 +999,10 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   <FormControl>
                     <Input
                       placeholder=""
+                      type="number"
+                      inputMode="numeric"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? null : parseInt(e.target.value))
-                      }
+                      onChange={(e) => field.onChange(e.target.value)}
                     />
                   </FormControl>
                 </FormItem>
