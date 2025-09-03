@@ -5,6 +5,7 @@ import { useFormContext, UseFormReturn, useWatch } from 'react-hook-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, FileText, Clock, Users, Building, Trash2, Eye } from 'lucide-react'
+import DocumentViewer from '@/components/dashboard/entities/accounts/DocumentViewer'
 import { Application } from '@/lib/entities/application'
 import DocumentUploader, { DocumentType } from './DocumentUploader'
 import { FormField } from '@/components/ui/form'
@@ -170,12 +171,14 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     return hashHex;
   }
 
-  // View an uploaded document in a new browser tab
+  // State and handler for DocumentViewer dialog
+  const [viewerOpen, setViewerOpen] = useState(false)
+  const [viewerDoc, setViewerDoc] = useState<any>(null)
+  const [viewerName, setViewerName] = useState('')
+
   const handleViewDocument = (formNumber: number, holderId?: string) => {
     const doc = documents.find((d: any) => {
-      if (holderId) {
-        return d.formNumber === formNumber && d.holderId === holderId
-      }
+      if (holderId) return d.formNumber === formNumber && d.holderId === holderId
       return d.formNumber === formNumber
     })
 
@@ -188,27 +191,18 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       return
     }
 
-    try {
-      // Convert base64 to Blob and open in a new tab
-      const byteCharacters = atob(doc.payload.data)
-      const byteNumbers = new Array(byteCharacters.length)
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i)
-      }
-      const byteArray = new Uint8Array(byteNumbers)
-      const blob = new Blob([byteArray], { type: doc.payload.mimeType || 'application/octet-stream' })
-      const url = URL.createObjectURL(blob)
-      window.open(url, '_blank')
-      // Revoke URL after some time to free memory
-      setTimeout(() => URL.revokeObjectURL(url), 10000)
-    } catch (error) {
-      console.error('Failed to open document', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to open document',
-        variant: 'destructive',
-      })
+    // Transform to shape expected by DocumentViewer
+    const viewerDocument = {
+      data: doc.payload.data,
+      mime_type: doc.payload.mimeType || 'application/octet-stream',
+      file_name: doc.attachedFile?.fileName || 'document',
     }
+
+    const docName = DOCUMENT_CONFIGS.find(cfg => cfg.formNumber === formNumber)?.name || 'Document'
+
+    setViewerDoc(viewerDocument)
+    setViewerName(docName)
+    setViewerOpen(true)
   }
 
   const isDocumentUploaded = (formNumber: number, holderId?: string): boolean => {
@@ -541,6 +535,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                     <div className="flex items-center gap-2">
                       <Badge variant="success">Uploaded</Badge>
                       <Button
+                        type="button"
                         variant="ghost"
                         size="sm"
                         className="h-6 w-6 p-0 hover:bg-muted/50"
@@ -550,6 +545,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                         <Eye className="h-3 w-3" />
                       </Button>
                       <Button
+                        type="button"
                         variant="ghost"
                         size="sm"
                         className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -628,6 +624,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                 <div className="flex items-center gap-2">
                   <Badge variant="success">Uploaded</Badge>
                   <Button
+                    type="button"
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0 hover:bg-muted/50"
@@ -637,6 +634,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                     <Eye className="h-3 w-3" />
                   </Button>
                   <Button
+                    type="button"
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -758,6 +756,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                         <div className="flex items-center gap-2">
                           <Badge variant="success">Uploaded</Badge>
                           <Button
+                            type="button"
                             variant="ghost"
                             size="sm"
                             className="h-6 w-6 p-0 hover:bg-muted/50"
@@ -767,6 +766,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                             <Eye className="h-3 w-3" />
                           </Button>
                           <Button
+                            type="button"
                             variant="ghost"
                             size="sm"
                             className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -789,6 +789,14 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Document viewer dialog */}
+      <DocumentViewer
+        isOpen={viewerOpen}
+        onOpenChange={setViewerOpen}
+        document={viewerDoc}
+        documentName={viewerName}
+      />
 
       {/* Summary */}
       <Card>
