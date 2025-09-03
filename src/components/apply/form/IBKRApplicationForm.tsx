@@ -18,10 +18,10 @@ import { Button } from '@/components/ui/button'
 import LoaderButton from '@/components/misc/LoaderButton'
 import { Check } from "lucide-react"
 import ApplicationSuccess from './ApplicationSuccess'
-import { getApplicationDefaults } from '@/utils/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { beto_form, individual_form } from './samples'
+import { individual_form } from './samples'
 import { useSession } from 'next-auth/react'
+import { getApplicationDefaults } from '@/utils/form'
 
 // Local storage keys used for saving progress
 const LOCAL_STORAGE_APP_ID = 'agm_application_draft_id';
@@ -47,7 +47,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: beto_form,
+    defaultValues: getApplicationDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });
