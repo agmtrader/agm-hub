@@ -24,6 +24,8 @@ interface Props {
 
 const Sidebar = ({ setExpandSidebar }: Props) => {
 
+  // Testing the new git
+
   const { lang, t } = useTranslationProvider()
   const {data: session} = useSession()
 
