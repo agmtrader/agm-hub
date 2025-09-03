@@ -516,6 +516,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
                 />
               </FormControl>
+              <p className="text-xs text-subtitle">{t('apply.account.account_holder_info.net_worth_help')}</p>
               <FormMessage />
             </FormItem>
           )}
@@ -533,6 +534,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
                 />
               </FormControl>
+              <p className="text-xs text-subtitle">{t('apply.account.account_holder_info.liquid_net_worth_help')}</p>
               <FormMessage />
             </FormItem>
           )}
@@ -550,6 +552,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
                   onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
                 />
               </FormControl>
+              <p className="text-xs text-subtitle">{t('apply.account.account_holder_info.annual_net_income_help')}</p>
               <FormMessage />
             </FormItem>
           )}
