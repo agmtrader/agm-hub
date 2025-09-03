@@ -464,7 +464,11 @@
                     "business": "Negocio",
                     "property": "Propiedad",
                     "pension": "Pensión",
-                    "other": "Otro"
+                    "other": "Otro",
+                    "allowance": "Permiso",
+                    "interest": "Interés",
+                    "market_profit": "Ganancias de Mercado",
+                    "disability": "Discapacidad"
                 },
                 "products": {
                     "bonds": "Bonos",

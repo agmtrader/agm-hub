@@ -470,7 +470,11 @@
                     "business": "Business",
                     "property": "Property",
                     "pension": "Pension",
-                    "other": "Other"
+                    "other": "Other",
+                    "allowance": "Allowance",
+                    "interest": "Interest",
+                    "market_profit": "Market Profit",
+                    "disability": "Disability"
                 },
                 "products": {
                     "bonds": "Bonds",
