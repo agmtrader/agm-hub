@@ -1634,6 +1634,7 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
+              <p className="text-xs text-subtitle">{t('apply.account.account_holder_info.tin_help')}</p>
             </FormItem>
           )}
         />

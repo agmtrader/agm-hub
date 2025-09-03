@@ -187,7 +187,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
   async function handleCreateAccount() {
 
-    if (!application) return;
+    if (!application || !application.application) return;
 
     if (!session?.user?.id) {
       throw new Error('User not found');
@@ -317,7 +317,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     }
   }
 
-  if (!application) return <LoadingComponent className="w-full h-full" />;
+  // Ensure we have the full IBKR application payload before rendering
+  if (!application || !application.application) return <LoadingComponent className="w-full h-full" />;
 
   // --- Customer Section ---
   const customer = application.application.customer;
