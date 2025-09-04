@@ -147,11 +147,14 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   // User
   const [selectedUserID, setSelectedUserID] = useState<string | null>(null)
 
+  console.log(application)
+
   // Fetch application details
   useEffect(() => {
     async function fetchApplication() {
       try {
         const application = await ReadApplicationByID(applicationId);
+        console.log(application)
         if (!application) throw new Error("Application not found");
         setApplication(application);
       } catch (e) {
@@ -323,6 +326,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   // --- Customer Section ---
   const customer = application.application.customer;
   const isJointAccount = customer.type === 'JOINT';
+  const isOrgAccount = customer.type === 'ORG';
   
   // Handle individual vs joint account structures
   const accountHolder = customer.accountHolder;
@@ -349,6 +353,13 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   const jointRegulatoryInfo = isJointAccount
     ? (jointHolders?.regulatoryInformation?.[0] ?? accountHolder?.regulatoryInformation?.[0])
     : undefined;
+  
+  // --- Organization (ORG) Section ---
+  const organizationIdents = isOrgAccount ? customer.organization?.identifications || [] : [];
+  const organizationAccountSupport = isOrgAccount ? customer.organization?.accountSupport : undefined;
+  const associatedIndividuals = isOrgAccount ? customer.organization?.associatedEntities?.associatedIndividuals || [] : [];
+  const organizationFinancialInfo = isOrgAccount ? customer.organization?.financialInformation?.[0] : undefined;
+  const organizationRegulatoryInfo = isOrgAccount ? customer.organization?.regulatoryInformation?.[0] : undefined;
 
   // --- Accounts Section ---
   const accounts = application.application.accounts || [];
@@ -402,6 +413,53 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
               <LabelValue label="Foreign Tax ID" value={details.w8Ben.foreignTaxId} />
             </>
           )}
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // Render Organization card
+  const renderOrganizationCard = () => {
+    if (!isOrgAccount) return null;
+
+    return (
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Info className="h-5 w-5 text-primary"/>
+            Organization Details
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+          {/* General Customer Fields */}
+          <LabelValue label="Customer Prefix" value={customer.prefix} />
+          <LabelValue label="Customer External ID" value={customer.externalId} />
+          <LabelValue label="Customer Email" value={customer.email} />
+          <LabelValue label="Legal Residence Country" value={customer.legalResidenceCountry} />
+          <LabelValue label="Direct Trading Access" value={<Badge variant={customer.directTradingAccess ? 'success' : 'outline'}>{customer.directTradingAccess ? 'Yes' : 'No'}</Badge>} />
+          <LabelValue label="Meets AML Standard" value={customer.meetAmlStandard} />
+          <LabelValue label="MD Status Non-Pro" value={<Badge variant={customer.mdStatusNonPro ? 'success' : 'outline'}>{customer.mdStatusNonPro ? 'Yes' : 'No'}</Badge>} />
+
+          {/* Account Support */}
+          {organizationAccountSupport && (
+            <>
+              <LabelValue label="Owners Reside US" value={<Badge variant={organizationAccountSupport.ownersResideUS ? 'success' : 'outline'}>{organizationAccountSupport.ownersResideUS ? 'Yes' : 'No'}</Badge>} />
+              <LabelValue label="Business Description" value={organizationAccountSupport.businessDescription} />
+            </>
+          )}
+
+          {/* Identifications (may be multiple) */}
+          {organizationIdents.map((ident:any, idx:number) => {
+            const businessAddress = ident.placeOfBusinessAddress;
+            return (
+              <React.Fragment key={idx}>
+                <LabelValue label={`Identification Name ${idx+1}`} value={ident.name} />
+                <LabelValue label={`Identification ID ${idx+1}`} value={ident.identification} />
+                <LabelValue label={`Identification Description ${idx+1}`} value={ident.businessDescription} />
+                <LabelValue label={`Business Address ${idx+1}`} value={businessAddress ? `${businessAddress.street1}, ${businessAddress.city}, ${businessAddress.state}, ${businessAddress.country} ${businessAddress.postalCode}` : undefined} />
+              </React.Fragment>
+            );
+          })}
         </CardContent>
       </Card>
     );
@@ -605,6 +663,21 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           {renderAccountHolderCard("Account Holder Details", accountHolderDetails, true)}
         </div>
       )}
+      {/* Organization Details & Associated Individuals */}
+      {isOrgAccount && (
+        <>
+          <div className="mb-8">
+            {renderOrganizationCard()}
+          </div>
+          {associatedIndividuals.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {associatedIndividuals.map((ind:any, idx:number) => (
+                renderAccountHolderCard(`Associated Individual ${idx+1}`, ind, idx===0)
+              ))}
+            </div>
+          )}
+        </>
+      )}
 
       {/* Financial Information and Regulatory */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -614,7 +687,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           </CardHeader>
           <CardContent className="space-y-2">
             {(() => {
-              const finInfo = isJointAccount ? jointFinancialInfo : financialInfo;
+              const finInfo = isJointAccount ? jointFinancialInfo : (isOrgAccount ? organizationFinancialInfo : financialInfo);
               return (
                 <>
                   <LabelValue label="Net Worth" value={finInfo?.netWorth} />
@@ -634,7 +707,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           </CardHeader>
           <CardContent>
             {(() => {
-              const regInfo = isJointAccount ? jointRegulatoryInfo : regulatoryInfo;
+              const regInfo = isJointAccount ? jointRegulatoryInfo : (isOrgAccount ? organizationRegulatoryInfo : regulatoryInfo);
               return regInfo?.regulatoryDetails?.length ? (
                 <Table>
                   <TableHeader>

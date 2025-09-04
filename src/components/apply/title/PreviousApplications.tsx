@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { InternalApplication } from '@/lib/entities/application'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { ReadApplicationByUserID, ReadApplications } from '@/utils/entities/application'
+import { ReadApplicationByUserID } from '@/utils/entities/application'
 import { formatDateFromTimestamp } from '@/utils/dates'
 
 type Props = {
