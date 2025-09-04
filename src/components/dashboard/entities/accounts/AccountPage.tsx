@@ -160,8 +160,8 @@ const AccountPage = ({ accountId }: Props) => {
 
   // Risk Profiles and Investment Proposal state
   const [riskProfiles, setRiskProfiles] = useState<RiskProfile[] | null>(null)
+  const [investmentProposals, setInvestmentProposals] = useState<InvestmentProposalType[] | null>(null)
   const [selectedRiskProfile, setSelectedRiskProfile] = useState<string | null>(null)
-  const [investmentProposals, setInvestmentProposals] = useState<InvestmentProposalType[]>([])
   const [selectedInvestmentProposal, setSelectedInvestmentProposal] = useState<InvestmentProposalType | null>(null)
 
   const refreshAccountDetails = async () => {
@@ -316,7 +316,7 @@ const AccountPage = ({ accountId }: Props) => {
                 </Select>
               </div>
 
-              {currentRiskProfile && (
+              {currentRiskProfile && investmentProposals && (
                 <div className="flex flex-col gap-2">
                   <DataTable
                     data={investmentProposals}
@@ -332,15 +332,12 @@ const AccountPage = ({ accountId }: Props) => {
                 </div>
               )}
 
-              {selectedInvestmentProposal && (
+              {selectedInvestmentProposal && currentRiskProfile && (
                 <Dialog open={!!selectedInvestmentProposal} onOpenChange={(open) => {
                       if (!open) setSelectedInvestmentProposal(null)
                     }}>
-                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Investment Proposal</DialogTitle>
-                    </DialogHeader>
-                    <InvestmentProposal investmentProposal={selectedInvestmentProposal} />
+                  <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+                    <InvestmentProposal riskProfile={currentRiskProfile} investmentProposal={selectedInvestmentProposal} />
                   </DialogContent>
                 </Dialog>
               )}

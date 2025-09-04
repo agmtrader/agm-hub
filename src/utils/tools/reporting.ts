@@ -5,17 +5,17 @@ export async function GenerateReports() {
   return report
 }
 
-export async function GetDimensionalTable() {
-  const report = await accessAPI('/reporting/dimensional_table', 'GET')
-  return report
-}
-
 export async function ReadClientsReport() {
   const report = await accessAPI('/reporting/clients', 'GET')
   return report
 }
 
-export async function GetClientFeesReport() {
+export async function ReadClientFeesReport() {
   const report = await accessAPI('/reporting/client_fees', 'GET')
+  return report
+}
+
+export async function ReadNavReport() {
+  const report = await accessAPI('/reporting/nav', 'GET')
   return report
 }

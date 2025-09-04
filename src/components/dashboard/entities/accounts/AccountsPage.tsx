@@ -12,7 +12,7 @@ import { formatURL } from '@/utils/language/lang';
 import { Account } from '@/lib/entities/account';
 import { formatDateFromTimestamp } from '@/utils/dates';
 import { Badge } from '@/components/ui/badge';
-import { ReadClientsReport } from '@/utils/tools/reporting';
+import { ReadClientsReport, ReadNavReport } from '@/utils/tools/reporting';
 
 const AccountsPage = () => {
 
@@ -20,17 +20,21 @@ const AccountsPage = () => {
   const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [clients, setClients] = useState<any[] | null>(null)
 
+  const [navReport, setNavReport] = useState<any[] | null>(null)
+
   useEffect(() => {
 
     async function fetchData () {
 
       try {
-        const [accounts, clients] = await Promise.all([
+        const [accounts, clients, navReport] = await Promise.all([
           ReadAccounts(),
-          ReadClientsReport()
+          ReadClientsReport(),
+          ReadNavReport()
         ])
         setAccounts(accounts.sort((a, b) => b.created.localeCompare(a.created)))
         setClients(clients)
+        setNavReport(navReport)
       } catch (error) {
         toast({
           title: "Error",
@@ -44,7 +48,7 @@ const AccountsPage = () => {
 
   }, [])
 
-  if (!accounts || !clients) return <LoadingComponent className='w-full h-full' />
+  if (!accounts || !clients || !navReport) return <LoadingComponent className='w-full h-full' />
 
   const columns = [
     {
@@ -106,7 +110,6 @@ const AccountsPage = () => {
       }
     }
   ] as ColumnDefinition<Account>[]
-
 
   const rowActions: any[] = [
     {

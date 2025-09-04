@@ -5,7 +5,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <DashboardPage title="Account Management" description="Manage accounts related to AGM">
+    <DashboardPage title="Accounts" description="Manage accounts related to AGM">
       <AccountsPage />
     </DashboardPage>
   )

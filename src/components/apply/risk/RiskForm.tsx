@@ -31,7 +31,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
 import { useSession } from "next-auth/react"
-import { getRiskFormQuestions, RiskArchetype, weights } from "@/lib/tools/risk-profile"
+import { getRiskFormQuestions, RiskArchetype, RiskProfile, weights } from "@/lib/tools/risk-profile"
 import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
@@ -68,6 +68,7 @@ const RiskForm = () => {
   const [submitting, setSubmitting] = useState(false)
   const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
+  const [riskProfile, setRiskProfile] = useState<RiskProfile | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,7 +143,8 @@ const RiskForm = () => {
         score: risk_score,
         answers: answers
       }
-      
+       
+      setRiskProfile(riskProfile)
       const riskProfileResponse = await CreateRiskProfile(riskProfile)
       if (!riskProfileResponse) throw new Error('Failed to create risk profile')
       riskProfile['id'] = riskProfileResponse.id
@@ -468,8 +470,8 @@ const RiskForm = () => {
                 <DialogHeader>
                   <DialogTitle>Investment Proposal</DialogTitle>
                 </DialogHeader>
-                {investmentProposal && (
-                  <InvestmentProposalView investmentProposal={investmentProposal} />
+                {investmentProposal && riskProfile && (
+                  <InvestmentProposalView riskProfile={riskProfile} investmentProposal={investmentProposal} />
                 )}
               </DialogContent>
             </Dialog>

@@ -70,6 +70,12 @@ const user_tools = [
     url: '/dashboard/investment-proposals',
     icon: FaChartBar,
     id: 'investment_proposals',
+  },
+  {
+    name: 'Risk Profiles',
+    url: '/dashboard/risk-profiles',
+    icon: TrendingUp,
+    id: 'risk_profiles',
   }
 ]
 
