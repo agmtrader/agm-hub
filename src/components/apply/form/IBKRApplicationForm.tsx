@@ -22,6 +22,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { individual_form } from './samples'
 import { useSession } from 'next-auth/react'
 import { getApplicationDefaults } from '@/utils/form'
+import StatesFormField from '@/components/ui/StatesFormField'
 
 // Local storage keys used for saving progress
 const LOCAL_STORAGE_APP_ID = 'agm_application_draft_id';

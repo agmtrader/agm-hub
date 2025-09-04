@@ -23,6 +23,7 @@ import { createW8FormDocument } from '@/utils/form';
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { format as formatDateFns } from "date-fns";
 import { Trash2, Plus } from "lucide-react";
+import StatesFormField from "@/components/ui/StatesFormField";
 
 interface AccountHolderInfoStepProps {
   form: UseFormReturn<Application>;
@@ -441,7 +442,23 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         )}
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField
+        <CountriesFormField
+          form={form}
+          element={{
+            name: `${basePath}.country`,
+            title: t('apply.account.account_holder_info.country')
+          }}
+        />
+        {/* Country subdivisions selector */}
+        <StatesFormField
+          form={form}
+          country={form.watch(`${basePath}.country` as any) as string | undefined}
+          stateFieldName={`${basePath}.state`}
+          label={t('apply.account.account_holder_info.state')}
+        />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <FormField
           control={form.control}
           name={`${basePath}.city` as any}
           render={({ field }) => (
@@ -456,21 +473,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
         />
         <FormField
           control={form.control}
-          name={`${basePath}.state` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('apply.account.account_holder_info.state')}</FormLabel>
-              <FormControl>
-                <Input placeholder="" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
           name={`${basePath}.postalCode` as any}
           render={({ field }) => (
             <FormItem>
@@ -481,13 +483,6 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
               <FormMessage />
             </FormItem>
           )}
-        />
-        <CountriesFormField
-          form={form}
-          element={{
-            name: `${basePath}.country`,
-            title: t('apply.account.account_holder_info.country')
-          }}
         />
       </div>
     </>
