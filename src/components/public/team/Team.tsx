@@ -4,7 +4,6 @@ import { TeamCarousel } from './Carousel'
 import { Button } from '@/components/ui/button'
 import { motion, useInView } from 'framer-motion'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import Link from 'next/link'
 
 const Team = () => {
 

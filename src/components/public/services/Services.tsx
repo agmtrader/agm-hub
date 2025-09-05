@@ -9,6 +9,8 @@ import Link from 'next/link'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { formatURL } from '@/utils/language/lang'
 import { containerVariants, itemVariants } from '@/lib/anims'
+import { DotPattern } from '@/components/ui/dot-pattern'
+import { cn } from '@/lib/utils'
 
 interface Service {
   name: string;
@@ -44,10 +46,17 @@ const Services = ({ services }: ServicesProps) => {
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={containerVariants}
-      className='flex flex-col h-fit w-full'
+      className='relative flex flex-col h-fit w-full'
     >
-      <div className='bg-secondary w-full h-full justify-center items-center flex flex-col gap-y-20 py-20'>
-        <div className='flex flex-col gap-y-5 items-center justify-center'> 
+      <div className='relative bg-secondary w-full h-full justify-center items-center flex flex-col gap-y-20 py-20'>
+        <DotPattern
+          glow={true}
+          className={cn(
+            "absolute inset-0 fill-blue-950/40 pointer-events-none z-0",
+            "[mask-image:linear-gradient(to_right,transparent_0%,white_15%,white_85%,transparent_100%)]",
+          )}
+        />
+        <div className="relative z-10 flex flex-col gap-y-5 items-center justify-center"> 
         <motion.p 
           variants={itemVariants}
           className='font-bold text-5xl text-background text-center'

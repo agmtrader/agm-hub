@@ -1,7 +1,7 @@
 import * as React from "react"
 import useEmblaCarousel from 'embla-carousel-react'
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, User } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar } from "@/components/ui/avatar"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 import { FaLinkedin } from "react-icons/fa";
 import Link from "next/link";
@@ -105,11 +105,8 @@ export function TeamCarousel() {
                     <Dialog>
                       <DialogTrigger asChild>
                         <div className="w-full text-foreground cursor-pointer h-full text-center flex flex-col items-center justify-center space-y-4">
-                          <Avatar className="w-40 h-40 border-2">
-                            <AvatarImage src={member.avatar} className="object-cover" />
-                            <AvatarFallback className="text-2xl font-bold bg-background text-foreground">
-                              {member.name.split(' ').map(n => n[0]).join('')}
-                            </AvatarFallback>
+                          <Avatar className="w-40 h-40 border-2 flex items-center justify-center bg-muted">
+                            <User className="h-16 w-16 text-foreground" />
                           </Avatar>
                           <div>
                             <p className="text-xl font-semibold">{member.name}</p>
