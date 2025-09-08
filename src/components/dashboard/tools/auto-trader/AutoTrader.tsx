@@ -59,6 +59,7 @@ const AutoTrader = () => {
     });
 
     traderSocket.on('trades_data', (trades: any) => {
+      console.log(trades);
       setTrades(trades);
     });
 
