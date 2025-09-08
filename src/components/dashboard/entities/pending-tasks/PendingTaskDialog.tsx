@@ -57,23 +57,11 @@ const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess }: Props) =
     async function fetchData() {
       if (!taskID) return
       try {
+        
         const data = await ReadPendingTaskByID(taskID)
         if (!data.pending_tasks || data.pending_tasks.length === 0) throw new Error('Task not found')
         setTask(data.pending_tasks[0])
         setFollowUps(data.follow_ups || [])
-
-        const users = await ReadUsers()
-        const agm = users
-          .filter((u: any) => u.email?.includes('@agmtechnology.com'))
-          .map((u: any) => ({ id: u.id, email: u.email ?? null }))
-        setAGMUsers(agm)
-
-        if (!task) return
-        const account = await ReadAccountByAccountID(task.account_id)
-        if (!account || !account.user_id) throw new Error('Account or user ID not found')
-        const user = users.find((u: User) => u.id === account.user_id)
-        if (!user) throw new Error('User not found')
-        setUser(user)
 
       } catch (e) {
         toast({ title: 'Error', description: e instanceof Error ? e.message : 'Failed to fetch task', variant: 'destructive' })
@@ -81,6 +69,31 @@ const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess }: Props) =
     }
     fetchData()
   }, [taskID])
+
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const users = await ReadUsers()
+        const agm = users
+          .filter((u: any) => u.email?.includes('@agmtechnology.com'))
+          .map((u: any) => ({ id: u.id, email: u.email ?? null }))
+
+        setAGMUsers(agm)
+
+        if (!task) return
+        const account = await ReadAccountByAccountID(task.account_id)
+        if (!account || !account.user_id) throw new Error('Account or user ID not found')
+        const usr = users.find((u: any) => u.id === account.user_id)
+        if (usr) setUser(usr); else setUser(null)
+      } catch (e) {
+        console.error('Failed to fetch users')
+      }
+    }
+
+    if (task) {
+      fetchUsers()
+    }
+  }, [task])
 
   // Keep local email state in sync when task is fetched/updated
   useEffect(() => {
@@ -306,3 +319,4 @@ const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess }: Props) =
 }
 
 export default PendingTaskDialog
+

@@ -50,7 +50,17 @@ const AccountsPage = () => {
 
   if (!accounts || !clients || !navReport) return <LoadingComponent className='w-full h-full' />
 
+  console.log(navReport)
+
   const columns = [
+    {
+      header: 'Alias',
+      accessorKey: 'alias',
+      cell: ({ row }: any) => {
+        const client = clients.find(client => client['Account ID'] === row.original.ibkr_account_number)
+        return client ? client['Alias'] : '-'
+      }
+    },
     {
       header: 'Master Account',
       accessorKey: 'master_account_id',
@@ -62,6 +72,15 @@ const AccountsPage = () => {
     {
       header: 'Account Number',
       accessorKey: 'ibkr_account_number',
+    },
+    {
+      header: 'NAV',
+      accessorKey: 'nav',
+      cell: ({ row }: any) => {
+        const navClient = navReport.find((client: any) => client['ClientAccountID'] === row.original.ibkr_account_number)
+        console.log(navClient)
+        return navClient ? navClient['Total'] : '-'
+      }
     },
     {
       header: 'IBKR Username',

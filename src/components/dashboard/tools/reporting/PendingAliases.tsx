@@ -49,7 +49,7 @@ const PendingAliases = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        let [clients, accounts] = await Promise.all([ReadClientsReport(), ReadAccounts()])
+        let [clients] = await Promise.all([ReadClientsReport()])
         setData(clients.filter((client: any) => client.Alias === '' && (client.Status !== 'Rejected' && client.Status !== 'Closed')))
       } catch (error:any) {
         toast({
@@ -67,12 +67,12 @@ const PendingAliases = () => {
   return (
     <div className='w-full h-full flex flex-col gap-5'>
       <DataTable 
-          data={data}
-          enablePagination
-          infiniteScroll
-          pageSize={5}
-          columns={columns}
-        />
+        data={data}
+        enablePagination
+        infiniteScroll
+        pageSize={5}
+        columns={columns}
+      />
     </div>
   )
 }
