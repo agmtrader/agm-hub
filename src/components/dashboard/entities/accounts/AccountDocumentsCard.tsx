@@ -19,7 +19,6 @@ import { toast } from '@/hooks/use-toast'
 import { DocumentSubmissionRequest, InternalDocument } from '@/lib/entities/account'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 
-// Convert file to base64
 function getBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -42,7 +41,6 @@ function getBase64(file: File): Promise<string> {
   })
 }
 
-// SHA-1 checksum using Web Crypto API
 async function calculateSHA1(file: File): Promise<string> {
   const buffer = await file.arrayBuffer()
   const hashBuffer = await crypto.subtle.digest('SHA-1', buffer)

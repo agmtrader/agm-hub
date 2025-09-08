@@ -18,7 +18,7 @@ const PendingTasksPage = () => {
   const [followUps, setFollowUps] = useState<PendingTaskFollowUp[]>([])
   const [accounts, setAccounts] = useState<Account[]>([])
   const [clients, setClients] = useState<any[]>([])
-  const [selectedTask, setSelectedTask] = useState<PendingTask | null>(null)
+  const [selectedTaskID, setSelectedTaskID] = useState<string | null>(null)
   const [isViewOpen, setIsViewOpen] = useState(false)
 
   async function fetchData() {
@@ -33,7 +33,6 @@ const PendingTasksPage = () => {
 
   async function fetchTasks() {
     const res = await ReadPendingTasks()
-    // Sort tasks by date in descending order (most recent first)
     setTasks(
       res.pending_tasks.sort(
         (a, b) => getDateObjectFromTimestamp(a.date).getTime() - getDateObjectFromTimestamp(b.date).getTime()
@@ -147,15 +146,14 @@ const PendingTasksPage = () => {
           {
             label: 'View',
             onClick: (row: PendingTask) => {
-              setSelectedTask(row)
+              setSelectedTaskID(row.id)
               setIsViewOpen(true)
             },
           },
         ]}
       />
       <PendingTaskDialog
-        task={selectedTask}
-        followUps={followUps}
+        taskID={selectedTaskID}
         isOpen={isViewOpen}
         onOpenChange={setIsViewOpen}
         onSuccess={fetchTasks}

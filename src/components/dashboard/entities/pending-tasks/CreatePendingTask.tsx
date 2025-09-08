@@ -71,8 +71,6 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
     fetchData()
   }, [])
 
-  console.log(clients, accounts)
-
   const formSchema = z.object({
     ...pending_task_schema.shape,
     follow_ups: z.array(pending_task_follow_up_schema),

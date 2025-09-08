@@ -106,7 +106,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         temporal_email: values.temporal_email,
         temporal_password: values.temporal_password,
         application_id: application.id,
-        fee_template: null
+        fee_template: null,
+        user_id: session?.user?.id
       };
 
       await CreateAccount(account);
@@ -213,7 +214,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         temporal_email: null,
         temporal_password: null,
         application_id: application.id,
-        fee_template: null
+        fee_template: null,
+        user_id: session?.user?.id
       }
 
       const accountResponse = await CreateAccount(account)

@@ -12,6 +12,7 @@ export type InternalAccount = AccountPayload & {
   temporal_password: string | null,
   application_id: string,
   fee_template: string | null,
+  user_id: string | null,
 }
 export type Account = Base & InternalAccount
 
