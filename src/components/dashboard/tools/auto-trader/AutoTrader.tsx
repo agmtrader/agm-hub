@@ -15,35 +15,36 @@ import {
   ContractData,
   OrderData,
   PositionData,
-  TraderResponse,
-  BacktestSnapshot
+  Snapshot
 } from '@/lib/tools/trader';
 import { toast } from '@/hooks/use-toast';  
-import Backtest from './Backtest';
 import { getDecisionColor, getDecisionIcon } from '@/utils/tools/trader';
+import { formatDateFromTimestamp } from '@/utils/dates';
+import Backtest from './Backtest';
 
 const AutoTrader = () => {
   
   const [socket, setSocket] = useState<any>(null);
 
+  const [trades, setTrades] = useState<any>(null);
   const [decision, setDecision] = useState<TradingDecision | null>(null);
   const [accountSummary, setAccountSummary] = useState<AccountSummaryItem[] | null>(null);
   const [strategy, setStrategy] = useState<Strategy | null>(null);
-  const [backtest, setBacktest] = useState<BacktestSnapshot[]>([]);
+  const [history, setHistory] = useState<Snapshot[]>([]);
 
   const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
   //const socketURL = 'http://167.71.94.59:3333'
 
   useEffect(() => {
 
-    const newSocket = io(socketURL);
-    setSocket(newSocket)
+    const traderSocket = io(socketURL);
+    setSocket(traderSocket)
 
-    newSocket.on('connected', (data: TraderResponse) => {
+    traderSocket.on('connected', () => {
       try {
         console.log('Connected to Trader');
-        newSocket.emit('ping');
-        newSocket.emit('backtest');
+        traderSocket.emit('history');
+        traderSocket.emit('trades');
       } catch (error) {
         toast({
           title: 'Error connecting to Trader',
@@ -53,56 +54,31 @@ const AutoTrader = () => {
       }
     });
 
-    newSocket.on('disconnected', () => {
+    traderSocket.on('disconnected', () => {
       console.log('Disconnected from Trader');
     });
 
-    newSocket.on('pong', (data: TraderResponse) => {
-      console.log('Pong', data);
-      setDecision(data['decision'] as TradingDecision);
-      setStrategy(data['strategy']);
-      setAccountSummary(data['account_summary']);
+    traderSocket.on('trades_data', (trades: any) => {
+      setTrades(trades);
     });
 
-    newSocket.on('backtest_data', (data: BacktestSnapshot[]) => {
-      try {
-        console.log('Received backtest data', data);
-        setBacktest(data);
-      } catch (error) {
-        toast({
-          title: 'Error processing backtest data',
-          description: 'Failed to process backtest information.',
-          variant: 'destructive',
-        });
-      }
+    traderSocket.on('history_data', (history: Snapshot[]) => {
+      console.log(history);
+      if (!history || history.length === 0) return;
+      setHistory(history);
+      const latest = history[history.length - 1];
+      setDecision(latest.decision as TradingDecision);
+      setStrategy(latest.strategy);
+      setAccountSummary(latest.account_summary);
     });
 
     return () => {
-      newSocket.disconnect();
+      traderSocket.disconnect();
     };
 
   }, []);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    if (socket) {
-      interval = setInterval(() => {
-        socket.emit('ping');
-        if (backtest && backtest.length > 0) {
-          socket.emit('backtest');
-        }
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [socket]);
-
-  if (!socket || !socket.connected || !strategy || !accountSummary || !backtest || !decision) return <LoadingComponent className='w-full h-full'/>
+  if (!socket || !socket.connected || !strategy || !accountSummary || !decision) return <LoadingComponent className='w-full h-full'/>
 
   return (
     <div className='w-full h-full p-4 '>
@@ -317,14 +293,18 @@ const AutoTrader = () => {
             <TabsContent value="chart" className="mt-0">
               <div className="rounded-lg p-4 bg-background space-y-6">
                 {strategy.params.contracts.map((contract, index) => {
-                  const psar_indicator = contract.indicators?.psar || [];
-                  const sma_indicator = contract.indicators?.sma || [];
+                  const first_indicator = contract.indicators?.[Object.keys(contract.indicators)[0]] || [];
+                  const decisions = history.map(snap => ({
+                    time: formatDateFromTimestamp(snap.current_time),
+                    decision: snap.decision,
+                  }));
                   return (
                     <TraderChart
                       key={contract.symbol}
                       contract={contract}
-                      indicator={sma_indicator}
+                      indicator={first_indicator}
                       title={`${contract.symbol} Trading Chart`}
+                      decisions={decisions}
                     />
                   );
                 })}
@@ -332,7 +312,7 @@ const AutoTrader = () => {
             </TabsContent>
 
             <TabsContent value="backtest" className="mt-0">
-              <Backtest trades={backtest} />
+              <Backtest trades={trades} />
             </TabsContent>
           </Tabs>
         </div>

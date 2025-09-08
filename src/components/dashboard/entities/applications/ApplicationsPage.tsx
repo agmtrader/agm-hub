@@ -64,7 +64,7 @@ const ApplicationsPage = () => {
   async function fetchApplications() {
     try {
       // For the list view we don't need the heavy IBKR application JSON so exclude it for performance
-      const fetchedApplications = await ReadApplications(0)
+      const fetchedApplications = await ReadApplications(1)
       setAllApplications(fetchedApplications.sort((a, b) => b.created.localeCompare(a.created)))
     } catch (error) {
       toast({

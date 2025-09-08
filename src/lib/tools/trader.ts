@@ -14,7 +14,6 @@ export interface HistoricalDataPoint {
   high: number;
   low: number;
   close: number;
-  /** Optional additional fields returned by the Trader back-end */
   volume?: number;
   average?: number;
   barCount?: number;
@@ -77,7 +76,6 @@ export interface IchimokuBaseParams {
   tenkan: number;
   kijun: number;
   number_of_contracts: number;
-
   indicators: Map;
   contracts: ContractData[];
   open_orders: OrderData[];
@@ -95,7 +93,7 @@ export interface SMACrossoverParams {
 
 export interface Strategy {
   name: string;
-  params: IchimokuBaseParams;
+  params: SMACrossoverParams;
 }
 
 export interface Snapshot {
@@ -104,8 +102,6 @@ export interface Snapshot {
   decision: TradingDecision;
   account_summary: AccountSummaryItem[];
 }
-
-export type TraderResponse = Snapshot[];
 
 export interface BacktestSnapshot {
   Side: 'LONG' | 'SHORT'

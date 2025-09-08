@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react'
 import { ColumnDefinition, DataTable } from '../../../misc/DataTable'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { ReadClientsReport } from '@/utils/tools/reporting'
-import { ReadAccounts } from '@/utils/entities/account'
 
 const PendingAliases = () => {
 
