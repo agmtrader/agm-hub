@@ -181,11 +181,7 @@ const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess }: Props) =
                     {completed}/{taskFollowUps.length} follow-ups completed
                   </Badge>
                 )}
-                {user ? 
-                  <UserCard user={user} title="User Information" /> 
-                  : 
-                  <LoadingComponent />
-                }
+                <UserCard user={user} title="User Information" /> 
                 <Card className="p-6 space-y-4">
                   <h3 className="text-lg font-semibold">Pending Task Information</h3>
                   <div className="grid grid-cols-2 gap-4">
