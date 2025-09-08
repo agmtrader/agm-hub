@@ -55,13 +55,26 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
     let candlestickData: CandlestickData[] = []
 
     if (contract?.data) {
-      candlestickData = contract.data.map(point => ({   
-        time: point.date.split(' ')[0],
-        open: point.open,
-        high: point.high,
-        low: point.low,
-        close: point.close,
-      }))
+      // Create a map to handle duplicate dates by keeping the last occurrence
+      const dataMap = new Map<string, CandlestickData>()
+      
+      contract.data.forEach(point => {
+        const timeKey = point.date.split(' ')[0] // Extract date part
+        dataMap.set(timeKey, {
+          time: timeKey,
+          open: point.open,
+          high: point.high,
+          low: point.low,
+          close: point.close,
+        })
+      })
+      
+      // Convert map to array and sort by time ascending
+      candlestickData = Array.from(dataMap.values()).sort((a, b) => {
+        const timeA = new Date(a.time as string).getTime()
+        const timeB = new Date(b.time as string).getTime()
+        return timeA - timeB
+      })
     }
 
     // Add candlestick series
@@ -160,9 +173,14 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
       const indicatorBelow: any[] = []
       const indicatorAbove: any[] = []
 
-      indicator.forEach((value, index) => {
+      // Ensure we don't exceed the candlestick data length and properly align indicator data
+      const maxLength = Math.min(indicator.length, candlestickData.length)
+      
+      for (let index = 0; index < maxLength; index++) {
         const candle = candlestickData[index]
-        if (!candle) return
+        const value = indicator[index]
+        
+        if (!candle || value === undefined || value === null) continue
 
         const point = {
           time: candle.time,
@@ -175,10 +193,17 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
         } else {
           indicatorAbove.push(point)
         }
-      })
+      }
 
       // Add blue series for PSAR points below the close price
       if (indicatorBelow.length > 0) {
+        // Sort and deduplicate indicator data
+        const sortedIndicatorBelow = indicatorBelow
+          .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+          .filter((point, index, array) => {
+            return index === 0 || point.time !== array[index - 1].time
+          })
+          
         const indicatorSeriesBelow = chart.addSeries(LineSeries, {
           color: '#3b82f6', // Blue color
           lineWidth: 2,
@@ -187,11 +212,18 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
           lineVisible: false,
           lastValueVisible: false,
         })
-        indicatorSeriesBelow.setData(indicatorBelow)
+        indicatorSeriesBelow.setData(sortedIndicatorBelow)
       }
 
       // Add purple series for PSAR points above the close price
       if (indicatorAbove.length > 0) {
+        // Sort and deduplicate indicator data
+        const sortedIndicatorAbove = indicatorAbove
+          .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+          .filter((point, index, array) => {
+            return index === 0 || point.time !== array[index - 1].time
+          })
+          
         const indicatorSeriesAbove = chart.addSeries(LineSeries, {
           color: '#9333ea', // Purple color (original)
           lineWidth: 2,
@@ -200,7 +232,7 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
           lineVisible: false,
           lastValueVisible: false,
         })
-        indicatorSeriesAbove.setData(indicatorAbove)
+        indicatorSeriesAbove.setData(sortedIndicatorAbove)
       }
     }
 

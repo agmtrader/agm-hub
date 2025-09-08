@@ -32,8 +32,8 @@ const AutoTrader = () => {
   const [strategy, setStrategy] = useState<Strategy | null>(null);
   const [history, setHistory] = useState<Snapshot[]>([]);
 
-  const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
-  //const socketURL = 'http://167.71.94.59:3333'
+  //const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
+  const socketURL = 'http://167.71.94.59:3333'
 
   useEffect(() => {
 
@@ -78,6 +78,15 @@ const AutoTrader = () => {
     };
 
   }, []);
+
+  // Ping every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      socket?.emit('history');
+      socket?.emit('trades');
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [socket]);
 
   if (!socket || !socket.connected || !strategy || !accountSummary || !decision) return <LoadingComponent className='w-full h-full'/>
 
