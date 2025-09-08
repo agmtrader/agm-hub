@@ -98,13 +98,14 @@ export interface Strategy {
   params: IchimokuBaseParams;
 }
 
-export interface TraderResponse {
+export interface Snapshot {
   current_time: string;
-  decision: string;
   strategy: Strategy;
+  decision: TradingDecision;
   account_summary: AccountSummaryItem[];
-  indicators: SingleIndicatorData;
 }
+
+export type TraderResponse = Snapshot[];
 
 export interface BacktestSnapshot {
   Side: 'LONG' | 'SHORT'

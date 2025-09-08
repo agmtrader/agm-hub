@@ -32,12 +32,12 @@ const PendingAliases = () => {
       header: 'Alias (Standard to type into IBKR)',
       accessorKey: 'account_alias',
       cell: ({ row }: { row: any }) => {
-        return <div className='text-sm text-gray-500'>{row.original['Account ID']} + {row.original.Title}</div>
+        return <div className='text-sm text-gray-500'>{row.original['Account ID']} {row.original.Title}</div>
       }
     },
     {
       header: 'Status',
-      accessorKey: 'Status',
+      accessorKey: 'Status'
     },
     {
       header: 'Current Alias',
@@ -50,7 +50,7 @@ const PendingAliases = () => {
     async function fetchData() {
       try {
         let [clients] = await Promise.all([ReadClientsReport()])
-        setData(clients.filter((client: any) => client.Alias === '' && (client.Status !== 'Rejected' && client.Status !== 'Closed')))
+        setData(clients.filter((client: any) => client.Alias === '' && (client.Status !== 'Rejected' && client.Status !== 'Closed' && client.Status !== 'Funded Pending')))
       } catch (error:any) {
         toast({
           title: 'Error fetching clients',
