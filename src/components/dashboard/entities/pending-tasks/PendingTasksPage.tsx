@@ -10,6 +10,7 @@ import LoadingComponent from '@/components/misc/LoadingComponent'
 import CreatePendingTask from './CreatePendingTask'
 import PendingTaskDialog from './PendingTaskDialog'
 import { ReadAccounts } from '@/utils/entities/account'
+import { ReadUsers } from '@/utils/entities/user'
 import { Account } from '@/lib/entities/account'
 import { ReadClientsReport } from '@/utils/tools/reporting'
 
@@ -19,13 +20,15 @@ const PendingTasksPage = () => {
   const [accounts, setAccounts] = useState<Account[]>([])
   const [clients, setClients] = useState<any[]>([])
   const [selectedTaskID, setSelectedTaskID] = useState<string | null>(null)
+  const [users, setUsers] = useState<any[]>([])
   const [isViewOpen, setIsViewOpen] = useState(false)
 
   async function fetchData() {
     try {
-      const [accounts, clients] = await Promise.all([ReadAccounts(), ReadClientsReport()])
+      const [accounts, clients, users] = await Promise.all([ReadAccounts(), ReadClientsReport(), ReadUsers()])
       setAccounts(accounts)
       setClients(clients)
+      setUsers(users)
     } catch (e) {
       toast({ title: 'Error', description: 'Failed to fetch accounts', variant: 'destructive' })
     }
@@ -134,7 +137,12 @@ const PendingTasksPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-end">
-        <CreatePendingTask refreshTasks={fetchTasks} />
+        <CreatePendingTask
+          refreshTasks={fetchTasks}
+          accounts={accounts}
+          agmUsers={users.filter((u:any)=>u.email?.includes('@agmtechnology.com'))}
+          clients={clients}
+        />
       </div>
       <DataTable
         data={tasks}
@@ -157,6 +165,7 @@ const PendingTasksPage = () => {
         isOpen={isViewOpen}
         onOpenChange={setIsViewOpen}
         onSuccess={fetchTasks}
+        users={users}
       />
     </div>
   )

@@ -34,9 +34,10 @@ interface Props {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onSuccess?: () => void
+  users?: User[]
 }
 
-const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess }: Props) => {
+const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess, users }: Props) => {
 
   const [task, setTask] = useState<PendingTask | null>(null)
   const [followUps, setFollowUps] = useState<PendingTaskFollowUp[]>([])
@@ -49,7 +50,9 @@ const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess }: Props) =
   // Emails to notify editing state
   const [isEditingEmails, setIsEditingEmails] = useState(false)
   const [emails, setEmails] = useState<string[]>(task?.emails_to_notify || [])
-  const [AGMUsers, setAGMUsers] = useState<{ id: string; email: string | null }[]>([])
+  const [AGMUsers, setAGMUsers] = useState<{ id: string; email: string | null }[]>(
+    (users ? users.filter(u => u.email?.includes('@agmtechnology.com')).map(u => ({ id: u.id, email: u.email ?? null })) : [])
+  )
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   // Fetch task + follow-ups whenever taskID changes or after updates
@@ -71,29 +74,28 @@ const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess }: Props) =
   }, [taskID])
 
   useEffect(() => {
-    async function fetchUsers() {
+    async function initUsers() {
       try {
-        const users = await ReadUsers()
-        const agm = users
+        const allUsers = users ?? await ReadUsers()
+        const agm = allUsers
           .filter((u: any) => u.email?.includes('@agmtechnology.com'))
           .map((u: any) => ({ id: u.id, email: u.email ?? null }))
-
         setAGMUsers(agm)
 
         if (!task) return
         const account = await ReadAccountByAccountID(task.account_id)
         if (!account || !account.user_id) throw new Error('Account or user ID not found')
-        const usr = users.find((u: any) => u.id === account.user_id)
+        const usr = allUsers.find((u: any) => u.id === account.user_id)
         if (usr) setUser(usr); else setUser(null)
-      } catch (e) {
-        console.error('Failed to fetch users')
+      } catch {
+        // ignore
       }
     }
 
     if (task) {
-      fetchUsers()
+      initUsers()
     }
-  }, [task])
+  }, [task, users])
 
   // Keep local email state in sync when task is fetched/updated
   useEffect(() => {

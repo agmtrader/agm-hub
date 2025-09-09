@@ -232,6 +232,7 @@ export const account_schema = z.object({
   margin: z.string().min(1, { message: 'Margin type is required' }),
   tradingLimits: trading_limits_schema, // Added from new schema
   alias: z.string().optional(),
+  feesTemplateName: z.string().optional(),
 });
 
 export const user_schema = z.object({

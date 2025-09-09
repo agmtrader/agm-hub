@@ -88,8 +88,8 @@ export const individual_form: Application = {
                         },
                         {
                             "code": "EmployeePubTrade",
-                            "status": true,
-                            "details": "AAPL"
+                            "status": false,
+                            "details": "Employee is not trading publicly"
                         },
                         {
                             "code": "ControlPubTraded",

@@ -34,7 +34,6 @@ import { Input } from "@/components/ui/input";
 import { formatTimestamp } from "@/utils/dates";
 import { ReadAdvisors } from "@/utils/entities/advisor";
 import { Advisor } from "@/lib/entities/advisor";
-import { Lead, FollowUp } from "@/lib/entities/lead";
 import LeadDialog from "../leads/LeadDialog";
 import UserDialog from "../users/UserDialog";
 import {
@@ -46,7 +45,6 @@ import {
 } from "@/components/ui/select";
 import { DataTable } from "@/components/misc/DataTable";
 import ApplicationDocuments from "./ApplicationDocuments";
-import { ReadUserByID } from "@/utils/entities/user";
 
 interface Props {
   applicationId: string;
@@ -59,6 +57,10 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   // Application
   const [application, setApplication] = useState<InternalApplication | null>(null);
   const [submitting, setSubmitting] = useState(false)  
+
+  // Result dialog state
+  const [resultData, setResultData] = useState<any | null>(null)
+  const [isResultDialogOpen, setIsResultDialogOpen] = useState(false)
 
   // Manual Account
   const [isManualAccountDialogOpen, setIsManualAccountDialogOpen] = useState(false);
@@ -202,6 +204,17 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
       const applicationResponse = await SendApplicationToIBKR(application.application)
       console.log(applicationResponse)
+
+      // Store response and open result dialog
+      setResultData(applicationResponse)
+      setIsResultDialogOpen(true)
+
+      const status = applicationResponse.fileData.data.application.status
+      if (status !== 'Success') {
+        // If not successful, skip account creation flow
+        return
+      }
+
       const accountNumber = applicationResponse.fileData.data.application.accounts[0].value
       if (!accountNumber) {
         throw new Error('Error creating account, please try again later.');
@@ -466,6 +479,44 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
       </Card>
     );
   };
+
+  // --- render result dialog ---
+  const renderResultDialog = () => (
+    <Dialog open={isResultDialogOpen} onOpenChange={setIsResultDialogOpen}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Application Result</DialogTitle>
+        </DialogHeader>
+        {(() => {
+          if (!resultData) return null
+          const status = resultData.fileData?.data?.application?.status
+          if (status === 'Success') {
+            const account = resultData.fileData?.data?.application?.accounts?.[0]
+            return (
+              <div className="space-y-4">
+                <p className="text-sm">Application was processed successfully.</p>
+                <Card className="p-4 flex flex-col items-start gap-2">
+                  <span className="font-medium text-foreground">Account Number</span>
+                  <Badge variant="success" className="text-lg px-4 py-1">{account?.value}</Badge>
+                </Card>
+              </div>
+            )
+          }
+          // errors
+          const errors = resultData.fileData?.data?.application?.error || []
+          return (
+            <div className="space-y-4">
+              <p className="text-sm text-destructive">The application was rejected with the following errors:</p>
+              <DataTable
+                data={errors}
+                columns={[{ header: 'Error', accessorKey: 'value' }]}
+              />
+            </div>
+          )
+        })()}
+      </DialogContent>
+    </Dialog>
+  )
 
   return (
     <div className="flex flex-col"> 
@@ -872,6 +923,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         isOpen={!!selectedUserID}
         onOpenChange={() => setSelectedUserID(null)}
       />
+
+      {renderResultDialog()}
 
     </div>
   );

@@ -38,17 +38,20 @@ import { ReadClientsReport } from '@/utils/tools/reporting'
 
 interface Props {
   refreshTasks?: () => void
+  accounts?: Account[]
+  agmUsers?: User[]
+  clients?: any[]
 }
 
-const CreatePendingTask = ({ refreshTasks }: Props) => {
+const CreatePendingTask = ({ refreshTasks, accounts: propAccounts, agmUsers: propAGMUsers, clients: propClients }: Props) => {
 
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
   
-  const [accounts, setAccounts] = useState<Account[]>([])
-  const [AGMUsers, setAGMUsers] = useState<User[]>([])
-  const [clients, setClients] = useState<any[]>([])
+  const [accounts, setAccounts] = useState<Account[]>(propAccounts ?? [])
+  const [AGMUsers, setAGMUsers] = useState<User[]>(propAGMUsers ?? [])
+  const [clients, setClients] = useState<any[]>(propClients ?? [])
 
   // Popover state for adding notification emails
   const [isEmailPopoverOpen, setIsEmailPopoverOpen] = useState(false)
@@ -57,19 +60,22 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
   const { t } = useTranslationProvider()
 
   useEffect(() => {
+    if (accounts.length && AGMUsers.length && clients.length) return // already have data
+
     async function fetchData() {
       try {
-        const [accounts, users, clients] = await Promise.all([ReadAccounts(), ReadUsers(), ReadClientsReport()])
+        const [accs, users, cls] = await Promise.all([ReadAccounts(), ReadUsers(), ReadClientsReport()])
         const agmUsers = users.filter(u => u.email?.includes('@agmtechnology.com'))
-        setAccounts(accounts)
+        setAccounts(accs)
         setAGMUsers(agmUsers)
-        setClients(clients)
+        setClients(cls)
       } catch (error) {
         toast({ title: 'Error', description: 'Failed to fetch data', variant: 'destructive' })
       }
     }
+
     fetchData()
-  }, [])
+  }, [accounts.length, AGMUsers.length, clients.length])
 
   const formSchema = z.object({
     ...pending_task_schema.shape,
@@ -169,7 +175,7 @@ const CreatePendingTask = ({ refreshTasks }: Props) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-primary text-background hover:bg-primary/90">
+        <Button className="bg-primary text-background hover:bg-primary/90" disabled={accounts.length===0}>
           <Plus className="h-4 w-4 mr-2" /> Create Task
         </Button>
       </DialogTrigger>

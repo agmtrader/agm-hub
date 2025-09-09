@@ -13,8 +13,8 @@ const ApplicationSuccess = () => {
         <Check className='w-24 h-24 text-success' />
         <p className='text-2xl font-semibold text-foreground'>Application Submitted Successfully!</p>
         <div className='flex flex-col items-center gap-y-4'>
-            <p className='text-lg text-subtitle'>Your IBKR application has been submitted and is being processed.</p>
-            <p className='text-sm text-subtitle'>You will receive a confirmation email shortly with next steps.</p>
+            <p className='text-lg text-subtitle'>Your IBKR application has been submitted and is being reviewed.</p>
+            <p className='text-sm text-subtitle'>You will receive a confirmation email in the next day or two with next steps.</p>
         </div>
         <div className='flex gap-4'>
             <Button>

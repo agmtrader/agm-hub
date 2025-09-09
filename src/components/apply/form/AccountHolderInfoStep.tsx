@@ -79,6 +79,12 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
       shouldTouch: false,
       shouldValidate: false,
     });
+    // Ensure feesTemplateName is set
+    form.setValue("accounts.0.feesTemplateName", "Default", {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
   }, [form]);
   
   // Generate external IDs if not already set
