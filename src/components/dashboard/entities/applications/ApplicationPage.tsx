@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/select";
 import { DataTable } from "@/components/misc/DataTable";
 import ApplicationDocuments from "./ApplicationDocuments";
+import UserCard from "../users/UserCard";
 
 interface Props {
   applicationId: string;
@@ -481,42 +482,38 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
   };
 
   // --- render result dialog ---
-  const renderResultDialog = () => (
-    <Dialog open={isResultDialogOpen} onOpenChange={setIsResultDialogOpen}>
+  const renderResultDialog = () => {
+    if (!resultData) return null;
+    const status = resultData.fileData?.data?.application?.status
+    const errors = resultData.fileData?.data?.application?.error || []
+    const account = resultData.fileData?.data?.application?.accounts?.[0]
+
+    return (
+      <Dialog open={isResultDialogOpen} onOpenChange={setIsResultDialogOpen}> 
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Application Result</DialogTitle>
+          <DialogTitle>{status === 'Success' ? 'Successfully Sent to IBKR' : 'Rejected'}</DialogTitle>
         </DialogHeader>
-        {(() => {
-          if (!resultData) return null
-          const status = resultData.fileData?.data?.application?.status
-          if (status === 'Success') {
-            const account = resultData.fileData?.data?.application?.accounts?.[0]
-            return (
-              <div className="space-y-4">
-                <p className="text-sm">Application was processed successfully.</p>
-                <Card className="p-4 flex flex-col items-start gap-2">
-                  <span className="font-medium text-foreground">Account Number</span>
-                  <Badge variant="success" className="text-lg px-4 py-1">{account?.value}</Badge>
-                </Card>
-              </div>
-            )
-          }
-          // errors
-          const errors = resultData.fileData?.data?.application?.error || []
-          return (
-            <div className="space-y-4">
-              <p className="text-sm text-destructive">The application was rejected with the following errors:</p>
-              <DataTable
-                data={errors}
-                columns={[{ header: 'Error', accessorKey: 'value' }]}
-              />
-            </div>
-          )
-        })()}
-      </DialogContent>
-    </Dialog>
-  )
+        {status === 'Success' ? (
+          <div className="space-y-4">
+            <p className="text-sm text-success">Successfully Sent to IBKR</p>
+            <p className="text-sm text-foreground">Account Number: {account?.value}</p>
+            <Button>Send email with credentials to user</Button>
+          </div>
+          ) : (
+          <div className="space-y-4">
+            <p className="text-sm text-error">Rejected</p>
+            <p className="text-sm text-foreground">The following errors occurred:</p>
+            <DataTable
+              data={errors}
+              columns={[{ header: 'Error', accessorKey: 'value' }]}
+            />
+          </div>
+          )}
+      </DialogContent> 
+      </Dialog>
+    )
+  }
 
   return (
     <div className="flex flex-col"> 
@@ -798,10 +795,25 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
           disabled={application.date_sent_to_ibkr !== null} 
           text="Send Application to IBKR" className="w-fit"
         />
+
+        {
+          application.date_sent_to_ibkr !== null && (
+            <LoaderButton 
+              onClick={() => {}} 
+              isLoading={false}
+              disabled={!application.date_sent_to_ibkr} 
+              text="Send email with credentials to user" className="w-fit"
+            />
+          )
+        }
         
-        <Button onClick={handleCreateManualAccount} variant="outline" className="w-fit">
-          Create Manual Account
-        </Button>
+        {
+          /*
+          <Button onClick={handleCreateManualAccount} variant="outline" className="w-fit">
+            Create Manual Account
+          </Button>
+          */
+        }
       </div>
 
       <Dialog open={isManualAccountDialogOpen} onOpenChange={setIsManualAccountDialogOpen}>
