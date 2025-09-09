@@ -1,6 +1,6 @@
 'use client'
 
-import { createChart, ColorType, CandlestickData, CandlestickSeries, LineSeries } from 'lightweight-charts'
+import { createChart, ColorType, CandlestickData, CandlestickSeries, LineSeries, Time, UTCTimestamp } from 'lightweight-charts'
 import { useEffect, useRef, useState } from 'react'
 import { ContractData, TradingDecision } from '@/lib/tools/trader'
 import { Label } from '@/components/ui/label'
@@ -11,9 +11,10 @@ interface TraderChartProps {
   indicator?: number[]
   title?: string
   decisions?: { time: string; decision: TradingDecision }[]
+  timeframe?: string
 }
 
-const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps) => {
+const TraderChart = ({ contract, indicator, title, decisions, timeframe }: TraderChartProps) => {
 
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const [showIndicators, setShowIndicators] = useState(true)
@@ -24,6 +25,45 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
     EXIT: '#facc15', // yellow
   }
 
+  // Function to automatically detect timeframe from data intervals
+  const detectTimeframe = (data: any[]): string => {
+    if (!data || data.length < 2) return 'Unknown'
+    
+    // Calculate intervals between consecutive data points
+    const intervals: number[] = []
+    for (let i = 1; i < Math.min(data.length, 10); i++) { // Check first 10 intervals for accuracy
+      const prev = new Date(data[i - 1].date || data[i - 1].time).getTime()
+      const curr = new Date(data[i].date || data[i].time).getTime()
+      const interval = curr - prev
+      if (interval > 0) intervals.push(interval)
+    }
+    
+    if (intervals.length === 0) return 'Unknown'
+    
+    // Get the most common interval (mode)
+    const avgInterval = intervals.reduce((sum, interval) => sum + interval, 0) / intervals.length
+    
+    // Convert milliseconds to readable timeframe
+    const minutes = avgInterval / (1000 * 60)
+    const hours = minutes / 60
+    const days = hours / 24
+    
+    if (minutes < 60) {
+      return `${Math.round(minutes)}m`
+    } else if (hours < 24) {
+      return `${Math.round(hours)}h`
+    } else if (days < 7) {
+      return `${Math.round(days)}d`
+    } else {
+      const weeks = days / 7
+      return `${Math.round(weeks)}w`
+    }
+  }
+
+  // Get timeframe from data or use provided timeframe
+  const detectedTimeframe = contract?.data ? detectTimeframe(contract.data) : 'Unknown'
+  const displayTimeframe = timeframe || detectedTimeframe
+
   useEffect(() => {
 
     if (!chartContainerRef.current) throw new Error('Chart container not found')
@@ -32,6 +72,55 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
     const computedStyle = getComputedStyle(document.documentElement)
     const foreground   = computedStyle.getPropertyValue('--foreground')
     const mutedColor = computedStyle.getPropertyValue('--muted')
+
+    // Configure timeScale based on detected timeframe
+    const getTimeScaleOptions = (timeframe: string) => {
+      const baseOptions = {
+        borderColor: `hsl(${foreground})`,
+        timeVisible: true,
+        secondsVisible: false,
+      }
+
+      // Configure time formatting based on timeframe
+      if (timeframe.includes('m')) { // Minutes
+        return {
+          ...baseOptions,
+          timeVisible: true,
+          secondsVisible: false,
+          tickMarkFormatter: (time: any) => {
+            // Create date from UTC timestamp and format as UTC (which now represents market time)
+            const date = new Date(time * 1000)
+            return date.toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: false 
+            })
+          }
+        }
+      } else if (timeframe.includes('h')) { // Hours
+        return {
+          ...baseOptions,
+          timeVisible: true,
+          secondsVisible: false,
+          tickMarkFormatter: (time: any) => {
+            // Create date from UTC timestamp and format as UTC (which now represents market time)
+            const date = new Date(time * 1000)
+            return date.toLocaleString('en-US', { 
+              month: 'short', 
+              day: 'numeric',
+              hour: '2-digit',
+              hour12: false 
+            })
+          }
+        }
+      } else { // Days, weeks, etc.
+        return {
+          ...baseOptions,
+          timeVisible: false,
+          secondsVisible: false,
+        }
+      }
+    }
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
@@ -45,9 +134,7 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
       rightPriceScale: {
         borderColor: `hsl(${foreground})`,
       },
-      timeScale: {
-        borderColor: `hsl(${foreground})`,
-      },
+      timeScale: getTimeScaleOptions(displayTimeframe),
       width: chartContainerRef.current.clientWidth,
       height: 400,
     })
@@ -55,12 +142,45 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
     let candlestickData: CandlestickData[] = []
 
     if (contract?.data) {
-      // Create a map to handle duplicate dates by keeping the last occurrence
+      // Process data based on detected timeframe
+      const processTimeData = (dateString: string, timeframe: string): Time => {
+        
+        if (timeframe.includes('m') || timeframe.includes('h')) {
+          // For intraday data, treat the time as local market time without timezone conversion
+          if (dateString.includes(' ')) {
+            // Format like "2024-08-06 09:30:00"
+            // Parse manually to avoid timezone issues
+            const [datePart, timePart] = dateString.split(' ')
+            const [year, month, day] = datePart.split('-').map(Number)
+            const [hours, minutes, seconds = 0] = timePart.split(':').map(Number)
+            
+            // Create UTC date directly with the same time values (no timezone conversion)
+            const utcDate = new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds || 0))
+            const timestamp = Math.floor(utcDate.getTime() / 1000)
+            
+            return timestamp as UTCTimestamp
+          } else {
+            // Fallback for other formats
+            const date = new Date(dateString)
+            return Math.floor(date.getTime() / 1000) as UTCTimestamp
+          }
+        } else {
+          // For daily+ data, use date only
+          const date = new Date(dateString)
+          const year = date.getFullYear()
+          const month = String(date.getMonth() + 1).padStart(2, '0')
+          const day = String(date.getDate()).padStart(2, '0')
+          return `${year}-${month}-${day}` as Time
+        }
+      }
+
+      // Create a map to handle duplicate timestamps
       const dataMap = new Map<string, CandlestickData>()
       
       contract.data.forEach(point => {
-        const timeKey = point.date.split(' ')[0] // Extract date part
-        dataMap.set(timeKey, {
+        const timeKey = processTimeData(point.date, displayTimeframe)
+        const timeKeyString = typeof timeKey === 'number' ? timeKey.toString() : timeKey as string
+        dataMap.set(timeKeyString, {
           time: timeKey,
           open: point.open,
           high: point.high,
@@ -71,9 +191,16 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
       
       // Convert map to array and sort by time ascending
       candlestickData = Array.from(dataMap.values()).sort((a, b) => {
-        const timeA = new Date(a.time as string).getTime()
-        const timeB = new Date(b.time as string).getTime()
-        return timeA - timeB
+        if (typeof a.time === 'string' && typeof b.time === 'string') {
+          return new Date(a.time).getTime() - new Date(b.time).getTime()
+        } else if (typeof a.time === 'number' && typeof b.time === 'number') {
+          return a.time - b.time
+        } else {
+          // Mixed types, convert to Date for comparison
+          const timeA = typeof a.time === 'string' ? new Date(a.time).getTime() : (a.time as number) * 1000
+          const timeB = typeof b.time === 'string' ? new Date(b.time).getTime() : (b.time as number) * 1000
+          return timeA - timeB
+        }
       })
     }
 
@@ -91,7 +218,7 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
     // Add decision markers if provided
     if (decisions && decisions.length > 0) {
       // Group decisions by type for better visualization
-      const decisionGroups: Record<TradingDecision, Array<{time: string, value: number}>> = {
+      const decisionGroups: Record<TradingDecision, Array<{time: Time, value: number}>> = {
         LONG: [],
         SHORT: [],
         STAY: [],
@@ -102,41 +229,79 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
         // Filter out STAY decisions - only show actionable trading decisions
         if (decision === 'STAY') return
         
-        // Parse the time to extract just the date part for matching with candlestick data
-        // Handle various formats: "Nov 17, 2021, 12:00 AM", "2021-11-17 12:00:00", etc.
-        let timeKey = time
-        if (time.includes(',')) {
-          // Format like "Nov 17, 2021, 12:00 AM"
-          const datePart = time.split(',').slice(0, 2).join(',').trim() // "Nov 17, 2021"
-          timeKey = new Date(datePart).toISOString().split('T')[0] // Convert to "2021-11-17"
-        } else if (time.includes(' ')) {
-          // Format like "2021-11-17 12:00:00" or similar
-          timeKey = time.split(' ')[0]
+        // Parse the decision time using the same UTC logic as candlestick data
+        // The time comes from formatDateFromTimestamp which creates local time strings like "Aug 6, 2024, 9:30 AM"
+        // We need to convert this back to the same format as the candlestick data
+        let processedDecisionTime: Time | null = null
+        
+        try {
+          // Parse the formatted date string back to a Date object
+          const decisionDate = new Date(time)
+          
+          if (displayTimeframe.includes('m') || displayTimeframe.includes('h')) {
+            // For intraday data, create UTC timestamp matching the candlestick processing
+            const utcDate = new Date(Date.UTC(
+              decisionDate.getFullYear(),
+              decisionDate.getMonth(),
+              decisionDate.getDate(),
+              decisionDate.getHours(),
+              decisionDate.getMinutes(),
+              decisionDate.getSeconds()
+            ))
+            processedDecisionTime = Math.floor(utcDate.getTime() / 1000) as UTCTimestamp
+          } else {
+            // For daily+ data, use date string format
+            const year = decisionDate.getFullYear()
+            const month = String(decisionDate.getMonth() + 1).padStart(2, '0')
+            const day = String(decisionDate.getDate()).padStart(2, '0')
+            processedDecisionTime = `${year}-${month}-${day}` as Time
+          }
+        } catch (error) {
+          console.warn('Failed to parse decision time:', time, error)
+          return
         }
         
         // Find the corresponding candlestick data to get price level
         const candleData = candlestickData.find(candle => {
-          // Try exact match first
-          if (candle.time === timeKey) return true
-          
-          // Try converting both to Date objects and comparing dates
-          try {
-            const candleDate = new Date(candle.time as string).toDateString()
-            const decisionDate = new Date(timeKey).toDateString()
-            return candleDate === decisionDate
-          } catch {
-            return false
+          if (typeof candle.time === 'number' && typeof processedDecisionTime === 'number') {
+            // For intraday data, match timestamps (allow small tolerance for rounding)
+            return Math.abs(candle.time - processedDecisionTime) < 60 // Within 1 minute tolerance
+          } else if (typeof candle.time === 'string' && typeof processedDecisionTime === 'string') {
+            // For daily data, exact string match
+            return candle.time === processedDecisionTime
+          } else {
+            // Mixed types, try to compare dates
+            try {
+              const candleDate = typeof candle.time === 'number' 
+                ? new Date(candle.time * 1000)
+                : new Date(candle.time as string)
+              const decisionDate = typeof processedDecisionTime === 'number'
+                ? new Date(processedDecisionTime * 1000)
+                : new Date(processedDecisionTime as string)
+              
+              // Compare date parts only
+              return candleDate.toDateString() === decisionDate.toDateString()
+            } catch {
+              return false
+            }
           }
         })
         
         if (candleData) {
-          const value = decision === 'LONG' ? candleData.low * 0.995 : // Show below candle for LONG
-                       decision === 'SHORT' ? candleData.high * 1.005 : // Show above candle for SHORT
-                       candleData.close // Show at close for EXIT
+          // Test: Show all decision dots on the high of the candle
+          const value = candleData.high
           
           decisionGroups[decision].push({
-            time: candleData.time as string, // Use the candle's time format for consistency
+            time: candleData.time as Time, // Use the candle's time format for consistency
             value: value
+          })
+        } else {
+          // Debug logging when no matching candle is found
+          console.warn('No matching candle found for decision:', {
+            originalTime: time,
+            processedTime: processedDecisionTime,
+            decision,
+            availableCandles: candlestickData.slice(0, 3).map(c => ({ time: c.time, date: typeof c.time === 'number' ? new Date(c.time * 1000).toISOString() : c.time }))
           })
         }
       })
@@ -146,7 +311,18 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
         if (points.length > 0) {
           // Sort points by time and remove duplicates
           const sortedPoints = points
-            .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+            .sort((a, b) => {
+              if (typeof a.time === 'number' && typeof b.time === 'number') {
+                return a.time - b.time
+              } else if (typeof a.time === 'string' && typeof b.time === 'string') {
+                return new Date(a.time).getTime() - new Date(b.time).getTime()
+              } else {
+                // Mixed types
+                const timeA = typeof a.time === 'string' ? new Date(a.time).getTime() : (a.time as number) * 1000
+                const timeB = typeof b.time === 'string' ? new Date(b.time).getTime() : (b.time as number) * 1000
+                return timeA - timeB
+              }
+            })
             .filter((point, index, array) => {
               // Keep only the first occurrence of each timestamp
               return index === 0 || point.time !== array[index - 1].time
@@ -156,7 +332,7 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
             const decisionSeries = chart.addSeries(LineSeries, {
               color: decisionColorMap[decision as TradingDecision],
               pointMarkersVisible: true,
-              pointMarkersRadius: 4,
+              pointMarkersRadius: 6, // Larger markers for better visibility
               lineVisible: false,
               lastValueVisible: false,
               title: `${decision} Decisions`
@@ -199,7 +375,17 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
       if (indicatorBelow.length > 0) {
         // Sort and deduplicate indicator data
         const sortedIndicatorBelow = indicatorBelow
-          .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+          .sort((a, b) => {
+            if (typeof a.time === 'number' && typeof b.time === 'number') {
+              return a.time - b.time
+            } else if (typeof a.time === 'string' && typeof b.time === 'string') {
+              return new Date(a.time).getTime() - new Date(b.time).getTime()
+            } else {
+              const timeA = typeof a.time === 'string' ? new Date(a.time).getTime() : (a.time as number) * 1000
+              const timeB = typeof b.time === 'string' ? new Date(b.time).getTime() : (b.time as number) * 1000
+              return timeA - timeB
+            }
+          })
           .filter((point, index, array) => {
             return index === 0 || point.time !== array[index - 1].time
           })
@@ -219,7 +405,17 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
       if (indicatorAbove.length > 0) {
         // Sort and deduplicate indicator data
         const sortedIndicatorAbove = indicatorAbove
-          .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+          .sort((a, b) => {
+            if (typeof a.time === 'number' && typeof b.time === 'number') {
+              return a.time - b.time
+            } else if (typeof a.time === 'string' && typeof b.time === 'string') {
+              return new Date(a.time).getTime() - new Date(b.time).getTime()
+            } else {
+              const timeA = typeof a.time === 'string' ? new Date(a.time).getTime() : (a.time as number) * 1000
+              const timeB = typeof b.time === 'string' ? new Date(b.time).getTime() : (b.time as number) * 1000
+              return timeA - timeB
+            }
+          })
           .filter((point, index, array) => {
             return index === 0 || point.time !== array[index - 1].time
           })
@@ -252,7 +448,7 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
       chart.remove()
       window.removeEventListener('resize', handleResize)
     }
-  }, [contract, indicator, showIndicators, decisions])
+  }, [contract, indicator, showIndicators, decisions, displayTimeframe])
 
   if (!contract?.data) {
     return (
@@ -270,9 +466,15 @@ const TraderChart = ({ contract, indicator, title, decisions }: TraderChartProps
             <h3 className="text-lg font-semibold">
               {title || `${contract?.symbol} Chart`}
             </h3>
-            <p className="text-sm text-muted-foreground">
-              {contract?.data.length || 0} data points
-            </p>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span>{contract?.data.length || 0} data points</span>
+              {displayTimeframe && displayTimeframe !== 'Unknown' && (
+                <div className="flex items-center gap-1">
+                  <span>•</span>
+                  <span className="font-medium text-primary">Timeframe: {displayTimeframe}</span>
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-4">
             {(indicator && indicator.length > 0) && (

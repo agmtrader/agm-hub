@@ -32,8 +32,8 @@ const AutoTrader = () => {
   const [strategy, setStrategy] = useState<Strategy | null>(null);
   const [history, setHistory] = useState<Snapshot[]>([]);
 
-  //const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
-  const socketURL = 'http://167.71.94.59:3333'
+  const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
+  //const socketURL = 'http://167.71.94.59:3333'
 
   useEffect(() => {
 
@@ -94,7 +94,6 @@ const AutoTrader = () => {
     <div className='w-full h-full p-4 '>
       <Card className="w-full h-fit p-6 bg-background">
         <div className='space-y-4'>
-
           <div className='rounded-lg p-4 bg-background'>
             <div className='flex justify-between items-center'>
               <div className='flex items-center'>
