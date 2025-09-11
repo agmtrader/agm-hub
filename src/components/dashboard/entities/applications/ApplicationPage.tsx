@@ -496,7 +496,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         </DialogHeader>
         {status === 'Success' ? (
           <div className="space-y-4">
-            <p className="text-sm text-success">Successfully Sent to IBKR</p>
             <p className="text-sm text-foreground">Account Number: {account?.value}</p>
             <Button>Send email with credentials to user</Button>
           </div>
