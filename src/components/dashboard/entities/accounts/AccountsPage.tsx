@@ -14,13 +14,22 @@ import { formatDateFromTimestamp } from '@/utils/dates';
 import { Badge } from '@/components/ui/badge';
 import { ReadClientsReport, ReadNavReport } from '@/utils/tools/reporting';
 
+type ExtendedAccount = Account & { 
+  alias: string
+  status: string
+  nav: string
+  master_account_id: string
+}
+
 const AccountsPage = () => {
 
   const {lang} = useTranslationProvider()
-  const [accounts, setAccounts] = useState<Account[] | null>(null)
+  const [accounts, setAccounts] = useState<ExtendedAccount[] | null>(null)
   const [clients, setClients] = useState<any[] | null>(null)
 
   const [navReport, setNavReport] = useState<any[] | null>(null)
+
+  const [hideCompleted, setHideCompleted] = useState(false)
 
   useEffect(() => {
 
@@ -32,7 +41,18 @@ const AccountsPage = () => {
           ReadClientsReport(),
           ReadNavReport()
         ])
-        setAccounts(accounts.sort((a, b) => b.created.localeCompare(a.created)))
+        // Enhance accounts with additional derived fields for easier filtering/searching
+        const enhancedAccounts = accounts.map(acc => {
+          const client = clients.find((c: any) => c["Account ID"] === acc.ibkr_account_number)
+          return {
+            ...acc,
+            alias: client ? client["Alias"] : "-",
+            status: client ? client["Status"] : "-",
+            nav: navReport ? navReport.find((n: any) => n["ClientAccountID"] === acc.ibkr_account_number) ? navReport.find((n: any) => n["ClientAccountID"] === acc.ibkr_account_number)["Total"] : "-" : "-",
+            master_account_id: client ? client["sheet_name"] : "-",
+          }
+        })
+        setAccounts(enhancedAccounts.sort((a, b) => b.created.localeCompare(a.created)))
         setClients(clients)
         setNavReport(navReport)
       } catch (error) {
@@ -50,23 +70,24 @@ const AccountsPage = () => {
 
   if (!accounts || !clients || !navReport) return <LoadingComponent className='w-full h-full' />
 
-  console.log(navReport)
+  const filteredAccounts = hideCompleted ?
+    accounts.filter(acc => !(acc.alias !== '-' && acc.status !== '-' && acc.master_account_id)) :
+    accounts
 
   const columns = [
     {
       header: 'Alias',
       accessorKey: 'alias',
       cell: ({ row }: any) => {
-        const client = clients.find(client => client['Account ID'] === row.original.ibkr_account_number)
-        return client ? client['Alias'] : '-'
+        return row.original.alias || '-'
       }
     },
     {
       header: 'Master Account',
       accessorKey: 'master_account_id',
+      enableSorting: false,
       cell: ({ row }: any) => {
-        const client = clients.find(client => client['Account ID'] === row.original.ibkr_account_number)
-        return client ? client['sheet_name'] : '-'
+        return row.original.master_account_id || '-'
       }
     },
     {
@@ -74,12 +95,17 @@ const AccountsPage = () => {
       accessorKey: 'ibkr_account_number',
     },
     {
+      header: 'Status',
+      accessorKey: 'status',
+      cell: ({ row }: any) => {
+        return row.original.status || '-'
+      }
+    },
+    {
       header: 'NAV',
       accessorKey: 'nav',
       cell: ({ row }: any) => {
-        const navClient = navReport.find((client: any) => client['ClientAccountID'] === row.original.ibkr_account_number)
-        console.log(navClient)
-        return navClient ? navClient['Total'] : '-'
+        return row.original.nav || '-'
       }
     },
     {
@@ -128,21 +154,30 @@ const AccountsPage = () => {
         return row.original.created ? formatDateFromTimestamp(row.original.created) : '-'
       }
     }
-  ] as ColumnDefinition<Account>[]
+  ] as ColumnDefinition<ExtendedAccount>[]
 
   const rowActions: any[] = [
     {
       label: 'View',
-      onClick: (row: Account) => {
+      onClick: (row: ExtendedAccount) => {
         redirect(formatURL(`/dashboard/accounts/${row.id}`, lang))
       }
     }
   ]
 
   return (
-    <motion.div variants={itemVariants} className="w-full">
+    <motion.div variants={itemVariants} className="w-full space-y-4">
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="hideCompleted"
+          checked={hideCompleted}
+          onChange={(e) => setHideCompleted(e.target.checked)}
+        />
+        <label htmlFor="hideCompleted" className="text-sm">Hide accounts with Alias, Status and Master Account</label>
+      </div>
       <DataTable 
-        data={accounts}
+        data={filteredAccounts}
         columns={columns}
         infiniteScroll
         enableFiltering

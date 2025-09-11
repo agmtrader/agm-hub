@@ -5,7 +5,7 @@ import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu'
 import { formatURL } from '@/utils/language/lang'
-import { ChevronLeft, ChevronRight, Plus, Ticket, TrendingUp, Users } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Home, Plus, Ticket, TrendingUp, Users } from 'lucide-react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 import { cn } from '@/lib/utils'
@@ -128,6 +128,14 @@ const Sidebar = () => {
           </Link>
         </Button>
         <NavigationMenuList className="w-full flex flex-col gap-2 items-start justify-center">
+          <NavigationMenuItem className="flex w-full h-fit">
+            <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
+              <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-start text-start w-full whitespace-nowrap")}>
+                <Home className="h-4 w-4" />
+                <span className="ml-2">Home</span>
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
           {filteredTools.map((item, index) => (
             <NavigationMenuItem key={index} className="flex w-full h-fit">
               <Link href={formatURL(item.url, lang)} legacyBehavior passHref>
