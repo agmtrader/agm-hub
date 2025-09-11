@@ -32,8 +32,8 @@ const AutoTrader = () => {
   const [strategy, setStrategy] = useState<Strategy | null>(null);
   const [history, setHistory] = useState<Snapshot[]>([]);
 
-  const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
-  //const socketURL = 'http://167.71.94.59:3333'
+  //const socketURL = process.env.DEV_MODE === 'true' ? 'http://localhost:3333' : 'NULL';
+  const socketURL = 'http://167.71.94.59:3333'
 
   useEffect(() => {
 
