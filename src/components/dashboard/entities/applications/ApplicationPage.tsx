@@ -475,7 +475,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         <LoaderButton 
           onClick={handleCreateAccount} 
           isLoading={submitting} 
-          disabled={application.date_sent_to_ibkr !== null} 
+          disabled={application.date_sent_to_ibkr !== null || !application.master_account_id || !application.advisor_code} 
           text="Send Application to IBKR" className="w-fit"
         />
 
