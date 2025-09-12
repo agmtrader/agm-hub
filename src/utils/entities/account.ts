@@ -52,6 +52,16 @@ export async function ReadAccountDocuments(accountID:string): Promise<InternalDo
 }
 
 // Account Management
+export async function SubmitIBKRDocument(accountID: string, documentSubmission: DocumentSubmissionRequest) {
+    const accountManagementRequests: AccountManagementRequests = {
+        accountManagementRequests: {
+            documentSubmission
+        }
+    }
+    const response = await accessAPI('/accounts/ibkr/update', 'POST', { 'account_id': accountID, 'account_management_requests': accountManagementRequests })
+    return response
+}
+
 export async function ReadAccountDetailsByAccountID(accountID:string): Promise<any | null> {
     let accounts:any = await accessAPI(`/accounts/ibkr/details?account_id=${accountID}`, 'GET')
     return accounts || null
@@ -79,15 +89,5 @@ export async function GetPendingTasksByAccountID(accountId: string): Promise<Pen
 
 export async function GetForms(forms: string[]): Promise<AllForms> {
     const response: AllForms = await accessAPI('/accounts/ibkr/forms', 'POST', { 'forms': forms })
-    return response
-}
-
-export async function SubmitIBKRDocument(accountID: string, documentSubmission: DocumentSubmissionRequest) {
-    const accountManagementRequests: AccountManagementRequests = {
-        accountManagementRequests: {
-            documentSubmission
-        }
-    }
-    const response = await accessAPI('/accounts/ibkr/update', 'POST', { 'account_id': accountID, 'account_management_requests': accountManagementRequests })
     return response
 }

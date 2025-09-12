@@ -75,10 +75,6 @@ export type InternalApplicationPayload = {
     advisor_code: string | null;
     master_account_id: string | null;
     lead_id: string | null;
-    /**
-     * The full Interactive Brokers application payload. May be null when the payload is stripped
-     * from list endpoints to keep responses lightweight.
-     */
     application: Application | null;
     date_sent_to_ibkr: string | null;
     user_id: string | null;

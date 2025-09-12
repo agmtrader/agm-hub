@@ -1,9 +1,8 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import LoadingComponent from '@/components/misc/LoadingComponent';
-import { LabelValue } from '../applications/ApplicationPage';
+import { LabelValue } from '@/components/misc/LabelValue';
 import { GetRegistrationTasksByAccountID } from '@/utils/entities/account';
 import { RegistrationTask, RegistrationTasksResponse } from '@/lib/entities/account';
 import { ListChecks, PenTool, CheckSquare, UploadCloud, CheckCircle } from 'lucide-react';

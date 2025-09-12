@@ -1,4 +1,3 @@
-import { ColumnDefinition } from '@/components/misc/DataTable'
 import { DataTable } from '@/components/misc/DataTable'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { FileText } from 'lucide-react'
@@ -23,6 +22,25 @@ const ApplicationDocuments = ({ documents }: Props) => {
       const getDocumentName = (formNumber: number) => {
         return DOCUMENT_TYPE_MAP[formNumber] || 'Unknown Document';
       };
+
+      const columns = [
+        {
+          header: 'File Name',
+          accessorKey: 'attachedFile.fileName'
+        },
+        {
+          header: 'File Size',
+          accessorKey: 'attachedFile.fileLength'
+        },
+        {
+          header: 'Signed By',
+          accessorKey: 'signedBy'
+        },
+        {
+          header: 'Uploaded',
+          accessorKey: 'execTimestamp'
+        }
+      ]
       
   return (
     <div className="mb-8">
@@ -33,6 +51,7 @@ const ApplicationDocuments = ({ documents }: Props) => {
         <CardContent>
         <DataTable
             data={documents}
+            columns={columns}
             enableRowActions
             rowActions={[{
                 label: 'View',

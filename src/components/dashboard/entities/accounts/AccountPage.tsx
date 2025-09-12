@@ -1,8 +1,19 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Account as AccountFromDB, InternalAccount } from '@/lib/entities/account';
+import { Account as AccountFromDB } from '@/lib/entities/account';
 
-// --- Account Details Types ---
+export interface MarketData {
+  serviceId: string;
+  serviceName: string;
+  currency: string;
+  monthlyFee: string;
+}
+
+export interface Restriction {
+  id: number;
+  name: string;
+  byIB: boolean;
+}
 
 export interface AccountDetails {
   account: Account;
@@ -10,6 +21,9 @@ export interface AccountDetails {
   financialInformation: FinancialInformation;
   sourcesOfWealth: SourceOfWealth[];
   documents?: any[];
+  marketData?: MarketData[];
+  restrictions?: Restriction[];
+  tradeBundles?: string[];
 }
 
 export interface Account {
@@ -33,6 +47,12 @@ export interface Account {
   externalId: string;
   mifidCategory: string;
   processType: string;
+  // Newly added optional fields from IBKR API
+  equity?: number;
+  riskScore?: number;
+  dateApproved?: string;
+  dateFunded?: string;
+  dateOpened?: string;
 }
 
 export interface FeeTemplate {
@@ -129,7 +149,7 @@ import {
   ListChecks,      
   ClipboardList,
 } from 'lucide-react';
-import { ReadAccountByAccountID, ReadAccountDetailsByAccountID, UpdateAccountByAccountID } from '@/utils/entities/account';
+import { ReadAccountByAccountID, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
 import { toast } from '@/hooks/use-toast';
 import { AccountPendingTasks } from './AccountPendingTasks';
 import { AccountRegistrationTasks } from './AccountRegistrationTasks';
@@ -142,8 +162,8 @@ import { InvestmentProposal as InvestmentProposalType } from '@/lib/tools/invest
 import InvestmentProposal from '../../tools/investment-center/InvestmentProposal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable, ColumnDefinition } from '@/components/misc/DataTable'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { LabelValue } from '../applications/ApplicationPage';
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { LabelValue } from '@/components/misc/LabelValue';
 
 type Props = {
   accountId: string;
@@ -247,6 +267,8 @@ const AccountPage = ({ accountId }: Props) => {
     financialInformation,
     sourcesOfWealth,
   } = accountDetails;
+
+  if (!internalAccount || !accountDetails) return <LoadingComponent className='w-full h-full' />;
   
   return (
     <div className="flex flex-col gap-6">
@@ -259,36 +281,51 @@ const AccountPage = ({ accountId }: Props) => {
             Account Summary
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+        <CardContent className="flex flex-col gap-2">
           <LabelValue label="Account ID" value={account.accountId} />
           <LabelValue label="Master Account ID" value={account.masterAccountId} />
           <LabelValue label="Account Title" value={account.accountTitle} />
           <LabelValue label="Email Address" value={account.emailAddress} />
           <LabelValue label="Base Currency" value={account.baseCurrency} />
           <LabelValue label="Margin Type" value={account.margin} /> 
-          <LabelValue label="Applicant Type" value={account.applicantType} />
+          <LabelValue label="Account Type" value={account.applicantType} />
           <LabelValue label="Status" value={account.clearingStatusDescription} />
-          <LabelValue label="Date Begun" value={new Date(account.dateBegun).toLocaleDateString()} />
-          <LabelValue label="External ID" value={account.externalId} />
+          {account.dateApproved && <LabelValue label="Date Approved" value={new Date(account.dateApproved).toLocaleDateString()} />}
+          {account.dateFunded && <LabelValue label="Date Funded" value={new Date(account.dateFunded).toLocaleDateString()} />}
+          {account.dateOpened && <LabelValue label="Date Opened" value={new Date(account.dateOpened).toLocaleDateString()} />}
         </CardContent>
       </Card>
-
-      {/* Internal Account Data Card */}
-      {internalAccount && (
-        <Card className="mb-6">
+      
+      {associatedPersons?.map((person, idx) => (
+        <Card key={person.entityId || idx} className="flex flex-col gap-2">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl font-bold">
-              <Info className="h-5 w-5 mr-2 text-primary" />
-              Internal Account Data
+            <CardTitle className="flex items-center"> 
+              <User className="h-5 w-5 mr-2 text-primary" /> 
+              {person.firstName} {person.lastName} ({person.associations?.join(', ') || 'No association'})
             </CardTitle>
-            <CardDescription>Editable internal account information</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="flex flex-col gap-2">
+            <LabelValue label="Username" value={person.username} />
+            <LabelValue label="Status" value={person.userStatus} />
+            <LabelValue label="Email" value={person.email} />
+            <LabelValue label="Date of Birth" value={new Date(person.dateOfBirth).toLocaleDateString()} />
+            <LabelValue label="Country of Birth" value={person.countryOfBirth} />
+            <LabelValue label="Dependents" value={person.numberOfDependents?.toString()} />
+            {person.phones?.mobile && <LabelValue label="Mobile Phone" value={person.phones.mobile} />}
+            {person.employmentDetails && (
+              <>
+                <LabelValue label="Employer" value={person.employmentDetails.Employer} />
+                <LabelValue label="Occupation" value={person.employmentDetails.Occupation} />
+              </>
+            )}
+            {person.identityDocuments.map(doc => (
+                <LabelValue key={doc.id} label={doc.name} value={`${doc.id}`} />
+            ))}
           </CardContent>
         </Card>
-      )}
-
-      {/* Risk Profile and Investment Proposals Section */}
+      ))}
+      
+      {/* Risk Profiles & Investment Proposals Tab */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center text-xl font-bold">
@@ -298,7 +335,7 @@ const AccountPage = ({ accountId }: Props) => {
         </CardHeader>
         <CardContent className="space-y-6">
           {(!riskProfiles || riskProfiles.length === 0) ? (
-            <p className="text-muted-foreground">No risk profiles for this account.</p>
+            <p className="text-subtitle">No risk profiles for this account.</p>
           ) : (
             <>
               <div className="flex items-center gap-3">
@@ -346,165 +383,162 @@ const AccountPage = ({ accountId }: Props) => {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="persons" className="w-full">
-        <TabsList className="mb-4 w-fit overflow-x-auto whitespace-nowrap justify-start sm:justify-center">
-          <TabsTrigger value="persons"><Users className="mr-2 h-4 w-4" />Associated Persons ({associatedPersons?.length || 0})</TabsTrigger>
+      {/* Documents Tab */}
+      <AccountDocumentsCard 
+        documents={(accountDetails as any).documents || []}
+        accountId={internalAccount?.id || null}
+        accountTitle={account.accountTitle}
+        onRefresh={refreshAccountDetails}
+      />
+
+      {/* Internal Account Data Card */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center text-xl font-bold">
+            <Info className="h-5 w-5 mr-2 text-primary" />
+            Account Internals
+          </CardTitle>
+          <CardDescription>Internal account tracking information</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <LabelValue label="Internal Account ID" value={internalAccount.id} />
+              <LabelValue label="Application ID" value={internalAccount.application_id} />
+              <LabelValue label="User ID" value={internalAccount.user_id || '-'} />
+              <LabelValue label="Fee Template" value={internalAccount.fee_template || '-'} />
+            </div>
+
+            <div className="space-y-3">
+              <LabelValue label="IBKR Account Number" value={internalAccount.ibkr_account_number} />
+              <LabelValue label="IBKR Username" value={internalAccount.ibkr_username || '-'} />
+              <LabelValue label="IBKR Password" value={internalAccount.ibkr_password || '-'} />
+              <LabelValue label="Temporal Email" value={internalAccount.temporal_email || '-'} />
+              <LabelValue label="Temporal Password" value={internalAccount.temporal_password || '-'} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+
+        <Tabs defaultValue="pending" className="w-full">
+          <TabsList className="mb-4 w-fit overflow-x-auto whitespace-nowrap justify-start sm:justify-center">
+            <TabsTrigger value="pending"><Users className="mr-2 h-4 w-4" />Pending Tasks</TabsTrigger>
+            {account.clearingStatus === 'O' && (
+              <>
+                <TabsTrigger value="financial"><DollarSign className="mr-2 h-4 w-4" />Financial Profile</TabsTrigger>
+                <TabsTrigger value="trading"><CandlestickChart className="mr-2 h-4 w-4" />Trading</TabsTrigger>
+              </>
+            )}
+          </TabsList>
+
+          <TabsContent value="pending">
+            <AccountPendingTasks accountId={account.accountId} accountTitle={account.accountTitle} />
+          </TabsContent>
+
           {account.clearingStatus === 'O' && (
-            <>
-              <TabsTrigger value="financial"><DollarSign className="mr-2 h-4 w-4" />Financial Profile</TabsTrigger>
-              <TabsTrigger value="trading"><CandlestickChart className="mr-2 h-4 w-4" />Trading</TabsTrigger>
-            </>
+            <div>
+              {/* Financial Profile Tab - Only for open accounts */}
+              <TabsContent value="financial">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 mr-2 text-primary"/>Financial Profile</CardTitle>
+                    <CardDescription>Currency: {financialInformation.currency}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                      <p className="text-lg font-semibold text-foreground">Worths</p>
+                      <LabelValue label="Net Worth" value={financialInformation.netWorth} />
+                      <LabelValue label="Liquid Net Worth" value={financialInformation.liquidNetWorth} />
+                      <LabelValue label="Annual Net Income" value={financialInformation.annualNetIncome} />
+                    </div>
+                      {financialInformation.investmentExperience?.STK && (
+                        <div className="flex flex-col gap-2">
+                          <p className="text-lg font-semibold text-foreground">Investment Experience</p>
+                          <p className="text-sm font-semibold">Stocks</p>
+                          <LabelValue label="Knowledge Level" value={financialInformation.investmentExperience.STK.knowledgeLevel} />
+                          <LabelValue label="Years Trading" value={financialInformation.investmentExperience.STK.yearsTrading} />
+                          <LabelValue label="Trades Per Year" value={financialInformation.investmentExperience.STK.tradesPerYear} />
+                        </div>
+                      )}
+                      {financialInformation.investmentExperience?.BOND && (
+                        <div className="flex flex-col gap-2">
+                          <p className="text-sm font-semibold">Bonds</p>
+                          <LabelValue label="Knowledge Level" value={financialInformation.investmentExperience.BOND.knowledgeLevel} />
+                          <LabelValue label="Years Trading" value={financialInformation.investmentExperience.BOND.yearsTrading} />
+                          <LabelValue label="Trades Per Year" value={financialInformation.investmentExperience.BOND.tradesPerYear} />
+                        </div>
+                      )}
+                      {sourcesOfWealth?.length > 0 && (
+                      <div className="flex flex-col gap-2">
+                        <p className="text-lg font-semibold text-foreground">Sources of Wealth</p>
+                        <div className="flex flex-col gap-2">
+                          {sourcesOfWealth.map(source => (
+                            <LabelValue key={source.label} label={source.label} value={`${source.annual_percentage}%`} />
+                          ))}
+                        </div>
+                      </div>
+                    )}  
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Trading Tab - Only for open accounts */}
+              <TabsContent value="trading">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center"><Package className="h-5 w-5 mr-2 text-primary"/>Trading Permissions & Bundles</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                      <p className="text-lg font-semibold text-foreground">Capabilities</p>
+                      {account.capabilities.approved?.length > 0 && (
+                          <LabelValue label="Approved" value={account.capabilities.approved.join(', ')} />
+                      )}
+                      {account.capabilities.requested?.length > 0 && (
+                        <LabelValue label="Requested" value={account.capabilities.requested.join(', ')} />
+                      )}
+                      {account.capabilities.activated?.length > 0 && (
+                        <LabelValue label="Activated" value={account.capabilities.activated.join(', ')} />
+                      )}
+                    </div>
+
+                    {/* Market Data Subscriptions */}
+                    {accountDetails.marketData && accountDetails.marketData.length > 0 && (
+                      <div className="flex flex-col gap-2">
+                        <p className="text-lg font-semibold text-foreground">Market Data Subscriptions</p>
+                        {accountDetails.marketData.map(md => (
+                          <p className="text-sm text-subtitle">{md.serviceName}</p>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Trade Bundles */}
+                    {accountDetails.tradeBundles && accountDetails.tradeBundles.length > 0 && (
+                      <div className="flex flex-col gap-2">
+                        <p className="text-lg font-semibold text-foreground">Trade Bundles</p>
+                        <p className="text-sm text-subtitle">{accountDetails.tradeBundles.join(', ')}</p>
+                      </div>
+                    )}
+
+                    {/* Restrictions */}
+                    {accountDetails.restrictions && accountDetails.restrictions.length > 0 && (
+                      <div className="flex flex-col gap-2">
+                        <p className="text-lg font-semibold text-foreground">Restrictions</p>
+                        <div className="flex flex-col gap-2">
+                          {accountDetails.restrictions.map(res => (
+                            <p className="text-sm text-subtitle">{res.name}</p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </div>
           )}
-          <TabsTrigger value="documents"><FileText className="mr-2 h-4 w-4" />Documents</TabsTrigger>
-          <TabsTrigger value="registrationTasks"><ListChecks className="mr-2 h-4 w-4" />Registration Tasks</TabsTrigger>
-          <TabsTrigger value="pendingTasks"><ClipboardList className="mr-2 h-4 w-4" />Pending Tasks</TabsTrigger>
-        </TabsList>
 
-        {/* Associated Persons Tab */}
-        <TabsContent value="persons">
-          {associatedPersons?.map((person, idx) => (
-            <Card key={person.entityId || idx} className="mb-4">
-              <CardHeader>
-                <CardTitle className="flex items-center"> 
-                  <User className="h-5 w-5 mr-2 text-primary" /> 
-                  {person.firstName} {person.lastName} ({person.associations?.join(', ') || 'No association'})
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-3">
-                <LabelValue label="Username" value={person.username} />
-                <LabelValue label="User Status" value={person.userStatus} />
-                <LabelValue label="User Status (Trading)" value={person.userStatusTrading} />
-                <LabelValue label="Email" value={person.email} />
-                <LabelValue label="Date of Birth" value={new Date(person.dateOfBirth).toLocaleDateString()} />
-                <LabelValue label="Country of Birth" value={person.countryOfBirth} />
-                <LabelValue label="Dependents" value={person.numberOfDependents?.toString()} />
-                <LabelValue label="Commercial" value={person.commercial} />
-                <LabelValue label="User Status (Trading)" value={person.userStatusTrading} />
-                {person.phones?.mobile && <LabelValue label="Mobile Phone" value={person.phones.mobile} />}
-                {person.employmentDetails && (
-                  <>
-                    <LabelValue label="Employer" value={person.employmentDetails.Employer} />
-                    <LabelValue label="Occupation" value={person.employmentDetails.Occupation} />
-                  </>
-                )}
-                {person.identityDocuments.map(doc => (
-                    <LabelValue key={doc.id} label={doc.name} value={`${doc.id}`} />
-                ))}
-              </CardContent>
-            </Card>
-          ))}
-          {(!associatedPersons || associatedPersons.length === 0) && <p className="text-muted-foreground">No associated persons found for this account.</p>}
-        </TabsContent>
-
-        {/* Financial Profile Tab - Only for open accounts */}
-        {account.clearingStatus === 'O' && (
-          <TabsContent value="financial">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 mr-2 text-primary"/>Financial Profile</CardTitle>
-                <CardDescription>Currency: {financialInformation.currency}</CardDescription>
-              </CardHeader>
-              <CardContent className="grid grid-cols-3 gap-4">
-
-                <div className="flex flex-col justify-start items-start">
-                  <p className="text-lg font-semibold text-foreground">Worths</p>
-                  <LabelValue label="Net Worth" value={financialInformation.netWorth} />
-                  <LabelValue label="Liquid Net Worth" value={financialInformation.liquidNetWorth} />
-                  <LabelValue label="Annual Net Income" value={financialInformation.annualNetIncome} />
-                </div>
-                
-                <div className="flex flex-col justify-start items-start">
-                  <p className="text-lg font-semibold text-foreground">Investment Experience</p>
-                  {financialInformation.investmentExperience?.STK && (
-                    <div>
-                      <p className="text-sm font-semibold">Stocks</p>
-                      <LabelValue label="Knowledge Level" value={financialInformation.investmentExperience.STK.knowledgeLevel} />
-                      <LabelValue label="Years Trading" value={financialInformation.investmentExperience.STK.yearsTrading} />
-                      <LabelValue label="Trades Per Year" value={financialInformation.investmentExperience.STK.tradesPerYear} />
-                    </div>
-                  )}
-                  {financialInformation.investmentExperience?.BOND && (
-                    <div>
-                      <p className="text-sm font-semibold">Bonds</p>
-                      <LabelValue label="Knowledge Level" value={financialInformation.investmentExperience.BOND.knowledgeLevel} />
-                      <LabelValue label="Years Trading" value={financialInformation.investmentExperience.BOND.yearsTrading} />
-                      <LabelValue label="Trades Per Year" value={financialInformation.investmentExperience.BOND.tradesPerYear} />
-                    </div>
-                  )}
-                  {(!financialInformation.investmentExperience?.STK && !financialInformation.investmentExperience?.BOND) && (
-                    <p className="text-sm text-muted-foreground">No investment experience information available.</p>
-                  )}
-                </div>
-
-                {sourcesOfWealth?.length > 0 && (
-                  <div className="flex flex-col">
-                    <p className="text-lg font-semibold text-foreground">Sources of Wealth</p>
-                    <div className="flex flex-wrap gap-1">
-                      {sourcesOfWealth.map(source => (
-                        <p key={source.label}>
-                          {source.label} - {source.annual_percentage}%
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        )}
-
-        {/* Trading Tab - Only for open accounts */}
-        {account.clearingStatus === 'O' && (
-          <TabsContent value="trading">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center"><Package className="h-5 w-5 mr-2 text-primary"/>Trading Permissions & Bundles</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <LabelValue label="Limited Option Trading" value={account.limitedOptionTrading} />
-                <div>
-                  <p className="text-md font-semibold mb-1 text-muted-foreground">Capabilities</p>
-                  <div className="space-y-2 mt-1">
-                    {account.capabilities.approved?.length > 0 && (
-                      <LabelValue label="Approved" value={account.capabilities.approved.map(c => <p key={c}>{c}</p>)} />
-                    )}
-                    {account.capabilities.requested?.length > 0 && (
-                      <LabelValue label="Requested" value={account.capabilities.requested.map(c => <p key={c}>{c}</p>)} />
-                    )}
-                    {account.capabilities.activated?.length > 0 && (
-                      <LabelValue label="Activated" value={account.capabilities.activated.map(c => <p key={c}>{c}</p>)} />
-                    )}
-                    {(!account.capabilities.approved?.length && !account.capabilities.requested?.length && !account.capabilities.activated?.length) && (
-                      <p className="text-sm text-muted-foreground">No capabilities information available.</p>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        )}
-
-        {/* Documents Tab - Only for open accounts */}
-        <TabsContent value="documents">
-          <AccountDocumentsCard 
-            documents={(accountDetails as any).documents || []}
-            accountId={internalAccount?.id || null}
-            accountTitle={account.accountTitle}
-            onRefresh={refreshAccountDetails}
-          />
-        </TabsContent>
-
-        {/* Registration Tasks Tab */}
-        <TabsContent value="registrationTasks">
-          <AccountRegistrationTasks accountId={accountId} />
-        </TabsContent>
-
-        {/* Pending Tasks Tab */}
-        <TabsContent value="pendingTasks">
-          <AccountPendingTasks accountId={account.accountId} accountTitle={account.accountTitle} />
-        </TabsContent>
-
-      </Tabs>
+        </Tabs>
 
       <UserDialog 
         userID={selectedUserID}
