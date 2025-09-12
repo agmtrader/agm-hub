@@ -91,3 +91,13 @@ export async function GetForms(forms: string[]): Promise<AllForms> {
     const response: AllForms = await accessAPI('/accounts/ibkr/forms', 'POST', { 'forms': forms })
     return response
 }
+
+export async function UpdateAccountAlias(accountID: string, newAlias: string): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/account_alias', 'POST', { 'account_id': accountID, 'new_alias': newAlias })
+    return response
+}
+
+export async function GetSecurityQuestions(): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/security_questions', 'GET')
+    return response
+}

@@ -1,143 +1,10 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Account as AccountFromDB } from '@/lib/entities/account';
-
-export interface MarketData {
-  serviceId: string;
-  serviceName: string;
-  currency: string;
-  monthlyFee: string;
-}
-
-export interface Restriction {
-  id: number;
-  name: string;
-  byIB: boolean;
-}
-
-export interface AccountDetails {
-  account: Account;
-  associatedPersons: AssociatedPerson[];
-  financialInformation: FinancialInformation;
-  sourcesOfWealth: SourceOfWealth[];
-  documents?: any[];
-  marketData?: MarketData[];
-  restrictions?: Restriction[];
-  tradeBundles?: string[];
-}
-
-export interface Account {
-  accountId: string;
-  masterAccountId: string;
-  clearingStatus: string;
-  clearingStatusDescription: string;
-  stateCode: string;
-  baseCurrency: string;
-  dateBegun: string; // ISO date string
-  accountTitle: string;
-  emailAddress: string;
-  margin: string;
-  applicantType: string;
-  subType: string;
-  stockYieldProgram?: Record<string, unknown>; // empty object or future fields
-  feeTemplate: FeeTemplate;
-  capabilities: Capabilities;
-  limitedOptionTrading: string;
-  investmentObjectives: string[];
-  externalId: string;
-  mifidCategory: string;
-  processType: string;
-  // Newly added optional fields from IBKR API
-  equity?: number;
-  riskScore?: number;
-  dateApproved?: string;
-  dateFunded?: string;
-  dateOpened?: string;
-}
-
-export interface FeeTemplate {
-  brokerFeeInfo: string;
-}
-
-export interface Capabilities {
-  approved: string[];
-  requested: string[];
-  activated: string[];
-}
-
-export interface AssociatedPerson {
-  entityId: number;
-  externalCode: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  passwordDate: string; // ISO datetime string
-  userStatus: string;
-  userStatusTrading: string;
-  email: string;
-  countryOfBirth: string;
-  dateOfBirth: string; // ISO date string
-  numberOfDependents: number;
-  commercial: string;
-  phones: Phones;
-  residence: Address;
-  mailing: Address;
-  associations: string[];
-  identityDocuments: IdentityDocument[];
-  employmentType: string;
-  employmentDetails?: EmploymentDetails;
-}
-
-export interface Phones {
-  mobile?: string;
-  [key: string]: string | undefined;
-}
-
-export interface Address {
-  street1: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-}
-
-export interface IdentityDocument {
-  name: string;
-  id: string;
-  country: string;
-}
-
-export interface EmploymentDetails {
-  Employer: string;
-  Occupation: string;
-  EmployerBusiness: string;
-  EmployerAddress: Address;
-}
-
-export interface FinancialInformation {
-  currency: string;
-  netWorth: string;
-  liquidNetWorth: string;
-  annualNetIncome: string;
-  investmentExperience: Record<string, InvestmentExperience>;
-}
-
-export interface InvestmentExperience {
-  knowledgeLevel: string;
-  yearsTrading: string;
-  tradesPerYear: string;
-}
-
-export interface SourceOfWealth {
-  label: string;
-  annual_percentage: number;
-}
-
 import LoadingComponent from '@/components/misc/LoadingComponent';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  FileText,
   User,
   Users,            
   Info,             
@@ -147,12 +14,10 @@ import {
   TrendingUp,             
   Package,
   ListChecks,      
-  ClipboardList,
 } from 'lucide-react';
 import { ReadAccountByAccountID, ReadAccountDetailsByAccountID } from '@/utils/entities/account';
 import { toast } from '@/hooks/use-toast';
 import { AccountPendingTasks } from './AccountPendingTasks';
-import { AccountRegistrationTasks } from './AccountRegistrationTasks';
 import AccountDocumentsCard from './AccountDocumentsCard';
 import UserDialog from '../users/UserDialog';
 import { ReadRiskProfiles } from '@/utils/tools/risk-profile';
@@ -164,6 +29,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataTable, ColumnDefinition } from '@/components/misc/DataTable'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { LabelValue } from '@/components/misc/LabelValue';
+import { AccountDetails } from '@/lib/entities/account';
 
 type Props = {
   accountId: string;
@@ -201,10 +67,12 @@ const AccountPage = ({ accountId }: Props) => {
     }
   }
 
+  // Fetch Account Details
   useEffect(() => {
     refreshAccountDetails()
   }, [accountId])
 
+  // Fetch Risk Profiles
   useEffect(() => {
     async function fetchRiskProfiles() {
       try {
@@ -220,11 +88,13 @@ const AccountPage = ({ accountId }: Props) => {
     if (internalAccount?.id) fetchRiskProfiles()
   }, [internalAccount?.id])
 
+  // Select first risk profile if no risk profile is selected
   useEffect(() => {
     if (!riskProfiles || riskProfiles.length === 0) return
     setSelectedRiskProfile(riskProfiles[0].id)
   }, [riskProfiles])
 
+  // Fetch Investment Proposals when risk profile is selected
   useEffect(() => {
     async function fetchProposals() {
       try {
@@ -253,7 +123,6 @@ const AccountPage = ({ accountId }: Props) => {
   if (!accountDetails || !internalAccount) return <LoadingComponent className='w-full h-full' />;
 
   const currentRiskProfile = riskProfiles?.find(rp => rp.id === selectedRiskProfile) || null
-
   const proposalColumns: ColumnDefinition<InvestmentProposalType>[] = [
     {
       header: 'Created',
@@ -267,8 +136,6 @@ const AccountPage = ({ accountId }: Props) => {
     financialInformation,
     sourcesOfWealth,
   } = accountDetails;
-
-  if (!internalAccount || !accountDetails) return <LoadingComponent className='w-full h-full' />;
   
   return (
     <div className="flex flex-col gap-6">
@@ -390,6 +257,22 @@ const AccountPage = ({ accountId }: Props) => {
         accountTitle={account.accountTitle}
         onRefresh={refreshAccountDetails}
       />
+
+      {/* Fee Template Card */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center text-xl font-bold">
+            <ListChecks className="h-5 w-5 mr-2 text-primary" />
+            Fee Template
+          </CardTitle>
+          <CardDescription>Broker commission schedule and fees</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-subtitle whitespace-pre-wrap">
+            {account.feeTemplate?.brokerFeeInfo || 'No commission schedule has been defined. IB\'s default commissions shall apply.'}
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Internal Account Data Card */}
       <Card className="mb-6">
