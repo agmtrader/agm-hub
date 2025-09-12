@@ -30,6 +30,8 @@ import { DataTable, ColumnDefinition } from '@/components/misc/DataTable'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { LabelValue } from '@/components/misc/LabelValue';
 import { AccountDetails } from '@/lib/entities/account';
+import { Button } from '@/components/ui/button';
+import { sendCredentialsEmail } from '@/utils/tools/email';
 
 type Props = {
   accountId: string;
@@ -66,6 +68,20 @@ const AccountPage = ({ accountId }: Props) => {
       })
     }
   }
+
+  const brokerFeeTemplates = [
+    'Brokerage',
+    'Commodities',
+    'Options',
+    'Futures',
+    'Forex',
+    'Cryptocurrency',
+    'Other',
+  ]
+
+  const advisorFeeTemplates = [
+    'Default'
+  ]
 
   // Fetch Account Details
   useEffect(() => {
@@ -290,6 +306,12 @@ const AccountPage = ({ accountId }: Props) => {
               <LabelValue label="Application ID" value={internalAccount.application_id} />
               <LabelValue label="User ID" value={internalAccount.user_id || '-'} />
               <LabelValue label="Fee Template" value={internalAccount.fee_template || '-'} />
+              <Button 
+                onClick={() => sendCredentialsEmail({ username: associatedPersons[0].username, password: 'empty' }, associatedPersons[0].email, 'es')} 
+                className="w-fit" 
+              >
+                Send IBKR credentials
+              </Button>
             </div>
 
             <div className="space-y-3">

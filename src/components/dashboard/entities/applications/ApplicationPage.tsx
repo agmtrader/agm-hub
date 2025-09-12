@@ -26,6 +26,8 @@ import LabelValue from "@/components/misc/LabelValue";
 import OrganizationCard from "./OrganizationCard";
 import { Separator } from "@/components/ui/separator";
 import ResultDialog from "./ResultDialog";
+import { Button } from "@/components/ui/button";
+import { sendCredentialsEmail } from "@/utils/tools/email";
 
 interface Props {
   applicationId: string;
@@ -479,12 +481,12 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
         {
           application.date_sent_to_ibkr !== null && (
-            <LoaderButton 
+            <Button 
               onClick={() => {}} 
-              isLoading={false}
-              disabled={!application.date_sent_to_ibkr} 
-              text="Send email with credentials to user" className="w-fit"
-            />
+              className="w-fit" 
+            >
+              Send IBKR credentials
+            </Button>
           )
         }
       </div>
