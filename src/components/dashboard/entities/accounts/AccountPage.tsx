@@ -70,6 +70,7 @@ const AccountPage = ({ accountId }: Props) => {
   }
 
   const brokerFeeTemplates = [
+    'Default',
     'Brokerage',
     'Commodities',
     'Options',

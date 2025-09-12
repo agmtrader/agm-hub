@@ -70,7 +70,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
     setIsSubmitting(true);
     try {
       // Only allow signing tasks that are online and have "to sign" action
-      if (!task.onlineTask || task.action !== "to sign") {
+      if (task.action !== "to sign") {
         throw new Error("This task cannot be auto-signed");
       }
 
@@ -138,9 +138,9 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
         throw new Error("No pending tasks found");
       }
 
-      // Filter tasks that can be auto-signed
+      // Filter tasks that can be auto-signed (now regardless of onlineTask status)
       const signableTasks = pendingTasks.pendingTasks.filter(
-        task => task.onlineTask && task.action === "to sign"
+        task => task.action === "to sign"
       );
 
       if (signableTasks.length === 0) {
@@ -242,7 +242,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
   const tasksToSign = pendingTasks.pendingTasks?.filter(task => task.action === "to sign") || [];
   const tasksToComplete = pendingTasks.pendingTasks?.filter(task => task.action === "to complete") || [];
   const tasksToSend = pendingTasks.pendingTasks?.filter(task => task.action === "to send") || [];
-  const signableTasks = tasksToSign.filter(task => task.onlineTask);
+  const signableTasks = tasksToSign;
 
   return (
     <div className="relative">
@@ -286,18 +286,12 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
                   {tasksToSign.map((task: PendingTask, index: number) => (
                     <Card key={`sign-${task.formNumber}-${task.taskNumber}-${index}`} className="p-3 bg-primary/10 border-primary/20 shadow-sm">
                       <div className="flex items-center gap-3">
-                        {task.onlineTask ? (
-                          <>
-                            <Checkbox
-                              id={`sign-task-${task.formNumber}-${task.taskNumber}-${index}`}
-                              checked={false}
-                              onCheckedChange={() => handleSignTask(task)}
-                            />
-                            <PenTool className="h-5 w-5 text-primary" />
-                          </>
-                        ) : (
-                          <PenTool className="h-5 w-5 text-muted-foreground" />
-                        )}
+                        <Checkbox
+                          id={`sign-task-${task.formNumber}-${task.taskNumber}-${index}`}
+                          checked={false}
+                          onCheckedChange={() => handleSignTask(task)}
+                        />
+                        <PenTool className="h-5 w-5 text-primary" />
                         <div className="flex-1">
                           <p className="text-sm font-semibold">{task.formName} (Form: {task.formNumber})</p>
                           <div className="flex flex-col gap-1">
@@ -307,11 +301,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
                                 <span className="text-xs bg-warning/20 text-warning px-2 py-0.5 rounded">Required for Trading</span>
                               )}
                             </div>
-                            {!task.onlineTask ? (
-                              <p className="text-xs text-muted-foreground">This form cannot be signed online.</p>
-                            ) : (
-                              <p className="text-xs text-primary">Click to sign this form</p>
-                            )}
+                            <p className="text-xs text-primary">Click to sign this form</p>
                           </div>
                         </div>
                       </div>
