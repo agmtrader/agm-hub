@@ -311,6 +311,10 @@
                 "steps": {
                     "agreements": "Agreements",
                     "account_type": "Account Type",
+                    "personal_info": "Personal Information",
+                    "financial_info": "Financial Information",
+                    "regulatory_info": "Regulatory Information",
+                    "account_information": "Account Setup",
                     "account_holder_info": "Account Holder Information",
                     "documents": "Documents",
                     "complete": "Complete"

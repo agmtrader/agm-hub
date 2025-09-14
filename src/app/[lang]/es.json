@@ -310,6 +310,10 @@
                 "steps": {
                     "agreements": "Acuerdos",
                     "account_type": "Tipo de Cuenta",
+                    "personal_info": "Información Personal",
+                    "financial_info": "Información Financiera",
+                    "regulatory_info": "Información Regulatoria",
+                    "account_information": "Configuración de la Cuenta",
                     "account_holder_info": "Información del Titular de la Cuenta",
                     "documents": "Documentos",
                     "complete": "Completo"
