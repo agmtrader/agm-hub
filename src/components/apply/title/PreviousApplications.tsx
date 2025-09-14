@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useSession } from 'next-auth/react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { InternalApplication } from '@/lib/entities/application'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
@@ -17,6 +18,9 @@ const PreviousApplications = ({ setStarted }: Props) => {
     const [dialogOpen, setDialogOpen] = useState(false)
 
     const { t } = useTranslationProvider()
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
 
     const { data: session } = useSession();
     const [previousApplications, setPreviousApplications] = useState<InternalApplication[]>([]);
@@ -54,15 +58,17 @@ const PreviousApplications = ({ setStarted }: Props) => {
         {
             label: t('apply.account.title.previous_applications.resume'),
             onClick: (application: InternalApplication) => {
-                if (typeof window !== 'undefined') {
-                    window.localStorage.setItem('agm_application_draft_id', application.id);
-                    window.localStorage.setItem('agm_application_current_step', '0');
-                }
+
+                // Build new query string preserving existing params and adding app=<id>
+                const params = new URLSearchParams(searchParams.toString());
+                params.set('app', application.id);
+
+                router.push(`${pathname}?${params.toString()}`);
+
                 setDialogOpen(false);
                 setStarted(false);
-                setTimeout(() => {
-                    setStarted(true);
-                }, 100);
+                // small delay to ensure component re-mounts with new param
+                setTimeout(() => setStarted(true), 100);
             },
         },
     ];

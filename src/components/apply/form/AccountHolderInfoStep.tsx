@@ -27,6 +27,9 @@ import StatesFormField from "@/components/ui/StatesFormField";
 
 interface AccountHolderInfoStepProps {
   form: UseFormReturn<Application>;
+  showFinancial?: boolean;
+  showRegulatory?: boolean;
+  showAccountInformation?: boolean;
 }
 
 const generateUUID = () => {
@@ -38,7 +41,7 @@ const generateUUID = () => {
 };
 
 
-const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
+const AccountHolderInfoStep = ({ form, showFinancial = true, showRegulatory = true, showAccountInformation = true }: AccountHolderInfoStepProps) => {
 
   const { t } = useTranslationProvider();
   const phoneTypeOptions = getPhoneTypes(t);
@@ -1839,8 +1842,8 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           {renderAccountHolderFields("customer.jointHolders.secondHolderDetails.0", t('apply.account.account_holder_info.second_account_holder'))}
           
           {/* Financial and Regulatory Information for Joint Account */}
-          {renderFinancialInformation("customer.jointHolders.financialInformation")}
-          {renderRegulatoryInformation("customer.jointHolders.regulatoryInformation")}
+          {showFinancial && renderFinancialInformation("customer.jointHolders.financialInformation")}
+          {showRegulatory && renderRegulatoryInformation("customer.jointHolders.regulatoryInformation")}
         </div>
 
       ) : accountType === 'ORG' ? (
@@ -1854,20 +1857,20 @@ const AccountHolderInfoStep = ({ form }: AccountHolderInfoStepProps) => {
           )}
           
           {/* Financial and Regulatory Information for Organization */}
-          {renderFinancialInformation("customer.organization.financialInformation")}
-          {renderRegulatoryInformation("customer.organization.regulatoryInformation")}
+          {showFinancial && renderFinancialInformation("customer.organization.financialInformation")}
+          {showRegulatory && renderRegulatoryInformation("customer.organization.regulatoryInformation")}
         </div>
       ) : (
         // Individual Account
         <div className="space-y-6">
           {renderAccountHolderFields("customer.accountHolder.accountHolderDetails.0", t('apply.account.account_holder_info.account_holder_information'))}
-          {renderFinancialInformation("customer.accountHolder.financialInformation")}
-          {renderRegulatoryInformation("customer.accountHolder.regulatoryInformation")}
+          {showFinancial && renderFinancialInformation("customer.accountHolder.financialInformation")}
+          {showRegulatory && renderRegulatoryInformation("customer.accountHolder.regulatoryInformation")}
         </div>
       )}
 
       {/* Account Information - Required for all account types */}
-      {renderAccountInformation()}
+      {showAccountInformation && renderAccountInformation()}
     </div>
   );
 };

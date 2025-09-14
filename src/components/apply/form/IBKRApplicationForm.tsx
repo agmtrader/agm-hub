@@ -10,7 +10,7 @@ import { application_schema } from '@/lib/entities/schemas/application'
 import { Application, InternalApplicationPayload } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
-import AccountHolderInfoStep from './AccountHolderInfoStep'
+import PersonalInfoStep from './PersonalInfoStep'
 import { CreateApplication, ReadApplicationByID, UpdateApplicationByID } from '@/utils/entities/application'
 import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
@@ -21,17 +21,23 @@ import ApplicationSuccess from './ApplicationSuccess'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { individual_form } from './samples'
 import { useSession } from 'next-auth/react'
+import LoadingComponent from '@/components/misc/LoadingComponent'
 import { getApplicationDefaults } from '@/utils/form'
+import FinancialInfoStep from './FinancialInfoStep'
+import RegulatoryInfoStep from './RegulatoryInfoStep'
+import AccountInformationStep from './AccountInformationStep'
 
 // Local storage keys used for saving progress
-const LOCAL_STORAGE_APP_ID = 'agm_application_draft_id';
-const LOCAL_STORAGE_APP_STEP = 'agm_application_current_step';
+// No local storage needed anymore; we use query params to load existing applications.
 
 enum FormStep {
   ACCOUNT_TYPE = 0,
-  ACCOUNT_HOLDER_INFO = 1,
-  DOCUMENTS = 2,
-  SUCCESS = 3
+  PERSONAL_INFO = 1,           // Basic account holder information
+  FINANCIAL_INFO = 2,         // Net-worth, income, investment objectives, etc.
+  REGULATORY_INFO = 3,        // Regulatory questions (affiliation, control, etc.)
+  ACCOUNT_INFORMATION = 4,    // Account setup: base currency, account type, trading permissions
+  DOCUMENTS = 5,
+  SUCCESS = 6,
 }
 
 const IBKRApplicationForm = () => {
@@ -44,54 +50,41 @@ const IBKRApplicationForm = () => {
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
+  const [isLoadingApplication, setIsLoadingApplication] = useState(false);
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
 
-  // Always start with a clean slate — remove any previously saved draft/step
+  // Load existing application based on query param (app=<id>)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(LOCAL_STORAGE_APP_ID);
-      window.localStorage.removeItem(LOCAL_STORAGE_APP_STEP);
-    }
-  }, []);
-
-  // Load existing draft (if any) from localStorage and hydrate the form
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const draftId = window.localStorage.getItem(LOCAL_STORAGE_APP_ID);
-    if (!draftId) return;
+    const appId = searchParams.get('app');
+    if (!appId) return;
+    setIsLoadingApplication(true);
     (async () => {
       try {
-        const existing = await ReadApplicationByID(draftId);
+        const existing = await ReadApplicationByID(appId);
         if (existing?.application) {
           form.reset(existing.application);
           setApplicationId(existing.id);
         }
       } catch (err) {
-        // If fetch fails, clear invalid draft id
-        window.localStorage.removeItem(LOCAL_STORAGE_APP_ID);
+        console.error('Failed to fetch application', err);
+      } finally {
+        setIsLoadingApplication(false);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams]);
 
-  // Load existing step (if any) from localStorage so the user resumes where they left off
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const draftId = window.localStorage.getItem(LOCAL_STORAGE_APP_ID);
-    const storedStep = window.localStorage.getItem(LOCAL_STORAGE_APP_STEP);
-    if (draftId && storedStep !== null) {
-      const stepNum = parseInt(storedStep, 10);
-      if (!isNaN(stepNum) && stepNum >= FormStep.ACCOUNT_TYPE && stepNum <= FormStep.SUCCESS) {
-        setCurrentStep(stepNum as FormStep);
-      }
-    }
-  }, []);
+  if (isLoadingApplication) {
+    return <LoadingComponent className="py-10">Loading application…</LoadingComponent>;
+  }
+
+  // No need to restore step from storage; default at ACCOUNT_TYPE.
 
   const sanitizeDocuments = (values: Application) => {
     const sanitizedDocuments = (values.documents || []).map((doc: any) => {
@@ -129,10 +122,6 @@ const IBKRApplicationForm = () => {
       };
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(LOCAL_STORAGE_APP_ID, createResp.id);
-        window.localStorage.setItem(LOCAL_STORAGE_APP_STEP, currentStep.toString());
-      }
     } else {
       await UpdateApplicationByID(applicationId, { application: sanitizedValues, status: status });
     }
@@ -144,7 +133,13 @@ const IBKRApplicationForm = () => {
       return await form.trigger('customer.type');
     }
 
-    if (currentStep === FormStep.ACCOUNT_HOLDER_INFO) {
+    // For now, run full validation on all intermediate steps until individual schemas are extracted.
+    if (
+      currentStep === FormStep.PERSONAL_INFO ||
+      currentStep === FormStep.FINANCIAL_INFO ||
+      currentStep === FormStep.REGULATORY_INFO ||
+      currentStep === FormStep.ACCOUNT_INFORMATION
+    ) {
       return await form.trigger();
     }
     return true;
@@ -166,9 +161,6 @@ const IBKRApplicationForm = () => {
       await saveProgress();
       const next = currentStep + 1;
       setCurrentStep(next as FormStep);
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(LOCAL_STORAGE_APP_STEP, next.toString());
-      }
       toast({
         title: 'Saved',
         description: 'Progress saved.',
@@ -186,9 +178,6 @@ const IBKRApplicationForm = () => {
   const handlePreviousStep = () => {
     const prev = currentStep - 1;
     setCurrentStep(prev as FormStep);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(LOCAL_STORAGE_APP_STEP, prev.toString());
-    }
   };
 
   async function onSubmit(values: Application) {
@@ -213,10 +202,7 @@ const IBKRApplicationForm = () => {
       });
 
       setCurrentStep(FormStep.SUCCESS);
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem(LOCAL_STORAGE_APP_STEP);
-        window.localStorage.removeItem(LOCAL_STORAGE_APP_ID);
-      }
+      // No local storage cleanup required
       setApplicationId(null);
     } catch (error) {
       toast({
@@ -232,9 +218,12 @@ const IBKRApplicationForm = () => {
   const renderProgress = () => {
     const steps = [
       { name: t('apply.account.header.steps.account_type'), step: FormStep.ACCOUNT_TYPE },
-      { name: t('apply.account.header.steps.account_holder_info'), step: FormStep.ACCOUNT_HOLDER_INFO },
+      { name: t('apply.account.header.steps.personal_info'), step: FormStep.PERSONAL_INFO },
+      { name: t('apply.account.header.steps.financial_info'), step: FormStep.FINANCIAL_INFO },
+      { name: t('apply.account.header.steps.regulatory_info'), step: FormStep.REGULATORY_INFO },
+      { name: t('apply.account.header.steps.account_information'), step: FormStep.ACCOUNT_INFORMATION },
       { name: t('apply.account.header.steps.documents'), step: FormStep.DOCUMENTS },
-      { name: t('apply.account.header.steps.complete'), step: FormStep.SUCCESS }
+      { name: t('apply.account.header.steps.complete'), step: FormStep.SUCCESS },
     ];
 
     console.log(form.formState.errors);
@@ -303,27 +292,46 @@ const IBKRApplicationForm = () => {
                 </div>
               </>
             )}
-            {currentStep === FormStep.ACCOUNT_HOLDER_INFO && (
+            {currentStep === FormStep.PERSONAL_INFO && (
               <>
-                <AccountHolderInfoStep form={form} />
+                <PersonalInfoStep form={form} />
                 <div className="flex justify-between">
-                  <Button 
-                    type="button" 
-                    variant="outline"
-                    onClick={handlePreviousStep}
-                  >
-                    Previous
-                  </Button>
-                  <Button 
-                    type="button" 
-                    onClick={handleNextStep}
-                    className="bg-primary text-background hover:bg-primary/90"
-                  >
-                    Next
-                  </Button>
+                  <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
+                  <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>
                 </div>
               </>
             )}
+
+            {currentStep === FormStep.FINANCIAL_INFO && (
+              <div className="space-y-8">
+                <FinancialInfoStep form={form} />
+                <div className="flex justify-between">
+                  <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
+                  <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>
+                </div>
+              </div>
+            )}
+
+            {currentStep === FormStep.REGULATORY_INFO && (
+              <div className="space-y-8">
+                <RegulatoryInfoStep form={form} />
+                <div className="flex justify-between">
+                  <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
+                  <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>
+                </div>
+              </div>
+            )}
+
+            {currentStep === FormStep.ACCOUNT_INFORMATION && (
+              <div className="space-y-8">
+                <AccountInformationStep form={form} />
+                <div className="flex justify-between">
+                  <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
+                  <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>
+                </div>
+              </div>
+            )}
+
             {currentStep === FormStep.DOCUMENTS && (
               <>
                 <DocumentsStep form={form} />

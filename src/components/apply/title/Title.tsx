@@ -164,9 +164,6 @@ const Title = ({ setStarted }:Props) => {
                 </p>
             </ShimmerButton>
           </motion.div>
-          <motion.div variants={itemVariants}>
-            <PreviousApplications setStarted={setStarted}/>
-          </motion.div>
         </motion.div>
       </div>
     </div>
