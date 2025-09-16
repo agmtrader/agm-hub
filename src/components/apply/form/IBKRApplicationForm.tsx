@@ -121,24 +121,6 @@ const IBKRApplicationForm = () => {
 
     let status = 'Started';
     if (currentStep === FormStep.DOCUMENTS) {
-
-      // If the application is being submitted, assign a lead ID if one is not provided
-      if (!lead_id) {
-        const leadPayload: LeadPayload = {
-          contact_id: contact_id,
-          referrer_id: contact_id,
-          description: 'User filled in the application form by themselves.',
-          contact_date: formatTimestamp(new Date()),
-          closed: formatTimestamp(new Date()),
-          sent: formatTimestamp(new Date()),
-        };
-  
-        const leadResponse = await CreateLead(leadPayload, [])
-        if (!leadResponse.id) throw new Error('Error creating lead, please try again later.');
-
-        lead_id = leadResponse.id;
-      }
-
       status = 'Completed';
     }
 
