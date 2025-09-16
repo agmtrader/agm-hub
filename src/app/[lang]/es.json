@@ -636,6 +636,16 @@
                     "title": "Completar Perfil de Riesgo",
                     "description": "Completa tu perfil de riesgo de inversión para ayudarnos a entender mejor tus preferencias y objetivos de inversión.",
                     "button": "Iniciar Perfil de Riesgo"
+                },
+                "fees": {
+                    "title": "Revisar Nuestras Tarifas",
+                    "description": "Explora nuestra estructura de precios transparente para entender los costos asociados con tu cuenta.",
+                    "button": "Ver Tarifas"
+                },
+                "downloads": {
+                    "title": "Descargar Nuestras Apps",
+                    "description": "Obtén acceso a nuestras aplicaciones móviles y de escritorio para operar sin problemas donde sea que estés.",
+                    "button": "Ver Descargas"
                 }
             },
             "personal": {

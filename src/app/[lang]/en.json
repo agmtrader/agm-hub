@@ -642,6 +642,16 @@
                     "title": "Complete Risk Profile",
                     "description": "Fill out your investment risk profile to help us better understand your investment preferences and goals.",
                     "button": "Start Risk Profile"
+                },
+                "fees": {
+                    "title": "Review Our Fees",
+                    "description": "Explore our transparent pricing structure to understand the costs associated with your account.",
+                    "button": "View Fees"
+                },
+                "downloads": {
+                    "title": "Download Our Apps",
+                    "description": "Get access to our mobile and desktop applications for seamless trading on the go.",
+                    "button": "View Downloads"
                 }
             },
             "personal": {

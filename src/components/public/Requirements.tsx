@@ -320,6 +320,46 @@ const RequirementsPage = () => {
                         </Link>
                     </CardContent>
                 </Card>
+
+                {/* Fees Card */}
+                <Card className="border-none shadow-md">
+                    <CardHeader className="pb-4">
+                        <div className="flex items-center gap-2">
+                            <ClipboardCheck className="h-5 w-5 text-primary" />
+                            <CardTitle className="text-lg">{t('apply.requirements.optional_preparation.fees.title')}</CardTitle>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {t('apply.requirements.optional_preparation.fees.description')}
+                        </p>
+                    </CardHeader>
+                    <CardContent>
+                        <Link href={formatURL('/fees', lang)} target="_blank" rel="noopener noreferrer">
+                            <Button className="w-full bg-primary text-background hover:bg-primary/90">
+                                {t('apply.requirements.optional_preparation.fees.button')}
+                            </Button>
+                        </Link>
+                    </CardContent>
+                </Card>
+
+                {/* Downloads Card */}
+                <Card className="border-none shadow-md">
+                    <CardHeader className="pb-4">
+                        <div className="flex items-center gap-2">
+                            <ClipboardCheck className="h-5 w-5 text-primary" />
+                            <CardTitle className="text-lg">{t('apply.requirements.optional_preparation.downloads.title')}</CardTitle>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {t('apply.requirements.optional_preparation.downloads.description')}
+                        </p>
+                    </CardHeader>
+                    <CardContent>
+                        <Link href={formatURL('/downloads', lang)} target="_blank" rel="noopener noreferrer">
+                            <Button className="w-full bg-primary text-background hover:bg-primary/90">
+                                {t('apply.requirements.optional_preparation.downloads.button')}
+                            </Button>
+                        </Link>
+                    </CardContent>
+                </Card>
             </div>
         </div>
         <Link href={formatURL('/apply', lang)} target="_blank" rel="noopener noreferrer">
