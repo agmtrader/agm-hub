@@ -28,7 +28,6 @@ import { CreateLead } from '@/utils/entities/lead'
 import { LeadPayload } from '@/lib/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
 import { getApplicationDefaults } from '@/utils/form'
-import { individual_form } from './samples'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.
@@ -56,7 +55,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: individual_form,
+    defaultValues: getApplicationDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });
