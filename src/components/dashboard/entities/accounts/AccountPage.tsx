@@ -57,7 +57,9 @@ const AccountPage = ({ accountId }: Props) => {
       const account = await ReadAccountByAccountID(accountId)
       if (!account) throw new Error('Account not found')
       setInternalAccount(account)
-      const details = await ReadAccountDetailsByAccountID(account.ibkr_account_number)
+      if (!account.master_account) throw new Error('Master account not found')
+      console.log('account.master_account', account.master_account)
+      const details = await ReadAccountDetailsByAccountID(account.ibkr_account_number, account.master_account)
       if (!details) throw new Error('Account details not found')
       setAccountDetails(details)
     } catch (e) {
@@ -273,6 +275,7 @@ const AccountPage = ({ accountId }: Props) => {
         accountId={internalAccount?.id || null}
         accountTitle={account.accountTitle}
         onRefresh={refreshAccountDetails}
+        masterAccount={internalAccount?.master_account}
       />
 
       {/* Fee Template Card */}
@@ -339,7 +342,7 @@ const AccountPage = ({ accountId }: Props) => {
           </TabsList>
 
           <TabsContent value="pending">
-            <AccountPendingTasks accountId={account.accountId} accountTitle={account.accountTitle} />
+            <AccountPendingTasks accountId={account.accountId} accountTitle={account.accountTitle} masterAccount={internalAccount?.master_account} />
           </TabsContent>
 
           {account.clearingStatus === 'O' && (

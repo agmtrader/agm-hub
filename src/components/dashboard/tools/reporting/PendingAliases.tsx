@@ -75,7 +75,7 @@ const PendingAliases = () => {
           const accountId = account['Account ID']
           const title = account.Title
           const newAlias = `${accountId} ${title}`
-          return UpdateAccountAlias(accountId, newAlias)
+          return UpdateAccountAlias(accountId, newAlias, 'br')
         })
       )
 

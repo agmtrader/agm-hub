@@ -13,6 +13,7 @@ export type InternalAccount = AccountPayload & {
   application_id: string,
   fee_template: string | null,
   user_id: string | null,
+  master_account: 'ad' | 'br' | null,
 }
 export type Account = Base & InternalAccount
 

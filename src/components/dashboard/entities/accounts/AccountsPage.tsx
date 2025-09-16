@@ -84,10 +84,10 @@ const AccountsPage = () => {
     },
     {
       header: 'Master Account',
-      accessorKey: 'master_account_id',
+      accessorKey: 'master_account',
       enableSorting: false,
       cell: ({ row }: any) => {
-        return row.original.master_account_id || '-'
+        return row.original.master_account || '-'
       }
     },
     {

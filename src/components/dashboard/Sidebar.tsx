@@ -11,7 +11,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { cn } from '@/lib/utils'
 import { Separator } from '../ui/separator'
 import { useSession } from 'next-auth/react'
-import { FaChartBar, FaEnvelope, FaQuestion, FaTasks } from 'react-icons/fa'
+import { FaQuestion, FaTasks } from 'react-icons/fa'
 
 const tools = [
   {
@@ -66,22 +66,10 @@ const user_tools = [
     id: 'trade_tickets',
   },
   {
-    name: 'Investment Proposals',
-    url: '/dashboard/investment-proposals',
-    icon: FaChartBar,
-    id: 'investment_proposals',
-  },
-  {
     name: 'Risk Profiles',
     url: '/dashboard/risk-profiles',
     icon: TrendingUp,
     id: 'risk_profiles',
-  },
-  {
-    name: 'Message Center',
-    url: '/dashboard/message-center',
-    icon: FaEnvelope,
-    id: 'message_center',
   }
 ]
 

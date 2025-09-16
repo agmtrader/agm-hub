@@ -42,9 +42,13 @@ export async function UpdateApplicationByID(applicationID: string, application: 
     return updateResponse
 }
 
-export async function SendApplicationToIBKR(application: Application) {
-    const response: any = await accessAPI('/applications/send_to_ibkr', 'POST', { 
-        'application': application 
+export async function SendApplicationToIBKR(
+    application: Application,
+    masterAccount: 'ad' | 'br'
+) {
+    const response: any = await accessAPI('/applications/send_to_ibkr', 'POST', {
+        application,
+        master_account: masterAccount,
     })
     return response
 }

@@ -94,7 +94,10 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     try {
       setSubmitting(true)
 
-      const applicationResponse = await SendApplicationToIBKR(application.application)
+      const applicationResponse = await SendApplicationToIBKR(
+        application.application,
+        (application.master_account as 'ad' | 'br')
+      )
       console.log(applicationResponse)
 
       // Store response and open result dialog
@@ -119,7 +122,8 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         temporal_password: null,
         application_id: application.id,
         fee_template: null,
-        user_id: session?.user?.id
+        user_id: session?.user?.id,
+        master_account: application.master_account as 'ad' | 'br'
       }
 
       const accountResponse = await CreateAccount(account)
@@ -198,7 +202,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
     
     try {
       await UpdateApplicationByID(application.id, {
-        master_account_id: newMasterAccountId,
+        master_account: newMasterAccountId,
       });
       
       // Update local state
@@ -420,7 +424,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
                 </span>
                 <div className="flex items-center gap-2">
                   <Select
-                    value={application.master_account_id || "none"}
+                    value={application.master_account || "none"}
                     onValueChange={handleUpdateMasterAccount}
                     disabled={false}
                   >
@@ -475,7 +479,7 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         <LoaderButton 
           onClick={handleCreateAccount} 
           isLoading={submitting} 
-          disabled={application.date_sent_to_ibkr !== null || !application.master_account_id || !application.advisor_code} 
+          disabled={application.date_sent_to_ibkr !== null || !application.advisor_code} 
           text="Send Application to IBKR" className="w-fit"
         />
 

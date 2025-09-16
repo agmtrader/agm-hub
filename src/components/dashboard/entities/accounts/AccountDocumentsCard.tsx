@@ -71,9 +71,10 @@ interface Props {
   accountId: string | null
   accountTitle: string
   onRefresh?: () => void
+  masterAccount: 'ad' | 'br' | null
 }
 
-const AccountDocumentsCard: React.FC<Props> = ({ documents = [], accountId, accountTitle, onRefresh }) => {
+const AccountDocumentsCard: React.FC<Props> = ({ documents = [], accountId, accountTitle, onRefresh, masterAccount }) => {
 
   const [docs, setDocs] = useState<InternalDocument[]>(documents)
   const [selectedDocument, setSelectedDocument] = useState<any>(null)
@@ -143,12 +144,14 @@ const AccountDocumentsCard: React.FC<Props> = ({ documents = [], accountId, acco
         translation: false
       }
 
-      await SubmitIBKRDocument(accountId, docSubmission)
+      if (!masterAccount) throw new Error('Master account not found')
+
+      await SubmitIBKRDocument(accountId, docSubmission, masterAccount)
       toast({ title: 'Success', description: 'Document uploaded successfully', variant: 'success' })
       setIsDialogOpen(false)
       setFiles(null)
       onRefresh?.()
-      // Refresh documents list
+
       try {
         const updatedDocs = await ReadAccountDocuments(accountId)
         setDocs(updatedDocs || [])

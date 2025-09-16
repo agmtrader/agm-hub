@@ -52,24 +52,24 @@ export async function ReadAccountDocuments(accountID:string): Promise<InternalDo
 }
 
 // Account Management
-export async function SubmitIBKRDocument(accountID: string, documentSubmission: DocumentSubmissionRequest) {
+export async function SubmitIBKRDocument(accountID: string, documentSubmission: DocumentSubmissionRequest, masterAccount: 'ad' | 'br') {
     const accountManagementRequests: AccountManagementRequests = {
         accountManagementRequests: {
             documentSubmission
         }
     }
-    const response = await accessAPI('/accounts/ibkr/update', 'POST', { 'account_id': accountID, 'account_management_requests': accountManagementRequests })
+    const response = await accessAPI('/accounts/ibkr/update', 'POST', { 'account_id': accountID, 'account_management_requests': accountManagementRequests, 'master_account': masterAccount })
     return response
 }
 
-export async function ReadAccountDetailsByAccountID(accountID:string): Promise<any | null> {
-    let accounts:any = await accessAPI(`/accounts/ibkr/details?account_id=${accountID}`, 'GET')
+export async function ReadAccountDetailsByAccountID(accountID:string, masterAccount: 'ad' | 'br'): Promise<any | null> {
+    let accounts:any = await accessAPI(`/accounts/ibkr/details?account_id=${accountID}&master_account=${masterAccount}`, 'GET')
     return accounts || null
 }
 
-export async function GetRegistrationTasksByAccountID(accountId: string): Promise<RegistrationTasksResponse | null> {
+export async function GetRegistrationTasksByAccountID(accountId: string, masterAccount: 'ad' | 'br'): Promise<RegistrationTasksResponse | null> {
     try {
-        const response: RegistrationTasksResponse = await accessAPI(`/accounts/ibkr/registration_tasks?account_id=${accountId}`, 'GET');
+        const response: RegistrationTasksResponse = await accessAPI(`/accounts/ibkr/registration_tasks?account_id=${accountId}&master_account=${masterAccount}`, 'GET');
         return response;
     } catch (error) {
         console.error('Error fetching registration tasks:', error);
@@ -77,9 +77,9 @@ export async function GetRegistrationTasksByAccountID(accountId: string): Promis
     }
 }
 
-export async function GetPendingTasksByAccountID(accountId: string): Promise<PendingTasksResponse | null> {
+export async function GetPendingTasksByAccountID(accountId: string, masterAccount: 'ad' | 'br'): Promise<PendingTasksResponse | null> {
     try {
-        const response: PendingTasksResponse = await accessAPI(`/accounts/ibkr/pending_tasks?account_id=${accountId}`, 'GET');
+        const response: PendingTasksResponse = await accessAPI(`/accounts/ibkr/pending_tasks?account_id=${accountId}&master_account=${masterAccount}`, 'GET');
         return response;
     } catch (error) {
         console.error('Error fetching pending tasks:', error);
@@ -87,17 +87,17 @@ export async function GetPendingTasksByAccountID(accountId: string): Promise<Pen
     }
 }
 
-export async function GetForms(forms: string[]): Promise<AllForms> {
-    const response: AllForms = await accessAPI('/accounts/ibkr/forms', 'POST', { 'forms': forms })
+export async function GetForms(forms: string[], masterAccount: 'ad' | 'br'): Promise<AllForms> {
+    const response: AllForms = await accessAPI('/accounts/ibkr/forms', 'POST', { 'forms': forms, 'master_account': masterAccount })
     return response
 }
 
-export async function UpdateAccountAlias(accountID: string, newAlias: string): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/account_alias', 'POST', { 'account_id': accountID, 'new_alias': newAlias })
+export async function UpdateAccountAlias(accountID: string, newAlias: string, masterAccount: 'ad' | 'br'): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/account_alias', 'POST', { 'account_id': accountID, 'new_alias': newAlias, 'master_account': masterAccount })
     return response
 }
 
-export async function GetSecurityQuestions(): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/security_questions', 'GET')
+export async function GetSecurityQuestions(masterAccount: 'ad' | 'br'): Promise<any> {
+    const response: any = await accessAPI(`/accounts/ibkr/security_questions?master_account=${masterAccount}`, 'GET')
     return response
 }

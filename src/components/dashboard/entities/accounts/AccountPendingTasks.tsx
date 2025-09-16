@@ -14,9 +14,10 @@ import LoaderButton from '@/components/misc/LoaderButton';
 interface Props {
   accountId: string;
   accountTitle: string;
+  masterAccount: 'ad' | 'br' | null;
 }
 
-export function AccountPendingTasks({ accountId, accountTitle }: Props) {
+export function AccountPendingTasks({ accountId, accountTitle, masterAccount }: Props) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAutoSigning, setIsAutoSigning] = useState(false);
@@ -33,7 +34,8 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
   useEffect(() => {
     const fetchHolderNames = async () => {
       try {
-        const details: any = await ReadAccountDetailsByAccountID(accountId);
+        if (!masterAccount) throw new Error('Master account not found')
+        const details: any = await ReadAccountDetailsByAccountID(accountId, masterAccount);
         if (details && details.associatedPersons && Array.isArray(details.associatedPersons)) {
           // Extract unique full names of associated persons (first + last)
           const names: string[] = details.associatedPersons
@@ -54,7 +56,8 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
   
   async function fetchData() {
     try {
-      const data = await GetPendingTasksByAccountID(accountId);
+      if (!masterAccount) throw new Error('Master account not found')
+      const data = await GetPendingTasksByAccountID(accountId, masterAccount);
       setPendingTasks(data);
     } catch (error) {
       console.error('Error fetching pending tasks:', error);
@@ -69,12 +72,14 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
   async function handleSignTask(task: PendingTask) {
     setIsSubmitting(true);
     try {
+      if (!masterAccount) throw new Error('Master account not found')
+
       // Only allow signing tasks that are online and have "to sign" action
       if (task.action !== "to sign") {
         throw new Error("This task cannot be auto-signed");
       }
 
-      const forms = await GetForms([task.formNumber.toString()]);
+      const forms = await GetForms([task.formNumber.toString()], masterAccount);
       if (!forms || !forms.formDetails.length) throw new Error("Form not found for this task");
       const form = forms.formDetails[0];
 
@@ -107,7 +112,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
       };
 
       // Submit document
-      const result = await SubmitIBKRDocument(accountId, documentSubmission);
+      const result = await SubmitIBKRDocument(accountId, documentSubmission, masterAccount);
       console.log(result);
       if (result.fileData.data.documentSubmission.documents[0].status === 'Accepted') {
         toast({
@@ -134,6 +139,8 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
   async function handleAutoSignAllSignableTasks() {
     setIsAutoSigning(true);
     try {
+      if (!masterAccount) throw new Error('Master account not found')
+
       if (!pendingTasks || !pendingTasks.pendingTasks) {
         throw new Error("No pending tasks found");
       }
@@ -153,7 +160,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
       // Get each form individually to ensure correct file data and SHA-1
       for (const task of signableTasks) {
         try {
-          const forms = await GetForms([task.formNumber.toString()]);
+          const forms = await GetForms([task.formNumber.toString()], masterAccount);
           if (forms && forms.formDetails.length > 0) {
             const form = forms.formDetails[0];
             const fileData = forms.fileData;
@@ -193,7 +200,7 @@ export function AccountPendingTasks({ accountId, accountTitle }: Props) {
         translation: false,
       };
 
-      const result = await SubmitIBKRDocument(accountId, documentSubmission);
+      const result = await SubmitIBKRDocument(accountId, documentSubmission, masterAccount);
       console.log('Auto-sign result:', result);
       
       if (result.fileData?.data?.documentSubmission?.documents) {

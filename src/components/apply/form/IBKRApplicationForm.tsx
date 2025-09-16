@@ -19,13 +19,13 @@ import LoaderButton from '@/components/misc/LoaderButton'
 import { Check } from "lucide-react"
 import ApplicationSuccess from './ApplicationSuccess'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { individual_form } from './samples'
 import { useSession } from 'next-auth/react'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { getApplicationDefaults } from '@/utils/form'
 import FinancialInfoStep from './FinancialInfoStep'
 import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AccountInformationStep from './AccountInformationStep'
+import { individual_form } from './samples'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.
@@ -54,7 +54,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -99,11 +99,13 @@ const IBKRApplicationForm = () => {
     if (!session?.user) throw new Error('User not found');
 
     const advisor_id = searchParams.get('ad') || null;
-    const master_account_id = searchParams.get('ma') || null;
+    const master_account = searchParams.get('ma') || null;
     const lead_id = searchParams.get('ld') || null;
 
     const currentValues = form.getValues();
     const sanitizedValues = sanitizeDocuments(currentValues);
+
+    console.log('sanitizedValues', sanitizedValues);
 
     let status = 'Started';
     if (currentStep === FormStep.DOCUMENTS) {
@@ -114,7 +116,7 @@ const IBKRApplicationForm = () => {
       const internalApplication: InternalApplicationPayload = {
         application: sanitizedValues,
         advisor_code: advisor_id,
-        master_account_id,
+        master_account,
         lead_id,
         date_sent_to_ibkr: null,
         user_id: session?.user.id,
