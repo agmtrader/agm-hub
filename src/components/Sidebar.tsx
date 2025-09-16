@@ -10,7 +10,6 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { motion } from "framer-motion"
-import Account from "./auth/Account"
 import { Button } from "./ui/button"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { formatURL } from "@/utils/language/lang"
@@ -23,8 +22,6 @@ interface Props {
 }
 
 const Sidebar = ({ setExpandSidebar }: Props) => {
-
-  // Testing the new git
 
   const { lang, t } = useTranslationProvider()
   const {data: session} = useSession()
@@ -82,9 +79,6 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
             )}
             
           </NavigationMenuList>
-          <div className="w-full flex flex-col justify-end items-end">
-            <Account />
-          </div>
         </NavigationMenu>
       </motion.div>
     </div>

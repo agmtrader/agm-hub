@@ -8,7 +8,6 @@ import { DollarSign, ShieldCheck, Info, Users, Briefcase, Building } from 'lucid
 import { toast } from '@/hooks/use-toast';
 import { CreateAccount, UploadAccountDocument } from "@/utils/entities/account";
 import { InternalAccount } from "@/lib/entities/account";
-import { useSession } from "next-auth/react";
 import LoaderButton from "@/components/misc/LoaderButton";
 import { formatDateFromTimestamp, formatTimestamp } from "@/utils/dates";
 import { ReadAdvisors } from "@/utils/entities/advisor";
@@ -27,15 +26,12 @@ import OrganizationCard from "./OrganizationCard";
 import { Separator } from "@/components/ui/separator";
 import ResultDialog from "./ResultDialog";
 import { Button } from "@/components/ui/button";
-import { sendCredentialsEmail } from "@/utils/tools/email";
 
 interface Props {
   applicationId: string;
 }
 
 const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
-    
-  const {data:session} = useSession()
 
   // Application
   const [application, setApplication] = useState<InternalApplication | null>(null);
@@ -87,10 +83,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
 
     if (!application || !application.application) return;
 
-    if (!session?.user?.id) {
-      throw new Error('User not found');
-    }
-
     try {
       setSubmitting(true)
 
@@ -122,7 +114,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
         temporal_password: null,
         application_id: application.id,
         fee_template: null,
-        user_id: session?.user?.id,
         master_account: application.master_account as 'ad' | 'br'
       }
 
@@ -402,17 +393,6 @@ const ApplicationPage: React.FC<Props> = ({ applicationId }) => {
               <LabelValue 
                 label="Lead ID"
                 value={application.lead_id}
-              />
-
-              <LabelValue 
-                label="User ID"
-                value={
-                  application.user_id ? (
-                    application.user_id
-                  ) : (
-                    '-'
-                  )
-                }
               />
             </div>
 

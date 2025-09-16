@@ -30,8 +30,7 @@ import { ReloadIcon } from "@radix-ui/react-icons"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
-import { useSession } from "next-auth/react"
-import { getRiskFormQuestions, RiskArchetype, RiskProfile, weights } from "@/lib/tools/risk-profile"
+import { getRiskFormQuestions, RiskArchetype, RiskProfile, RiskProfilePayload, weights } from "@/lib/tools/risk-profile"
 import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
@@ -40,7 +39,10 @@ import LoadingComponent from "@/components/misc/LoadingComponent"
 import { CreateInvestmentProposal } from "@/utils/tools/investment_proposals" 
 import InvestmentProposalView from "@/components/dashboard/tools/investment-center/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/tools/investment-proposals"
-import { RiskProfilePayload } from "@/lib/tools/risk-profile"
+import { CreateContact, ReadContactByEmail } from "@/utils/entities/contact"
+import { LeadPayload } from "@/lib/entities/lead"
+import { formatTimestamp } from "@/utils/dates"
+import { CreateLead } from "@/utils/entities/lead"
 
 // Each question in the form has a weight and each answer in the question has a weight
 // The risk score is calculated by summing the weighted values of the answers
@@ -51,7 +53,6 @@ import { RiskProfilePayload } from "@/lib/tools/risk-profile"
 const RiskForm = () => {
 
   const {toast} = useToast()
-  const {data:session} = useSession()
   const { t } = useTranslationProvider()
 
   const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
@@ -68,7 +69,7 @@ const RiskForm = () => {
   const [submitting, setSubmitting] = useState(false)
   const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
-  const [riskProfile, setRiskProfile] = useState<RiskProfile | null>(null)
+  const [riskProfile, setRiskProfile] = useState<RiskProfilePayload | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,7 +99,7 @@ const RiskForm = () => {
       const [key, value] = answer
   
       // Ignore certain fields
-      if (key !== 'account_id' && key !== 'client_name') {
+      if (key !== 'account_id' && key !== 'name' && key !== 'email') {
   
         // Get the weight of the question
         const weight = weights.find(el => el.name === key)?.weight || 0
@@ -115,12 +116,13 @@ const RiskForm = () => {
     setSubmitting(true)
 
     try {
-
-      if (!session?.user) throw new Error('User not found')
+      
       if (!riskArchetypes) throw new Error('Risk archetypes not found')
         
       // Calculate the risk score and find the assigned risk profile
       const risk_score = CalculateRiskScore(values)
+
+      console.log('Risk score', risk_score)
       
       // Find the assigned risk archetype
       const assigned_risk_archetype = riskArchetypes.find(archetype => risk_score >= archetype.min_score && risk_score < archetype.max_score)
@@ -135,24 +137,52 @@ const RiskForm = () => {
         goals: goals.find((q) => q.value === values.goals)?.label
       }
 
-      // Create the account risk profile
-      const riskProfile: any = {
-        name: values.client_name,
+      let contact_id = null;
+      let contact = await ReadContactByEmail(values.email);
+      if (!contact) {
+        // TODO: Look with phone too
+        const createContactResponse = await CreateContact({
+          name: values.name,
+          email: values.email,
+        });
+        contact_id = createContactResponse.id;
+      } else {
+        contact_id = contact?.id;
+      }
+
+      // Create lead only if no account is provided
+      if (!values.account_id) {
+        const lead:LeadPayload = {
+          contact_id: contact_id,
+          referrer_id: contact_id,
+          description: 'User filled in a risk assessment form. Make sure we follow up with them and open their account.',
+          contact_date: formatTimestamp(new Date()),
+          sent: null,
+          closed: null,
+        }
+        const leadResponse = await CreateLead(lead, [])
+        if (!leadResponse.id) throw new Error('Failed to create lead')
+      }
+
+      // Create the risk profile
+      const riskProfilePayload: RiskProfilePayload = {
+        name: values.name,
+        contact_id: contact_id,
         account_id: values.account_id,
         risk_profile_id: assigned_risk_archetype.id,
         score: risk_score,
-        answers: answers
+        answers: answers,
       }
-       
-      setRiskProfile(riskProfile)
-      const riskProfileResponse = await CreateRiskProfile(riskProfile)
+      const riskProfileResponse = await CreateRiskProfile(riskProfilePayload)
+      const riskProfile = {
+        ...riskProfilePayload,
+        id: riskProfileResponse
+      }
       if (!riskProfileResponse) throw new Error('Failed to create risk profile')
-      riskProfile['id'] = riskProfileResponse.id
 
       // Generate the investment proposal for the assigned risk profile
       const proposal = await CreateInvestmentProposal(riskProfile)
       if (!proposal) throw new Error('Failed to create investment proposal')
-      
       setInvestmentProposal(proposal)
       setIsProposalOpen(true)
 
@@ -189,80 +219,90 @@ const RiskForm = () => {
           transition={{ duration: 0.5 }}
         >
 
-            <FormField
-              control={form.control}
-              name="account_id"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-2 items-center">
-                    <FormLabel>{t('apply.risk.form.account_id')}</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className="w-full justify-between bg-muted"
-                        >
-                          {field.value
-                            ? accounts.find((account) => account.id === field.value)?.ibkr_account_number
-                            : t('forms.none') ?? 'None'
-                          }
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandList>
-                            <CommandInput placeholder={t('forms.search')} />
-                            <CommandEmpty>{t('forms.no_results')}</CommandEmpty>
-                            <CommandGroup>
+          <FormField
+            control={form.control}
+            name="account_id"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex gap-2 items-center">
+                  <FormLabel>{t('apply.risk.form.account_id')}</FormLabel>
+                  <FormMessage />
+                </div>
+                <FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between bg-muted"
+                      >
+                        {field.value
+                          ? accounts.find((account) => account.id === field.value)?.ibkr_account_number
+                          : t('forms.none') ?? 'None'
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandInput placeholder={t('forms.search')} />
+                          <CommandEmpty>{t('forms.no_results')}</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem
+                              key="none"
+                              value="none"
+                              onSelect={() => {
+                                field.onChange(null)
+                              }}
+                            >
+                              {t('forms.none') ?? 'None'}
+                            </CommandItem>
+                            {accounts.map((account) => (
                               <CommandItem
-                                key="none"
-                                value="none"
+                                key={account.id}
+                                value={account.ibkr_account_number}
                                 onSelect={() => {
-                                  field.onChange(null)
+                                  field.onChange(account.id)
                                 }}
                               >
-                                {t('forms.none') ?? 'None'}
+                                {account.ibkr_account_number}
                               </CommandItem>
-                              {accounts.map((account) => (
-                                <CommandItem
-                                  key={account.id}
-                                  value={account.ibkr_account_number}
-                                  onSelect={() => {
-                                    field.onChange(account.id)
-                                  }}
-                                >
-                                  {account.ibkr_account_number}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
           <FormField
-              control={form.control}
-              name="client_name"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-2">
-                    <FormLabel>{t('apply.risk.form.client_name')}</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('apply.risk.form.email')}</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('apply.risk.form.name')}</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
             <FormField
               control={form.control}
@@ -471,7 +511,7 @@ const RiskForm = () => {
                   <DialogTitle>Investment Proposal</DialogTitle>
                 </DialogHeader>
                 {investmentProposal && riskProfile && (
-                  <InvestmentProposalView riskProfile={riskProfile} investmentProposal={investmentProposal} />
+                  <InvestmentProposalView riskProfile={riskProfile as RiskProfile} investmentProposal={investmentProposal} />
                 )}
               </DialogContent>
             </Dialog>

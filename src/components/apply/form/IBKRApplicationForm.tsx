@@ -19,13 +19,16 @@ import LoaderButton from '@/components/misc/LoaderButton'
 import { Check } from "lucide-react"
 import ApplicationSuccess from './ApplicationSuccess'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { useSession } from 'next-auth/react'
 import LoadingComponent from '@/components/misc/LoadingComponent'
-import { getApplicationDefaults } from '@/utils/form'
 import FinancialInfoStep from './FinancialInfoStep'
 import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AccountInformationStep from './AccountInformationStep'
 import { individual_form } from './samples'
+import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
+import { Contact } from '@/lib/entities/contact'
+import { CreateLead } from '@/utils/entities/lead'
+import { LeadPayload } from '@/lib/entities/lead'
+import { formatTimestamp } from '@/utils/dates'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.
@@ -44,7 +47,6 @@ const IBKRApplicationForm = () => {
 
   const searchParams = useSearchParams();
   const { t } = useTranslationProvider();
-  const { data: session } = useSession();
   
   // State for step navigation and data
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
@@ -96,36 +98,67 @@ const IBKRApplicationForm = () => {
 
   // Create/update draft on every step
   const saveProgress = async () => {
-    if (!session?.user) throw new Error('User not found');
 
     const advisor_id = searchParams.get('ad') || null;
     const master_account = searchParams.get('ma') || null;
-    const lead_id = searchParams.get('ld') || null;
+    let lead_id = searchParams.get('ld') || null;
 
     const currentValues = form.getValues();
     const sanitizedValues = sanitizeDocuments(currentValues);
 
-    console.log('sanitizedValues', sanitizedValues);
+    let contact_id = null;
+    let contact = await ReadContactByEmail(sanitizedValues.customer.email);
+    if (!contact) {
+      // TODO: Look with phone too
+      const createContactResponse = await CreateContact({
+        name: sanitizedValues.customer.accountHolder?.accountHolderDetails[0]?.name.first + ' ' + sanitizedValues.customer.accountHolder?.accountHolderDetails[0]?.name.last,
+        email: sanitizedValues.customer.email,
+        country: sanitizedValues.customer.legalResidenceCountry,
+      });
+      contact_id = createContactResponse.id;
+    } else {
+      contact_id = contact?.id;
+    }
 
     let status = 'Started';
     if (currentStep === FormStep.DOCUMENTS) {
+
+      // If the application is being submitted, assign a lead ID if one is not provided
+      if (!lead_id) {
+        const leadPayload: LeadPayload = {
+          contact_id: contact_id,
+          referrer_id: contact_id,
+          description: 'User filled in the application form by themselves.',
+          contact_date: formatTimestamp(new Date()),
+          closed: formatTimestamp(new Date()),
+          sent: formatTimestamp(new Date()),
+        };
+  
+        const leadResponse = await CreateLead(leadPayload, [])
+        if (!leadResponse.id) throw new Error('Error creating lead, please try again later.');
+
+        lead_id = leadResponse.id;
+      }
+
       status = 'Completed';
     }
 
     if (!applicationId) {
+
       const internalApplication: InternalApplicationPayload = {
         application: sanitizedValues,
         advisor_code: advisor_id,
         master_account,
         lead_id,
         date_sent_to_ibkr: null,
-        user_id: session?.user.id,
         status,
+        contact_id: contact_id,
       };
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
     } else {
-      await UpdateApplicationByID(applicationId, { application: sanitizedValues, status: status });
+      console.log('Updating application', applicationId, { application: sanitizedValues, status: status, lead_id: lead_id });
+      await UpdateApplicationByID(applicationId, { application: sanitizedValues, status: status, lead_id: lead_id });
     }
   };
   
@@ -185,16 +218,12 @@ const IBKRApplicationForm = () => {
   async function onSubmit(values: Application) {
     try {
 
-      if (!session?.user) throw new Error('User not found')
-
       if (currentStep !== FormStep.DOCUMENTS) {
         await handleNextStep();
         return;
       }
       
       setIsSubmitting(true);
-
-      // Final save (create if needed, otherwise update)
       await saveProgress();
 
       toast({
@@ -204,8 +233,8 @@ const IBKRApplicationForm = () => {
       });
 
       setCurrentStep(FormStep.SUCCESS);
-      // No local storage cleanup required
       setApplicationId(null);
+
     } catch (error) {
       toast({
         title: "Submission Failed",

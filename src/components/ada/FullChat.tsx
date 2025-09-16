@@ -10,14 +10,11 @@ import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { accessAPI } from '@/utils/api'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { ChatResponse } from '@/lib/public/ada'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 const FullChat = () => {
-    const router = useRouter()
-    const {data:session} = useSession()
     const {t} = useTranslationProvider()
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>('');
@@ -64,8 +61,6 @@ const FullChat = () => {
         }
     }
     
-    if (!session) return null
-
     return (
         <Card className="flex-1 flex flex-col border-none shadow-none backdrop-blur">
             <CardHeader className="flex flex-row items-center justify-between w-full">

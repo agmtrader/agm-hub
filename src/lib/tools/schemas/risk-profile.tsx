@@ -3,7 +3,7 @@ import { z } from "zod"
 // Form schema
 export const risk_assesment_schema = (t: (key: string) => string) => z.object({
     account_id: z.string().nullable(),
-    client_name: z.string({
+    name: z.string({
         required_error: t('forms.errors.input_required')
     }),
     type: z.enum(["1", "2.5", "4"], {
@@ -36,4 +36,7 @@ export const risk_assesment_schema = (t: (key: string) => string) => z.object({
         return {message: t('forms.errors.select_required')};
         },
     }),
+    email: z.string().email({
+        message: t('forms.errors.email_invalid'),
+    })
 })

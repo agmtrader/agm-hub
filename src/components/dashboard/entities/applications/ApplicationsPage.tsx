@@ -259,15 +259,6 @@ const ApplicationsPage = () => {
               onClick: (row: InternalApplication) => handleRowClick(row)
             },
             {
-              label: 'View User',
-              onClick: (row: InternalApplication) => {
-                const user = users?.find(user => user.id === row.user_id)
-                if (user) {
-                  redirect(formatURL(`/dashboard/users/${user.id}`, lang))
-                }
-              }
-            },
-            {
               label: 'View Account',
               onClick: (row: InternalApplication) => {
                 const associatedAccount = accounts?.find(account => account.application_id === row.id)

@@ -24,7 +24,6 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { ReadUsers } from '@/utils/entities/user'
 import { sendTaskReminderEmail } from '@/utils/tools/email'
 import { User } from 'next-auth'
-import { ReadAccountByAccountID } from '@/utils/entities/account'
 import UserCard from '../users/UserCard'
 import LoadingComponent from '@/components/misc/LoadingComponent'
 import { ReadPendingTaskByID } from '@/utils/entities/pending_task'
@@ -36,6 +35,8 @@ interface Props {
   onSuccess?: () => void
   users?: User[]
 }
+
+/* TODO: Fix this */
 
 const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess, users }: Props) => {
 
@@ -83,10 +84,7 @@ const PendingTaskDialog = ({ taskID, isOpen, onOpenChange, onSuccess, users }: P
         setAGMUsers(agm)
 
         if (!task) return
-        const account = await ReadAccountByAccountID(task.account_id)
-        if (!account || !account.user_id) throw new Error('Account or user ID not found')
-        const usr = allUsers.find((u: any) => u.id === account.user_id)
-        if (usr) setUser(usr); else setUser(null)
+        setUser(null)
       } catch {
         // ignore
       }

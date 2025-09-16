@@ -24,16 +24,13 @@ export async function accessAPI(url: string, type: string, params?: Map) {
 }
 
 export async function getToken(): Promise<string> {
-    
-    const session = await getServerSession(authOptions);
-    if (!session || !session?.user) throw new Error('No session found');
 
     const response = await fetch(`${api_url}/token`, {
         method: 'POST',
         headers: {
             'Cache-Control': 'no-cache',
         },
-        body: JSON.stringify({token: session?.user?.id, scopes: session?.user?.scopes}),
+        body: JSON.stringify({token: 'all'}),
     })
 
     if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`Failed to get authentication token.`);

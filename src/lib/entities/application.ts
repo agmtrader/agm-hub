@@ -77,8 +77,8 @@ export type InternalApplicationPayload = {
     lead_id: string | null;
     application: Application | null;
     date_sent_to_ibkr: string | null;
-    user_id: string | null;
     status: string | null;
+    contact_id: string | null;
 }
 
 export type InternalApplication = InternalApplicationPayload & Base

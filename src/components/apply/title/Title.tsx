@@ -12,7 +12,6 @@ import { ReadApplicationByLeadID } from '@/utils/entities/application'
 import { ReadLeadByID, UpdateLeadByID } from '@/utils/entities/lead'
 import { toast } from '@/hooks/use-toast'
 import { formatTimestamp } from '@/utils/dates'
-import PreviousApplications from './PreviousApplications'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -163,9 +162,6 @@ const Title = ({ setStarted }:Props) => {
                   }
                 </p>
             </ShimmerButton>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <PreviousApplications setStarted={setStarted}/>
           </motion.div>
         </motion.div>
       </div>

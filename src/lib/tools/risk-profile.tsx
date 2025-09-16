@@ -2,10 +2,19 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Base } from '../entities/base';
 
 export interface RiskProfilePayload {
+  contact_id: string;
   name: string;
   account_id: string | null;
   risk_profile_id: number;
   score: number;
+  answers: {
+    gain: string | undefined;
+    loss: string | undefined;
+    period: string | undefined;
+    diversification: string | undefined;
+    goals: string | undefined;
+    type: string | undefined;
+  }
 }
 
 export type RiskProfile = RiskProfilePayload & Base

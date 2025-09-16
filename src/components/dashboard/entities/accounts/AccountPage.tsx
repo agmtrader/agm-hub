@@ -308,7 +308,6 @@ const AccountPage = ({ accountId }: Props) => {
             <div className="space-y-3">
               <LabelValue label="Internal Account ID" value={internalAccount.id} />
               <LabelValue label="Application ID" value={internalAccount.application_id} />
-              <LabelValue label="User ID" value={internalAccount.user_id || '-'} />
               <LabelValue label="Fee Template" value={internalAccount.fee_template || '-'} />
               <Button 
                 onClick={() => sendCredentialsEmail({ username: associatedPersons[0].username, password: 'empty' }, associatedPersons[0].email, 'es')} 

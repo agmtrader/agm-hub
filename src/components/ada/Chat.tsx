@@ -11,14 +11,12 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { usePathname, useRouter } from 'next/navigation'
 import { formatURL, getCallbackUrl } from '@/utils/language/lang'
-import { useSession } from 'next-auth/react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { accessAPI } from '@/utils/api'
-import { ChatMessage, ChatResponse } from '@/lib/public/ada'
+import { ChatResponse } from '@/lib/public/ada'
 
 const AdaChat = () => {
     const router = useRouter()
-    const {data:session} = useSession()
     const {lang, t} = useTranslationProvider()
     const pathname = usePathname()
     
@@ -74,7 +72,6 @@ const AdaChat = () => {
         setIsExpanded(false)
     }
     
-    if (!session) return null
     if (getCallbackUrl(pathname) === '/ada') return null
 
     return (
