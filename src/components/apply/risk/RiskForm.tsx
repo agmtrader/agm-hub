@@ -173,10 +173,11 @@ const RiskForm = () => {
         score: risk_score,
         answers: answers,
       }
+      setRiskProfile(riskProfilePayload)
       const riskProfileResponse = await CreateRiskProfile(riskProfilePayload)
       const riskProfile = {
         ...riskProfilePayload,
-        id: riskProfileResponse
+        id: riskProfileResponse.id
       }
       if (!riskProfileResponse) throw new Error('Failed to create risk profile')
 
