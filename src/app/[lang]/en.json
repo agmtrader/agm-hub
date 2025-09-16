@@ -393,6 +393,7 @@
                 "investment_objectives_description": "Select all that apply to this account",
                 "investment_experience": "Investment Experience",
                 "source_of_wealth": "Source of Wealth",
+                "source_of_wealth_description": "If you select 'Employed', you must include 'Income' as one of your sources of wealth in the Financial Information section.",
                 "source_type": "Source Type",
                 "percentage": "Percentage",
                 "add_source": "Add Source",

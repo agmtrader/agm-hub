@@ -387,6 +387,7 @@
                 "investment_objectives_description": "Selecciona todos los que apliquen a esta cuenta",
                 "investment_experience": "Experiencia en Inversiones",
                 "source_of_wealth": "Fuente de Riqueza",
+                "source_of_wealth_description": "Si seleccionas 'Empleado', debes incluir 'Ingresos' como una de tus fuentes de riqueza en la sección de Información Financiera.",
                 "source_type": "Tipo de Fuente",
                 "percentage": "Porcentaje",
                 "add_source": "Agregar Fuente",
