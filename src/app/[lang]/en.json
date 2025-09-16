@@ -587,7 +587,8 @@
             "description": "Please complete this form to help us understand your risk tolerance and investment preferences.",
             "form": {
                 "account_id": "Account number",
-                "client_name": "Full name",
+                "email": "Email",
+                "name": "Name",
                 "type": {
                     "title": "What type of investor do you consider yourself?",
                     "conservative": "Conservative",

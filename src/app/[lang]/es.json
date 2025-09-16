@@ -581,7 +581,8 @@
             "description": "Por favor, completa este formulario para ayudarnos a entender tu tolerancia al riesgo y preferencias de inversión.",
             "form": {
                 "account_id": "Número de cuenta",
-                "client_name": "Nombre completo",
+                "email": "Correo electrónico",
+                "name": "Nombre",
                 "type": {
                     "title": "¿Qué tipo de inversor te consideras?",
                     "conservative": "Conservador",
