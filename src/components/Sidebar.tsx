@@ -15,7 +15,6 @@ import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { formatURL } from "@/utils/language/lang"
 import { X } from "lucide-react"
 import LanguageSwitcher from "./misc/LanguageSwitcher"
-import { useSession } from "next-auth/react"
 
 interface Props {
   setExpandSidebar: React.Dispatch<React.SetStateAction<boolean>>
@@ -24,7 +23,6 @@ interface Props {
 const Sidebar = ({ setExpandSidebar }: Props) => {
 
   const { lang, t } = useTranslationProvider()
-  const {data: session} = useSession()
 
   const navbarContent = [
     { name: 'AGM Home', url: '/' },
@@ -67,16 +65,6 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
                 </Link>
               </NavigationMenuItem>
             ))}
-
-            {session?.user?.scopes?.includes('all') && (
-              <NavigationMenuItem className="w-full text-end">
-                <Link href={formatURL('/dashboard', lang)} legacyBehavior passHref>
-                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "justify-end")}>
-                    Dashboard
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            )}
             
           </NavigationMenuList>
         </NavigationMenu>

@@ -37,7 +37,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 import { CreateInvestmentProposal } from "@/utils/tools/investment_proposals" 
-import InvestmentProposalView from "@/components/dashboard/tools/investment-center/InvestmentProposal"
+import InvestmentProposalView from "@/components/apply/risk/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/tools/investment-proposals"
 import { CreateContact, ReadContactByEmail } from "@/utils/entities/contact"
 import { LeadPayload } from "@/lib/entities/lead"
