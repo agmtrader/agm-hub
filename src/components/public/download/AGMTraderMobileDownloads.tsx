@@ -1,11 +1,11 @@
 'use client'
 import { formatURL } from '@/utils/language/lang';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { AGMTraderProDownloads as downloads } from '@/lib/public/downloads';
-import Link from 'next/link';;
+import { AGMTraderMobileDownloads as downloads } from '@/lib/public/downloads';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 
-const AGMTraderProDownloads = () => {
+const AGMTraderMobileDownloads = () => {
   
   const {lang, t} = useTranslationProvider();
 
@@ -17,17 +17,18 @@ const AGMTraderProDownloads = () => {
         <div className="max-w-7xl mx-auto flex flex-col my-10">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-foreground mb-6">
-              {t('agm-trader.download.trader.title')}
+              {t('agm-trader.download.mobile.title')}
             </h1>
             <p className="text-lg max-w-xl mx-auto text-subtitle mb-10">
-              {t('agm-trader.download.trader.description')}
+              {t('agm-trader.download.mobile.description')}
             </p>
           </div>
 
           <div className="flex flex-col gap-y-6">
+            {/* Mobile Section */}
             <div>
-              <h2 className="text-xl font-semibold text-foreground mb-4">{t('agm-trader.download.desktop_platforms')}</h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <h2 className="text-xl font-semibold text-foreground mb-4">{t('agm-trader.download.mobile_platforms')}</h2>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {downloads.map((option) => (
                   <Card
                     key={option.os}
@@ -67,4 +68,4 @@ const AGMTraderProDownloads = () => {
   );
 };
 
-export default AGMTraderProDownloads;
+export default AGMTraderMobileDownloads;

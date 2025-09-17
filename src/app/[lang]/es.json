@@ -108,10 +108,21 @@
             ]
         },
         "download": {
-            "title": "Descargar AGM Trader",
+            "trader": {
+                "title": "Descargar AGM Trader",
+                "description": "Descarga nuestras aplicaciones de trading profesionales para tu plataforma preferida"
+            },
+            "mobile": {
+                "title": "Descargar AGM Trader Mobile",
+                "description": "Descarga nuestras aplicaciones de trading profesionales para tu plataforma preferida"
+            },
             "device": "Elige tu dispositivo",
             "operating_system": "Elige tu sistema operativo",
-            "download_now": "Descargar ahora"
+            "download_now": "Descargar ahora",
+            "desktop_platforms": "Plataformas de escritorio",
+            "mobile_platforms": "Plataformas móviles",
+            "by_downloading": "Al descargar, aceptas nuestros",
+            "terms_of_service": "Términos de servicio"
         }
     },
     "agm-advisor": {

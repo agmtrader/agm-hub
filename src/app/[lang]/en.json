@@ -102,8 +102,14 @@
             ]
         },
         "download": {
-            "title": "Download AGM Trader Pro",
-            "description": "AGM Trader Pro is our flagship product, a trading platform that allows you to trade stocks, options, futures, and more.",
+            "trader": {
+                "title": "Download AGM Trader Pro",
+                "description": "AGM Trader Pro is our flagship product, a trading platform that allows you to trade stocks, options, futures, and more."
+            },
+            "mobile": {
+                "title": "Download AGM Trader Mobile",
+                "description": "AGM Trader Mobile is our mobile trading platform that allows you to trade stocks, options, futures, and more."
+            },  
             "download_now": "Download now",
             "desktop_platforms": "Desktop Platforms",
             "mobile_platforms": "Mobile Platforms",

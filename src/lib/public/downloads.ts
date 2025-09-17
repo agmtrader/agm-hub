@@ -22,7 +22,10 @@ export const AGMTraderProDownloads: DownloadOption[] = [
     os: 'Linux',
     icon: FaLinux,
     download_url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-linux-x64.sh',
-  },
+  }
+]; 
+
+export const AGMTraderMobileDownloads: DownloadOption[] = [
   {
     os: 'iOS',
     icon: IoLogoApple,
@@ -33,4 +36,4 @@ export const AGMTraderProDownloads: DownloadOption[] = [
     icon: FaAndroid,
     download_url: 'https://play.google.com/store/apps/details?id=com.clientam.agm.app&hl=en&pli=1',
   },
-]; 
+];

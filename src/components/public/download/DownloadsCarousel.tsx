@@ -39,6 +39,15 @@ function DownloadsCarousel() {
         { type: 'Windows', icon: FaWindows, osType: osTypes.WINDOWS },
         { type: 'Mac', icon: FaApple, osType: osTypes.MACOS },
         { type: 'Linux', icon: FaLinux, osType: osTypes.LINUX },
+      ]
+    },
+    {
+      name: 'AGM Trader Mobile',
+      title: 'Mobile Trading Platform',
+      description: t('agm-trader.download.title'),
+      icon: '/assets/brand/agm-logo-circle.png',
+      download_url: '/downloads/mobile',
+      platforms: [
         { type: 'Android', icon: FaAndroid, osType: osTypes.ANDROID },
         { type: 'iOS', icon: FaApple, osType: osTypes.IOS },
       ]
