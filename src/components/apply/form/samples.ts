@@ -5,7 +5,7 @@ const external_id = Math.random().toString(36).substring(2, 12)
 export const individual_form: Application = {
     "customer": {
         "type": "INDIVIDUAL",
-        "externalId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
+        "externalId": external_id,
         "prefix": "andr",
         "email": "aguilarcarboni@gmail.com",
         "mdStatusNonPro": true,
@@ -18,7 +18,7 @@ export const individual_form: Application = {
                     "w8Ben": {
                         "localTaxForms": [],
                         "name": "Andres Aguilar",
-                        "foreignTaxId": "10810195",
+                        "foreignTaxId": "118490741",
                         "tinOrExplanationRequired": true,
                         "part29ACountry": "N/A",
                         "cert": true,
@@ -32,7 +32,7 @@ export const individual_form: Application = {
                         "last": "Aguilar"
                     },
                     "email": "aguilarcarboni@gmail.com",
-                    "dateOfBirth": "2025-09-18",
+                    "dateOfBirth": "2005-09-15",
                     "countryOfBirth": "CRI",
                     "maritalStatus": "S",
                     "numDependents": 0,
@@ -53,20 +53,20 @@ export const individual_form: Application = {
                         }
                     ],
                     "identification": {
-                        "expirationDate": "2025-09-10",
+                        "expirationDate": "2030-09-18",
                         "issuingCountry": "CRI",
                         "citizenship": "CRI",
-                        "passport": "980168263"
+                        "passport": "118490741"
                     },
                     "taxResidencies": [
                         {
                             "country": "CRI",
-                            "tin": "10810195",
-                            "tinType": "SSN"
+                            "tin": "118490741",
+                            "tinType": "NonUS_NationalId"
                         }
                     ],
                     "employmentType": "UNEMPLOYED",
-                    "externalId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
+                    "externalId": external_id,
                     "mailingAddress": {
                         "street1": "Calle San Miguel",
                         "street2": null,
@@ -75,7 +75,7 @@ export const individual_form: Application = {
                         "city": "San Jose",
                         "postalCode": "30301"
                     },
-                    "employmentDetails": null
+                    "employmentDetails": null,
                 }
             ],
             "regulatoryInformation": [
@@ -129,7 +129,7 @@ export const individual_form: Application = {
         {
             "multiCurrency": true,
             "feesTemplateName": "Default",
-            "externalId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
+            "externalId": external_id,
             "investmentObjectives": [
                 "Growth"
             ],
@@ -145,8 +145,8 @@ export const individual_form: Application = {
     ],
     "users": [
         {
-            "externalUserId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
-            "externalIndividualId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
+            "externalUserId": external_id,
+            "externalIndividualId": external_id,
             "prefix": "andr"
         }
     ],
@@ -155,7 +155,8 @@ export const individual_form: Application = {
     "id": null,
     "inputLanguage": null,
     "translation": null,
-    "paperAccount": null
+    "paperAccount": null,
+    "documents": []
 }
 
 const joint_external_id_1 = Math.random().toString(36).substring(2, 12)
@@ -224,7 +225,7 @@ export const joint_form: Application = {
                         }
                     ],
                     "employmentType": "UNEMPLOYED",
-                    "externalId": joint_external_id_1,
+                    "externalId": external_id,
                     "mailingAddress": {
                         "street1": "Avenida Escazu",
                         "street2": null,
