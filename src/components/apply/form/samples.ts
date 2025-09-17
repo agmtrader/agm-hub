@@ -5,7 +5,7 @@ const external_id = Math.random().toString(36).substring(2, 12)
 export const individual_form: Application = {
     "customer": {
         "type": "INDIVIDUAL",
-        "externalId": "cb6d8787-0716-4105-8408-02cda97321d9",
+        "externalId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
         "prefix": "andr",
         "email": "aguilarcarboni@gmail.com",
         "mdStatusNonPro": true,
@@ -18,7 +18,7 @@ export const individual_form: Application = {
                     "w8Ben": {
                         "localTaxForms": [],
                         "name": "Andres Aguilar",
-                        "foreignTaxId": "118490741",
+                        "foreignTaxId": "10810195",
                         "tinOrExplanationRequired": true,
                         "part29ACountry": "N/A",
                         "cert": true,
@@ -32,16 +32,16 @@ export const individual_form: Application = {
                         "last": "Aguilar"
                     },
                     "email": "aguilarcarboni@gmail.com",
-                    "dateOfBirth": "2002-07-24",
+                    "dateOfBirth": "2025-09-18",
                     "countryOfBirth": "CRI",
                     "maritalStatus": "S",
                     "numDependents": 0,
                     "residenceAddress": {
-                        "street1": "The Oasis",
+                        "street1": "Calle San Miguel",
                         "street2": null,
                         "country": "CRI",
                         "state": "CR-SJ",
-                        "city": "La Union",
+                        "city": "San Jose",
                         "postalCode": "30301"
                     },
                     "sameMailAddress": true,
@@ -53,26 +53,26 @@ export const individual_form: Application = {
                         }
                     ],
                     "identification": {
-                        "expirationDate": "2032-09-08",
+                        "expirationDate": "2025-09-10",
                         "issuingCountry": "CRI",
                         "citizenship": "CRI",
-                        "passport": "118490741"
+                        "passport": "980168263"
                     },
                     "taxResidencies": [
                         {
                             "country": "CRI",
-                            "tin": "118490741",
+                            "tin": "10810195",
                             "tinType": "SSN"
                         }
                     ],
                     "employmentType": "UNEMPLOYED",
-                    "externalId": "cb6d8787-0716-4105-8408-02cda97321d9",
+                    "externalId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
                     "mailingAddress": {
-                        "street1": "The Oasis",
+                        "street1": "Calle San Miguel",
                         "street2": null,
                         "country": "CRI",
                         "state": "CR-SJ",
-                        "city": "La Union",
+                        "city": "San Jose",
                         "postalCode": "30301"
                     },
                     "employmentDetails": null
@@ -101,14 +101,26 @@ export const individual_form: Application = {
             ],
             "financialInformation": [
                 {
-                    "netWorth": 10000,
-                    "liquidNetWorth": 10000,
-                    "annualNetIncome": 10000,
+                    "netWorth": 100000,
+                    "liquidNetWorth": 25000,
+                    "annualNetIncome": 100000,
                     "investmentObjectives": [
                         "Growth"
                     ],
-                    "investmentExperience": [],
-                    "sourcesOfWealth": []
+                    "investmentExperience": [
+                        {
+                            "assetClass": "BOND",
+                            "yearsTrading": 3,
+                            "tradesPerYear": 3,
+                            "knowledgeLevel": "Good"
+                        }
+                    ],
+                    "sourcesOfWealth": [
+                        {
+                            "sourceType": "SOW-IND-Income",
+                            "percentage": 100
+                        }
+                    ]
                 }
             ]
         }
@@ -117,7 +129,7 @@ export const individual_form: Application = {
         {
             "multiCurrency": true,
             "feesTemplateName": "Default",
-            "externalId": "cb6d8787-0716-4105-8408-02cda97321d9",
+            "externalId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
             "investmentObjectives": [
                 "Growth"
             ],
@@ -126,15 +138,15 @@ export const individual_form: Application = {
             "tradingPermissions": [
                 {
                     "country": "UNITED STATES",
-                    "product": "BONDS"
+                    "product": "STOCKS"
                 }
             ]
         }
     ],
     "users": [
         {
-            "externalUserId": "cb6d8787-0716-4105-8408-02cda97321d9",
-            "externalIndividualId": "cb6d8787-0716-4105-8408-02cda97321d9",
+            "externalUserId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
+            "externalIndividualId": "29e24b35-c51e-407e-b332-83a973c9ff2b",
             "prefix": "andr"
         }
     ],
