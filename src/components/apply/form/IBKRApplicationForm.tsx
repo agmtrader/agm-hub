@@ -28,6 +28,7 @@ import { CreateLead } from '@/utils/entities/lead'
 import { LeadPayload } from '@/lib/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
 import { getApplicationDefaults } from '@/utils/form'
+import { individual_form } from './samples'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.
@@ -95,6 +96,99 @@ const IBKRApplicationForm = () => {
     return { ...values, documents: sanitizedDocuments };
   };
 
+  // New helper to strip employmentDetails for holders whose employmentType is neither EMPLOYED nor SELF_EMPLOYED
+  const sanitizeEmploymentDetails = (application: Application): Application => {
+    const clone = structuredClone(application);
+    const strip = (holder: any) => {
+      if (!holder) return;
+      if (holder.employmentType && holder.employmentType !== 'EMPLOYED' && holder.employmentType !== 'SELF_EMPLOYED') {
+        holder.employmentDetails = null;
+      }
+    };
+
+    switch (clone.customer.type) {
+      case 'INDIVIDUAL':
+        strip(clone.customer.accountHolder?.accountHolderDetails?.[0]);
+        break;
+      case 'JOINT':
+        strip(clone.customer.jointHolders?.firstHolderDetails?.[0]);
+        strip(clone.customer.jointHolders?.secondHolderDetails?.[0]);
+        break;
+      case 'ORG':
+        const individuals = clone.customer.organization?.associatedEntities?.associatedIndividuals || [];
+        individuals.forEach(strip);
+        break;
+    }
+    return clone;
+  };
+
+  // Helper to strip mailingAddress when sameMailAddress is true
+  const sanitizeMailingAddress = (application: Application): Application => {
+    const clone = structuredClone(application);
+
+    const processHolder = (holder: any) => {
+      if (!holder) return;
+      if (holder.sameMailAddress === true) {
+        holder.mailingAddress = null;
+      }
+    };
+
+    switch (clone.customer.type) {
+      case 'INDIVIDUAL':
+        processHolder(clone.customer.accountHolder?.accountHolderDetails?.[0]);
+        break;
+      case 'JOINT':
+        processHolder(clone.customer.jointHolders?.firstHolderDetails?.[0]);
+        processHolder(clone.customer.jointHolders?.secondHolderDetails?.[0]);
+        break;
+      case 'ORG':
+        const individuals = clone.customer.organization?.associatedEntities?.associatedIndividuals || [];
+        individuals.forEach(processHolder);
+        break;
+    }
+    return clone;
+  };
+
+  const getContactCandidates = (values: Application): { name: string; email: string }[] => {
+    const contacts: { name: string; email: string }[] = [];
+    const { customer } = values;
+
+    switch (customer.type) {
+      case 'INDIVIDUAL': {
+        const holder = customer.accountHolder?.accountHolderDetails?.[0];
+        if (holder?.email) {
+          contacts.push({
+            name: `${holder.name.first} ${holder.name.last}`.trim(),
+            email: holder.email,
+          });
+        }
+        break;
+      }
+      case 'JOINT': {
+        const first = customer.jointHolders?.firstHolderDetails?.[0];
+        const second = customer.jointHolders?.secondHolderDetails?.[0];
+        if (first?.email) {
+          contacts.push({ name: `${first.name.first} ${first.name.last}`.trim(), email: first.email });
+        }
+        if (second?.email) {
+          contacts.push({ name: `${second.name.first} ${second.name.last}`.trim(), email: second.email });
+        }
+        break;
+      }
+      case 'ORG': {
+        const individuals = customer.organization?.associatedEntities?.associatedIndividuals || [];
+        individuals.forEach((ind) => {
+          if (ind?.email) {
+            contacts.push({ name: `${ind.name.first} ${ind.name.last}`.trim(), email: ind.email });
+          }
+        });
+        break;
+      }
+    }
+
+    return contacts;
+  };
+
   // Create/update draft on every step
   const saveProgress = async () => {
 
@@ -103,20 +197,24 @@ const IBKRApplicationForm = () => {
     let lead_id = searchParams.get('ld') || null;
 
     const currentValues = form.getValues();
-    const sanitizedValues = sanitizeDocuments(currentValues);
+    const sanitizedValues = sanitizeDocuments(sanitizeEmploymentDetails(sanitizeMailingAddress(currentValues)));
 
+    // Contact creation – only attempt after Personal Info step (or later)
     let contact_id = null;
-    let contact = await ReadContactByEmail(sanitizedValues.customer.email);
-    if (!contact) {
-      // TODO: Look with phone too
-      const createContactResponse = await CreateContact({
-        name: sanitizedValues.customer.accountHolder?.accountHolderDetails[0]?.name.first + ' ' + sanitizedValues.customer.accountHolder?.accountHolderDetails[0]?.name.last,
-        email: sanitizedValues.customer.email,
-        country: sanitizedValues.customer.legalResidenceCountry,
-      });
-      contact_id = createContactResponse.id;
-    } else {
-      contact_id = contact?.id;
+    if (currentStep >= FormStep.PERSONAL_INFO) {
+      const candidates = getContactCandidates(sanitizedValues);
+      for (const c of candidates) {
+        if (!c.email) continue;
+        let existingContact = await ReadContactByEmail(c.email);
+        if (!existingContact) {
+          const createResp = await CreateContact({ name: c.name, email: c.email });
+          // CreateContact returns IDResponse
+          existingContact = { id: createResp.id } as any;
+        }
+        if (!contact_id && existingContact?.id) {
+          contact_id = existingContact.id;
+        }
+      }
     }
 
     let status = 'Started';
@@ -139,7 +237,11 @@ const IBKRApplicationForm = () => {
       setApplicationId(createResp.id);
     } else {
       console.log('Updating application', applicationId, { application: sanitizedValues, status: status, lead_id: lead_id });
-      await UpdateApplicationByID(applicationId, { application: sanitizedValues, status: status, lead_id: lead_id });
+      const updatePayload:any = { application: sanitizedValues, status: status, lead_id: lead_id };
+      if (contact_id) {
+        updatePayload.contact_id = contact_id;
+      }
+      await UpdateApplicationByID(applicationId, updatePayload);
     }
   };
   

@@ -4,7 +4,7 @@ import { Application } from '@/lib/entities/application';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+// Removed Checkbox import – investment objectives now read-only
 import { Input } from '@/components/ui/input';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { investment_objectives as getInvestmentObjectives, products_complete as getProductsComplete } from '@/lib/public/form';
@@ -75,37 +75,28 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
           />
         </div>
 
-        {/* Investment Objectives (checkbox list) */}
+        {/* Investment Objectives – read-only display synced from Financial Info */}
         <FormField
           control={form.control}
           name="accounts.0.investmentObjectives"
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('apply.account.account_holder_info.investment_objectives')}</FormLabel>
-              <FormDescription>{t('apply.account.account_holder_info.investment_objectives_description')}</FormDescription>
-              <div className="flex flex-col space-y-2">
-                {investmentObjectivesOptions.map((option) => {
-                  const checked = (field.value || []).includes(option.id);
+              <div className="flex flex-wrap gap-2">
+                {((field.value as string[]) || []).map((obj) => {
+                  const label = investmentObjectivesOptions.find((o) => o.id === obj)?.label || obj;
                   return (
-                    <label key={option.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        checked={checked}
-                        onCheckedChange={(isChecked) => {
-                          let newValue: string[] = Array.isArray(field.value) ? [...field.value] : [];
-                          if (isChecked) {
-                            if (!newValue.includes(option.id)) newValue.push(option.id);
-                          } else {
-                            newValue = newValue.filter((v) => v !== option.id);
-                          }
-                          field.onChange(newValue);
-                        }}
-                      />
-                      <span>{option.label}</span>
-                    </label>
+                    <span key={obj} className="px-2 py-1 rounded bg-muted text-sm">
+                      {label}
+                    </span>
                   );
                 })}
+                {!(field.value && field.value.length) && (
+                  <span className="text-subtitle text-sm">
+                    {t('apply.account.account_holder_info.investment_objectives_description')}
+                  </span>
+                )}
               </div>
-              <FormMessage />
             </FormItem>
           )}
         />

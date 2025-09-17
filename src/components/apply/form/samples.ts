@@ -5,8 +5,8 @@ const external_id = Math.random().toString(36).substring(2, 12)
 export const individual_form: Application = {
     "customer": {
         "type": "INDIVIDUAL",
-        "externalId": external_id,
-        "prefix": "aguila",
+        "externalId": "cb6d8787-0716-4105-8408-02cda97321d9",
+        "prefix": "andr",
         "email": "aguilarcarboni@gmail.com",
         "mdStatusNonPro": true,
         "meetAmlStandard": "true",
@@ -32,17 +32,17 @@ export const individual_form: Application = {
                         "last": "Aguilar"
                     },
                     "email": "aguilarcarboni@gmail.com",
-                    "dateOfBirth": "2002-08-24",
+                    "dateOfBirth": "2002-07-24",
                     "countryOfBirth": "CRI",
                     "maritalStatus": "S",
-                    "numDependents": 100,
+                    "numDependents": 0,
                     "residenceAddress": {
                         "street1": "The Oasis",
-                        "street2": ".",
+                        "street2": null,
+                        "country": "CRI",
+                        "state": "CR-SJ",
                         "city": "La Union",
-                        "state": "CR-C",
-                        "postalCode": "30301",
-                        "country": "CRI"
+                        "postalCode": "30301"
                     },
                     "sameMailAddress": true,
                     "phones": [
@@ -53,7 +53,7 @@ export const individual_form: Application = {
                         }
                     ],
                     "identification": {
-                        "expirationDate": "2027-08-27",
+                        "expirationDate": "2032-09-08",
                         "issuingCountry": "CRI",
                         "citizenship": "CRI",
                         "passport": "118490741"
@@ -62,20 +62,20 @@ export const individual_form: Application = {
                         {
                             "country": "CRI",
                             "tin": "118490741",
-                            "tinType": "NonUS_NationalId"
+                            "tinType": "SSN"
                         }
                     ],
                     "employmentType": "UNEMPLOYED",
-                    "externalId": external_id,
-                    "employmentDetails": null,
+                    "externalId": "cb6d8787-0716-4105-8408-02cda97321d9",
                     "mailingAddress": {
                         "street1": "The Oasis",
-                        "street2": ".",
+                        "street2": null,
+                        "country": "CRI",
+                        "state": "CR-SJ",
                         "city": "La Union",
-                        "state": "CR-C",
-                        "postalCode": "30301",
-                        "country": "CRI"
-                    }
+                        "postalCode": "30301"
+                    },
+                    "employmentDetails": null
                 }
             ],
             "regulatoryInformation": [
@@ -101,52 +101,41 @@ export const individual_form: Application = {
             ],
             "financialInformation": [
                 {
-                    "netWorth": 100000,
-                    "liquidNetWorth": 25000,
-                    "annualNetIncome": 100000,
+                    "netWorth": 10000,
+                    "liquidNetWorth": 10000,
+                    "annualNetIncome": 10000,
                     "investmentObjectives": [
                         "Growth"
                     ],
-                    "investmentExperience": [
-                        {
-                            "assetClass": "BOND",
-                            "yearsTrading": 5,
-                            "tradesPerYear": 3,
-                            "knowledgeLevel": "Good"
-                        }
-                    ],
-                    "sourcesOfWealth": [
-                        {
-                            "sourceType": "SOW-IND-Income",
-                            "percentage": 100
-                        }
-                    ]
+                    "investmentExperience": [],
+                    "sourcesOfWealth": []
                 }
             ]
         }
     },
     "accounts": [
         {
-            "baseCurrency": "USD",
-            "margin": "Cash",
+            "multiCurrency": true,
+            "feesTemplateName": "Default",
+            "externalId": "cb6d8787-0716-4105-8408-02cda97321d9",
             "investmentObjectives": [
                 "Growth"
             ],
+            "baseCurrency": "USD",
+            "margin": "Cash",
             "tradingPermissions": [
                 {
                     "country": "UNITED STATES",
                     "product": "BONDS"
                 }
-            ],
-            "multiCurrency": true,
-            "externalId": external_id
+            ]
         }
     ],
     "users": [
         {
-            "externalUserId": external_id,
-            "externalIndividualId": external_id,
-            "prefix": "elen"
+            "externalUserId": "cb6d8787-0716-4105-8408-02cda97321d9",
+            "externalIndividualId": "cb6d8787-0716-4105-8408-02cda97321d9",
+            "prefix": "andr"
         }
     ],
     "additionalAccounts": null,

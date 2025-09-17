@@ -32,7 +32,7 @@ export const name_schema = z.object({
 });
 
 export const address_schema = z.object({
-  country: z.string().min(2, { message: 'Country is required (2 or 3 letter ISO code)' }), // ISO 3166-1 alpha-2 or alpha-3
+  country: z.string().min(2, { message: 'Country is required (2 or 3 letter ISO code)' }).optional(), // ISO 3166-1 alpha-2 or alpha-3
   street1: z.string().min(1, { message: 'Street address is required' }),
   street2: z.string().optional().nullable(),
   city: z.string().min(1, { message: 'City is required' }),
@@ -141,12 +141,12 @@ export const tax_residency_schema = z.object({
 });
 
 export const financial_information_schema = z.object({
-  investmentExperience: z.array(investment_experience_schema).min(1, { message: 'At least one investment experience is required' }),
-  investmentObjectives: z.array(z.string()).min(1, { message: 'At least one investment objective is required' }),
-  sourcesOfWealth: z.array(source_of_wealth_schema).min(1, { message: 'At least one source of wealth is required' }),
-  netWorth: z.number().int({ message: 'Net worth must be an integer' }),
-  liquidNetWorth: z.number().int({ message: 'Liquid net worth must be an integer' }),
-  annualNetIncome: z.number().int({ message: 'Annual net income must be an integer' }),
+  investmentExperience: z.array(investment_experience_schema).optional(),
+  investmentObjectives: z.array(z.string()).optional(),
+  sourcesOfWealth: z.array(source_of_wealth_schema).optional(),
+  netWorth: z.number().int({ message: 'Net worth must be an integer' }).optional(),
+  liquidNetWorth: z.number().int({ message: 'Liquid net worth must be an integer' }).optional(),
+  annualNetIncome: z.number().int({ message: 'Annual net income must be an integer' }).optional(),
   taxBracket: z.string().optional(),
   accreditedInvestor: z.boolean().optional(),
 });
@@ -155,7 +155,7 @@ export const regulatory_information_schema = z
   .object({
     regulatoryDetails: z
       .array(regulatory_detail_schema)
-      .min(1, { message: 'At least one regulatory detail is required' }),
+      .optional(),
   })
   .superRefine((val, ctx) => {
     const detailsList = val.regulatoryDetails || [];
@@ -224,12 +224,12 @@ export const regulatory_information_schema = z
   });
 
 export const account_schema = z.object({
-  investmentObjectives: z.array(z.string()).min(1, { message: 'At least one account investment objective is required' }),
-  tradingPermissions: z.array(trading_permission_schema).min(1, { message: 'At least one trading permission is required' }),
+  investmentObjectives: z.array(z.string()).optional(),
+  tradingPermissions: z.array(trading_permission_schema).min(1, { message: 'At least one trading permission is required' }).optional(),
   externalId: z.string().min(1, { message: 'Account external ID is required' }),
-  baseCurrency: z.string().min(3, { message: 'Base currency is required (3-letter code)' }),
+  baseCurrency: z.string().min(3, { message: 'Base currency is required (3-letter code)' }).optional(),
   multiCurrency: z.boolean().optional().default(true),
-  margin: z.string().min(1, { message: 'Margin type is required' }),
+  margin: z.string().min(1, { message: 'Margin type is required' }).optional(),
   tradingLimits: trading_limits_schema, // Added from new schema
   alias: z.string().optional(),
   feesTemplateName: z.string().optional(),
@@ -325,13 +325,13 @@ export const account_holder_details_schema = z.object({
 
 export const individual_applicant_schema = z.object({
   accountHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'Account holder details are required' }),
-  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }),
+  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }).optional(),
   regulatoryInformation: z.array(regulatory_information_schema).min(1, { message: 'Regulatory information is required' }),
 });
 
 export const joint_applicant_schema = z.object({
   accountHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'Account holder details are required' }),
-  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }),
+  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }).optional(),
   regulatoryInformation: z.array(regulatory_information_schema).min(1, { message: 'Regulatory information is required' }),
 });
 
@@ -339,7 +339,7 @@ export const joint_applicant_schema = z.object({
 export const joint_holders_schema = z.object({
   firstHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'First holder details are required' }),
   secondHolderDetails: z.array(account_holder_details_schema).min(1, { message: 'Second holder details are required' }),
-  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }),
+  financialInformation: z.array(financial_information_schema).min(1, { message: 'Financial information is required' }).optional(),
   regulatoryInformation: z.array(regulatory_information_schema).min(1, { message: 'Regulatory information is required' }),
   type: z.enum(['community', 'joint_tenants', 'tenants_common', 'tbe', 'au_joint_account']),
 }).optional();
@@ -377,7 +377,7 @@ export const organization_schema = z.object({
   identifications: z.array(organization_identification_schema).min(1),
   accountSupport: organization_account_support_schema.optional(),
   associatedEntities: organization_associated_entities_schema.optional(),
-  financialInformation: z.array(financial_information_schema).min(1),
+  financialInformation: z.array(financial_information_schema).min(1).optional(),
   regulatoryInformation: z.array(regulatory_information_schema).min(1),
   accreditedInvestorInformation: z.any().optional(),
   regulatedMemberships: z.any().optional(),

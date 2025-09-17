@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { investment_objectives as getInvestmentObjectives, source_of_wealth as getSourceOfWealth, asset_classes, knowledge_levels } from '@/lib/public/form';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface FinancialInfoStepProps {
   form: UseFormReturn<Application>;
@@ -289,28 +290,40 @@ const FinancialInfoStep = ({ form }: FinancialInfoStepProps) => {
           />
         </div>
 
-        {/* Investment Objectives – synced from Account step; read-only display */}
+        {/* Investment Objectives – editable list */}
         <FormField
           control={form.control}
           name={`${basePath}.0.investmentObjectives` as any}
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('apply.account.account_holder_info.investment_objectives')}</FormLabel>
-              <div className="flex flex-wrap gap-2">
-                {((field.value as string[]) || []).map((obj) => {
-                  const label = investmentObjectivesOptions.find((o) => o.id === obj)?.label || obj;
+              <FormDescription>{t('apply.account.account_holder_info.investment_objectives_description')}</FormDescription>
+              <div className="flex flex-col space-y-2">
+                {investmentObjectivesOptions.map((option) => {
+                  const checked = (field.value || []).includes(option.id);
                   return (
-                    <span key={obj} className="px-2 py-1 rounded bg-muted text-sm">
-                      {label}
-                    </span>
+                    <label key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={(isChecked) => {
+                          let newValue: string[] = Array.isArray(field.value) ? [...field.value] : [];
+                          if (isChecked) {
+                            if (!newValue.includes(option.id)) newValue.push(option.id);
+                          } else {
+                            newValue = newValue.filter((v) => v !== option.id);
+                          }
+                          field.onChange(newValue);
+
+                          // Sync to account-level field for display in AccountInformationStep
+                          form.setValue('accounts.0.investmentObjectives' as any, newValue);
+                        }}
+                      />
+                      <span>{option.label}</span>
+                    </label>
                   );
                 })}
-                {!(field.value && field.value.length) && (
-                  <span className="text-subtitle text-sm">
-                    {t('apply.account.account_holder_info.investment_objectives_description')}
-                  </span>
-                )}
               </div>
+              <FormMessage />
             </FormItem>
           )}
         />
