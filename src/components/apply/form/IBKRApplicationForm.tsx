@@ -24,11 +24,8 @@ import FinancialInfoStep from './FinancialInfoStep'
 import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AccountInformationStep from './AccountInformationStep'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
-import { CreateLead } from '@/utils/entities/lead'
-import { LeadPayload } from '@/lib/entities/lead'
-import { formatTimestamp } from '@/utils/dates'
 import { getApplicationDefaults } from '@/utils/form'
-import { individual_form } from './samples'
+import { test_form, individual_form, joint_form } from './samples'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.

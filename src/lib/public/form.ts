@@ -423,7 +423,7 @@ export const products_complete = (t: (key: string) => string) => [
     label: t('apply.account.regulatory.products.bonds')
   },
   {
-    id: "FUNDS",
+    id: "MUTUAL FUNDS",
     label: t('apply.account.regulatory.products.mutual_funds')
   },
   {
