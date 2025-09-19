@@ -458,7 +458,8 @@
                 "passport": "Pasaporte",
                 "national_id": "Cédula de Identidad",
                 "license": "Licencia de Conducir",
-                "secondary_contact_credentials": "Credenciales del Contacto Secundario"
+                "secondary_contact_credentials": "Credenciales del Contacto Secundario",
+                "add_trading_permissions": "Agregar Permisos de Operación"
             },
             "regulatory": {
                 "title": "Información Regulatoria",

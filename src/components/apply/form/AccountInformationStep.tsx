@@ -2,8 +2,11 @@ import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Application } from '@/lib/entities/application';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Plus, Trash2 } from 'lucide-react';
+import { useFieldArray } from 'react-hook-form';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { investment_objectives as getInvestmentObjectives, products_complete as getProductsComplete } from '@/lib/public/form';
 
@@ -15,6 +18,12 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
   const { t } = useTranslationProvider();
   const investmentObjectivesOptions = getInvestmentObjectives(t);
   const productsCompleteOptions = getProductsComplete(t);
+
+  // FieldArray for trading permissions
+  const { fields: tpFields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'accounts.0.tradingPermissions',
+  });
 
   return (
     <Card className="p-6 space-y-6">
@@ -99,64 +108,93 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
           )}
         />
 
-        {/* Trading Permissions */}
         <h4 className="text-lg font-semibold">
           {t('apply.account.account_holder_info.trading_permissions')}
         </h4>
         <p className="text-subtitle text-sm mb-4">
           {t('apply.account.account_holder_info.trading_permissions_description')}
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="accounts.0.tradingPermissions.0.country"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('apply.account.account_holder_info.primary_trading_market')}</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="UNITED STATES">{t('apply.account.account_holder_info.united_states')}</SelectItem>
-                    <SelectItem value="CANADA">{t('apply.account.account_holder_info.canada')}</SelectItem>
-                    <SelectItem value="UNITED KINGDOM">{t('apply.account.account_holder_info.united_kingdom')}</SelectItem>
-                    <SelectItem value="GERMANY">{t('apply.account.account_holder_info.germany')}</SelectItem>
-                    <SelectItem value="JAPAN">{t('apply.account.account_holder_info.japan')}</SelectItem>
-                    <SelectItem value="AUSTRALIA">{t('apply.account.account_holder_info.australia')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <FormField
-            control={form.control}
-            name="accounts.0.tradingPermissions.0.product"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('apply.account.account_holder_info.product_types')}</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {productsCompleteOptions.map((option) => (
-                      <SelectItem key={option.id} value={option.id}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <div className="space-y-4">
+          {tpFields.map((field, index) => (
+            <div key={field.id} className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+              {/* Country */}
+              <FormField
+                control={form.control}
+                name={`accounts.0.tradingPermissions.${index}.country` as const}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('apply.account.account_holder_info.primary_trading_market')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="UNITED STATES">{t('apply.account.account_holder_info.united_states')}</SelectItem>
+                        <SelectItem value="CANADA">{t('apply.account.account_holder_info.canada')}</SelectItem>
+                        <SelectItem value="UNITED KINGDOM">{t('apply.account.account_holder_info.united_kingdom')}</SelectItem>
+                        <SelectItem value="GERMANY">{t('apply.account.account_holder_info.germany')}</SelectItem>
+                        <SelectItem value="JAPAN">{t('apply.account.account_holder_info.japan')}</SelectItem>
+                        <SelectItem value="AUSTRALIA">{t('apply.account.account_holder_info.australia')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Product */}
+              <FormField
+                control={form.control}
+                name={`accounts.0.tradingPermissions.${index}.product` as const}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('apply.account.account_holder_info.product_types')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {productsCompleteOptions.map((option) => (
+                          <SelectItem key={option.id} value={option.id}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Remove button */}
+              {tpFields.length > 1 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="text-destructive mt-2"
+                  onClick={() => remove(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          ))}
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => append({ country: '', product: '' })}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {t('apply.account.account_holder_info.add_trading_permission') || 'Add Trading Permission'}
+          </Button>
         </div>
       </CardContent>
     </Card>

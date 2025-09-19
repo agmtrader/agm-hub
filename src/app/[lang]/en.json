@@ -459,7 +459,8 @@
                 "passport": "Passport",
                 "national_id": "National ID Card",
                 "license": "Driver License",
-                "secondary_contact_credentials": "Secondary Contact Credentials"
+                "secondary_contact_credentials": "Secondary Contact Credentials",
+                "add_trading_permissions": "Add Trading Permissions"
             },
             "regulatory": {
                 "title": "Regulatory Information",
