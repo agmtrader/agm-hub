@@ -125,14 +125,41 @@ const AccountHolderInfoStep = ({ form, showFinancial = true, showRegulatory = tr
       form.setValue("accounts.0.externalId", externalIdRef.current);
     }
 
-    // Generate user external IDs
-    const userExternalId = form.getValues("users.0.externalUserId");
-    if (!userExternalId) {
+    // Generate user external IDs (ensure one per account holder)
+    // Primary user (always present)
+    const userExternalId0 = form.getValues("users.0.externalUserId");
+    if (!userExternalId0) {
       form.setValue("users.0.externalUserId", externalIdRef.current);
     }
-    const userIndividualId = form.getValues("users.0.externalIndividualId");
-    if (!userIndividualId) {
+    const userIndividualId0 = form.getValues("users.0.externalIndividualId");
+    if (!userIndividualId0) {
       form.setValue("users.0.externalIndividualId", externalIdRef.current);
+    }
+    // Ensure primary user prefix exists
+    const userPrefix0 = form.getValues("users.0.prefix");
+    if (!userPrefix0) {
+      form.setValue("users.0.prefix", form.getValues("customer.prefix") ?? "");
+    }
+
+    // Secondary user for JOINT accounts
+    if (accountType === 'JOINT') {
+      const userExternalId1 = form.getValues("users.1.externalUserId");
+      if (!userExternalId1) {
+        form.setValue("users.1.externalUserId", generateUUID());
+      }
+      const userIndividualId1 = form.getValues("users.1.externalIndividualId");
+      if (!userIndividualId1) {
+        form.setValue("users.1.externalIndividualId", generateUUID());
+      }
+      const userPrefix1 = form.getValues("users.1.prefix");
+      if (!userPrefix1) {
+        form.setValue("users.1.prefix", form.getValues("customer.prefix") ?? "");
+      }
+    } else {
+      // For non-joint accounts, ensure we keep only one user entry to avoid stale data
+      if ((form.getValues("users") || []).length > 1) {
+        form.setValue("users", (form.getValues("users") as any[]).slice(0, 1));
+      }
     }
   }, [accountType, form]);
 
@@ -596,7 +623,7 @@ const AccountHolderInfoStep = ({ form, showFinancial = true, showRegulatory = tr
       <SourcesOfWealthFields basePath={basePath} />
       </CardContent>
     </Card>
-    );
+  );
 
   // Regulatory Information Section (Yes/No + conditional detail inputs)
   const renderRegulatoryInformation = (basePath: string) => (
@@ -1869,10 +1896,38 @@ const AccountHolderInfoStep = ({ form, showFinancial = true, showRegulatory = tr
         </div>
       )}
 
+      {/* SECONDARY CONTACT CREDENTIALS FOR JOINT ACCOUNTS */}
+      {accountType === 'JOINT' && (
+        <Card className="p-6 space-y-6">
+          <CardHeader>
+            <CardTitle>{t('apply.account.account_holder_info.secondary_contact_credentials')}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <FormField
+              control={form.control}
+              name={"users.1.prefix" as any}
+              render={({ field }) => (
+                <FormItem>
+                  <div className='flex flex-row gap-2 items-center'>
+                    <FormLabel>{t('apply.account.account_holder_info.username')}</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <FormDescription>{t('apply.account.account_holder_info.username_description')}</FormDescription>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+      )}
+
       {/* Account Information - Required for all account types */}
       {showAccountInformation && renderAccountInformation()}
     </div>
   );
+  
 };
 
 export default AccountHolderInfoStep;

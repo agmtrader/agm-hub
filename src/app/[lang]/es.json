@@ -457,7 +457,8 @@
                 "non_us_national_id": "ID Nacional No Estadounidense",
                 "passport": "Pasaporte",
                 "national_id": "Cédula de Identidad",
-                "license": "Licencia de Conducir"
+                "license": "Licencia de Conducir",
+                "secondary_contact_credentials": "Credenciales del Contacto Secundario"
             },
             "regulatory": {
                 "title": "Información Regulatoria",

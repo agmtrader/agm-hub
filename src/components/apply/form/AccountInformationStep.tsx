@@ -4,8 +4,6 @@ import { Application } from '@/lib/entities/application';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-// Removed Checkbox import – investment objectives now read-only
-import { Input } from '@/components/ui/input';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { investment_objectives as getInvestmentObjectives, products_complete as getProductsComplete } from '@/lib/public/form';
 

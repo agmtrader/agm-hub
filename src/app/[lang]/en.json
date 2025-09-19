@@ -458,7 +458,8 @@
                 "non_us_national_id": "Non-US National ID",
                 "passport": "Passport",
                 "national_id": "National ID Card",
-                "license": "Driver License"
+                "license": "Driver License",
+                "secondary_contact_credentials": "Secondary Contact Credentials"
             },
             "regulatory": {
                 "title": "Regulatory Information",

@@ -590,7 +590,11 @@ export const test_form:Application = {
             "tradingPermissions": [
                 {
                     "country": "UNITED STATES",
-                    "product": "MUTUAL FUNDS"
+                    "product": "STOCKS"
+                },
+                {
+                    "country": "UNITED STATES",
+                    "product": "BONDS"
                 }
             ]
         }
