@@ -92,8 +92,23 @@ export async function GetForms(forms: string[], masterAccount: 'ad' | 'br'): Pro
     return response
 }
 
+export async function ApplyFeeTemplate(accountID: string, template_name: string, masterAccount: 'ad' | 'br'): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/fee_template', 'POST', { 'account_id': accountID, 'template_name': template_name, 'master_account': masterAccount })
+    return response
+}
+
 export async function UpdateAccountAlias(accountID: string, newAlias: string, masterAccount: 'ad' | 'br'): Promise<any> {
     const response: any = await accessAPI('/accounts/ibkr/account_alias', 'POST', { 'account_id': accountID, 'new_alias': newAlias, 'master_account': masterAccount })
+    return response
+}
+
+export async function UpdateAccountEmail(referenceUserName: string, newEmail: string, masterAccount: 'ad' | 'br', access = true): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/account_email', 'POST', {
+        'reference_user_name': referenceUserName,
+        'new_email': newEmail,
+        'access': access,
+        'master_account': masterAccount,
+    })
     return response
 }
 

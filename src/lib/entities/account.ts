@@ -142,7 +142,7 @@ export interface IBKRAccount {
 }
 
 export interface FeeTemplate {
-  brokerFeeInfo: string;
+  feeTemplateName: string;
 }
 
 export interface Capabilities {

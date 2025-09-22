@@ -159,6 +159,7 @@ const RiskForm = () => {
           contact_date: formatTimestamp(new Date()),
           sent: null,
           closed: null,
+          emails_to_notify: [],
         }
         const leadResponse = await CreateLead(lead, [])
         if (!leadResponse.id) throw new Error('Failed to create lead')

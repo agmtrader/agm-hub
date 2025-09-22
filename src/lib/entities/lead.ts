@@ -9,10 +9,12 @@ export type LeadPayload = z.infer<typeof lead_schema> & {
     contact_date: string
     closed: string | null
     sent: string | null
+    emails_to_notify: string[]
 }
 export type Lead = Base & LeadPayload
 
 export type FollowUpPayload = z.infer<typeof follow_up_schema> & {
     lead_id: string
+    emails_to_notify: string[]
 }
 export type FollowUp = Base & FollowUpPayload
