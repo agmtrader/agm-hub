@@ -1,8 +1,6 @@
 'use server'
 
 import { Map } from "../lib/public/types"
-import { getServerSession } from 'next-auth'
-import { authOptions } from "./auth";
 
 interface AuthenticationResponse {
     access_token: string,
