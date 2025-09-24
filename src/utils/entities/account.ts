@@ -1,6 +1,7 @@
 import { accessAPI } from "../api"
 import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, InternalAccount, InternalDocument, InternalDocumentPayload } from "@/lib/entities/account"
 import { IDResponse } from "@/lib/entities/base"
+import { SecurityQuestionsResponse } from "@/lib/entities/security_question"
 
 export async function CreateAccount(account: InternalAccount): Promise<IDResponse> {
     const createResponse: IDResponse = await accessAPI('/accounts/create', 'POST', { 'account': account })
@@ -97,11 +98,6 @@ export async function ApplyFeeTemplate(accountID: string, template_name: string,
     return response
 }
 
-export async function UpdateAccountAlias(accountID: string, newAlias: string, masterAccount: 'ad' | 'br'): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/account_alias', 'POST', { 'account_id': accountID, 'new_alias': newAlias, 'master_account': masterAccount })
-    return response
-}
-
 export async function UpdateAccountEmail(referenceUserName: string, newEmail: string, masterAccount: 'ad' | 'br', access = true): Promise<any> {
     const response: any = await accessAPI('/accounts/ibkr/account_email', 'POST', {
         'reference_user_name': referenceUserName,
@@ -112,7 +108,7 @@ export async function UpdateAccountEmail(referenceUserName: string, newEmail: st
     return response
 }
 
-export async function GetSecurityQuestions(masterAccount: 'ad' | 'br'): Promise<any> {
-    const response: any = await accessAPI(`/accounts/ibkr/security_questions?master_account=${masterAccount}`, 'GET')
+export async function GetSecurityQuestions(): Promise<SecurityQuestionsResponse> {
+    const response: SecurityQuestionsResponse = await accessAPI(`/accounts/ibkr/security_questions`, 'GET')
     return response
 }
