@@ -460,7 +460,7 @@
                 "national_id": "National ID Card",
                 "license": "Driver License",
                 "secondary_contact_credentials": "Secondary Contact Credentials",
-                "add_trading_permissions": "Add Trading Permissions",
+                "add_trading_permission": "Add Trading Permission",
                 "security_questions": "Security Questions",
                 "security_questions_description": "Select three security questions and provide your answers",
                 "select_question": "Select question",

@@ -459,7 +459,7 @@
                 "national_id": "Cédula de Identidad",
                 "license": "Licencia de Conducir",
                 "secondary_contact_credentials": "Credenciales del Contacto Secundario",
-                "add_trading_permissions": "Agregar Permisos de Operación",
+                "add_trading_permission": "Agregar Permisos de Operación",
                 "security_questions": "Preguntas de Seguridad",
                 "security_questions_description": "Selecciona tres preguntas de seguridad y proporciona tus respuestas",
                 "select_question": "Seleccionar pregunta",
