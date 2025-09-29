@@ -5,17 +5,14 @@ import AccountHolderInfoStep from './AccountHolderInfoStep';
 
 interface PersonalInfoStepProps {
   form: UseFormReturn<Application>;
+  onSecurityQuestionsChange?: (qa: Record<string, string>) => void;
 }
 
-const PersonalInfoStep = ({ form }: PersonalInfoStepProps) => {
-  return (
-    <AccountHolderInfoStep
-      form={form}
-      showFinancial={false}
-      showRegulatory={false}
-      showAccountInformation={false}
-    />
-  );
-};
+const PersonalInfoStep = ({ form, onSecurityQuestionsChange }: PersonalInfoStepProps) => (
+  <AccountHolderInfoStep
+    form={form}
+    onSecurityQuestionsChange={onSecurityQuestionsChange}
+  />
+);
 
 export default PersonalInfoStep;

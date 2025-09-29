@@ -23,13 +23,13 @@ import { createW8FormDocument } from '@/utils/form';
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { format as formatDateFns } from "date-fns";
 import { Trash2, Plus } from "lucide-react";
+import { SecurityQuestion } from '@/lib/entities/security_question';
+import { GetSecurityQuestions } from '@/utils/entities/account';
 import StatesFormField from "@/components/ui/StatesFormField";
 
 interface AccountHolderInfoStepProps {
   form: UseFormReturn<Application>;
-  showFinancial?: boolean;
-  showRegulatory?: boolean;
-  showAccountInformation?: boolean;
+  onSecurityQuestionsChange?: (qa: Record<string, string>) => void;
 }
 
 const generateUUID = () => {
@@ -41,7 +41,7 @@ const generateUUID = () => {
 };
 
 
-const AccountHolderInfoStep = ({ form, showFinancial = true, showRegulatory = true, showAccountInformation = true }: AccountHolderInfoStepProps) => {
+const AccountHolderInfoStep = ({ form, onSecurityQuestionsChange }: AccountHolderInfoStepProps) => {
 
   const { t } = useTranslationProvider();
   const phoneTypeOptions = getPhoneTypes(t);
@@ -1790,6 +1790,99 @@ const AccountHolderInfoStep = ({ form, showFinancial = true, showRegulatory = tr
     );
   }
 
+  // ----------------- Security Questions -----------------
+  const [questions, setQuestions] = React.useState<SecurityQuestion[]>([]);
+  const [selectedQA, setSelectedQA] = React.useState<Record<string, string>>({});
+
+  // Fetch available questions once
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const resp = await GetSecurityQuestions();
+        setQuestions(resp.jsonData || []);
+      } catch (err) {
+        console.error('Failed to fetch security questions', err);
+      }
+    })();
+  }, []);
+
+  // Whenever the selected Q&A changes, bubble up a mapping where the keys
+  // are the actual question texts (labels) instead of their numeric IDs so that
+  // future backend changes to question IDs do not break persisted answers.
+  React.useEffect(() => {
+    if (!onSecurityQuestionsChange) return;
+
+    const qaByText: Record<string, string> = {};
+    Object.entries(selectedQA).forEach(([id, answer]) => {
+      const label = questions.find((q) => q.id === id)?.question || id;
+      qaByText[label] = answer;
+    });
+
+    onSecurityQuestionsChange(qaByText);
+  }, [selectedQA, onSecurityQuestionsChange, questions]);
+
+  const questionOptions = questions.map((q) => ({ label: q.question, value: q.id }));
+
+  // ---------- Security Questions UI Component ------------
+  const renderSecurityQuestions = () => {
+    const indices = [0, 1, 2];
+    return (
+      <Card className="p-6 space-y-6">
+        <CardHeader>
+          <CardTitle>{t('apply.account.account_holder_info.security_questions') || 'Security Questions'}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <p className="text-sm text-subtitle">
+            {t('apply.account.account_holder_info.security_questions_description') || 'Select three security questions and provide your answers.'}
+          </p>
+          {indices.map((idx) => (
+            <div key={idx} className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+              {/* Question selector */}
+              <Select
+                onValueChange={(val) => {
+                  setSelectedQA((prev) => {
+                    const newQA = { ...prev } as Record<string, string>;
+                    // Remove any previous key having this index
+                    const keys = Object.keys(newQA);
+                    const currentKey = keys[idx];
+                    if (currentKey) delete newQA[currentKey];
+                    newQA[val] = '';
+                    return newQA;
+                  });
+                }}
+                defaultValue={Object.keys(selectedQA)[idx] ?? undefined}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('apply.account.account_holder_info.select_question') || 'Select Question'} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="max-h-60 overflow-y-auto">
+                  {questionOptions.map((q) => (
+                    <SelectItem key={q.value} value={q.value} disabled={Object.keys(selectedQA).includes(q.value) && Object.keys(selectedQA)[idx] !== q.value}>
+                      {q.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Answer input */}
+              <Input
+                placeholder={t('apply.account.account_holder_info.answer_placeholder') || 'Answer'}
+                value={selectedQA[Object.keys(selectedQA)[idx]] || ''}
+                onChange={(e) => {
+                  const key = Object.keys(selectedQA)[idx];
+                  if (!key) return;
+                  setSelectedQA((prev) => ({ ...prev, [key]: e.target.value }));
+                }}
+              />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="space-y-6">
 
@@ -1868,9 +1961,6 @@ const AccountHolderInfoStep = ({ form, showFinancial = true, showRegulatory = tr
           {/* Second Holder */}
           {renderAccountHolderFields("customer.jointHolders.secondHolderDetails.0", t('apply.account.account_holder_info.second_account_holder'))}
           
-          {/* Financial and Regulatory Information for Joint Account */}
-          {showFinancial && renderFinancialInformation("customer.jointHolders.financialInformation")}
-          {showRegulatory && renderRegulatoryInformation("customer.jointHolders.regulatoryInformation")}
         </div>
 
       ) : accountType === 'ORG' ? (
@@ -1883,16 +1973,11 @@ const AccountHolderInfoStep = ({ form, showFinancial = true, showRegulatory = tr
             "Associated Individual Details"
           )}
           
-          {/* Financial and Regulatory Information for Organization */}
-          {showFinancial && renderFinancialInformation("customer.organization.financialInformation")}
-          {showRegulatory && renderRegulatoryInformation("customer.organization.regulatoryInformation")}
         </div>
       ) : (
         // Individual Account
         <div className="space-y-6">
           {renderAccountHolderFields("customer.accountHolder.accountHolderDetails.0", t('apply.account.account_holder_info.account_holder_information'))}
-          {showFinancial && renderFinancialInformation("customer.accountHolder.financialInformation")}
-          {showRegulatory && renderRegulatoryInformation("customer.accountHolder.regulatoryInformation")}
         </div>
       )}
 
@@ -1922,9 +2007,9 @@ const AccountHolderInfoStep = ({ form, showFinancial = true, showRegulatory = tr
           </CardContent>
         </Card>
       )}
-
-      {/* Account Information - Required for all account types */}
-      {showAccountInformation && renderAccountInformation()}
+      
+      {/* Security Questions Section (always visible) */}
+      {renderSecurityQuestions()}
     </div>
   );
   

@@ -33,6 +33,7 @@ import {
 
 import { poa_schema, poi_schema } from './schemas/application';
 import { Base } from './base';
+import { Map } from '../public/types';
 
 export type POADocumentInfo = z.infer<typeof poa_schema>
 export type POIDocumentInfo = z.infer<typeof poi_schema>
@@ -79,6 +80,7 @@ export type InternalApplicationPayload = {
     date_sent_to_ibkr: string | null;
     status: string | null;
     contact_id: string | null;
+    security_questions: Map
 }
 
 export type InternalApplication = InternalApplicationPayload & Base

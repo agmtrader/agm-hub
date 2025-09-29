@@ -25,7 +25,7 @@ import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AccountInformationStep from './AccountInformationStep'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
 import { getApplicationDefaults } from '@/utils/form'
-import { test_form, individual_form, joint_form } from './samples'
+import { individual_form } from './samples'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.
@@ -51,9 +51,12 @@ const IBKRApplicationForm = () => {
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const [isLoadingApplication, setIsLoadingApplication] = useState(false);
 
+  // Security questions selected in Personal Info step
+  const [securityQA, setSecurityQA] = useState<Record<string, string>>({});
+
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -229,12 +232,16 @@ const IBKRApplicationForm = () => {
         date_sent_to_ibkr: null,
         status,
         contact_id: contact_id,
+        security_questions: securityQA,
       };
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
     } else {
       console.log('Updating application', applicationId, { application: sanitizedValues, status: status, lead_id: lead_id });
       const updatePayload:any = { application: sanitizedValues, status: status, lead_id: lead_id };
+      if (Object.keys(securityQA).length) {
+        updatePayload.security_questions = securityQA;
+      }
       if (contact_id) {
         updatePayload.contact_id = contact_id;
       }
@@ -386,13 +393,7 @@ const IBKRApplicationForm = () => {
               <>
                 <AccountTypeStep form={form} />
                 <div className="flex justify-between">
-                  <Button 
-                    type="button" 
-                    variant="outline"
-                    onClick={handlePreviousStep}
-                  >
-                    Previous
-                  </Button>
+                  <div></div>
                   <Button 
                     type="button" 
                     onClick={handleNextStep}
@@ -405,7 +406,7 @@ const IBKRApplicationForm = () => {
             )}
             {currentStep === FormStep.PERSONAL_INFO && (
               <>
-                <PersonalInfoStep form={form} />
+                <PersonalInfoStep form={form} onSecurityQuestionsChange={setSecurityQA} />
                 <div className="flex justify-between">
                   <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
                   <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>
