@@ -13,11 +13,11 @@ const Footer = () => {
   const socialIcons = [
     {
       icon: FaInstagram,
-      href: 'https://www.instagram.com/agmtrader/'
+      href: 'https://www.instagram.com/agmbrokerad/'
     },
     {
       icon: FaLinkedin,
-      href: 'https://www.linkedin.com/company/agmtrader/'
+      href: 'https://www.linkedin.com/company/agm-trader-2001/'
     }
   ]
 
