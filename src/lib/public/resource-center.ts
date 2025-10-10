@@ -22,7 +22,7 @@ export const chapters = [
     {
       title: 'Introduction to Economic Events',
       id: '5',
-      image: '/assets/resource-center/chapters/coming-soon.jpeg'
+      image: '/assets/resource-center/chapters/5.JPG'
     }
 ]
 
