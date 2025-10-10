@@ -20,11 +20,10 @@ export const chapters = [
       image: '/assets/resource-center/chapters/4.jpeg'
     },
     {
-      title: 'Coming soon...',
+      title: 'Introduction to Economic Events',
       id: '5',
       image: '/assets/resource-center/chapters/coming-soon.jpeg'
-    },
-    
+    }
 ]
 
 export const videosDictionary = [
@@ -124,6 +123,16 @@ export const videosDictionary = [
         chapter: '3'
     },
     {
+        title: 'Indicadores de Tendencia',
+        id: '6cpe_yujLig',
+        chapter: '4'
+    },
+    {
+        title: 'Indicadores Basados en el Volumen',
+        id: 'TRKu-3xdWy0',
+        chapter: '4'
+    },
+    {
         title: 'Análisis Técnico - Observacion',
         id: 'wuYxugDCo7M',
         chapter: '4'
@@ -134,8 +143,43 @@ export const videosDictionary = [
         chapter: '4'
     },
     {
-        title: 'Indicadores de Tendencia',
-        id: '6cpe_yujLig',
+        title: 'Analisis Tecnico - Candelas Japonesas',
+        id: 'pJNapx_qmj0',
         chapter: '4'
     },
+    {
+        title: 'Analisis Tecnico - Conclusión',
+        id: 'W-ckkyZVgGg',
+        chapter: '4'
+    },
+    {
+        title: 'Medidores de Oscilación ROC Razón de Cambio',
+        id: 'ULyzhmim2xU',
+        chapter: '4'
+    },
+    {
+        title: 'Tipo de Dojis',
+        id: 'p1n2vQpFDvE',
+        chapter: '4'
+    },
+    {
+        title: 'Repaso del Análisis Fundamental y Técnico',
+        id: 'dWVxy8ChiUQ',
+        chapter: '5'
+    },
+    {
+        title: 'Aprenda Sobre Eventos Económicos Clave',
+        id: 'xYcEU9v6eIQ',
+        chapter: '5'
+    },
+    {
+        title: 'Otros Eventos Económicos Clave',
+        id: 'zdicPcMYCRg',
+        chapter: '5'
+    },
+    {
+        title: 'Comprender los Datos de Viviendo de Estados Unidos',
+        id: 'N5F0DO9MVV8',
+        chapter: '5'
+    }
 ]

@@ -914,5 +914,11 @@
             "other_fees_international": "International: $25 + any fees charged by the receiving bank."
         },
         "footnote": "All of the costs and fees are in USD and can change at any moment without notice. Other costs or fees may apply. These charges and fees are the most common that apply to the most commonly used products and services. Stocks, ETFs and Bonds (Non Euroclear) might have additional charges."
+    },
+    "learning": {
+        "chapter_label": "Chapter",
+        "go_back": "Go back",
+        "available_videos": "Available Videos",
+        "no_videos": "No videos available for this chapter. Please check back later."
     }
 }

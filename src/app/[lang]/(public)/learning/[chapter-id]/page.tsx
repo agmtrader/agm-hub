@@ -32,7 +32,7 @@ const ChapterPage = ({ params }: Props) => {
     const [selected, setSelected] = useState<Video | null>(videos[0] ?? null)
     const [showList, setShowList] = useState(true)
 
-    const { lang } = useTranslationProvider()
+    const { lang, t } = useTranslationProvider()
 
     return (
     <motion.div 
@@ -43,7 +43,7 @@ const ChapterPage = ({ params }: Props) => {
         <Button asChild className='absolute left-10 z-10' variant='ghost'>
             <Link href={formatURL('/learning', lang)}>
                 <ArrowLeft className='w-4 h-4 text-foreground'/>
-                Go back
+                {t('learning.go_back')}
             </Link>
         </Button>
 
@@ -52,7 +52,7 @@ const ChapterPage = ({ params }: Props) => {
             animate={{ opacity: 1, y: 0 }}
             className='text-5xl font-bold'
         >
-            Chapter {chapterId}
+            {t('learning.chapter_label')} {chapterId}
         </motion.h1>
         
         <motion.p 
@@ -61,11 +61,11 @@ const ChapterPage = ({ params }: Props) => {
         transition={{ delay: 0.2 }}
         className='text-2xl text-subtitle'
         >
-            {chapters.find((chapter) => chapter.id === chapterId)?.title}
+            {(() => { const translated = t(`learning.chapters.${chapterId}.title`); return translated === `learning.chapters.${chapterId}.title` ? chapters.find((chapter)=>chapter.id===chapterId)?.title : translated })()}
         </motion.p>
 
         {videos.length == 0 && (
-            <p className='text-lg text-subtitle'>No videos available for this chapter. Please check back later.</p>
+            <p className='text-lg text-subtitle'>{t('learning.no_videos')}</p>
         )}
 
         {videos && selected && (
@@ -79,7 +79,7 @@ const ChapterPage = ({ params }: Props) => {
                 layout
                 className='flex flex-col gap-2 w-[300px] p-6 bg-muted rounded-lg shadow-sm'
                 >
-                <h3 className='font-semibold mb-2 text-lg'>Available Videos</h3>
+                <h3 className='font-semibold mb-2 text-lg'>{t('learning.available_videos')}</h3>
                 <AnimatePresence mode="wait">
                     {showList && (
                     <motion.div 

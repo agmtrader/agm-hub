@@ -22,7 +22,7 @@ export function LearningCarousel() {
     }
   })
 
-  const { lang } = useTranslationProvider()
+  const { lang , t } = useTranslationProvider()
 
   return (
     <div className="w-full flex justify-center items-center h-full max-w-[90%] md:max-w-[80%] lg:max-w-[65%] relative">
@@ -53,7 +53,10 @@ export function LearningCarousel() {
                     </CardContent>
                     <CardHeader className="pt-2 pb-4">
                       <p className="text-md font-semibold text-center">
-                        Chapter {chapter.id}: <span className="font-normal">{chapter.title}</span>
+                        {t('learning.chapter_label')} {chapter.id}: <span className="font-normal">{(() => {
+                          const translated = t(`learning.chapters.${chapter.id}.title`)
+                          return translated === `learning.chapters.${chapter.id}.title` ? chapter.title : translated
+                        })()}</span>
                       </p>
                     </CardHeader>
                   </Card>
