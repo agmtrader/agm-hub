@@ -24,6 +24,8 @@ import FinancialInfoStep from './FinancialInfoStep'
 import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AccountInformationStep from './AccountInformationStep'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
+import { UpdateLeadByID } from '@/utils/entities/lead'
+import { formatTimestamp } from '@/utils/dates'
 import { getApplicationDefaults } from '@/utils/form'
 import { individual_form, test_form } from './samples'
 
@@ -312,6 +314,16 @@ const IBKRApplicationForm = () => {
       
       setIsSubmitting(true);
       await saveProgress();
+
+      // Mark lead as filled (completed application)
+      const lead_id = searchParams.get('ld');
+      if (lead_id) {
+        try {
+          await UpdateLeadByID(lead_id, { filled: formatTimestamp(new Date()) });
+        } catch (err) {
+          console.error('Failed to mark lead as filled', err);
+        }
+      }
 
       toast({
         title: "Application Submitted",

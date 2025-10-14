@@ -48,12 +48,12 @@ const Title = ({ setStarted }:Props) => {
         return
       }
 
-      // Check if the lead is closed
-      if (leadData.leads[0].closed) {
+      // Check if the lead is filled
+      if (leadData.leads[0].filled) {
         setLeadNotFoundError(true)
         toast({
-          title: "Lead Closed",
-          description: "The lead has already been closed. Please contact support for more information.",
+          title: "Lead Filled",
+          description: "The lead has already been filled. Please contact support for more information.",
           variant: "destructive"
         })
         return

@@ -159,6 +159,7 @@ const RiskForm = () => {
           contact_date: formatTimestamp(new Date()),
           sent: null,
           closed: null,
+          filled: null,
           emails_to_notify: [],
         }
         const leadResponse = await CreateLead(lead, [])
