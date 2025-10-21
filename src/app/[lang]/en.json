@@ -879,6 +879,7 @@
     },
     "ada": {
         "title": "Chat with ADA",
+        "description": "AGM's AI assistant available 24/7 to answer your questions about AGM's services, trading capabilities, and financial markets.",
         "placeholder": "Type your message here...",
         "start_conversation": "Start a conversation with Ada",
         "typing": "Ada is typing...",

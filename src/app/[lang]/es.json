@@ -880,6 +880,7 @@
     },
     "ada": {
         "title": "Chat con ADA",
+        "description": "La asistente de IA de AGM disponible 24/7 para responder tus preguntas sobre los servicios de AGM, capacidades de trading y mercados financieros.",
         "start_conversation": "Inicia una conversación con Ada",
         "typing": "Ada está escribiendo...",
         "placeholder": "Escribe tu mensaje aquí...",

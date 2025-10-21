@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Message } from 'ai/react'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardTitle, CardHeader, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Send, RotateCcw, Bot } from 'lucide-react'
@@ -62,117 +62,126 @@ const FullChat = () => {
     }
     
     return (
-        <Card className="flex-1 flex flex-col border-none shadow-none backdrop-blur">
-            <CardHeader className="flex flex-row items-center justify-between w-full">
-                <CardTitle className="text-2xl text-foreground font-bold w-full">{t('ada.title')}</CardTitle>
-                    <div className="flex justify-center w-fit">
-                        <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={handleReset}
-                            className="h-8 w-8 p-0"
-                        >
-                            <RotateCcw className="h-4 w-4" />
-                        </Button>
+        <Card className="flex-1 flex flex-col bg-background/70 border border-border/50 shadow-lg rounded-xl backdrop-blur-lg">
+            <CardHeader className="flex flex-row items-center justify-between w-full border-b border-border/50 px-6 py-4">
+                <div className="flex flex-col gap-2">
+                <CardTitle className="text-xl md:text-2xl text-foreground font-bold w-full">
+                    {t('ada.title')}
+                </CardTitle>
+                <CardDescription className="text-sm text-subtitle font-medium w-full">
+                    {t('ada.description')}
+                </CardDescription>
+                </div>
+                <div className="flex justify-center w-fit">
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleReset}
+                        className="h-8 w-8 p-0"
+                    >
+                        <RotateCcw className="h-4 w-4" />
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col p-4 gap-4">
+                {messages.length === 0 ? (
+                    <div className="flex-1 flex items-center justify-center flex-col gap-4 text-muted-foreground">
+                        <Bot className="h-12 w-12" />
+                        <p className="text-center">{t('ada.start_conversation')}</p>
                     </div>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col p-4 gap-4">
-                    {messages.length === 0 ? (
-                        <div className="flex-1 flex items-center justify-center flex-col gap-4 text-muted-foreground">
-                            <Bot className="h-12 w-12" />
-                            <p className="text-center">{t('ada.start_conversation')}</p>
-                        </div>
-                    ) : (
-                        <ScrollArea className="flex-1 pr-4">
-                            {messages.map((m) => (
-                                <motion.div
-                                    key={m.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ type: "spring", bounce: 0.4 }}
-                                    className={`mb-4 flex ${
-                                        m.role === 'user' ? 'justify-end' : 'justify-start'
-                                    }`}
-                                >
-                                    {m.role === 'assistant' && (
-                                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
-                                            <Bot className="h-4 w-4 text-primary" />
-                                        </div>
-                                    )}
-                                    <motion.div
-                                        initial={{ scale: 0.8 }}
-                                        animate={{ scale: 1 }}
-                                        className={`max-w-[80%] p-3 rounded-lg ${
-                                            m.role === 'user'
-                                                ? 'bg-primary text-background'
-                                                : 'bg-muted'
-                                        }`}
-                                    >
-                                        <div className="prose prose-sm dark:prose-invert max-w-none">
-                                            <ReactMarkdown 
-                                                remarkPlugins={[remarkGfm]}
-                                                components={{
-                                                    p: ({children, ...props}: React.PropsWithChildren<{}>) => (
-                                                        <p className="m-0" {...props}>{children}</p>
-                                                    ),
-                                                    a: ({children, href, ...props}: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-                                                        <a className="text-blue-500 hover:underline" href={href} {...props}>{children}</a>
-                                                    ),
-                                                    code: ({children, ...props}: React.PropsWithChildren<{}>) => (
-                                                        <code className="bg-gray-100 dark:bg-gray-800 rounded px-1" {...props}>{children}</code>
-                                                    )
-                                                }}
-                                            >
-                                                {m.content}
-                                            </ReactMarkdown>
-                                        </div>
-                                    </motion.div>
-                                </motion.div>
-                            ))}
-                            {isTyping && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="flex items-center gap-2 text-muted-foreground"
-                                >
-                                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                ) : (
+                    <ScrollArea className="flex-1 pr-4">
+                        {messages.map((m) => (
+                            <motion.div
+                                key={m.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ type: "spring", bounce: 0.4 }}
+                                className={`mb-4 flex ${
+                                    m.role === 'user' ? 'justify-end' : 'justify-start'
+                                }`}
+                            >
+                                {m.role === 'assistant' && (
+                                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
                                         <Bot className="h-4 w-4 text-primary" />
                                     </div>
-                                    <div className="bg-muted p-3 rounded-lg">
-                                        {t('ada.typing')}
+                                )}
+                                <motion.div
+                                    initial={{ scale: 0.8 }}
+                                    animate={{ scale: 1 }}
+                                    className={`max-w-[75%] md:max-w-[60%] px-4 py-2 rounded-2xl shadow-sm text-sm leading-relaxed ${
+                                        m.role === 'user'
+                                            ? 'bg-primary text-background'
+                                            : 'bg-muted/40 text-foreground'
+                                    }`}
+                                >
+                                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                                        <ReactMarkdown 
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                p: ({children, ...props}: React.PropsWithChildren<{}>) => (
+                                                    <p className="m-0" {...props}>{children}</p>
+                                                ),
+                                                a: ({children, href, ...props}: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+                                                    <a className="text-blue-500 hover:underline" href={href} {...props}>{children}</a>
+                                                ),
+                                                code: ({children, ...props}: React.PropsWithChildren<{}>) => (
+                                                    <code className="bg-gray-100 dark:bg-gray-800 rounded px-1" {...props}>{children}</code>
+                                                )
+                                            }}
+                                        >
+                                            {m.content}
+                                        </ReactMarkdown>
                                     </div>
                                 </motion.div>
-                            )}
-                        </ScrollArea>
-                    )}
-                    <motion.form 
-                        className="flex w-full space-x-2" 
-                        onSubmit={handleSubmit}
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        <Input
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            placeholder={t('ada.placeholder')}
-                            className="flex-grow"
-                            disabled={isTyping}
-                        />
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <Button 
-                                type="submit" 
-                                size="icon"
-                                disabled={isTyping}
+                            </motion.div>
+                        ))}
+                        {isTyping && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex items-center gap-2 text-muted-foreground"
                             >
-                                <Send className="h-4 w-4" />
-                            </Button>
-                        </motion.div>
-                    </motion.form>
-                </CardContent>
+                                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <Bot className="h-4 w-4 text-primary" />
+                                </div>
+                                <div className="bg-muted p-3 rounded-lg">
+                                    {t('ada.typing')}
+                                </div>
+                            </motion.div>
+                        )}
+                    </ScrollArea>
+                )}
+                <motion.form 
+                    className="flex w-full space-x-2" 
+                    onSubmit={handleSubmit}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <Input
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder={t('ada.placeholder')}
+                        className="flex-grow bg-muted/30 rounded-full px-4 py-2 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        disabled={isTyping}
+                    />
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <Button 
+                            type="submit" 
+                            size="icon"
+                            className="bg-primary hover:bg-primary/90 text-background rounded-full"
+                            disabled={isTyping}
+                            aria-label="Send message"
+                        >
+                            <Send className="h-4 w-4" />
+                        </Button>
+                    </motion.div>
+                </motion.form>
+            </CardContent>
             </Card>
     )
 }
