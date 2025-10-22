@@ -134,6 +134,20 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
 
   const holders = getHolderInfo();
 
+  // New helper to get externalIndividualId for the given holder (needed for Joint POI/POA)
+  const getExternalIndividualId = (holderId: string): string | undefined => {
+    const users = actualFormData?.users || [] as any[];
+    switch (holderId) {
+      case 'primary':
+      case 'first':
+        return users[0]?.externalIndividualId;
+      case 'second':
+        return users[1]?.externalIndividualId;
+      default:
+        return undefined;
+    }
+  };
+
   // Utility functions for document upload
   /**
    * Convert a File into a pure base-64 string (without the Data URL prefix).
@@ -282,6 +296,9 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
         execTimestamp: ibkrTimestamp,
         proofOfAddressType: poaFormValues.type,
         holderId: holderId || 'primary', // Add holder identifier
+        ...(getExternalIndividualId(holderId || 'primary') && {
+          externalIndividualId: getExternalIndividualId(holderId || 'primary'),
+        }),
         payload: {
           mimeType: file.type,
           data: base64Data,
@@ -341,6 +358,9 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
         execTimestamp: ibkrTimestamp,
         proofOfIdentityType: poiFormValues.type,
         holderId: holderId || 'primary', // Add holder identifier
+        ...(getExternalIndividualId(holderId || 'primary') && {
+          externalIndividualId: getExternalIndividualId(holderId || 'primary'),
+        }),
         payload: {
           mimeType: file.type,
           data: base64Data,

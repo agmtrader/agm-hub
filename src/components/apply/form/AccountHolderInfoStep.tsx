@@ -92,6 +92,8 @@ const AccountHolderInfoStep = ({ form, onSecurityQuestionsChange }: AccountHolde
   
   // Generate external IDs if not already set
   const externalIdRef = React.useRef<string>(generateUUID())
+  // Separate ID for second joint holder to ensure consistent linkage
+  const secondHolderIdRef = React.useRef<string>(generateUUID())
   React.useEffect(() => {
     const currentCustomerExternalId = form.getValues("customer.externalId");
     if (!currentCustomerExternalId) {
@@ -110,7 +112,7 @@ const AccountHolderInfoStep = ({ form, onSecurityQuestionsChange }: AccountHolde
       }
       const secondHolderExternalId = form.getValues("customer.jointHolders.secondHolderDetails.0.externalId");
       if (!secondHolderExternalId) {
-        form.setValue("customer.jointHolders.secondHolderDetails.0.externalId", externalIdRef.current);
+        form.setValue("customer.jointHolders.secondHolderDetails.0.externalId", secondHolderIdRef.current);
       }
     } else if (accountType === 'ORG') {
       const orgIndividualExternalId = form.getValues("customer.organization.associatedEntities.associatedIndividuals.0.externalId");
@@ -145,11 +147,11 @@ const AccountHolderInfoStep = ({ form, onSecurityQuestionsChange }: AccountHolde
     if (accountType === 'JOINT') {
       const userExternalId1 = form.getValues("users.1.externalUserId");
       if (!userExternalId1) {
-        form.setValue("users.1.externalUserId", generateUUID());
+        form.setValue("users.1.externalUserId", secondHolderIdRef.current);
       }
       const userIndividualId1 = form.getValues("users.1.externalIndividualId");
       if (!userIndividualId1) {
-        form.setValue("users.1.externalIndividualId", generateUUID());
+        form.setValue("users.1.externalIndividualId", secondHolderIdRef.current);
       }
       const userPrefix1 = form.getValues("users.1.prefix");
       if (!userPrefix1) {
@@ -161,6 +163,41 @@ const AccountHolderInfoStep = ({ form, onSecurityQuestionsChange }: AccountHolde
         form.setValue("users", (form.getValues("users") as any[]).slice(0, 1));
       }
     }
+  }, [accountType, form]);
+
+  // Keep user external IDs in sync with joint holder IDs on every change
+  React.useEffect(() => {
+    if (accountType !== 'JOINT') return;
+
+    const subscription = form.watch((value, { name }) => {
+      if (!name) return;
+      if (!name.startsWith('customer.jointHolders')) return;
+
+      const firstId = value.customer?.jointHolders?.firstHolderDetails?.[0]?.externalId;
+      const secondId = value.customer?.jointHolders?.secondHolderDetails?.[0]?.externalId;
+
+      if (firstId) {
+        if (value.users?.[0]?.externalUserId !== firstId) {
+          form.setValue('users.0.externalUserId', firstId);
+        }
+        if (value.users?.[0]?.externalIndividualId !== firstId) {
+          form.setValue('users.0.externalIndividualId', firstId);
+        }
+      }
+
+      if (secondId) {
+        if ((value.users?.[1] ?? {}).externalUserId !== secondId) {
+          form.setValue('users.1.externalUserId', secondId);
+        }
+        if ((value.users?.[1] ?? {}).externalIndividualId !== secondId) {
+          form.setValue('users.1.externalIndividualId', secondId);
+        }
+      }
+    });
+
+    return () => {
+      if (subscription?.unsubscribe) subscription.unsubscribe();
+    };
   }, [accountType, form]);
 
   // Simple function to update W8 documents with proper signatures
@@ -1882,6 +1919,22 @@ const AccountHolderInfoStep = ({ form, onSecurityQuestionsChange }: AccountHolde
       </Card>
     );
   };
+
+  // Ensure customer & account externalId match first holder in JOINT accounts
+  React.useEffect(() => {
+    if (accountType !== 'JOINT') return;
+
+    const firstId = form.getValues('customer.jointHolders.firstHolderDetails.0.externalId');
+    if (!firstId) return;
+
+    if (form.getValues('customer.externalId') !== firstId) {
+      form.setValue('customer.externalId', firstId);
+    }
+
+    if (form.getValues('accounts.0.externalId') !== firstId) {
+      form.setValue('accounts.0.externalId', firstId);
+    }
+  }, [accountType, form]);
 
   return (
     <div className="space-y-6">
