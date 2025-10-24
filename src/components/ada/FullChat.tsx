@@ -9,8 +9,47 @@ import { Send, RotateCcw, Bot } from 'lucide-react'
 import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import Link from 'next/link'
+
+// Helper to extract sources of the form "Source: {...} Content: <text>" appearing at the start of a string.
+interface SourceInfo {
+  source?: string;
+  title?: string;
+  description?: string;
+  language?: string;
+  start_index?: number;
+  content?: string;
+}
+
+function parseAssistantMessage(raw: string): { sources: SourceInfo[]; text: string } {
+  const sources: SourceInfo[] = [];
+
+  // Split potential multiple source blocks
+  let remaining = raw;
+  const srcRegex = /Source:\s*(\{[^}]*\})\s*Content:\s*/i;
+
+  while (true) {
+    const match = remaining.match(srcRegex);
+    if (!match) break;
+    const objString = match[1].replace(/'/g, '"');
+    try {
+      const src = JSON.parse(objString);
+      sources.push(src);
+    } catch {
+      // ignore parse error
+    }
+    // Remove this source block from remaining text
+    const idx = remaining.indexOf(match[0]);
+    if (idx !== -1) {
+      remaining = remaining.slice(idx + match[0].length);
+    } else {
+      break;
+    }
+  }
+
+  return { sources, text: remaining.trim() };
+}
 import { accessAPI } from '@/utils/api'
-import { useRouter } from 'next/navigation'
 import { ChatResponse } from '@/lib/public/ada'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
@@ -30,24 +69,35 @@ const FullChat = () => {
         e.preventDefault();
         if (!input.trim() || isTyping) return;
 
-        // Add user message immediately
+        // Create and display the user message immediately
         const userMessage: Message = { role: 'user', content: input, id: id.toString() };
-        setMessages(prevMessages => [...prevMessages, userMessage]);
+        setMessages(prev => [...prev, userMessage]);
         setId(prev => prev + 1);
-        setInput(''); // Clear input right after sending
+
+        // Prepare full conversation to send (without the local ids)
+        const outgoingMessages = [
+            ...messages.map(m => ({ role: m.role, content: m.content })),
+            { role: 'user', content: input }
+        ];
+
+        // Clear input and show typing indicator
+        setInput('');
         setIsTyping(true);
 
         try {
-            // Call Ada chat endpoint directly
-            const response: ChatResponse = await accessAPI('/ada/chat', 'POST', { messages: [{ role: 'user', content: input }] });
-            // Add assistant message
-            const assistantMessage: Message = { 
-                role: 'assistant', 
-                content: response.message.content, 
-                id: (id + 1).toString() 
-            };
-            setMessages(prevMessages => [...prevMessages, assistantMessage]);
-            setId(prev => prev + 1);
+            // Call Ada chat endpoint, expecting the FULL conversation back
+            const response: ChatResponse = await accessAPI('/ada/chat', 'POST', { messages: outgoingMessages });
+
+            // Replace local state with server-authoritative conversation
+            const mapped: Message[] = response.messages
+                .filter(m => m.message && m.message.trim() !== '')
+                .map((m, idx) => ({
+                    role: m.role === 'HumanMessage' ? 'user' : 'assistant',
+                    content: m.message,
+                    id: (idx + 1).toString()
+                }));
+            setMessages(mapped);
+            setId(mapped.length + 1);
         } catch (error) {
             const errorMessage: Message = { 
                 role: 'assistant', 
@@ -60,6 +110,8 @@ const FullChat = () => {
             setIsTyping(false);
         }
     }
+
+    console.log(messages);
     
     return (
         <Card className="flex-1 flex flex-col bg-background/70 border border-border/50 shadow-lg rounded-xl backdrop-blur-lg">
@@ -116,22 +168,73 @@ const FullChat = () => {
                                     }`}
                                 >
                                     <div className="prose prose-sm dark:prose-invert max-w-none">
-                                        <ReactMarkdown 
-                                            remarkPlugins={[remarkGfm]}
-                                            components={{
-                                                p: ({children, ...props}: React.PropsWithChildren<{}>) => (
-                                                    <p className="m-0" {...props}>{children}</p>
-                                                ),
-                                                a: ({children, href, ...props}: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-                                                    <a className="text-blue-500 hover:underline" href={href} {...props}>{children}</a>
-                                                ),
-                                                code: ({children, ...props}: React.PropsWithChildren<{}>) => (
-                                                    <code className="bg-gray-100 dark:bg-gray-800 rounded px-1" {...props}>{children}</code>
-                                                )
-                                            }}
-                                        >
-                                            {m.content}
-                                        </ReactMarkdown>
+                                        {(() => {
+                                            // Only attempt parsing for assistant messages
+                                            if (m.role === 'assistant') {
+                                                const { sources, text } = parseAssistantMessage(m.content);
+                                                return (
+                                                    <>
+                                                        {sources.length > 0 && (
+                                                            <div className="mb-2 space-y-1">
+                                                                {sources.map((s, idx) => (
+                                                                    <div key={idx} className="text-xs text-muted-foreground">
+                                                                        <span className="font-semibold">Source:</span>{' '}
+                                                                        {s.source ? (
+                                                                            <Link href={s.source} target="_blank" className="text-blue-500 hover:underline">
+                                                                                {s.title ?? s.source}
+                                                                            </Link>
+                                                                        ) : null}
+                                                                        {s.description && (
+                                                                            <> – {s.description}</>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                        {text && (
+                                                            (() => {
+                                                                const showText = !(sources.length > 0) || (
+                                                                    text.length < 300 && text.includes('.')
+                                                                );
+                                                                if (!showText) return null;
+                                                                return (
+                                                                    <ReactMarkdown
+                                                                        remarkPlugins={[remarkGfm]}
+                                                                        components={{
+                                                                            p: ({ children, ...props }: React.PropsWithChildren<{}>) => (
+                                                                                <p className="m-0" {...props}>{children}</p>
+                                                                            ),
+                                                                            a: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+                                                                                <a className="text-blue-500 hover:underline" href={href} {...props}>{children}</a>
+                                                                            ),
+                                                                            code: ({ children, ...props }: React.PropsWithChildren<{}>) => (
+                                                                                <code className="bg-gray-100 dark:bg-gray-800 rounded px-1" {...props}>{children}</code>
+                                                                            )
+                                                                        }}
+                                                                    >
+                                                                        {text}
+                                                                    </ReactMarkdown>
+                                                                );
+                                                            })()
+                                                        )}
+                                                    </>
+                                                );
+                                            }
+
+                                            // For user messages keep as-is
+                                            return (
+                                                <ReactMarkdown
+                                                    remarkPlugins={[remarkGfm]}
+                                                    components={{
+                                                        p: ({ children, ...props }: React.PropsWithChildren<{}>) => (
+                                                            <p className="m-0" {...props}>{children}</p>
+                                                        ),
+                                                    }}
+                                                >
+                                                    {m.content}
+                                                </ReactMarkdown>
+                                            );
+                                        })()}
                                     </div>
                                 </motion.div>
                             </motion.div>
