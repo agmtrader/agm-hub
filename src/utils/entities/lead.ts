@@ -24,7 +24,6 @@ export async function UpdateLeadByID(leadID:string, lead:Partial<LeadPayload>): 
     return updateResponse
 }
 
-// Create a follow-up for a given lead
 export async function CreateLeadFollowUp(leadID: string, followUp: Omit<FollowUpPayload, 'lead_id'>): Promise<IDResponse> {
     const createResponse: IDResponse = await accessAPI('/leads/follow_up/create', 'POST', {
         'lead_id': leadID,
@@ -33,7 +32,6 @@ export async function CreateLeadFollowUp(leadID: string, followUp: Omit<FollowUp
     return createResponse
 }
 
-// Update an existing follow-up (requires the follow-up id in a separate param, per API spec)
 export async function UpdateLeadFollowUpByID(
     leadID: string,
     followUpID: string,
@@ -47,7 +45,6 @@ export async function UpdateLeadFollowUpByID(
     return updateResponse
 }
 
-// Delete a follow-up by id
 export async function DeleteLeadFollowUpByID(leadID: string, followUpID: string): Promise<IDResponse> {
     const deleteResponse: IDResponse = await accessAPI('/leads/follow_up/delete', 'POST', {
         'lead_id': leadID,

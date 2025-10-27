@@ -1,8 +1,9 @@
 import { accessAPI } from "../api"
-import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, InternalAccount, InternalDocument, InternalDocumentPayload } from "@/lib/entities/account"
+import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, InternalAccount, InternalDocument, InternalDocumentPayload, ProductCountryBundlesResponse } from "@/lib/entities/account"
 import { IDResponse } from "@/lib/entities/base"
 import { SecurityQuestionsResponse } from "@/lib/entities/security_question"
 
+// Database
 export async function CreateAccount(account: InternalAccount): Promise<IDResponse> {
     const createResponse: IDResponse = await accessAPI('/accounts/create', 'POST', { 'account': account })
     return createResponse
@@ -54,12 +55,7 @@ export async function ReadAccountDocuments(accountID:string): Promise<InternalDo
 
 // Account Management
 export async function SubmitIBKRDocument(accountID: string, documentSubmission: DocumentSubmissionRequest, masterAccount: 'ad' | 'br') {
-    const accountManagementRequests: AccountManagementRequests = {
-        accountManagementRequests: {
-            documentSubmission
-        }
-    }
-    const response = await accessAPI('/accounts/ibkr/update', 'POST', { 'account_id': accountID, 'account_management_requests': accountManagementRequests, 'master_account': masterAccount })
+    const response = await accessAPI('/accounts/ibkr/documents', 'POST', { 'account_id': accountID, 'document_submission': documentSubmission, 'master_account': masterAccount })
     return response
 }
 
@@ -88,13 +84,27 @@ export async function GetPendingTasksByAccountID(accountId: string, masterAccoun
     }
 }
 
-export async function GetForms(forms: string[], masterAccount: 'ad' | 'br'): Promise<AllForms> {
-    const response: AllForms = await accessAPI('/accounts/ibkr/forms', 'POST', { 'forms': forms, 'master_account': masterAccount })
+export async function ApplyFeeTemplate(accountID: string, template_name: string, masterAccount: 'ad' | 'br'): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/fee_template', 'POST', { 'account_id': accountID, 'template_name': template_name, 'master_account': masterAccount })
     return response
 }
 
-export async function ApplyFeeTemplate(accountID: string, template_name: string, masterAccount: 'ad' | 'br'): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/fee_template', 'POST', { 'account_id': accountID, 'template_name': template_name, 'master_account': masterAccount })
+export async function AddTradingPermissions(
+    accountID: string,
+    tradingPermissions: Array<{ country: string; product: string }>,
+    masterAccount: 'ad' | 'br',
+    documents?: any,
+): Promise<any> {
+
+    const payload: any = {
+        account_id: accountID,
+        trading_permissions: tradingPermissions,
+        master_account: masterAccount,
+    }
+
+    if (documents) payload.documents = documents
+
+    const response: any = await accessAPI('/accounts/ibkr/trading_permissions', 'POST', payload)
     return response
 }
 
@@ -108,7 +118,18 @@ export async function UpdateAccountEmail(referenceUserName: string, newEmail: st
     return response
 }
 
+// Enums
+export async function GetForms(forms: string[], masterAccount: 'ad' | 'br'): Promise<AllForms> {
+    const response: AllForms = await accessAPI('/accounts/ibkr/forms', 'POST', { 'forms': forms, 'master_account': masterAccount })
+    return response
+}
+
 export async function GetSecurityQuestions(): Promise<SecurityQuestionsResponse> {
     const response: SecurityQuestionsResponse = await accessAPI(`/accounts/ibkr/security_questions`, 'GET')
+    return response
+}
+
+export async function GetProductCountryBundles(): Promise<ProductCountryBundlesResponse> {
+    const response: ProductCountryBundlesResponse = await accessAPI(`/accounts/ibkr/product_country_bundles`, 'GET')
     return response
 }

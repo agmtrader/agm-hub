@@ -144,7 +144,9 @@ export interface IBKRAccount {
 }
 
 export interface FeeTemplate {
-  feeTemplateName: string;
+  feeTemplateName?: string;
+  feeEffectiveDate?: string;
+  brokerFeeInfo?: string;
 }
 
 export interface Capabilities {
@@ -232,4 +234,16 @@ export interface Restriction {
   id: number;
   name: string;
   byIB: boolean;
+}
+
+// Product Country Bundle
+export interface ProductCountryBundle {
+  countryRegion: string;
+  assetClass: string;
+  bundleCode: string;
+}
+
+export interface ProductCountryBundlesResponse {
+  enumerationsType: string;
+  jsonData: ProductCountryBundle[];
 }

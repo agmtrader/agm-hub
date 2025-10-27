@@ -25,3 +25,8 @@ export async function ReadContactByEmail(email: string): Promise<Contact | null>
     if (contacts.length > 1) throw new Error('Multiple contacts found with same Email')
     return contacts[0]
 }
+
+export async function UpdateContactByID(id: string, contact: Partial<Contact>): Promise<'Updated'> {
+    await accessAPI('/contacts/update', 'POST', { 'query': { 'id': id }, 'contact': contact })
+    return 'Updated'
+}

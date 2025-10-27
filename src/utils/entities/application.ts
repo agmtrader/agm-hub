@@ -7,18 +7,12 @@ export async function CreateApplication(application: InternalApplicationPayload)
     return createResponse
 }
 
-/**
- * Fetch a list of applications. By default the heavy `application` IBKR payload is *stripped* from
- * the response to minimise network transfer size. Set `includeApplication` to `true` if you need
- * the full payload.
- */
 export async function ReadApplications(stripApplication: 0 | 1 = 1): Promise<InternalApplication[]> {
     const applications: InternalApplication[] = await accessAPI(`/applications/read?strip_application=${stripApplication}`, 'GET')
     return applications
 }
 
 export async function ReadApplicationByID(applicationID: string): Promise<InternalApplication | null> {
-    // We need the full application payload for a single record view so ask the API NOT to strip it
     const applications: InternalApplication[] = await accessAPI(`/applications/read?id=${applicationID}`, 'GET')
     if (applications.length === 0) return null
     if (applications.length > 1) throw new Error('Multiple applications found for ID: ' + applicationID)
@@ -41,6 +35,8 @@ export async function UpdateApplicationByID(applicationID: string, application: 
     const updateResponse: IDResponse = await accessAPI('/applications/update', 'POST', { 'query': { 'id': applicationID }, 'application': application })
     return updateResponse
 }
+
+// IBKR
 
 export async function SendApplicationToIBKR(
     application: Application,

@@ -50,7 +50,7 @@ function parseAssistantMessage(raw: string): { sources: SourceInfo[]; text: stri
   return { sources, text: remaining.trim() };
 }
 import { accessAPI } from '@/utils/api'
-import { ChatResponse } from '@/lib/public/ada'
+import { ChatResponse } from '@/lib/tools/ada'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 const FullChat = () => {
