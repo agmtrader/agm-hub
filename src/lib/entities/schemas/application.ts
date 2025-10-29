@@ -225,11 +225,11 @@ export const regulatory_information_schema = z
 
 export const account_schema = z.object({
   investmentObjectives: z.array(z.string()).optional(),
-  tradingPermissions: z.array(trading_permission_schema).min(1, { message: 'At least one trading permission is required' }).optional(),
-  externalId: z.string().min(1, { message: 'Account external ID is required' }),
-  baseCurrency: z.string().min(3, { message: 'Base currency is required (3-letter code)' }).optional(),
+  tradingPermissions: z.array(trading_permission_schema).nullable().optional(),
+  externalId: z.string().min(1, { message: 'Account external ID is required' }),  
+  baseCurrency: z.string().nullable().optional(),
   multiCurrency: z.boolean().optional().default(true),
-  margin: z.string().min(1, { message: 'Margin type is required' }).optional(),
+  margin: z.string().nullable().optional(),
   tradingLimits: trading_limits_schema, // Added from new schema
   alias: z.string().optional(),
   feesTemplateName: z.string().optional(),
@@ -298,7 +298,7 @@ export const account_holder_details_schema = z.object({
   name: name_schema,
   email: z.string().email({ message: 'Invalid email address' }),
   residenceAddress: address_schema,
-  mailingAddress: address_schema.optional(),
+  mailingAddress: address_schema.nullable().optional(),
   sameMailAddress: z.boolean().optional(),
   countryOfBirth: z.string().min(2, { message: 'Country of birth is required' }),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date of birth must be YYYY-MM-DD' }),
