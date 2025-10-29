@@ -39,7 +39,7 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('apply.account.account_holder_info.base_currency')}</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="" />
@@ -65,7 +65,7 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('apply.account.account_holder_info.account_type')}</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="" />
