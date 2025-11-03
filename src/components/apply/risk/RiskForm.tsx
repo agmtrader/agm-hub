@@ -150,22 +150,6 @@ const RiskForm = () => {
         contact_id = contact?.id;
       }
 
-      // Create lead only if no account is provided
-      if (!values.account_id) {
-        const lead:LeadPayload = {
-          contact_id: contact_id,
-          referrer_id: contact_id,
-          description: 'User filled in a risk assessment form. Make sure we follow up with them and open their account.',
-          contact_date: formatTimestamp(new Date()),
-          sent: null,
-          closed: null,
-          filled: null,
-          emails_to_notify: [],
-        }
-        const leadResponse = await CreateLead(lead, [])
-        if (!leadResponse.id) throw new Error('Failed to create lead')
-      }
-
       // Create the risk profile
       const riskProfilePayload: RiskProfilePayload = {
         name: values.name,
