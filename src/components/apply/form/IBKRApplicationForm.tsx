@@ -27,6 +27,7 @@ import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
 import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
 import { getApplicationDefaults } from '@/utils/form'
+import { individual_form } from './samples'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.
@@ -57,7 +58,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -150,6 +151,56 @@ const IBKRApplicationForm = () => {
     return clone;
   };
 
+  // NEW: Helper to remove `identificationType` fields from all account holders before persisting
+  const stripIdentificationType = (application: Application): Application => {
+    const clone = structuredClone(application);
+
+    const clear = (holder: any) => {
+      if (holder && Object.prototype.hasOwnProperty.call(holder, 'identificationType')) {
+        delete holder.identificationType;
+      }
+    };
+
+    switch (clone.customer.type) {
+      case 'INDIVIDUAL':
+        clear(clone.customer.accountHolder?.accountHolderDetails?.[0]);
+        break;
+      case 'JOINT':
+        clear(clone.customer.jointHolders?.firstHolderDetails?.[0]);
+        clear(clone.customer.jointHolders?.secondHolderDetails?.[0]);
+        break;
+      case 'ORG':
+        (clone.customer.organization?.associatedEntities?.associatedIndividuals || []).forEach(clear);
+        break;
+    }
+
+    return clone;
+  };
+
+  // NEW: Helper to recursively remove accented characters from all string fields
+  const stripAccents = <T,>(data: T): T => {
+    const transform = (value: any): any => {
+      if (typeof value === 'string') {
+        try {
+          return value.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+        } catch {
+          // Fallback for older engines without \p{Diacritic}
+          return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+      }
+      if (Array.isArray(value)) return value.map(transform);
+      if (value && typeof value === 'object') {
+        const out: Record<string, any> = {};
+        Object.entries(value).forEach(([k, v]) => {
+          out[k] = transform(v);
+        });
+        return out;
+      }
+      return value;
+    };
+    return transform(data);
+  };
+
   const getContactCandidates = (values: Application): { name: string; email: string }[] => {
     const contacts: { name: string; email: string }[] = [];
     const { customer } = values;
@@ -198,7 +249,13 @@ const IBKRApplicationForm = () => {
     let lead_id = searchParams.get('ld') || null;
 
     const currentValues = form.getValues();
-    const sanitizedValues = sanitizeDocuments(sanitizeEmploymentDetails(sanitizeMailingAddress(currentValues)));
+    const sanitizedValues = stripAccents(
+      sanitizeDocuments(
+        sanitizeEmploymentDetails(
+          sanitizeMailingAddress(stripIdentificationType(currentValues))
+        )
+      )
+    );
 
     // Contact creation – only attempt after Personal Info step (or later)
     let contact_id = null;
