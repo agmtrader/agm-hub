@@ -464,7 +464,9 @@
                 "security_questions": "Security Questions",
                 "security_questions_description": "Select three security questions and provide your answers",
                 "select_question": "Select question",
-                "answer_placeholder": "Type your answer"
+                "answer_placeholder": "Type your answer",
+                "estimated_deposit": "Estimated Deposit",
+                "estimated_deposit_help": "Approximate amount you plan to deposit initially."
             },
             "regulatory": {
                 "title": "Regulatory Information",

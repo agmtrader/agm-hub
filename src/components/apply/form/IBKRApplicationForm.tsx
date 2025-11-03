@@ -55,10 +55,12 @@ const IBKRApplicationForm = () => {
 
   // Security questions selected in Personal Info step
   const [securityQA, setSecurityQA] = useState<Record<string, string>>({});
+  // Estimated deposit amount for the account (captured in FinancialInfoStep)
+  const [estimatedDeposit, setEstimatedDeposit] = useState<number | null>(null);
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -291,6 +293,7 @@ const IBKRApplicationForm = () => {
         status,
         contact_id: contact_id,
         security_questions: securityQA,
+        estimated_deposit: estimatedDeposit,
       };
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
@@ -299,6 +302,9 @@ const IBKRApplicationForm = () => {
       const updatePayload:any = { application: sanitizedValues, status: status, lead_id: lead_id };
       if (Object.keys(securityQA).length) {
         updatePayload.security_questions = securityQA;
+      }
+      if (estimatedDeposit !== null) {
+        updatePayload.estimated_deposit = estimatedDeposit;
       }
       if (contact_id) {
         updatePayload.contact_id = contact_id;
@@ -484,7 +490,7 @@ const IBKRApplicationForm = () => {
 
             {currentStep === FormStep.FINANCIAL_INFO && (
               <div className="space-y-8">
-                <FinancialInfoStep form={form} />
+                <FinancialInfoStep form={form} onEstimatedDepositChange={setEstimatedDeposit} />
                 <div className="flex justify-between">
                   <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
                   <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>

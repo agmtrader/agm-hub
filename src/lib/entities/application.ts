@@ -81,6 +81,7 @@ export type InternalApplicationPayload = {
     status: string | null;
     contact_id: string | null;
     security_questions: Map
+    estimated_deposit: number | null;
 }
 
 export type InternalApplication = InternalApplicationPayload & Base

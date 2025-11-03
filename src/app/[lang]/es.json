@@ -463,7 +463,9 @@
                 "security_questions": "Preguntas de Seguridad",
                 "security_questions_description": "Selecciona tres preguntas de seguridad y proporciona tus respuestas",
                 "select_question": "Seleccionar pregunta",
-                "answer_placeholder": "Escribe tu respuesta"
+                "answer_placeholder": "Escribe tu respuesta",
+                "estimated_deposit": "Depósito Estimado",
+                "estimated_deposit_help": "Cantidad aproximada que planeas depositar inicialmente."
             },
             "regulatory": {
                 "title": "Información Regulatoria",
