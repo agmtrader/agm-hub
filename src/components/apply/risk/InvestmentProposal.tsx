@@ -1,8 +1,6 @@
 'use client'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { TrendingUp } from 'lucide-react'
 import { PieChart, Pie, Cell } from 'recharts'
 import { useMemo, useState, useEffect } from 'react'
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart'
@@ -13,6 +11,8 @@ import { DataTable } from '@/components/misc/DataTable'
 import type { ColumnDefinition } from '@/components/misc/DataTable'
 import { ListRiskArchetypes } from '@/utils/tools/risk-profile'
 import { toast } from '@/hooks/use-toast'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Switch } from '@/components/ui/switch'
 
 type Props = {
   investmentProposal: InvestmentProposalType
@@ -142,19 +142,29 @@ const InvestmentProposal = ({ investmentProposal, riskProfile }: Props) => {
         <span className="text-sm text-subtitle ml-auto">
           {((getValue())).toFixed(1) || 0 }%
         </span>
-      ),
+      )
     }
   ]
 
   return (
-    <div className="flex flex-col gap-2 w-full text-lg">
+    <div className="flex flex-col gap-5 w-full text-lg">
 
-    {/* Matched Risk Archetype */}
     {currentArchetype && (
       <h3 className="text-5xl font-semibold text-primary">
         {currentArchetype.name}
       </h3>
     )}
+
+
+    <div className="flex items-center gap-2">
+
+      <Switch
+        checked={showPortfolioOverview}
+        onCheckedChange={(checked) => setShowPortfolioOverview(checked === true)}
+      />
+
+      <p className="text-sm text-subtitle">Show Portfolio Overview</p>
+    </div>
 
     <div className="flex flex-col lg:flex-row items-center gap-5">
       <Card className='w-full h-full gap-5 flex flex-col'>
@@ -285,7 +295,7 @@ const InvestmentProposal = ({ investmentProposal, riskProfile }: Props) => {
     <p className="text-base text-error">
     The investment proposal is based on the risk profile of the account. If you want to see more details, please contact us and set up a meeting.
     </p>
-    
+
   </div>
   ) 
 }
