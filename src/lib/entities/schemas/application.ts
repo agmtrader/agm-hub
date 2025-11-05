@@ -61,7 +61,7 @@ export const employment_details_schema = z.object({
   employer: z.string().optional().nullable(),
   occupation: z.string().optional().nullable(),
   employerAddress: address_schema.optional().nullable(),
-  yearsWithEmployer: z.number().int().positive().optional().nullable(),
+  yearsWithEmployer: z.number().int().optional().nullable(),
   employerBusiness: z.string().optional().nullable(),
 });
 
@@ -74,7 +74,7 @@ export const investment_experience_schema = z.object({
 
 export const source_of_wealth_schema = z.object({
   sourceType: z.string().optional().nullable(),
-  percentage: z.number().int().positive().optional().nullable(),
+  percentage: z.number().int().optional().nullable(),
   usedForFunds: z.boolean().optional().nullable(),
   description: z.string().optional().nullable(),
 });
@@ -140,9 +140,9 @@ export const financial_information_schema = z.object({
   investmentExperience: z.array(investment_experience_schema).optional().nullable(),
   investmentObjectives: z.array(z.string()).optional().nullable(),
   sourcesOfWealth: z.array(source_of_wealth_schema).optional().nullable(),
-  netWorth: z.number().int().positive().optional().nullable(),
-  liquidNetWorth: z.number().int().positive().optional().nullable(),
-  annualNetIncome: z.number().int().positive().optional().nullable(),
+  netWorth: z.number().int().optional().nullable(),
+  liquidNetWorth: z.number().int().optional().nullable(),
+  annualNetIncome: z.number().int().optional().nullable(),
   taxBracket: z.string().optional().nullable(),
   accreditedInvestor: z.boolean().optional().nullable(),
 });
@@ -297,7 +297,7 @@ export const account_holder_details_schema = z.object({
   dateOfBirth: z.string().optional().nullable(),
   gender: z.string().optional().nullable(),
   maritalStatus: z.string().optional().nullable(),
-  numDependents: z.number().int().positive().optional().nullable(),
+  numDependents: z.number().int().optional().nullable(),
   phones: z.array(phone_schema).optional().nullable(),
   identification: identification_schema,
   employmentDetails: employment_details_schema.optional().nullable(),
@@ -309,7 +309,7 @@ export const account_holder_details_schema = z.object({
   authorizedToSignOnBehalfOfOwner: z.boolean().optional().nullable(),
   authorizedTrader: z.boolean().optional().nullable(),
   usTaxResident: z.boolean().optional().nullable(),
-  ownershipPercentage: z.number().int().positive().optional().nullable(),
+  ownershipPercentage: z.number().int().optional().nullable(),
   titles: z.array(z.object({
     value: z.string().optional().nullable(),
     code: z.string().optional().nullable()
