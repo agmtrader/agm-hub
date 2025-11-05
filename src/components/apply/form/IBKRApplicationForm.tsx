@@ -27,7 +27,7 @@ import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
 import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
 import { getApplicationDefaults } from '@/utils/form'
-import { individual_form } from './samples'
+import { test_form } from './samples'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.
