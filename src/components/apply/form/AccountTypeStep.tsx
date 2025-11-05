@@ -21,17 +21,14 @@ interface AccountTypeStepProps {
 
 const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
   const { t } = useTranslationProvider();
+
   const handleAccountTypeChange = (value: string) => {
+
     const defaultRegulatoryInformation = getDefaultRegulatoryInformation()
     const defaultW8Ben = getDefaultW8Ben()
-    
-    // Build the customer object based on the account type
+
     const accountType = value as 'INDIVIDUAL' | 'JOINT' | 'ORG'
-    
-    // Get current customer values to preserve basic info
     const currentCustomer = form.getValues('customer')
-    
-    // Create a clean customer object with only the basic properties
     const cleanCustomer: any = {
       type: accountType,
       externalId: currentCustomer?.externalId,
@@ -43,7 +40,6 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
       legalResidenceCountry: currentCustomer?.legalResidenceCountry,
     }
     
-    // Add the appropriate nested structure based on account type
     if (accountType === 'INDIVIDUAL') {
       cleanCustomer.accountHolder = {
         accountHolderDetails: [{
@@ -71,11 +67,9 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
         regulatoryInformation: defaultRegulatoryInformation
       }
     }
-    
-    // Reset the customer object completely
+
     form.setValue('customer', cleanCustomer)
     
-    // Clear documents array - W8 forms will be generated when names are provided
     form.setValue('documents', [])
   }
 

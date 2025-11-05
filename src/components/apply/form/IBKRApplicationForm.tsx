@@ -46,16 +46,11 @@ const IBKRApplicationForm = () => {
 
   const searchParams = useSearchParams();
   const { t } = useTranslationProvider();
-  
-  // State for step navigation and data
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const [isLoadingApplication, setIsLoadingApplication] = useState(false);
-
-  // Security questions selected in Personal Info step
   const [securityQA, setSecurityQA] = useState<Record<string, string>>({});
-  // Estimated deposit amount for the account (captured in FinancialInfoStep)
   const [estimatedDeposit, setEstimatedDeposit] = useState<number | null>(null);
 
   const form = useForm<Application>({
@@ -83,14 +78,9 @@ const IBKRApplicationForm = () => {
         setIsLoadingApplication(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  if (isLoadingApplication) {
-    return <LoadingComponent className="py-10">Loading application…</LoadingComponent>;
-  }
-
-  // No need to restore step from storage; default at ACCOUNT_TYPE.
+  if (isLoadingApplication) return <LoadingComponent className="py-10">Loading application…</LoadingComponent>
 
   const sanitizeDocuments = (values: Application) => {
     const sanitizedDocuments = (values.documents || []).map((doc: any) => {
@@ -153,7 +143,7 @@ const IBKRApplicationForm = () => {
     return clone;
   };
 
-  // NEW: Helper to remove `identificationType` fields from all account holders before persisting
+  // Helper to remove `identificationType` fields from all account holders before persisting
   const stripIdentificationType = (application: Application): Application => {
     const clone = structuredClone(application);
 
@@ -179,7 +169,7 @@ const IBKRApplicationForm = () => {
     return clone;
   };
 
-  // NEW: Helper to recursively remove accented characters from all string fields
+  // Helper to recursively remove accented characters from all string fields
   const stripAccents = <T,>(data: T): T => {
     const transform = (value: any): any => {
       if (typeof value === 'string') {

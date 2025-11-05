@@ -71,7 +71,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
         holders.push({
           id: 'organization',
           name: 'Organization',
-          fullName: orgIdentification.name,
+          fullName: orgIdentification.name ?? '',
           type: 'organization'
         });
       }

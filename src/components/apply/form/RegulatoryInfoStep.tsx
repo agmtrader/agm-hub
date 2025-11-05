@@ -3,7 +3,6 @@ import { UseFormReturn } from 'react-hook-form';
 import { Application } from '@/lib/entities/application';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CountriesFormField from '@/components/ui/CountriesFormField';
 import { Input } from '@/components/ui/input';

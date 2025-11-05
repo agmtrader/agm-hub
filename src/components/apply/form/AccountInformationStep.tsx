@@ -15,6 +15,7 @@ interface AccountInformationStepProps {
 }
 
 const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
+  
   const { t } = useTranslationProvider();
   const investmentObjectivesOptions = getInvestmentObjectives(t);
   const productsCompleteOptions = getProductsComplete(t);
@@ -125,7 +126,7 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('apply.account.account_holder_info.primary_trading_market')}</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="" />
@@ -152,7 +153,7 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('apply.account.account_holder_info.product_types')}</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="" />
