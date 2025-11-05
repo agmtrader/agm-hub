@@ -334,7 +334,7 @@
                 "individual": "Cuenta Individual",
                 "individual_description": "Una cuenta propiedad y controlada por una sola persona",
                 "joint": "Cuenta Mancomunada",
-                "joint_description": "Una cuenta propiedad y controlada por dos o más personas",
+                "joint_description": "Una cuenta propiedad y controlada por dos personas",
                 "institutional": "Cuenta Institucional",
                 "institutional_description": "Una cuenta propiedad y controlada por una empresa u organización"
             },

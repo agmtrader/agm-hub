@@ -330,7 +330,7 @@
                 "individual": "Individual Account",
                 "individual_description": "An account owned and controlled by a single person",
                 "joint": "Joint Account",
-                "joint_description": "An account owned and controlled by two or more people",
+                "joint_description": "An account owned and controlled by two people",
                 "institutional": "Institutional Account",
                 "institutional_description": "An account owned and controlled by a company or organization"
             },
