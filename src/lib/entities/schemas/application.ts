@@ -63,6 +63,7 @@ export const employment_details_schema = z.object({
   employerAddress: address_schema.optional().nullable(),
   yearsWithEmployer: z.number().int().optional().nullable(),
   employerBusiness: z.string().optional().nullable(),
+  emplCountryResCountryDetails: z.string().optional().nullable()
 });
 
 export const investment_experience_schema = z.object({
