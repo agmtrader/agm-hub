@@ -1,7 +1,7 @@
 import { IBKRDocument } from "./application"
 import { Base } from "./base"
 import { z } from "zod"
-import { account_schema } from "./schemas/account"
+import { account_schema, deposit_request_schema } from "./schemas/account"
 
 export type AccountPayload = z.infer<typeof account_schema>
 export type InternalAccount = AccountPayload & {
@@ -19,7 +19,6 @@ export type InternalAccount = AccountPayload & {
 }
 export type Account = Base & InternalAccount
 
-// Internal Document Payload
 export interface InternalDocumentPayload {
   mime_type: string;
   file_name: string;
@@ -29,7 +28,7 @@ export interface InternalDocumentPayload {
 }
 export type InternalDocument = InternalDocumentPayload & Base
 
-// Agreement/disclosure form details
+// Account Management API
 export interface AllForms {
   formDetails: FormDetails[]
   fileData: {
@@ -47,7 +46,6 @@ export interface FormDetails {
   fileLength: number;
 }
 
-// Registration Task
 export interface RegistrationTask {
   formName: string;
   action: string;
@@ -66,7 +64,6 @@ export interface RegistrationTasksResponse {
   registrationTasks: RegistrationTask[];
 }
 
-// Pending Task
 export interface PendingTask {
   taskNumber: number;
   formNumber: number;
@@ -88,7 +85,6 @@ export interface PendingTasksResponse {
   pendingTaskPresent: boolean;
 }
 
-// Documents Submitted for Pending or Registration Tasks
 export interface DocumentSubmissionRequest {
     documents: IBKRDocument[];
     accountId: string;
@@ -102,7 +98,6 @@ export interface AccountManagementRequests {
   }
 }
 
-// IBKR Account Details
 export interface AccountDetails {
   account: IBKRAccount;
   associatedPersons: AssociatedPerson[];
@@ -236,7 +231,6 @@ export interface Restriction {
   byIB: boolean;
 }
 
-// Product Country Bundle
 export interface ProductCountryBundle {
   countryRegion: string;
   assetClass: string;
@@ -246,4 +240,29 @@ export interface ProductCountryBundle {
 export interface ProductCountryBundlesResponse {
   enumerationsType: string;
   jsonData: ProductCountryBundle[];
+}
+
+export interface WireInstructions {
+  enumerationType: string;
+  jsonData: WireInstruction[];
+}
+
+export interface WireInstruction {
+  accountNameAndBeneficiary: string;
+  accountNumber: string;
+  alternateAccountInfo: string;
+  bankSWIFTCode: string;
+  bankTitleAndAddress: string;
+  currency: string;
+  paymentReference: string;
+  routingNumber: string;
+  referenceNumber: string;
+}
+
+export type DepositRequestPayload = z.infer<typeof deposit_request_schema>
+
+export type DepositRequest = DepositRequestPayload & {
+  master_account: 'ad' | 'br',
+  client_instruction_id: string,
+  account_id: string
 }

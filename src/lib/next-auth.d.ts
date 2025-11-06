@@ -4,18 +4,15 @@ import { JWT } from "next-auth/jwt"
 
 declare module "next-auth" {
   interface User extends DefaultUser {
-    phone: string | null
-    country: string
-    company_name: string | null
     created: string
     updated: string
+    last_login: string
     scopes: string;
   }
 }
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    firebaseToken: string;
     user: User & DefaultSession["user"]
   }
 }
@@ -26,8 +23,6 @@ declare module "next-auth/jwt" {
     name: User["name"]
     email: User["email"]
     image: User["image"]
-    accessToken: User["accessToken"]
-    refreshToken: User["refreshToken"]
     scopes: User["scopes"]
   }
 }
