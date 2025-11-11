@@ -283,7 +283,7 @@ const IBKRApplicationForm = () => {
         status,
         contact_id: contact_id,
         security_questions: securityQA,
-        estimated_deposit: estimatedDeposit,
+        estimated_deposit: estimatedDeposit ?? null,
       };
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
@@ -480,7 +480,7 @@ const IBKRApplicationForm = () => {
 
             {currentStep === FormStep.FINANCIAL_INFO && (
               <div className="space-y-8">
-                <FinancialInfoStep form={form} onEstimatedDepositChange={setEstimatedDeposit} />
+                <FinancialInfoStep form={form} setEstimatedDeposit={setEstimatedDeposit} estimatedDeposit={estimatedDeposit} />
                 <div className="flex justify-between">
                   <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
                   <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>

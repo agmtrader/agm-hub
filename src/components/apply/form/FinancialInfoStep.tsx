@@ -13,10 +13,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 interface FinancialInfoStepProps {
   form: UseFormReturn<Application>;
-  onEstimatedDepositChange?: (value: number | null) => void;
+  setEstimatedDeposit: (value: number | null) => void;
+  estimatedDeposit: number | null;
 }
 
-const FinancialInfoStep = ({ form, onEstimatedDepositChange }: FinancialInfoStepProps) => {
+const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: FinancialInfoStepProps) => {
+
   const { t } = useTranslationProvider();
   const accountType = form.watch('customer.type');
 
@@ -342,28 +344,7 @@ const FinancialInfoStep = ({ form, onEstimatedDepositChange }: FinancialInfoStep
         <SourcesOfWealthFields basePath={basePath} />
 
         {/* Estimated Deposit */}
-        <FormField
-          control={form.control}
-          name={`accounts.0.estimatedDeposit` as any}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('apply.account.account_holder_info.estimated_deposit') || 'Estimated Deposit (USD)'}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
-                  {...field}
-                  onChange={(e) => {
-                    const val = e.target.value === '' ? null : parseInt(e.target.value);
-                    field.onChange(val);
-                    onEstimatedDepositChange?.(val);
-                  }}
-                />
-              </FormControl>
-              <FormDescription>{t('apply.account.account_holder_info.estimated_deposit_help') || 'Approximate amount you plan to deposit initially.'}</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <Input placeholder={t('apply.account.account_holder_info.estimated_deposit')} value={estimatedDeposit ?? ''} onChange={(e) => setEstimatedDeposit(e.target.value === '' ? null : parseInt(e.target.value))} />
       </CardContent>
     </Card>
   );
