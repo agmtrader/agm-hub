@@ -14,6 +14,7 @@ import {
 import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from '@/components/ui/file-upload'
 import POAForm from './POAForm'
 import POIForm from './POIForm'
+import { DateTimePicker } from '@/components/ui/datetime-picker'
 
 export type DocumentType = 'POA' | 'POI';
 
@@ -27,14 +28,23 @@ const DocumentUploader = ({ documentType, handleSubmit }: Props) => {
     const [uploading, setUploading] = useState<boolean>(false)
     const [files, setFiles] = useState<File[] | null>(null)
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [issuedDate, setIssuedDate] = useState<Date | undefined>(undefined)
+    const [expiryDate, setExpiryDate] = useState<Date | undefined>(undefined)
 
     const handleUpload = async (values: any) => {
         setUploading(true)
-        handleSubmit(documentType, values, files)
+        const augmentedValues = {
+          ...values,
+          issuedDate,
+          expiryDate,
+        }
+        handleSubmit(documentType, augmentedValues, files)
 
         setUploading(false)
         setDialogOpen(false)
         setFiles(null)
+        setIssuedDate(undefined)
+        setExpiryDate(undefined)
     }
 
     const FormComponent = documentType === 'POA' ? POAForm : POIForm;
@@ -81,6 +91,22 @@ const DocumentUploader = ({ documentType, handleSubmit }: Props) => {
                         ))}
                     </FileUploaderContent>
                 </FileUploader>
+
+                {/* Optional issue and expiry dates */}
+                <DateTimePicker
+                  value={issuedDate}
+                  onChange={setIssuedDate}
+                  placeholder="Issue Date"
+                  className="w-full"
+                  granularity="minute"
+                />
+                <DateTimePicker
+                  value={expiryDate}
+                  onChange={setExpiryDate}
+                  placeholder="Expiry Date"
+                  className="w-full"
+                  granularity="minute"
+                />
                 <FormComponent onSubmit={handleUpload} uploading={uploading} />
             </DialogContent>
         </Dialog>

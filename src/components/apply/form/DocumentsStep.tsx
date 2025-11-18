@@ -6,11 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, FileText, Clock, Users, Building, Trash2, Eye } from 'lucide-react'
 import DocumentViewer from '@/components/misc/DocumentViewer'
-import { Application } from '@/lib/entities/application'
+import { Application, IBKRDocument } from '@/lib/entities/application'
 import DocumentUploader, { DocumentType } from './DocumentUploader'
 import { FormField } from '@/components/ui/form'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
+import { formatTimestamp } from '@/utils/dates'
 
 interface DocumentsStepProps {
   form?: UseFormReturn<Application>
@@ -303,6 +304,8 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
           mimeType: file.type,
           data: base64Data,
         },
+        issuedDate: poaFormValues.issuedDate ? formatTimestamp(poaFormValues.issuedDate) : undefined,
+        expiryDate: poaFormValues.expiryDate ? formatTimestamp(poaFormValues.expiryDate) : undefined,
       };
 
       const currentDocs = actualForm?.getValues('documents') || [];
@@ -358,6 +361,8 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
         execTimestamp: ibkrTimestamp,
         proofOfIdentityType: poiFormValues.type,
         holderId: holderId || 'primary', // Add holder identifier
+        ...(poiFormValues.issuedDate && { issuedDate: formatTimestamp(poiFormValues.issuedDate) }),
+        ...(poiFormValues.expiryDate && { expiryDate: formatTimestamp(poiFormValues.expiryDate) }),
         ...(getExternalIndividualId(holderId || 'primary') && {
           externalIndividualId: getExternalIndividualId(holderId || 'primary'),
         }),
@@ -425,6 +430,8 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
           mimeType: file.type,
           data: base64Data,
         },
+        ...(poeFormValues.issuedDate && { issuedDate: formatTimestamp(poeFormValues.issuedDate) }),
+        ...(poeFormValues.expiryDate && { expiryDate: formatTimestamp(poeFormValues.expiryDate) }),
       };
 
       const currentDocs = actualForm?.getValues('documents') || [];
@@ -484,6 +491,8 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
           mimeType: file.type,
           data: base64Data,
         },
+        ...(ppbFormValues.issuedDate && { issuedDate: formatTimestamp(ppbFormValues.issuedDate) }),
+        ...(ppbFormValues.expiryDate && { expiryDate: formatTimestamp(ppbFormValues.expiryDate) }),
       };
 
       const currentDocs = actualForm?.getValues('documents') || [];
@@ -687,6 +696,8 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                         execLoginTimestamp: ibkrTimestamp,
                         execTimestamp: ibkrTimestamp,
                         holderId: 'joint',
+                        ...(formValues?.issuedDate && { issuedDate: formatTimestamp(formValues.issuedDate) }),
+                        ...(formValues?.expiryDate && { expiryDate: formatTimestamp(formValues.expiryDate) }),
                         payload: {
                           mimeType: file.type,
                           data: base64Data,
