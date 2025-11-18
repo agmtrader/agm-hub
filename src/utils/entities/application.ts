@@ -37,7 +37,6 @@ export async function UpdateApplicationByID(applicationID: string, application: 
 }
 
 // IBKR
-
 export async function SendApplicationToIBKR(
     application: Application,
     masterAccount: 'ad' | 'br'

@@ -1,7 +1,7 @@
 import { IBKRDocument } from "./application"
 import { Base } from "./base"
 import { z } from "zod"
-import { account_schema, deposit_request_schema } from "./schemas/account"
+import { account_schema, deposit_instruction_schema, withdrawal_instruction_schema } from "./schemas/account"
 
 export type AccountPayload = z.infer<typeof account_schema>
 export type InternalAccount = AccountPayload & {
@@ -130,7 +130,6 @@ export interface IBKRAccount {
   externalId: string;
   mifidCategory: string;
   processType: string;
-  // Newly added optional fields from IBKR API
   equity?: number;
   riskScore?: number;
   dateApproved?: string;
@@ -259,10 +258,28 @@ export interface WireInstruction {
   referenceNumber: string;
 }
 
-export type DepositRequestPayload = z.infer<typeof deposit_request_schema>
+export type DepositInstructionPayload = z.infer<typeof deposit_instruction_schema>
 
-export type DepositRequest = DepositRequestPayload & {
-  master_account: 'ad' | 'br',
-  client_instruction_id: string,
-  account_id: string
+export type DepositInstruction = DepositInstructionPayload & {
+  accountId: string
+  sendingInstitution: string
+  identifier: string
+  specialInstruction: string
+  bankInstructionName: string
+  senderInstitutionName: string
+  isIRA: boolean
+}
+
+export type WithdrawalInstructionPayload = z.infer<typeof withdrawal_instruction_schema>
+
+export type WithdrawalInstruction = WithdrawalInstructionPayload & {
+  accountId: string
+  bankInstructionName: string
+}
+
+export type UserRequest = {
+  prefix: string;
+  userName: string;
+  externalId: string;
+  authorizedTrader: boolean;
 }

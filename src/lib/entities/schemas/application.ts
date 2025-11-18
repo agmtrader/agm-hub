@@ -256,6 +256,8 @@ export const ibkr_document_schema = z.object({
     mimeType: z.string(),
     data: z.string(),
   }).optional(),
+  issuedDate: z.string().optional().nullable(),
+  expiryDate: z.string().optional().nullable(),
 }).optional();
 
 export const add_additional_account_schema = z.object({
@@ -407,5 +409,5 @@ export const application_schema = z.object({
   id: z.string().optional().nullable(),
   inputLanguage: z.enum(['en', 'zh-Hans', 'ja', 'ru', 'fr', 'pt', 'es', 'it', 'ar-AE', 'de', 'he-IL', 'hu']).optional().nullable(),
   translation: z.boolean().optional().nullable(),
-  paperAccount: z.boolean().optional().nullable(),
+  paperAccount: z.boolean().optional().nullable()
 });
