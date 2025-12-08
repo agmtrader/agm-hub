@@ -16,7 +16,7 @@ import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
 import LoaderButton from '@/components/misc/LoaderButton'
-import { Check } from "lucide-react"
+import { Check, Eye } from "lucide-react"
 import ApplicationSuccess from './ApplicationSuccess'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import LoadingComponent from '@/components/misc/LoadingComponent'
@@ -28,6 +28,11 @@ import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
 import { getApplicationDefaults } from '@/utils/form'
 import { test_form } from './samples'
+import { FormDetails } from '@/lib/entities/account'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { GetForms } from '@/utils/entities/account'
+import { Dialog, DialogHeader, DialogContent, DialogTitle } from '@/components/ui/dialog'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.
@@ -38,8 +43,9 @@ enum FormStep {
   FINANCIAL_INFO = 2,         // Net-worth, income, investment objectives, etc.
   REGULATORY_INFO = 3,        // Regulatory questions (affiliation, control, etc.)
   ACCOUNT_INFORMATION = 4,    // Account setup: base currency, account type, trading permissions
-  DOCUMENTS = 5,
-  SUCCESS = 6,
+  AGREEMENTS = 5,
+  DOCUMENTS = 6,
+  SUCCESS = 7,
 }
 
 const IBKRApplicationForm = () => {
@@ -52,6 +58,12 @@ const IBKRApplicationForm = () => {
   const [isLoadingApplication, setIsLoadingApplication] = useState(false);
   const [securityQA, setSecurityQA] = useState<Record<string, string>>({});
   const [estimatedDeposit, setEstimatedDeposit] = useState<number | null>(null);
+
+  const [fetchedForms, setFetchedForms] = useState<FormDetails[] | null>(null);
+  const [userSignature, setUserSignature] = useState<string | null>(null);
+  const [isFormViewerOpen, setIsFormViewerOpen] = useState(false);
+  const [selectedFormName, setSelectedFormName] = useState<string | null>(null);
+  const [selectedFormData, setSelectedFormData] = useState<string | null>(null);
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
@@ -356,6 +368,31 @@ const IBKRApplicationForm = () => {
     setCurrentStep(prev as FormStep);
   };
 
+  useEffect(() => {
+    const fetchForms = async () => {
+      const forms = await GetForms(['3230', '3024', '4070', '3044', '3089', '4304', '4404', '5013', '5001', '4024', '9130', '3074', '3203', '3070', '3094', '3071', '4587', '2192', '2191', '3077', '4399', '4684', '2109', '4016', '4289'], 'br');
+      console.log(forms);
+      setFetchedForms(forms.formDetails);
+    }
+    fetchForms();
+  }, []);
+
+  // Handler to view individual form
+  const handleViewForm = async (formNumber: string, formName: string) => {
+    try {
+      const forms = await GetForms([formNumber], 'br');
+      if (forms && forms.fileData && forms.fileData.data) {
+        setSelectedFormName(formName);
+        setSelectedFormData(forms.fileData.data);
+        setIsFormViewerOpen(true);
+      } else {
+        toast({ title: 'Error', description: 'Failed to fetch form content.', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch form.', variant: 'destructive' });
+    }
+  };
+
   async function onSubmit(values: Application) {
     try {
 
@@ -404,6 +441,7 @@ const IBKRApplicationForm = () => {
       { name: t('apply.account.header.steps.financial_info'), step: FormStep.FINANCIAL_INFO },
       { name: t('apply.account.header.steps.regulatory_info'), step: FormStep.REGULATORY_INFO },
       { name: t('apply.account.header.steps.account_information'), step: FormStep.ACCOUNT_INFORMATION },
+      { name: t('apply.account.header.steps.agreements'), step: FormStep.AGREEMENTS },
       { name: t('apply.account.header.steps.documents'), step: FormStep.DOCUMENTS },
       { name: t('apply.account.header.steps.complete'), step: FormStep.SUCCESS },
     ];
@@ -508,6 +546,54 @@ const IBKRApplicationForm = () => {
               </div>
             )}
 
+            {currentStep === FormStep.AGREEMENTS && (
+                <>
+                <div className="flex flex-col gap-4">
+                  <h2 className="text-xl font-semibold mb-2">Agreements and Disclosures</h2>
+                    {fetchedForms ? fetchedForms.map((form) => (
+                      <Card key={form.formNumber} className="flex justify-between p-4 items-center">
+                        <div className="flex flex-col">
+                          <p className="text-md font-semibold">{form.formName}</p>
+                          <p className="text-sm text-muted-foreground">Form #{form.formNumber}</p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => handleViewForm(form.formNumber, form.formName)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </Card>
+                    )) : (
+                      <LoadingComponent />
+                    )}
+                </div>
+                <Input
+                  type="text"
+                  placeholder="Please enter your signature to continue"
+                  value={userSignature || ""}
+                  onChange={(e) => setUserSignature(e.target.value)}
+                />
+                <div className="flex justify-between">
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={handlePreviousStep}
+                  >
+                    Previous
+                  </Button>
+                  <Button 
+                    type="button" 
+                    onClick={handleNextStep}
+                    disabled={userSignature === null || userSignature === ""}
+                    className="bg-primary text-background hover:bg-primary/90"
+                  >
+                    Next
+                  </Button>
+                </div>
+              </>
+            )}
+
             {currentStep === FormStep.DOCUMENTS && (
               <>
                 <DocumentsStep form={form} />
@@ -525,6 +611,23 @@ const IBKRApplicationForm = () => {
             )}
           </form>
         </Form>
+        {/* Form Viewer Dialog */}
+        <Dialog open={isFormViewerOpen} onOpenChange={setIsFormViewerOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+            <DialogHeader>
+              <DialogTitle>{selectedFormName}</DialogTitle>
+            </DialogHeader>
+            {selectedFormData ? (
+              <iframe
+                src={`data:application/pdf;base64,${selectedFormData}`}
+                className="w-full h-[70vh] border-0"
+                title={selectedFormName || 'Form'}
+              />
+            ) : (
+              <p className="text-center">Loading...</p>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
