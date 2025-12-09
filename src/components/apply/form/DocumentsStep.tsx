@@ -35,12 +35,11 @@ const DOCUMENT_CONFIGS: DocumentConfig[] = [
   { id: 'w8', name: 'W8 Form', formNumber: 5001 },
   { id: 'poi', name: 'Proof of Identity', formNumber: 8001 },
   { id: 'poa', name: 'Proof of Address', formNumber: 8002 },
-  { id: 'poe', name: 'Proof of Existence', formNumber: 9001 }, // Organization proof of existence
-  { id: 'ppb', name: 'Proof of Place of Business', formNumber: 9002 } // Organization proof of place of business
+  { id: 'poe', name: 'Proof of Existence', formNumber: 9001 },
+  { id: 'ppb', name: 'Proof of Place of Business', formNumber: 9002 }
 ];
 
 const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
-  // Use the passed form if available, otherwise try to get from context
   const actualForm = form as UseFormReturn<Application>
   const actualFormData = formData || (actualForm ? actualForm.getValues() : null)
 

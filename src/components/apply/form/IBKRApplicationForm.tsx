@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Form,
 } from '@/components/ui/form'
-import { application_schema } from '@/lib/entities/schemas/application'
+import { application_schema, individual_applicant_schema } from '@/lib/entities/schemas/application'
 import { Application, InternalApplicationPayload } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
@@ -26,13 +26,13 @@ import AccountInformationStep from './AccountInformationStep'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
 import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
+import { getApplicationDefaults } from '@/utils/form'
 import { individual_form } from './samples'
 import { FormDetails } from '@/lib/entities/account'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { GetForms } from '@/utils/entities/account'
 import { Dialog, DialogHeader, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import { getApplicationDefaults } from '@/utils/form'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.
@@ -245,6 +245,43 @@ const IBKRApplicationForm = () => {
     return contacts;
   };
 
+  // Helper to get the list of valid signature names for the application,
+  // based on the account holder / authorized individuals.
+  const getValidSignatureNames = (application: Application): string[] => {
+    const names: string[] = [];
+    const { customer } = application;
+
+    const addHolderName = (holder: any) => {
+      const first = holder?.name?.first;
+      const last = holder?.name?.last;
+      if (first && last) {
+        names.push(`${first} ${last}`.trim());
+      }
+    };
+
+    switch (customer.type) {
+      case 'INDIVIDUAL': {
+        const holder = customer.accountHolder?.accountHolderDetails?.[0];
+        addHolderName(holder);
+        break;
+      }
+      case 'JOINT': {
+        const firstHolder = customer.jointHolders?.firstHolderDetails?.[0];
+        const secondHolder = customer.jointHolders?.secondHolderDetails?.[0];
+        addHolderName(firstHolder);
+        addHolderName(secondHolder);
+        break;
+      }
+      case 'ORG': {
+        const individuals = customer.organization?.associatedEntities?.associatedIndividuals || [];
+        individuals.forEach(addHolderName);
+        break;
+      }
+    }
+
+    return names;
+  };
+
   // Create/update draft on every step
   const saveProgress = async () => {
 
@@ -343,6 +380,35 @@ const IBKRApplicationForm = () => {
         variant: 'destructive'
       });
       return;
+    }
+
+    // Extra validation for Agreements step: signature must match an account holder name
+    if (currentStep === FormStep.AGREEMENTS) {
+      const normalizedSignature = (userSignature || '').trim().toLowerCase();
+
+      if (!normalizedSignature) {
+        toast({
+          title: 'Signature Required',
+          description: 'Please enter your full name as your digital signature before continuing.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const applicationValues = form.getValues();
+      const validNames = getValidSignatureNames(applicationValues).map((name) =>
+        name.trim().toLowerCase()
+      );
+
+      if (!validNames.length || !validNames.includes(normalizedSignature)) {
+        toast({
+          title: 'Signature Mismatch',
+          description:
+            'Your signature must exactly match the account holder name (first and last name) as entered in the application.',
+          variant: 'destructive',
+        });
+        return;
+      }
     }
 
     try {
@@ -548,6 +614,20 @@ const IBKRApplicationForm = () => {
 
             {currentStep === FormStep.AGREEMENTS && (
                 <>
+                {/** Derive valid signature names and validity flag for Agreements step */}
+                {(() => {
+                  const applicationValues = form.getValues();
+                  const validNames = getValidSignatureNames(applicationValues).map((name) =>
+                    name.trim().toLowerCase()
+                  );
+                  const normalizedSignature = (userSignature || '').trim().toLowerCase();
+                  const isSignatureValid =
+                    normalizedSignature.length > 0 &&
+                    validNames.length > 0 &&
+                    validNames.includes(normalizedSignature);
+
+                  return (
+                    <>
                 <div className="flex flex-col gap-4">
                   <h2 className="text-xl font-semibold mb-2">Agreements and Disclosures</h2>
                     {fetchedForms ? fetchedForms.map((form) => (
@@ -568,13 +648,21 @@ const IBKRApplicationForm = () => {
                       <LoadingComponent />
                     )}
                 </div>
-                <p className="text-sm text-muted-foreground">Please note this field counts as a digital signature and will be used to sign the agreements and disclosures.</p>
+                <p className="text-sm text-muted-foreground">
+                  Please note this field counts as a digital signature and must match the account
+                  holder&apos;s first and last name as entered in the application.
+                </p>
                 <Input
                   type="text"
-                  placeholder="Please enter your signature to continue"
+                  placeholder="Enter your first and last name exactly as in the application"
                   value={userSignature || ""}
                   onChange={(e) => setUserSignature(e.target.value)}
                 />
+                {!isSignatureValid && (userSignature || '').length > 0 && (
+                  <p className="text-sm text-error mt-1">
+                    Signature must exactly match the account holder&apos;s first and last name.
+                  </p>
+                )}
                 <div className="flex justify-between">
                   <Button 
                     type="button" 
@@ -586,12 +674,15 @@ const IBKRApplicationForm = () => {
                   <Button 
                     type="button" 
                     onClick={handleNextStep}
-                    disabled={userSignature === null || userSignature === ""}
+                    disabled={!isSignatureValid}
                     className="bg-primary text-background hover:bg-primary/90"
                   >
                     Next
                   </Button>
                 </div>
+                    </>
+                  );
+                })()}
               </>
             )}
 
