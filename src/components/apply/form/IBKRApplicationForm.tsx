@@ -568,6 +568,7 @@ const IBKRApplicationForm = () => {
                       <LoadingComponent />
                     )}
                 </div>
+                <p className="text-sm text-muted-foreground">Please note this field counts as a digital signature and will be used to sign the agreements and disclosures.</p>
                 <Input
                   type="text"
                   placeholder="Please enter your signature to continue"
