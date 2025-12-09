@@ -300,7 +300,7 @@
     "apply": {
         "account": {
             "title": {
-                "ready": "¿Listo para ganar dinero?",
+                "ready": "¿Listo para invertir?",
                 "description": "Desbloquea un mundo de oportunidades financieras con tu cuenta AGM.",
                 "get_started": "¿No sabes cómo empezar? Consulta los requisitos",
                 "get_started_link": "aquí",
