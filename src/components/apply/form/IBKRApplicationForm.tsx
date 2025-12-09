@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Form,
 } from '@/components/ui/form'
-import { application_schema } from '@/lib/entities/schemas/application'
+import { application_schema, individual_applicant_schema } from '@/lib/entities/schemas/application'
 import { Application, InternalApplicationPayload } from '@/lib/entities/application';
 import { useSearchParams } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
@@ -26,13 +26,13 @@ import AccountInformationStep from './AccountInformationStep'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
 import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
-import { getApplicationDefaults } from '@/utils/form'
-import { test_form } from './samples'
+import { individual_form } from './samples'
 import { FormDetails } from '@/lib/entities/account'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { GetForms } from '@/utils/entities/account'
 import { Dialog, DialogHeader, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { getApplicationDefaults } from '@/utils/form'
 
 // Local storage keys used for saving progress
 // No local storage needed anymore; we use query params to load existing applications.

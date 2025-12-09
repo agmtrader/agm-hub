@@ -1,127 +1,80 @@
 import { Application } from "@/lib/entities/application"
 
-const joint_external_id_1 = Math.random().toString(36).substring(2, 12)
-const joint_external_id_2 = Math.random().toString(36).substring(2, 12)
-
-export const test_form:Application = {
-    "accounts": [
-        {
-            "baseCurrency": "USD",
-            "externalId": joint_external_id_1,
-            "feesTemplateName": "Default",
-            "investmentObjectives": [
-                "Growth",
-                "Income"
-            ],
-            "margin": "Margin",
-            "multiCurrency": true,
-            "tradingPermissions": [
-                {
-                    "country": "UNITED STATES",
-                    "product": "BONDS"
-                }
-            ]
-        }
-    ],
-    "additionalAccounts": null,
+const external_id = Math.random().toString(36).substring(2, 12)
+export const individual_form: Application = {
     "customer": {
+        "type": "INDIVIDUAL",
+        "externalId": external_id,
+        "prefix": "andr",
+        "email": "aguilarcarboni@gmail.com",
+        "mdStatusNonPro": true,
+        "meetAmlStandard": "true",
         "directTradingAccess": true,
-        "email": "Danielaog210@gmail.com",
-        "externalId": joint_external_id_1,
-        "jointHolders": {
-            "financialInformation": [
+        "legalResidenceCountry": "CRI",
+        "accountHolder": {
+            "accountHolderDetails": [
                 {
-                    "annualNetIncome": 60000,
-                    "investmentExperience": [
-                        {
-                            "assetClass": "STK",
-                            "knowledgeLevel": "Good",
-                            "tradesPerYear": 25,
-                            "yearsTrading": 3
-                        }
-                    ],
-                    "investmentObjectives": [
-                        "Growth",
-                        "Income"
-                    ],
-                    "liquidNetWorth": 75000,
-                    "netWorth": 250000,
-                    "sourcesOfWealth": [
-                        {
-                            "percentage": 100,
-                            "sourceType": "SOW-IND-Income"
-                        }
-                    ]
-                }
-            ],
-            "firstHolderDetails": [
-                {
-                    "countryOfBirth": "CRI",
-                    "dateOfBirth": "1993-03-27",
-                    "email": "Danielaog210@gmail.com",
-                    "employmentDetails": {
-                        "employer": "Alcon",
-                        "employerAddress": {
-                            "city": "Panama",
-                            "country": "PAN",
-                            "postalCode": "64154",
-                            "state": "Panama City",
-                            "street1": "Av Paseo del Mar, Panama, Provincia de Panama,",
-                            "street2": null
-                        },
-                        "employerBusiness": "Healthcare",
-                        "occupation": "Analyst"
+                    "w8Ben": {
+                        "localTaxForms": [],
+                        "name": "Andres Aguilar",
+                        "foreignTaxId": "118490741",
+                        "tinOrExplanationRequired": true,
+                        "part29ACountry": "N/A",
+                        "cert": true,
+                        "signatureType": "Electronic",
+                        "blankForm": true,
+                        "taxFormFile": "Form5001.pdf",
+                        "electronicFormat": true
                     },
-                    "employmentType": "EMPLOYED",
-                    "externalId": joint_external_id_1,
-                    "identification": {
-                        "citizenship": "MEX",
-                        "expirationDate": "2030-09-17",
-                        "issuingCountry": "MEX",
-                        "passport": "00GD930327MMCRNN00"
-                    },
-                    "mailingAddress": null,
-                    "maritalStatus": "S",
                     "name": {
-                        "first": "Daniela",
-                        "last": "Orozco Granados"
+                        "first": "Andres",
+                        "last": "Aguilar"
                     },
+                    "email": "aguilarcarboni@gmail.com",
+                    "dateOfBirth": "2005-09-15",
+                    "countryOfBirth": "CRI",
+                    "maritalStatus": "S",
                     "numDependents": 0,
-                    "phones": [
-                        {
-                            "country": "MEX",
-                            "number": "5540632886",
-                            "type": "Mobile"
-                        }
-                    ],
                     "residenceAddress": {
-                        "city": "Costa del Este",
-                        "country": "PAN",
-                        "postalCode": "64154",
-                        "state": "Panama City",
-                        "street1": "PH Top Tower 13 1301 COSTA DEL ESTE JUAN DIAZ PANAMA",
-                        "street2": null
+                        "street1": "Calle San Miguel",
+                        "street2": null,
+                        "country": "CRI",
+                        "state": "CR-SJ",
+                        "city": "San Jose",
+                        "postalCode": "30301"
                     },
                     "sameMailAddress": true,
-                    "taxResidencies": [
+                    "phones": [
                         {
-                            "country": "MEX",
-                            "tin": "00GD930327MMCRNN00",
-                            "tinType": "EIN"
+                            "type": "Mobile",
+                            "country": "CRI",
+                            "number": "83027366"
                         }
                     ],
-                    "w8Ben": {
-                        "blankForm": true,
-                        "cert": true,
-                        "electronicFormat": true,
-                        "foreignTaxId": "00GD930327MMCRNN00",
-                        "localTaxForms": [],
-                        "name": "Daniela Orozco Granados",
-                        "part29ACountry": "N/A",
-                        "signatureType": "Electronic",
-                        "taxFormFile": "Form5001.pdf",
-                        "tinOrExplanationRequired": true
-                    }
+                    "identification": {
+                        "expirationDate": "2030-09-18",
+                        "issuingCountry": "CRI",
+                        "citizenship": "CRI",
+                        "passport": "118490741"
+                    },
+                    "taxResidencies": [
+                        {
+                            "country": "CRI",
+                            "tin": "118490741",
+                            "tinType": "NonUS_NationalId"
+                        }
+                    ],
+                    "employmentType": "UNEMPLOYED",
+                    "externalId": external_id,
+                    "mailingAddress": {
+                        "street1": "Calle San Miguel",
+                        "street2": null,
+                        "country": "CRI",
+                        "state": "CR-SJ",
+                        "city": "San Jose",
+                        "postalCode": "30301"
+                    },
+                    "employmentDetails": null,
                 }
             ],
             "regulatoryInformation": [
@@ -129,123 +82,78 @@ export const test_form:Application = {
                     "regulatoryDetails": [
                         {
                             "code": "AFFILIATION",
-                            "details": "Affiliated with Interactive Brokers",
-                            "status": false
+                            "status": false,
+                            "details": "Affiliated with Interactive Brokers"
                         },
                         {
                             "code": "EmployeePubTrade",
-                            "details": "Employee is not trading publicly",
-                            "status": false
+                            "status": false,
+                            "details": "Employee is not trading publicly"
                         },
                         {
                             "code": "ControlPubTraded",
-                            "details": "Controlled trading is not allowed",
-                            "status": false
+                            "status": false,
+                            "details": "Controlled trading is not allowed"
                         }
                     ]
                 }
             ],
-            "secondHolderDetails": [
+            "financialInformation": [
                 {
-                    "countryOfBirth": "MEX",
-                    "dateOfBirth": "1997-07-29",
-                    "email": "Hannahabutbul@gmail.com",
-                    "employmentDetails": {
-                        "employer": "Ximena Orozco Granados",
-                        "employerAddress": {
-                            "city": "Panama",
-                            "country": "PAN",
-                            "postalCode": "64154",
-                            "state": "Panama City",
-                            "street1": "PH Top Tower 13 1301 COSTA DEL ESTE JUAN DIAZ PANAMA",
-                            "street2": null
-                        },
-                        "employerBusiness": "Content Creation",
-                        "occupation": "Content Creator"
-                    },
-                    "employmentType": "SELF_EMPLOYED",
-                    "externalId": joint_external_id_2,
-                    "identification": {
-                        "citizenship": "MEX",
-                        "expirationDate": "2028-05-30",
-                        "issuingCountry": "MEX",
-                        "passport": "OOGX970729MDFRRM09"
-                    },
-                    "mailingAddress": {
-                        "city": null,
-                        "country": null,
-                        "postalCode": null,
-                        "state": null,
-                        "street1": null
-                    },
-                    "maritalStatus": "S",
-                    "name": {
-                        "first": "Ximena",
-                        "last": "Orozco Granados"
-                    },
-                    "numDependents": 0,
-                    "phones": [
+                    "netWorth": 100000,
+                    "liquidNetWorth": 25000,
+                    "annualNetIncome": 100000,
+                    "investmentObjectives": [
+                        "Growth"
+                    ],
+                    "investmentExperience": [
                         {
-                            "country": "MEX",
-                            "number": "5540632886",
-                            "type": "Mobile"
+                            "assetClass": "BOND",
+                            "yearsTrading": 3,
+                            "tradesPerYear": 3,
+                            "knowledgeLevel": "Good"
                         }
                     ],
-                    "residenceAddress": {
-                        "city": "Panama",
-                        "country": "PAN",
-                        "postalCode": "64154",
-                        "state": "Panama City",
-                        "street1": "PH Top Tower 13 1301 COSTA DEL ESTE JUAN DIAZ PANAMA",
-                        "street2": null
-                    },
-                    "sameMailAddress": true,
-                    "taxResidencies": [
+                    "sourcesOfWealth": [
                         {
-                            "country": "MEX",
-                            "tin": "OOGX970729MDFRRM09",
-                            "tinType": "NonUS_NationalId"
+                            "sourceType": "SOW-IND-Income",
+                            "percentage": 100
                         }
-                    ],
-                    "w8Ben": {
-                        "blankForm": true,
-                        "cert": true,
-                        "electronicFormat": true,
-                        "foreignTaxId": "OOGX970729MDFRRM09",
-                        "localTaxForms": [],
-                        "name": "Ximena Orozco Granados",
-                        "part29ACountry": "N/A",
-                        "signatureType": "Electronic",
-                        "taxFormFile": "Form5001.pdf",
-                        "tinOrExplanationRequired": true
-                    }
+                    ]
                 }
-            ],
-            "type": "joint_tenants"
-        },
-        "legalResidenceCountry": "PAN",
-        "mdStatusNonPro": true,
-        "meetAmlStandard": "true",
-        "prefix": "dorz31",
-        "type": "JOINT"
+            ]
+        }
     },
-    "documents": [
+    "accounts": [
+        {
+            "multiCurrency": true,
+            "feesTemplateName": "Default",
+            "externalId": external_id,
+            "investmentObjectives": [
+                "Growth"
+            ],
+            "baseCurrency": "USD",
+            "margin": "Cash",
+            "tradingPermissions": [
+                {
+                    "country": "UNITED STATES",
+                    "product": "STOCKS"
+                }
+            ]
+        }
     ],
-    "id": null,
-    "inputLanguage": null,
-    "masterAccountId": null,
-    "paperAccount": null,
-    "translation": null,
     "users": [
         {
-            "externalIndividualId": joint_external_id_1,
-            "externalUserId": joint_external_id_1,
-            "prefix": "dorz31"
-        },
-        {
-            "externalIndividualId": joint_external_id_2,
-            "externalUserId": joint_external_id_2,
-            "prefix": "dorz31"
+            "externalUserId": external_id,
+            "externalIndividualId": external_id,
+            "prefix": "andr"
         }
-    ]
+    ],
+    "additionalAccounts": null,
+    "masterAccountId": null,
+    "id": null,
+    "inputLanguage": null,
+    "translation": null,
+    "paperAccount": null,
+    "documents": []
 }
