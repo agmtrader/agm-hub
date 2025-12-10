@@ -1,5 +1,5 @@
 import { accessAPI } from "../api"
-import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, InternalAccount, InternalDocument, InternalDocumentPayload, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction } from "@/lib/entities/account"
+import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, InternalAccount, InternalDocument, InternalDocumentPayload, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction, AccountScreening, FinancialRangesResponse } from "@/lib/entities/account"
 import { InvestmentExperience } from "@/lib/entities/application"
 import { IDResponse } from "@/lib/entities/base"
 import { SecurityQuestionsResponse } from "@/lib/entities/security_question"
@@ -12,19 +12,9 @@ export async function CreateAccount(account: InternalAccount): Promise<IDRespons
     return createResponse
 }
 
-export async function CreateAccountInstruction(accountID: string): Promise<IDResponse> {
-    const response: any = await accessAPI(`/accounts/instructions`, 'POST', { 'account_id': accountID })
-    return response
-}
-
 export async function ReadAccounts() {
     let accounts:Account[] = await accessAPI('/accounts/read', 'GET')
     return accounts
-}
-
-export async function ReadAccountInstruction(accountID: string): Promise<any> {
-    const response: any = await accessAPI(`/accounts/instructions?account_id=${accountID}`, 'GET')
-    return response
 }
 
 export async function ReadAccountByAccountID(accountID:string): Promise<Account | null> {
@@ -42,7 +32,7 @@ export async function UpdateAccountByAccountID(accountID:string, account:Partial
     return updateResponse
 }
 
-export async function UploadAccountDocument(accountID:string, file_name:string, file_length:number, sha1_checksum:string, mime_type:string, data:string, category:string, type:string, issued_date:string, expiry_date:string) {
+export async function UploadAccountDocument(accountID:string, file_name:string, file_length:number, sha1_checksum:string, mime_type:string, data:string, category:string, type:string, issued_date:string, expiry_date:string, name:string, comment:string | null) {
     const document:InternalDocumentPayload = {
         file_name: file_name,
         file_length: file_length,
@@ -61,21 +51,52 @@ export async function UploadAccountDocument(accountID:string, file_name:string, 
         'type': type,
         'issued_date': issued_date,
         'expiry_date': expiry_date,
+        'name': name,
+        'comment': comment,
     })
+    console.log(uploadResponse)
     return uploadResponse
 }
 
-export async function ReadAccountDocuments(accountID:string): Promise<InternalDocument[]> {
-    const documents:InternalDocument[] = await accessAPI(`/accounts/documents?account_id=${accountID}`, 'GET')
-    return documents
-}
-
-// Account Management
-export async function SubmitIBKRDocument(accountID: string, documentSubmission: DocumentSubmissionRequest, masterAccount: 'ad' | 'br') {
-    const response = await accessAPI('/accounts/ibkr/documents', 'POST', { 'account_id': accountID, 'document_submission': documentSubmission, 'master_account': masterAccount })
+export async function ReadAccountDocuments(accountID:string): Promise<{documents: InternalDocument[], account_documents: any[]}> {
+    const response: {documents: InternalDocument[], account_documents: any[]} = await accessAPI(`/accounts/documents?account_id=${accountID}`, 'GET')
     return response
 }
 
+export async function DeleteAccountDocument(documentID:string): Promise<any> {
+    const response: any = await accessAPI(`/accounts/documents`, 'DELETE', { 'document_id': documentID })
+    return response
+}
+
+export async function UpdateAccountDocument(documentID: string, category?: string, type?: string, name?: string, comment?: string, issued_date?: string, expiry_date?: string): Promise<any> {
+    const response: any = await accessAPI(`/accounts/documents`, 'PATCH', {
+        'document_id': documentID,
+        'category': category,
+        'type': type,
+        'name': name,
+        'comment': comment,
+        'issued_date': issued_date,
+        'expiry_date': expiry_date,
+    })
+    return response
+}
+
+export async function ReadAccountInstruction(accountID: string): Promise<any> {
+    const response: any = await accessAPI(`/accounts/instructions?account_id=${accountID}`, 'GET')
+    return response
+}
+
+export async function ScreenPerson(accountID: string, holderName: string, residenceCountry: string): Promise<IDResponse> {
+    const response: IDResponse = await accessAPI('/accounts/screening', 'POST', { account_id: accountID, holder_name: holderName, residence_country: residenceCountry })
+    return response
+}
+
+export async function ReadAccountScreenings(accountID: string): Promise<AccountScreening[]> {
+    const report: AccountScreening[] = (await accessAPI(`/accounts/screening?account_id=${accountID}`, 'GET'))
+    return report
+}
+
+// Account Management
 export async function ReadAccountDetailsByAccountID(accountID:string, masterAccount: 'ad' | 'br'): Promise<any | null> {
     let accounts:any = await accessAPI(`/accounts/ibkr/details?account_id=${accountID}&master_account=${masterAccount}`, 'GET')
     return accounts || null
@@ -101,8 +122,31 @@ export async function GetPendingTasksByAccountID(accountId: string, masterAccoun
     }
 }
 
+export async function SubmitIBKRDocument(accountID: string, documentSubmission: DocumentSubmissionRequest, masterAccount: 'ad' | 'br') {
+    const response = await accessAPI('/accounts/ibkr/documents', 'POST', { 'account_id': accountID, 'document_submission': documentSubmission, 'master_account': masterAccount })
+    return response
+}
+
+
+export async function CreateUserForAccount(accountID: string, prefix:string, userName:string, externalId:string, authorizedTrader:boolean, masterAccount: 'ad' | 'br'): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/user', 'POST', {
+        'account_id': accountID,
+        'prefix': prefix,
+        'user_name': userName,
+        'external_id': externalId,
+        'authorized_trader': authorizedTrader,
+        'master_account': masterAccount,
+    })
+    return response
+}
+
 export async function ApplyFeeTemplate(accountID: string, template_name: string, masterAccount: 'ad' | 'br'): Promise<any> {
     const response: any = await accessAPI('/accounts/ibkr/fee_template', 'POST', { 'account_id': accountID, 'template_name': template_name, 'master_account': masterAccount })
+    return response
+}
+
+export async function ChangeInvestmentExperience(accountID: string, investmentExperience: InvestmentExperience[], masterAccount: 'ad' | 'br'): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/change_investment_experience', 'POST', { account_id: accountID, investment_experience: investmentExperience, master_account: masterAccount })
     return response
 }
 
@@ -129,30 +173,52 @@ export async function AddCLPCapability(accountID: string, masterAccount: 'ad' | 
     return response
 }
 
-export async function UpdateAccountEmail(referenceUserName: string, newEmail: string, masterAccount: 'ad' | 'br', access = true): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/account_email', 'POST', {
-        'reference_user_name': referenceUserName,
-        'new_email': newEmail,
-        'access': access,
-        'master_account': masterAccount,
+export async function TransferPositionInternally(masterAccount: 'ad' | 'br', sourceAccountID: string, targetAccountID: string, transferQuantity: number, conid: string): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/transfer_position_internally', 'POST', {
+        source_account_id: sourceAccountID,
+        target_account_id: targetAccountID,
+        transfer_quantity: transferQuantity,
+        conid: conid,
+        master_account: masterAccount,
     })
     return response
 }
 
-export async function CreateUserForAccount(accountID: string, prefix:string, userName:string, externalId:string, authorizedTrader:boolean, masterAccount: 'ad' | 'br'): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/user', 'POST', {
-        'account_id': accountID,
-        'prefix': prefix,
-        'user_name': userName,
-        'external_id': externalId,
-        'authorized_trader': authorizedTrader,
-        'master_account': masterAccount,
+export async function TransferPositionExternally(masterAccount: 'ad' | 'br', sourceAccountID: string, targetAccountID: string, transferQuantity: number, conid: string): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/transfer_position_externally', 'POST', {
+        master_account: masterAccount,
+        source_account_id: sourceAccountID,
+        target_account_id: targetAccountID,
+        conid: conid,
+        transfer_quantity: transferQuantity,
     })
     return response
 }
 
-export async function GetWithdrawableCash(accountID: string, masterAccount: 'ad' | 'br', clientInstructionID: string): Promise<any> {
-    const response: any = await accessAPI(`/accounts/ibkr/withdrawable_cash?account_id=${accountID}&master_account=${masterAccount}&client_instruction_id=${clientInstructionID}`, 'GET')
+export async function CreateDepositInstruction(masterAccount: 'ad' | 'br', instruction: DepositInstruction, accountID: string): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/deposit', 'POST', {
+        master_account: masterAccount,
+        instruction: instruction,
+        account_id: accountID,
+    })
+    return response
+}
+
+export async function CreateWithdrawalInstruction(masterAccount: 'ad' | 'br', instruction: WithdrawalInstruction, accountID: string): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/withdraw', 'POST', {
+        master_account: masterAccount,
+        instruction: instruction,
+        account_id: accountID,
+    })
+    return response
+}
+
+export async function GetWireInstructions(accountID: string, masterAccount: 'ad' | 'br', currency: string): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/wire_instructions', 'POST', {
+        account_id: accountID,
+        master_account: masterAccount,
+        currency: currency,
+    })
     return response
 }
 
@@ -177,59 +243,7 @@ export async function GetProductCountryBundles(): Promise<ProductCountryBundlesR
     return response
 }
 
-export async function CreateDepositInstruction(masterAccount: 'ad' | 'br', instruction: DepositInstruction, accountID: string): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/deposit', 'POST', {
-        master_account: masterAccount,
-        instruction: instruction,
-        account_id: accountID,
-    })
-    console.log(response)
-    return response
-}
-
-export async function CreateWithdrawalInstruction(masterAccount: 'ad' | 'br', instruction: WithdrawalInstruction, accountID: string): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/withdraw', 'POST', {
-        master_account: masterAccount,
-        instruction: instruction,
-        account_id: accountID,
-    })
-    return response
-}
-
-export async function TransferPositionInternally(masterAccount: 'ad' | 'br', sourceAccountID: string, targetAccountID: string, transferQuantity: number, conid: string): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/transfer_position_internally', 'POST', {
-        source_account_id: sourceAccountID,
-        target_account_id: targetAccountID,
-        transfer_quantity: transferQuantity,
-        conid: conid,
-        master_account: masterAccount,
-    })
-    return response
-}
-
-export async function TransferPositionExternally(masterAccount: 'ad' | 'br', sourceAccountID: string, targetAccountID: string, transferQuantity: number, conid: string): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/transfer_position_externally', 'POST', {
-        master_account: masterAccount,
-        source_account_id: sourceAccountID,
-        target_account_id: targetAccountID,
-        conid: conid,
-        transfer_quantity: transferQuantity,
-    })
-    return response
-}
-
-export async function GetWireInstructions(accountID: string, masterAccount: 'ad' | 'br', currency: string): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/wire_instructions', 'POST', {
-        account_id: accountID,
-        master_account: masterAccount,
-        currency: currency,
-    })
-    return response
-}
-
-export async function ChangeFinancialInformation(accountID: string, investmentExperience: InvestmentExperience[], masterAccount: 'ad' | 'br'): Promise<any> {
-
-    const response: any = await accessAPI('/accounts/ibkr/change_financial_information', 'POST', { account_id: accountID, investment_experience: investmentExperience, master_account: masterAccount })
-    return response
-    
+export async function GetFinancialRanges(): Promise<ProductCountryBundlesResponse | FinancialRangesResponse> {
+  const response: FinancialRangesResponse = await accessAPI(`/accounts/ibkr/financial_ranges`, 'GET')
+  return response
 }

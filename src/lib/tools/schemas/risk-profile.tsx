@@ -1,42 +1,25 @@
-import { z } from "zod"
+import { z } from "zod";
+import { riskQuestions, QuestionKey } from "../risk-questions";
 
-// Form schema
-export const risk_assesment_schema = (t: (key: string) => string) => z.object({
-    account_id: z.string().nullable(),
-    name: z.string({
-        required_error: t('forms.errors.input_required')
-    }),
-    type: z.enum(["1", "2.5", "4"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    loss: z.enum(["1", "2", "3", "4"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    gain: z.enum(["1", "2", "3", "4"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-    },
-    }),
-    period: z.enum(["1", "2", "3", "4"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    diversification: z.enum(["1", "2", "3"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    goals: z.enum(["1", "2", "3"], {
-        errorMap: (issue, ctx) => {
-        return {message: t('forms.errors.select_required')};
-        },
-    }),
-    email: z.string().email({
-        message: t('forms.errors.email_invalid'),
-    })
-})
+/*
+ * Dynamically build the Zod schema from the shared question definition.
+ * This guarantees that the schema is always in-sync with the questionnaire.
+ */
+export const risk_assesment_schema = (t: (key: string) => string) => {
+  const dynamicShape = Object.fromEntries(
+    riskQuestions.map((q) => [
+      q.key,
+      // Accept the exact set of numeric values present in the question choices
+      z.coerce
+        .number({ invalid_type_error: t("forms.errors.select_required") })
+        .refine((v) => q.choices.some((c) => c.value === v), {
+          message: t("forms.errors.select_required"),
+        }),
+    ]) as [QuestionKey, z.ZodTypeAny][]
+  );
+
+  return z.object({
+    name: z.string({ required_error: t("forms.errors.input_required") }),
+    ...dynamicShape,
+  });
+};

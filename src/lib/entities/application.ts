@@ -75,13 +75,13 @@ export type Organization = z.infer<typeof organization_schema>;
 export type InternalApplicationPayload = {
     advisor_code: string | null;
     master_account: string | null;
-    lead_id: string | null;
     application: Application | null;
     date_sent_to_ibkr: string | null;
     status: string | null;
     contact_id: string | null;
-    security_questions: Map
+    security_questions: Map | null;
     estimated_deposit?: number | null;
+    risk_profile_id: string | null;
 }
 
 export type InternalApplication = InternalApplicationPayload & Base

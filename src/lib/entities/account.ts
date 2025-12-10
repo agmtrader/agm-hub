@@ -230,6 +230,20 @@ export interface Restriction {
   byIB: boolean;
 }
 
+export interface FinancialRange {
+  id: string;
+  type: string; // e.g., "NET_WORTH", "NET_WORTH_LIQUID", "ANNUAL_NET_INCOME"
+  lowerBound: string; // numeric strings
+  upperBound: string; // numeric string or empty (open-ended)
+  ibEntity: string;
+  startDate: string; // ISO datetime
+}
+
+export interface FinancialRangesResponse {
+  enumerationsType: string;
+  jsonData: FinancialRange[];
+}
+
 export interface ProductCountryBundle {
   countryRegion: string;
   assetClass: string;
@@ -282,4 +296,30 @@ export type UserRequest = {
   userName: string;
   externalId: string;
   authorizedTrader: boolean;
+}
+
+export type AccountScreening = {
+  account_id: string;
+  holder_name: string;
+  ofac_results: string;
+  fatf_status: string;
+  risk_score: string;
+} & Base
+
+export type CLPCapabilityResponse = {
+  name?: string
+  data?: {
+    addCLPCapability?: {
+      accountId?: string
+      message?: string
+      requestId?: string
+      status?: string
+    }
+    execution?: {
+      client?: string
+      clientMasterAccount?: string
+      executedAt?: string
+      processFile?: string
+    }
+  }
 }

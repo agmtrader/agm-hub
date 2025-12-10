@@ -30,46 +30,36 @@ import { ReloadIcon } from "@radix-ui/react-icons"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
-import { getRiskFormQuestions, RiskArchetype, RiskProfile, RiskProfilePayload, weights } from "@/lib/tools/risk-profile"
+import { RiskArchetype, RiskProfile, RiskProfilePayload } from "@/lib/tools/risk-profile"
+import { useRiskTranslations, calcRiskScore, RiskFormValues } from "@/lib/tools/risk-questions"
 import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 import { CreateInvestmentProposal } from "@/utils/tools/investment_proposals" 
 import InvestmentProposalView from "@/components/apply/risk/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/tools/investment-proposals"
-import { CreateContact, ReadContactByEmail } from "@/utils/entities/contact"
-import { LeadPayload } from "@/lib/entities/lead"
-import { formatTimestamp } from "@/utils/dates"
-import { CreateLead } from "@/utils/entities/lead"
-
-// Each question in the form has a weight and each answer in the question has a weight
-// The risk score is calculated by summing the weighted values of the answers
-
-// Question weight is stored in the weights array
-// Answer weight is stored in the question schema
+import { CreateApplication } from "@/utils/entities/application"
 
 const RiskForm = () => {
 
   const {toast} = useToast()
   const { t } = useTranslationProvider()
 
-  const { types, losses, gains, periods, diversifications, goals } = getRiskFormQuestions()
+  const questions = useRiskTranslations()
 
   const formSchema = risk_assesment_schema(t)
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<RiskFormValues>({
       resolver: zodResolver(formSchema),
-      defaultValues: getDefaults(formSchema),
+      defaultValues: getDefaults(formSchema) as unknown as RiskFormValues,
   })
 
   const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [riskArchetypes, setRiskArchetypes] = useState<RiskArchetype[] | null>(null)
+  const [riskProfile, setRiskProfile] = useState<RiskProfilePayload | null>(null)
 
   const [submitting, setSubmitting] = useState(false)
   const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
-  const [riskProfile, setRiskProfile] = useState<RiskProfilePayload | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,89 +81,38 @@ const RiskForm = () => {
     fetchData()
   }, [])
 
-  function CalculateRiskScore(values: z.infer<typeof formSchema>): number {
-    let risk_score = 0
-    Object.entries(values).forEach((answer) => {
-  
-      // Extract the question key and answer value
-      const [key, value] = answer
-  
-      // Ignore certain fields
-      if (key !== 'account_id' && key !== 'name' && key !== 'email') {
-  
-        // Get the weight of the question
-        const weight = weights.find(el => el.name === key)?.weight || 0
-  
-        // Add onto the risk score by multiplying the weight of the question by the value of the answer
-        risk_score += weight * Number(value)
-      }
-    })
-    return risk_score
-  }
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: RiskFormValues) {
 
     setSubmitting(true)
 
     try {
-      
       if (!riskArchetypes) throw new Error('Risk archetypes not found')
-        
-      // Calculate the risk score and find the assigned risk profile
-      const risk_score = CalculateRiskScore(values)
 
-      console.log('Risk score', risk_score)
-      
-      // Find the assigned risk archetype
-      const assigned_risk_archetype = riskArchetypes.find(archetype => risk_score >= archetype.min_score && risk_score < archetype.max_score)
+      const risk_score = calcRiskScore(values)
+      const assigned_risk_archetype = riskArchetypes.find(a => risk_score >= a.min_score && risk_score < a.max_score)
       if (!assigned_risk_archetype) throw new Error('No risk profile found')
 
-      const answers = {
-        type: types.find((q) => q.value === values.type)?.label,
-        loss: losses.find((q) => q.value === values.loss)?.label,
-        gain: gains.find((q) => q.value === values.gain)?.label,
-        period: periods.find((q) => q.value === values.period)?.label,
-        diversification: diversifications.find((q) => q.value === values.diversification)?.label,
-        goals: goals.find((q) => q.value === values.goals)?.label
-      }
+      const answers = Object.fromEntries(
+        questions.map(q => [q.key, q.choices.find(c => c.value === values[q.key])?.label])
+      ) as RiskProfilePayload['answers']
 
-      let contact_id = null;
-      let contact = await ReadContactByEmail(values.email);
-      if (!contact) {
-        // TODO: Look with phone too
-        const createContactResponse = await CreateContact({
-          name: values.name,
-          email: values.email,
-        });
-        contact_id = createContactResponse.id;
-      } else {
-        contact_id = contact?.id;
-      }
-
-      // Create the risk profile
       const riskProfilePayload: RiskProfilePayload = {
         name: values.name,
-        contact_id: contact_id,
-        account_id: values.account_id,
         risk_profile_id: assigned_risk_archetype.id,
         score: risk_score,
-        answers: answers,
+        answers,
       }
       setRiskProfile(riskProfilePayload)
+
       const riskProfileResponse = await CreateRiskProfile(riskProfilePayload)
-      const riskProfile = {
-        ...riskProfilePayload,
-        id: riskProfileResponse.id
-      }
+      const riskProfile = { ...riskProfilePayload, id: riskProfileResponse.id }
       if (!riskProfileResponse) throw new Error('Failed to create risk profile')
 
-      // Generate the investment proposal for the assigned risk profile
       const proposal = await CreateInvestmentProposal(riskProfile)
       if (!proposal) throw new Error('Failed to create investment proposal')
+
       setInvestmentProposal(proposal)
       setIsProposalOpen(true)
-
-      // Reset the form after submission
       form.reset(getDefaults(formSchema))
 
     } catch (error:any) {
@@ -185,7 +124,6 @@ const RiskForm = () => {
     } finally {
       setSubmitting(false)
     }
-
   }
 
   if (!accounts) return <LoadingComponent />
@@ -206,78 +144,7 @@ const RiskForm = () => {
           transition={{ duration: 0.5 }}
         >
 
-          <FormField
-            control={form.control}
-            name="account_id"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex gap-2 items-center">
-                  <FormLabel>{t('apply.risk.form.account_id')}</FormLabel>
-                  <FormMessage />
-                </div>
-                <FormControl>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className="w-full justify-between bg-muted"
-                      >
-                        {field.value
-                          ? accounts.find((account) => account.id === field.value)?.ibkr_account_number
-                          : t('forms.none') ?? 'None'
-                        }
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandInput placeholder={t('forms.search')} />
-                          <CommandEmpty>{t('forms.no_results')}</CommandEmpty>
-                          <CommandGroup>
-                            <CommandItem
-                              key="none"
-                              value="none"
-                              onSelect={() => {
-                                field.onChange(null)
-                              }}
-                            >
-                              {t('forms.none') ?? 'None'}
-                            </CommandItem>
-                            {accounts.map((account) => (
-                              <CommandItem
-                                key={account.id}
-                                value={account.ibkr_account_number}
-                                onSelect={() => {
-                                  field.onChange(account.id)
-                                }}
-                              >
-                                {account.ibkr_account_number}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('apply.risk.form.email')}</FormLabel>
-                <FormControl>
-                  <Input placeholder="" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
+          {/* Name */}
           <FormField
             control={form.control}
             name="name"
@@ -291,27 +158,33 @@ const RiskForm = () => {
             )}
           />
 
+          {/* Dynamic questions */}
+          {questions.map((q) => (
             <FormField
-              control={form.control}
-              name="type"
+              key={q.key}
+              control={form.control as any}
+              name={q.key as any}
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2">
-                    <FormLabel>{t('apply.risk.form.type.title')}</FormLabel>
+                    <FormLabel>{q.label}</FormLabel>
                     <FormMessage />
                   </div>
                   <FormControl>
                     <RadioGroup
-                      onValueChange={field.onChange}
-                      value={field.value}
+                      onValueChange={(v) => field.onChange(Number(v))}
+                      value={String(field.value)}
                       className="flex flex-col"
                     >
-                      {types.map((type) => (
-                        <FormItem key={type.id} className="flex flex-row gap-x-2">
+                      {q.choices.map((choice) => (
+                        <FormItem key={choice.value} className="flex flex-row gap-x-2 items-center">
                           <FormControl>
-                            <RadioGroupItem value={type.value} />
+                            <RadioGroupItem value={String(choice.value)} />
                           </FormControl>
-                          <FormLabel className="font-normal">{type.label}</FormLabel>
+                          <FormLabel className="font-normal whitespace-nowrap">{choice.label}</FormLabel>
+                          {q.key === 'diversification' && (
+                            <Progress className="bg-secondary w-64" value={choice.bonds_percentage} />
+                          )}
                         </FormItem>
                       ))}
                     </RadioGroup>
@@ -319,195 +192,33 @@ const RiskForm = () => {
                 </FormItem>
               )}
             />
+          ))}
 
-            <FormField
-              control={form.control}
-              name="loss"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-2">
-                    <FormLabel>{t('apply.risk.form.loss.title')}</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      className="flex flex-col"
-                    >
-                      {losses.map((loss) => (
-                        <FormItem key={loss.id} className="flex flex-row gap-x-2">
-                          <FormControl>
-                            <RadioGroupItem value={loss.value} />
-                          </FormControl>
-                          <FormLabel className="font-normal">{loss.label}</FormLabel>
-                        </FormItem>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+          <Button type="submit" disabled={submitting}>
+            {submitting ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                {t('forms.submitting')}
+              </>
+            ) : (
+              t('forms.submit')
+            )}
+          </Button>
 
-            <FormField
-              control={form.control}
-              name="gain"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-2">
-                    <FormLabel>{t('apply.risk.form.gain.title')}</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      className="flex flex-col"
-                    >
-
-                      {gains.map((gain) => (
-                        <FormItem key={gain.id} className="flex flex-row gap-x-2">
-                          <FormControl>
-                            <RadioGroupItem value={gain.value} />
-                          </FormControl>
-                          <FormLabel className="font-normal">{gain.label}</FormLabel>
-                        </FormItem>
-                      ))}
-  
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="period"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-2">
-                    <FormLabel>{t('apply.risk.form.period.title')}</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      className="flex flex-col"
-                    >
-
-                      {periods.map((period) => (
-                        <FormItem key={period.id} className="flex flex-row gap-x-2">
-                          <FormControl>
-                            <RadioGroupItem value={period.value} />
-                          </FormControl>
-                          <FormLabel className="font-normal">{period.label}</FormLabel>
-                        </FormItem>
-                      ))}
-
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="diversification"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-2">
-                    <FormLabel>{t('apply.risk.form.diversification.title')}</FormLabel>
-                    <FormMessage />
-                  </div>
-
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      className="flex flex-col"
-                    >
-
-                      {diversifications.map((diversification) => (
-                        <FormItem key={diversification.id} className="flex flex-row gap-x-2">
-                          <FormControl>
-                            <RadioGroupItem value={diversification.value} />
-                          </FormControl>
-                          <FormLabel className="font-normal whitespace-nowrap">{diversification.label}</FormLabel>
-                          <Progress className="bg-secondary w-64" value={diversification.bonds_percentage} />
-                        </FormItem>
-                      ))}
-
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-
-                
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="goals"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-2">
-                    <FormLabel>{t('apply.risk.form.goals.title')}</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      className="flex flex-col"
-                    >
-
-                      {
-                        goals.map((goal) => (
-                          <FormItem key={goal.id} className="flex flex-row gap-x-2">
-                            <FormControl>
-                              <RadioGroupItem value={goal.value} />
-                            </FormControl>
-                            <FormLabel className="font-normal">{goal.label}</FormLabel>
-                          </FormItem>
-                        ))
-                      }
-
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {/*TODO AGREGAR FOTOS DE LOUIS */}
-            
-            <Button type="submit" className="" disabled={submitting}>
-              {submitting ? (
-                <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  {t('forms.submitting')}
-                </>
-              ) : (
-                t('forms.submit')
-              )}
-            </Button>
-
-            <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
+          <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
             <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Investment Proposal</DialogTitle>
-                </DialogHeader>
-                {investmentProposal && riskProfile && (
-                  <InvestmentProposalView riskProfile={riskProfile as RiskProfile} investmentProposal={investmentProposal} />
-                )}
-              </DialogContent>
-            </Dialog>
-
+              <DialogHeader>
+                <DialogTitle>Investment Proposal</DialogTitle>
+              </DialogHeader>
+              {investmentProposal && riskProfile && (
+                <InvestmentProposalView riskProfile={riskProfile as RiskProfile} investmentProposal={investmentProposal} />
+              )}
+            </DialogContent>
+          </Dialog>
         </motion.form>
       </Form>
     </motion.div>
   )
-
 }
 
 export default RiskForm

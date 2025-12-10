@@ -15,8 +15,12 @@ export async function accessAPI(url: string, type: string, params?: Map) {
     const token = await getToken();
     if (type === 'GET') {
         return await GetData(url, token);
-    } else {
+    } else if (type === 'POST') {
         return await PostData(url, params, token);
+    } else if (type === 'DELETE') {
+        return await DeleteData(url, params, token);
+    } else if (type === 'PATCH') {
+        return await PatchData(url, params, token);
     }
 
 }
@@ -60,6 +64,32 @@ async function PostData(url: string, params: Map | undefined, token: string) {
         body: JSON.stringify(params),
     });
 
+    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
+    return await response.json();
+}
+
+async function DeleteData(url: string, params: Map | undefined, token: string) {
+    const response = await fetch(`${api_url}${url}`, {
+        method: 'DELETE',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(params),
+    });
+    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
+    return await response.json();
+}
+
+async function PatchData(url: string, params: Map | undefined, token: string) {
+    const response = await fetch(`${api_url}${url}`, {
+        method: 'PATCH',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(params),
+    });
     if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
     return await response.json();
 }

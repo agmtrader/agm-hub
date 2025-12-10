@@ -24,10 +24,8 @@ import FinancialInfoStep from './FinancialInfoStep'
 import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AccountInformationStep from './AccountInformationStep'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
-import { UpdateLeadByID } from '@/utils/entities/lead'
 import { formatTimestamp } from '@/utils/dates'
 import { getApplicationDefaults } from '@/utils/form'
-import { individual_form } from './samples'
 import { FormDetails } from '@/lib/entities/account'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -327,12 +325,12 @@ const IBKRApplicationForm = () => {
         application: sanitizedValues,
         advisor_code: advisor_id,
         master_account,
-        lead_id,
         date_sent_to_ibkr: null,
         status,
         contact_id: contact_id,
         security_questions: securityQA,
         estimated_deposit: estimatedDeposit ?? null,
+        risk_profile_id: null,
       };
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
@@ -469,16 +467,6 @@ const IBKRApplicationForm = () => {
       
       setIsSubmitting(true);
       await saveProgress();
-
-      // Mark lead as filled (completed application)
-      const lead_id = searchParams.get('ld');
-      if (lead_id) {
-        try {
-          await UpdateLeadByID(lead_id, { filled: formatTimestamp(new Date()) });
-        } catch (err) {
-          console.error('Failed to mark lead as filled', err);
-        }
-      }
 
       toast({
         title: "Application Submitted",

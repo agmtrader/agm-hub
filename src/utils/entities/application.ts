@@ -19,13 +19,6 @@ export async function ReadApplicationByID(applicationID: string): Promise<Intern
     return applications[0]
 }
 
-export async function ReadApplicationByLeadID(leadID: string): Promise<InternalApplication | null> {
-    const applications: InternalApplication[] = await accessAPI(`/applications/read?lead_id=${leadID}`, 'GET')
-    if (applications.length === 0) return null
-    if (applications.length > 1) throw new Error('Multiple applications found for Lead ID: ' + leadID)
-    return applications[0]
-}
-
 export async function ReadApplicationByUserID(userID: string): Promise<InternalApplication[]> { 
     const applications: InternalApplication[] = await accessAPI(`/applications/read?user_id=${userID}`, 'GET')
     return applications

@@ -12,46 +12,21 @@ import { ExternalLink } from 'lucide-react'
 import type { InternalDocument } from '@/lib/entities/account'
 
 interface DocumentViewerProps {
-  /**
-   * Whether the dialog is open
-   */
   isOpen: boolean
-  /**
-   * Callback fired when the open state changes
-   */
   onOpenChange: (open: boolean) => void
-  /**
-   * The document record fetched from the database. If `null` nothing is rendered.
-   */
   document: InternalDocument | null
-  /**
-   * Human-readable name for the document shown in the dialog header
-   */
   documentName: string
 }
 
-/**
- * A viewer component for account documents stored in the database. Supports inline
- * rendering for images and PDFs (via `iframe`). Other MIME types provide a button
- * to open the file in a new tab.
- */
 const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: DocumentViewerProps) => {
-  // Guard – nothing to render if no document or the record doesn't have binary data
   if (!document || !document.data) return null
 
   const mimeType = document.mime_type
   const data = document.data
   const fileName = document.file_name || 'document'
 
-  // Build data URL from base-64 string
   const dataUrl = `data:${mimeType};base64,${data}`
 
-  /*
-   * For large PDF files some browsers (Safari, Firefox) have trouble rendering
-   * them with very long data URLs. Creating a Blob URL is much more reliable
-   * and avoids the inherent length limit. We only create the object URL for
-   * PDFs – images are typically smaller and work fine as data URLs.
-   */
   const [blobUrl, setBlobUrl] = useState<string | null>(null)
 
   useEffect(() => {
@@ -62,7 +37,6 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
 
     if (mimeType === 'application/pdf') {
       try {
-        // Decode base-64 into binary data and build a Blob
         const byteCharacters = atob(data)
         const byteNumbers = new Array(byteCharacters.length)
         for (let i = 0; i < byteCharacters.length; i++) {
@@ -73,10 +47,8 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
         const url = URL.createObjectURL(blob)
         setBlobUrl(url)
 
-        // Clean up the URL when the component unmounts or the document changes
         return () => URL.revokeObjectURL(url)
       } catch {
-        // Fall back to the data URL if anything goes wrong
         setBlobUrl(null)
       }
     } else {
@@ -109,7 +81,6 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
       )
     }
 
-    // Fallback for unsupported formats
     return (
       <div className="flex flex-col items-center justify-center h-[70vh] text-center">
         <p className="text-muted-foreground mb-4">

@@ -2,9 +2,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Base } from '../entities/base';
 
 export interface RiskProfilePayload {
-  contact_id: string;
   name: string;
-  account_id: string | null;
   risk_profile_id: number;
   score: number;
   answers: {
@@ -30,9 +28,8 @@ export interface RiskArchetype {
   max_score: number;
 }
 
-// Question weights out of 100%
-// This array is used to give relative importance to each question
-export const weights = [
+// Deprecated – weights moved to risk-questions.ts
+/* export const weights = [
   {
     name: 'type',
     weight: 0.2
@@ -63,7 +60,10 @@ export const weights = [
 // Each question has choices and each choice has a value
 // The value is used to calculate the risk score, the higher the score the higher the risk of the answer
 // The risk score is calculated by multiplying the weight of the question by the value of the answer
-export const getRiskFormQuestions = () => {
+*/
+
+// Deprecated – questions moved to risk-questions.ts
+/* export const getRiskFormQuestions = () => {
 
   const { t } = useTranslationProvider()
 
@@ -192,4 +192,4 @@ export const getRiskFormQuestions = () => {
   ]
 
   return { types, losses, gains, periods, diversifications, goals }
-}
+} */

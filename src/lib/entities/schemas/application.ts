@@ -14,11 +14,21 @@ export const affiliation_details_schema = z.object({
 });
 
 export const poa_schema = z.object({
-  type: z.enum(["Utility Bill", "Bank Statement", "Tax Return"]),
+  type: z.enum(["Utility Bill", "Bank Statement", "Tax Return", "Marriage Certificate", "Other"]),
 })
 
 export const poi_schema = z.object({
-  type: z.enum(["National ID Card", "Driver License", "Passport"]),
+  type: z.enum(["National ID Card", "Driver License", "Passport", "Other"]),
+})
+
+// Proof of Existence for legal persons and trusts
+export const poe_schema = z.object({
+  type: z.enum(['Business Registration', 'Articles of Incorporation', 'Company Charter', 'Partnership Agreement', 'Government-issued business license', 'Government-issued Certificate of Good Standing from the Jurisdiction of Incorporation', 'Business Registration', 'Regulatory Registration License', 'Other']),
+})
+
+// Proof of Existence for individuals
+export const sow_schema = z.object({
+  type: z.enum(["Bank Statement", "Tax Return", "Other", "Other"]),
 })
 
 // Base Schemas
