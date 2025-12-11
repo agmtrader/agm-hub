@@ -285,7 +285,6 @@ const IBKRApplicationForm = () => {
 
     const advisor_id = searchParams.get('ad') || null;
     const master_account = searchParams.get('ma') || null;
-    let lead_id = searchParams.get('ld') || null;
 
     const currentValues = form.getValues();
     const sanitizedValues = stripAccents(
@@ -335,8 +334,8 @@ const IBKRApplicationForm = () => {
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
     } else {
-      console.log('Updating application', applicationId, { application: sanitizedValues, status: status, lead_id: lead_id });
-      const updatePayload:any = { application: sanitizedValues, status: status, lead_id: lead_id };
+      console.log('Updating application', applicationId, { application: sanitizedValues, status: status });
+      const updatePayload:any = { application: sanitizedValues, status: status };
       if (Object.keys(securityQA).length) {
         updatePayload.security_questions = securityQA;
       }
