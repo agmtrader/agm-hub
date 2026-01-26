@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { useFieldArray } from 'react-hook-form';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { investment_objectives as getInvestmentObjectives, products_complete as getProductsComplete } from '@/lib/public/form';
+import { account_types, currencies, products } from '@/lib/public/form';
 
 interface AccountInformationStepProps {
   form: UseFormReturn<Application>;
@@ -17,8 +17,6 @@ interface AccountInformationStepProps {
 const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
   
   const { t } = useTranslationProvider();
-  const investmentObjectivesOptions = getInvestmentObjectives(t);
-  const productsCompleteOptions = getProductsComplete(t);
 
   // FieldArray for trading permissions
   const { fields: tpFields, append, remove } = useFieldArray({
@@ -29,17 +27,17 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
   return (
     <Card className="p-6 space-y-6">
       <CardHeader>
-        <CardTitle>{t('apply.account.account_holder_info.account_setup')}</CardTitle>
+        <CardTitle>{t('apply.account.account_setup.account_setup')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Base Currency */}
+
           <FormField
             control={form.control}
             name="accounts.0.baseCurrency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('apply.account.account_holder_info.base_currency')}</FormLabel>
+                <FormLabel>{t('apply.account.account_setup.base_currency')}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                   <FormControl>
                     <SelectTrigger>
@@ -47,11 +45,11 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="USD">{t('apply.account.account_holder_info.usd')}</SelectItem>
-                    <SelectItem value="EUR">{t('apply.account.account_holder_info.eur')}</SelectItem>
-                    <SelectItem value="GBP">{t('apply.account.account_holder_info.gbp')}</SelectItem>
-                    <SelectItem value="CAD">{t('apply.account.account_holder_info.cad')}</SelectItem>
-                    <SelectItem value="AUD">{t('apply.account.account_holder_info.aud')}</SelectItem>
+                    {currencies.map((currency: { value: string; label: string }) => (
+                      <SelectItem key={currency.value} value={currency.value}>
+                        {currency.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -59,13 +57,12 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
             )}
           />
 
-          {/* Margin or Cash */}
           <FormField
             control={form.control}
             name="accounts.0.margin"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('apply.account.account_holder_info.account_type')}</FormLabel>
+                <FormLabel>{t('apply.account.account_setup.account_type')}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                   <FormControl>
                     <SelectTrigger>
@@ -73,8 +70,11 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Cash">{t('apply.account.account_holder_info.cash_account')}</SelectItem>
-                    <SelectItem value="Margin">{t('apply.account.account_holder_info.margin_account')}</SelectItem>
+                    {account_types(t).map((option: { value: string; label: string }) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -83,49 +83,22 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
           />
         </div>
 
-        {/* Investment Objectives – read-only display synced from Financial Info */}
-        <FormField
-          control={form.control}
-          name="accounts.0.investmentObjectives"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('apply.account.account_holder_info.investment_objectives')}</FormLabel>
-              <div className="flex flex-wrap gap-2">
-                {((field.value as string[]) || []).map((obj) => {
-                  const label = investmentObjectivesOptions.find((o) => o.id === obj)?.label || obj;
-                  return (
-                    <span key={obj} className="px-2 py-1 rounded bg-muted text-sm">
-                      {label}
-                    </span>
-                  );
-                })}
-                {!(field.value && field.value.length) && (
-                  <span className="text-subtitle text-sm">
-                    {t('apply.account.account_holder_info.investment_objectives_description')}
-                  </span>
-                )}
-              </div>
-            </FormItem>
-          )}
-        />
-
         <h4 className="text-lg font-semibold">
-          {t('apply.account.account_holder_info.trading_permissions')}
+          {t('apply.account.account_setup.trading_permissions')}
         </h4>
         <p className="text-subtitle text-sm mb-4">
-          {t('apply.account.account_holder_info.trading_permissions_description')}
+          {t('apply.account.account_setup.trading_permissions_description')}
         </p>
 
         <div className="space-y-4">
           {tpFields.map((field, index) => (
-            <div key={field.id} className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
-              {/* Country */}
+            <div key={field.id} className="grid grid-cols-1 sm:grid-cols-[2fr_2fr_auto] gap-4 items-end">
               <FormField
                 control={form.control}
                 name={`accounts.0.tradingPermissions.${index}.country` as const}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('apply.account.account_holder_info.primary_trading_market')}</FormLabel>
+                    <FormLabel>{t('apply.account.account_setup.primary_trading_market')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                       <FormControl>
                         <SelectTrigger>
@@ -133,12 +106,12 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="UNITED STATES">{t('apply.account.account_holder_info.united_states')}</SelectItem>
-                        <SelectItem value="CANADA">{t('apply.account.account_holder_info.canada')}</SelectItem>
-                        <SelectItem value="UNITED KINGDOM">{t('apply.account.account_holder_info.united_kingdom')}</SelectItem>
-                        <SelectItem value="GERMANY">{t('apply.account.account_holder_info.germany')}</SelectItem>
-                        <SelectItem value="JAPAN">{t('apply.account.account_holder_info.japan')}</SelectItem>
-                        <SelectItem value="AUSTRALIA">{t('apply.account.account_holder_info.australia')}</SelectItem>
+                        <SelectItem value="UNITED STATES">{t('apply.account.account_setup.united_states')}</SelectItem>
+                        <SelectItem value="CANADA">{t('apply.account_setup.canada')}</SelectItem>
+                        <SelectItem value="UNITED KINGDOM">{t('apply.account.account_setup.united_kingdom')}</SelectItem>
+                        <SelectItem value="GERMANY">{t('apply.account.account_setup.germany')}</SelectItem>
+                        <SelectItem value="JAPAN">{t('apply.account.account_setup.japan')}</SelectItem>
+                        <SelectItem value="AUSTRALIA">{t('apply.account_setup.australia')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -152,7 +125,7 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
                 name={`accounts.0.tradingPermissions.${index}.product` as const}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('apply.account.account_holder_info.product_types')}</FormLabel>
+                    <FormLabel>{t('apply.account.account_setup.product_types')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                       <FormControl>
                         <SelectTrigger>
@@ -160,7 +133,7 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {productsCompleteOptions.map((option) => (
+                        {products(t).map((option: { id: string; label: string }) => (
                           <SelectItem key={option.id} value={option.id}>
                             {option.label}
                           </SelectItem>
@@ -171,19 +144,17 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
                   </FormItem>
                 )}
               />
+              
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="text-destructive self-start sm:mt-0"
+                onClick={() => remove(index)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
 
-              {/* Remove button */}
-              {tpFields.length > 1 && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="text-destructive mt-2"
-                  onClick={() => remove(index)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
             </div>
           ))}
 
@@ -194,7 +165,7 @@ const AccountInformationStep = ({ form }: AccountInformationStepProps) => {
             onClick={() => append({ country: '', product: '' })}
           >
             <Plus className="h-4 w-4 mr-2" />
-            {t('apply.account.account_holder_info.add_trading_permission') || 'Add Trading Permission'}
+            {t('apply.account.account_setup.add_trading_permission')}
           </Button>
         </div>
       </CardContent>

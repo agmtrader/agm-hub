@@ -194,57 +194,7 @@ export const countries = [
     { label: "Yemen", value: "YEM" },
     { label: "Zambia", value: "ZMB" },
     { label: "Zimbabwe", value: "ZWE" },
-] as const
-
-export const account_types = (t: (key: string) => string) => [
-  {
-    value: "Individual",
-    label: t('apply.account.general_info.account_types.individual')
-  },
-  {
-    value: "Joint",
-    label: t('apply.account.general_info.account_types.joint')
-  },
-  {
-    value: "Institutional",
-    label: t('apply.account.general_info.account_types.institutional')
-  }
 ]
-
-export const salutations = [
-    { label: "Mr.", value: "Mr" },
-    { label: "Ms.", value: "Ms" },
-    { label: "Mrs.", value: "Mrs" },
-    { label: "Dr.", value: "Dr" },
-] as const
-
-export const marital_status = (t: (key: string) => string) => [
-    { label: t('apply.account.account_holder_info.single'), value: "S" },
-    { label: t('apply.account.account_holder_info.married'), value: "M" },
-    { label: t('apply.account.account_holder_info.divorced'), value: "D" },
-    { label: t('apply.account.account_holder_info.widowed'), value: "W" },
-] as const
-
-export const phone_types = (t: (key: string) => string) => [
-  { label: t('apply.account.account_holder_info.mobile'), value: "Mobile" },
-  { label: t('apply.account.account_holder_info.home'), value: "Home" },
-] as const
-
-export const id_type = (t: (key: string) => string) => [
-    { label: t('apply.account.account_holder_info.passport'), value: "Passport" },
-    { label: t('apply.account.account_holder_info.national_id'), value: "National ID Card" },
-    { label: t('apply.account.account_holder_info.license'), value: "Driver License" },
-] as const
-
-export const employment_status = (t: (key: string) => string) => [
-    { label: t('apply.account.account_holder_info.employed'), value: "Employed" },
-    { label: t('apply.account.account_holder_info.retired'), value: "Retired" },
-    { label: t('apply.account.account_holder_info.self_employed'), value: "Self-employed" },
-    { label: t('apply.account.account_holder_info.trader'), value: "Trader" },
-    { label: t('apply.account.account_holder_info.student'), value: "Student" },
-    { label: t('apply.account.account_holder_info.homemaker'), value: "Homemaker" },
-    { label: t('apply.account.account_holder_info.unemployed'), value: "Unemployed" },
-] as const
 
 export const currencies = [
   { label: "USD", value: "USD" },
@@ -271,42 +221,7 @@ export const currencies = [
   { label: "TRY", value: "TRY" },
   { label: "ZAR", value: "ZAR" },
   { label: "KRW", value: "KRW" },
-] as const
-
-export const worths = [
-  {
-    value: "< $5,000",
-    label: "< $5,000",
-  },
-  {
-    value: "$5,000 - $24,999",
-    label: "$5,000 - $24,999",
-  },
-  {
-    value: "$25,000 - $49,999",
-    label: "$25,000 - $49,999",
-  },
-  {
-    value: "$50,000 - $99,999",
-    label: "$50,000 - $99,999",
-  },
-  {
-    value: "$100,000 - $149,999",
-    label: "$100,000 - $149,999",
-  },
-  {
-    value: "$150,000 - $499,999",
-    label: "$150,000 - $499,999",
-  },
-  {
-    value: "$500,000 - $1,000,000",
-    label: "$500,000 - $1,000,000",
-  },
-  {
-    value: "$1,000,000+",
-    label: "$1,000,000+",
-  },
-] as const
+]
 
 export const security_questions = [
   { label: "In what city were you married?", value: "In what city were you married?" },
@@ -350,120 +265,14 @@ export const security_questions = [
   { label: "Who is your favorite architect?", value: "Who is your favorite architect?" },
   { label: "Where did you celebrate New Year's Eve In The Year 2000?", value: "Where did you celebrate New Year's Eve In The Year 2000?" },
   { label: "What is your spouse's middle name?", value: "What is your spouse's middle name?" },
-] as const
-
-export const purposes = (t: (key: string) => string) => [
-  { label: t('apply.account.organization.purpose_list.operating_business'), id: "Operating business" },
-  { label: t('apply.account.organization.purpose_list.family_investment'), id: "Family investment" },
-  { label: t('apply.account.organization.purpose_list.proprietary_trading'), id: "Proprietary trading" },
-  { label: t('apply.account.organization.purpose_list.financial_institution'), id: "Financial institution" },
-] as const
-
-export const source_of_wealth = (t: (key: string) => string) => [
-  {
-    id: "SOW-IND-Income",
-    label: t('apply.account.regulatory.source_of_wealth.income')
-  },
-  {
-    id: "SOW-IND-Inheritance",
-    label: t('apply.account.regulatory.source_of_wealth.inheritance')
-  },
-  {
-    id: "SOW-IND-Interest",
-    label: t('apply.account.regulatory.source_of_wealth.interest')
-  },
-  {
-    id: "SOW-IND-MarketProfit",
-    label: t('apply.account.regulatory.source_of_wealth.market_profit')
-  },
-  {
-    id: "SOW-IND-Property",
-    label: t('apply.account.regulatory.source_of_wealth.property')
-  },
-  {
-    id: "SOW-IND-Pension",
-    label: t('apply.account.regulatory.source_of_wealth.pension')
-  },
-  {
-    id: "SOW-IND-Allowance",
-    label: t('apply.account.regulatory.source_of_wealth.allowance')
-  },
-  {
-    id: "SOW-IND-Disability",
-    label: t('apply.account.regulatory.source_of_wealth.disability')
-  },
-  {
-    id: "SOW-IND-Other",
-    label: t('apply.account.regulatory.source_of_wealth.other')
-  },
-] as const
-
-export const investment_objectives = (t: (key: string) => string) => [
-  {
-    id: "Growth",
-    label: t('apply.account.regulatory.investment_objectives_list.growth')
-  },
-  {
-    id: "Trading",
-    label: t('apply.account.regulatory.investment_objectives_list.trading')
-  },
-  {
-    id: "Income",
-    label: t('apply.account.regulatory.investment_objectives_list.income')
-  },
-  {
-    id: "Hedging",
-    label: t('apply.account.regulatory.investment_objectives_list.hedging')
-  }
-] as const
-
-export const products_complete = (t: (key: string) => string) => [
-  {
-    id: "BONDS",
-    label: t('apply.account.regulatory.products.bonds')
-  },
-  {
-    id: "MUTUAL FUNDS",
-    label: t('apply.account.regulatory.products.mutual_funds')
-  },
-  {
-    id: "STOCKS",
-    label: t('apply.account.regulatory.products.stocks')
-  },
-  {
-    id: "OPTIONS",
-    label: t('apply.account.regulatory.products.options')
-  },
-  {
-    id: "FUTURES",
-    label: t('apply.account.regulatory.products.futures')
-  }
 ]
-
-export const regulatory_codes = [
-  {
-    code: "AFFILIATION",
-    label: "Interactive Brokers Affiliation",
-    description: "Are you affiliated with Interactive Brokers?"
-  },
-  {
-    code: "EmployeePubTrade",
-    label: "Employee of Publicly Traded Company",
-    description: "Are you an employee of a publicly traded company?"
-  },
-  {
-    code: "ControlPubTraded",
-    label: "Control Person of Publicly Traded Company",
-    description: "Are you a control person of a publicly traded company?"
-  }
-] as const
 
 export const knowledge_levels = [
   { label: "None", value: "None" },
   { label: "Limited", value: "Limited" },
   { label: "Good", value: "Good" },
   { label: "Extensive", value: "Extensive" },
-] as const
+]
 
 export const asset_classes = [
   { label: "Bonds", value: "BOND" },
@@ -471,28 +280,151 @@ export const asset_classes = [
   { label: "Stocks", value: "STK" },
   { label: "Options", value: "OPT" },
   { label: "Futures", value: "FUT" },
-] as const
+]
 
-export const margin_types = [
-  { label: "Cash Account", value: "Cash" },
-  { label: "Regulation T Margin", value: "RegTMargin" },
-  { label: "Portfolio Margin", value: "PortfolioMargin" },
-] as const
+export const marital_status = (t: (key: string) => string) => [
+    { label: t('apply.account.account_holder_info.single'), value: "S" },
+    { label: t('apply.account.account_holder_info.married'), value: "M" },
+    { label: t('apply.account.account_holder_info.divorced'), value: "D" },
+    { label: t('apply.account.account_holder_info.widowed'), value: "W" },
+]
 
-export const trading_countries = [
-  { label: "United States", value: "UNITED STATES" },
-  { label: "Canada", value: "CANADA" },
-  { label: "United Kingdom", value: "UNITED KINGDOM" },
-  { label: "European Union", value: "EUROPEAN UNION" },
-  { label: "Hong Kong", value: "HONG KONG" },
-  { label: "Japan", value: "JAPAN" },
-  { label: "Australia", value: "AUSTRALIA" },
-] as const
+export const phone_types = (t: (key: string) => string) => [
+  { label: t('apply.account.account_holder_info.mobile'), value: "Mobile" },
+  { label: t('apply.account.account_holder_info.home'), value: "Home" },
+]
 
-export const trading_products = [
-  { label: "Bonds", value: "BONDS" },
-  { label: "ETFs", value: "FUNDS" },
-  { label: "Stocks", value: "STOCKS" },
-  { label: "Options", value: "OPTIONS" },
-  { label: "Futures", value: "FUTURES" },
-] as const
+export const id_type = (t: (key: string) => string) => [
+    { label: t('apply.account.account_holder_info.passport'), value: "Passport" },
+    { label: t('apply.account.account_holder_info.national_id'), value: "National ID Card" },
+    { label: t('apply.account.account_holder_info.license'), value: "Driver License" },
+]
+
+export const employment_status = (t: (key: string) => string) => [
+  { value: 'EMPLOYED', label: t('apply.account.account_holder_info.employment_types.employed') }, 
+  { value: 'SELFEMPLOYED', label: t('apply.account.account_holder_info.employment_types.self_employed') }, 
+  { value: 'UNEMPLOYED', label: t('apply.account.account_holder_info.employment_types.unemployed') }, 
+  { value: 'STUDENT', label: t('apply.account.account_holder_info.employment_types.student') }, 
+  { value: 'RETIRED', label: t('apply.account.account_holder_info.employment_types.retired') }, 
+  { value: 'OTHER', label: t('apply.account.account_holder_info.employment_types.other') }
+]
+
+export const tin_types = (t: (key: string) => string) => [
+  { value: 'SSN', label: t('apply.account.account_holder_info.tin_types.ssn') },
+  { value: 'EIN', label: t('apply.account.account_holder_info.tin_types.ein') },
+  { value: 'NonUS_NationalId', label: t('apply.account.account_holder_info.tin_types.non_us_national_id') },
+]
+
+export const purposes = (t: (key: string) => string) => [
+  { label: t('apply.account.organization.purposes.operating_business'), id: "Operating business" },
+  { label: t('apply.account.organization.purposes.family_investment'), id: "Family investment" },
+  { label: t('apply.account.organization.purposes.proprietary_trading'), id: "Proprietary trading" },
+  { label: t('apply.account.organization.purposes.financial_institution'), id: "Financial institution" },
+]
+
+export const account_types = (t: (key: string) => string) => [
+  { label: t('apply.account.account_setup.cash_account'), value: "Cash" },
+  { label: t('apply.account.account_setup.margin_account'), value: "Margin" },
+]
+
+export const sources_of_wealth = (t: (key: string) => string) => [
+  {
+    id: "SOW-IND-Income",
+    label: t('apply.account.financial.sources_of_wealth.income')
+  },
+  {
+    id: "SOW-IND-Inheritance",
+    label: t('apply.account.financial.sources_of_wealth.inheritance')
+  },
+  {
+    id: "SOW-IND-Interest",
+    label: t('apply.account.financial.sources_of_wealth.interest')
+  },
+  {
+    id: "SOW-IND-MarketProfit",
+    label: t('apply.account.financial.sources_of_wealth.market_profit')
+  },
+  {
+    id: "SOW-IND-Property",
+    label: t('apply.account.financial.sources_of_wealth.property')
+  },
+  {
+    id: "SOW-IND-Pension",
+    label: t('apply.account.financial.sources_of_wealth.pension')
+  },
+  {
+    id: "SOW-IND-Allowance",
+    label: t('apply.account.financial.sources_of_wealth.allowance')
+  },
+  {
+    id: "SOW-IND-Disability",
+    label: t('apply.account.financial.sources_of_wealth.disability')
+  },
+  {
+    id: "SOW-IND-Other",
+    label: t('apply.account.financial.sources_of_wealth.other')
+  },
+]
+
+export const investment_objectives = (t: (key: string) => string) => [
+  {
+    id: "Growth",
+    label: t('apply.account.financial.investment_objectives_list.growth')
+  },
+  {
+    id: "Trading",
+    label: t('apply.account.financial.investment_objectives_list.trading')
+  },
+  {
+    id: "Income",
+    label: t('apply.account.financial.investment_objectives_list.income')
+  },
+  {
+    id: "Hedging",
+    label: t('apply.account.financial.investment_objectives_list.hedging')
+  }
+]
+
+export const products = (t: (key: string) => string) => [
+  {
+    id: "BONDS",
+    label: t('apply.account.account_setup.products.bonds')
+  },
+  {
+    id: "MUTUAL FUNDS",
+    label: t('apply.account.account_setup.products.mutual_funds')
+  },
+  {
+    id: "STOCKS",
+    label: t('apply.account.account_setup.products.stocks')
+  },
+  {
+    id: "OPTIONS",
+    label: t('apply.account.account_setup.products.options')
+  },
+  {
+    id: "FUTURES",
+    label: t('apply.account.account_setup.products.futures')
+  }
+]
+
+export const regulatory_codes = (t: (key: string) => string) => [
+  {
+    code: "AFFILIATION",
+    label: t('apply.account.regulatory.affiliation'),
+    positive: t('apply.account.regulatory.affiliation_yes'),
+    negative: t('apply.account.regulatory.affiliation_no')
+  },
+  {
+    code: "EmployeePubTrade",
+    label: t('apply.account.regulatory.employee_pub_trade'),
+    positive: t('apply.account.regulatory.employee_pub_trade_yes'),
+    negative: t('apply.account.regulatory.employee_pub_trade_no')
+  },
+  {
+    code: "ControlPubTraded",
+    label: t('apply.account.regulatory.control_pub_traded'),
+    positive: t('apply.account.regulatory.control_pub_traded_yes'),
+    negative: t('apply.account.regulatory.control_pub_traded_no')
+  }
+]

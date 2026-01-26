@@ -20,6 +20,7 @@ interface AccountTypeStepProps {
 }
 
 const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
+  
   const { t } = useTranslationProvider();
 
   const handleAccountTypeChange = (value: string) => {
@@ -29,6 +30,7 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
 
     const accountType = value as 'INDIVIDUAL' | 'JOINT' | 'ORG'
     const currentCustomer = form.getValues('customer')
+
     const cleanCustomer: any = {
       type: accountType,
       externalId: currentCustomer?.externalId,
@@ -69,7 +71,6 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
     }
 
     form.setValue('customer', cleanCustomer)
-    
     form.setValue('documents', [])
   }
 
@@ -118,8 +119,6 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
                       </div>
                   </FormItem>
                 </Card>
-
-
 
                 <Card className="p-6">
                   <FormItem className="flex flex-row items-center justify-start gap-10">

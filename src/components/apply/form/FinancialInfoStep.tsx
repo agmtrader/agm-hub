@@ -8,24 +8,68 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { investment_objectives as getInvestmentObjectives, source_of_wealth as getSourceOfWealth, asset_classes, knowledge_levels } from '@/lib/public/form';
+import { sources_of_wealth, asset_classes, knowledge_levels, investment_objectives, currencies, products } from '@/lib/public/form';
 import { Checkbox } from '@/components/ui/checkbox';
+import { FinancialRange } from '@/lib/entities/account';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 interface FinancialInfoStepProps {
   form: UseFormReturn<Application>;
   setEstimatedDeposit: (value: number | null) => void;
   estimatedDeposit: number | null;
+  financialRanges: FinancialRange[];
+  financialRangesLoading: boolean;
+  financialRangesError: string | null;
+  estimatedDepositError?: string | null;
 }
 
-const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: FinancialInfoStepProps) => {
+const FinancialInfoStep = ({
+  form,
+  setEstimatedDeposit,
+  estimatedDeposit,
+  financialRanges,
+  financialRangesLoading,
+  financialRangesError,
+  estimatedDepositError,
+}: FinancialInfoStepProps) => {
 
   const { t } = useTranslationProvider();
+  const { formState } = form;
   const accountType = form.watch('customer.type');
+  const tradingPermissions = form.watch('accounts.0.tradingPermissions') || [];
 
-  const investmentObjectivesOptions = getInvestmentObjectives(t);
-  const sourceOfWealthOptions = getSourceOfWealth(t);
 
-  // Determine the correct basePath depending on account type
+  console.log(form.getValues('customer'));
+
+  const TRADING_COUNTRIES = [
+    "UNITED STATES",
+    "CANADA",
+    "UNITED KINGDOM",
+    "GERMANY",
+    "JAPAN",
+    "AUSTRALIA"
+  ];
+
+  const toggleProduct = (productId: string, checked: boolean) => {
+    let currentPermissions = [...(tradingPermissions || [])];
+    
+    // Remove existing entries for this product
+    currentPermissions = currentPermissions.filter(p => p.product !== productId);
+
+    if (checked) {
+      // Add entries for all countries
+      TRADING_COUNTRIES.forEach(country => {
+        currentPermissions.push({
+          country,
+          product: productId
+        });
+      });
+    }
+
+    form.setValue('accounts.0.tradingPermissions', currentPermissions);
+  };
+
   const basePath = React.useMemo(() => {
     switch (accountType) {
       case 'JOINT':
@@ -37,7 +81,20 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
     }
   }, [accountType]);
 
-  /** Sub-component: dynamic Sources of Wealth list */
+  const formatRangeLabel = (range: FinancialRange) => {
+    const lower = Number(range.lowerBound).toLocaleString();
+    const upper = range.upperBound ? Number(range.upperBound).toLocaleString() : null;
+    return upper ? `${lower} - ${upper}` : `${lower}+`;
+  };
+
+  const rangeByType = React.useMemo(() => {
+    return {
+      netWorth: financialRanges.filter((range) => range.type === 'NET_WORTH'),
+      liquidNetWorth: financialRanges.filter((range) => range.type === 'NET_WORTH_LIQUID'),
+      annualNetIncome: financialRanges.filter((range) => range.type === 'ANNUAL_NET_INCOME'),
+    };
+  }, [financialRanges]);
+
   const SourcesOfWealthFields = ({ basePath }: { basePath: string }) => {
     const { fields, append, remove } = useFieldArray({
       control: form.control,
@@ -55,21 +112,19 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
               render={({ field }) => (
                 <FormItem className="col-span-3">
                   {index === 0 && (
-                    <>
-                      <FormLabel>{t('apply.account.account_holder_info.source_type')}</FormLabel>
-                      <FormDescription>
-                        {t('apply.account.account_holder_info.source_of_wealth_description')}
-                      </FormDescription>
-                    </>
+                    <div className="flex flex-row gap-2 items-center">
+                      <FormLabel>{t('apply.account.financial.source_type')}</FormLabel>
+                      <FormMessage />
+                    </div>
                   )}
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {sourceOfWealthOptions.map((option) => (
+                      {sources_of_wealth(t).map((option: { id: string; label: string }) => (
                         <SelectItem key={option.id} value={option.id}>
                           {option.label}
                         </SelectItem>
@@ -86,7 +141,12 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
               name={`${basePath}.0.sourcesOfWealth.${index}.percentage` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.percentage')}</FormLabel>}
+                  {index === 0 && 
+                    <div className="flex flex-row gap-2 items-center">
+                      <FormLabel>{t('apply.account.financial.percentage')}</FormLabel>
+                      <FormMessage />
+                    </div>
+                  }
                   <FormControl>
                     <Input
                       placeholder=""
@@ -99,15 +159,13 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
             />
 
             {/* Remove button */}
-            {fields.length > 1 && (
-              <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
+            <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         ))}
         <Button type="button" variant="outline" size="sm" onClick={() => append({ sourceType: '', percentage: 0 })}>
-          <Plus className="h-4 w-4 mr-2" /> {t('apply.account.account_holder_info.add_source')}
+          <Plus className="h-4 w-4 mr-2" /> {t('apply.account.financial.add_source')}
         </Button>
       </div>
     );
@@ -130,8 +188,13 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
               name={`${basePath}.0.investmentExperience.${index}.assetClass` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.asset_class')}</FormLabel>}
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  {index === 0 && 
+                    <div className="flex flex-row gap-2 items-center">
+                      <FormLabel>{t('apply.account.financial.asset_class')}</FormLabel>
+                      <FormMessage />
+                    </div>
+                  }
+                  <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="" />
@@ -155,7 +218,12 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
               name={`${basePath}.0.investmentExperience.${index}.yearsTrading` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.years_trading')}</FormLabel>}
+                  {index === 0 && 
+                    <div className="flex flex-row gap-2 items-center">
+                      <FormLabel>{t('apply.account.financial.years_trading')}</FormLabel>
+                      <FormMessage />
+                    </div>
+                  }
                   <FormControl>
                     <Input
                       placeholder=""
@@ -175,7 +243,12 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
               name={`${basePath}.0.investmentExperience.${index}.tradesPerYear` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.trades_per_year')}</FormLabel>}
+                  {index === 0 && 
+                    <div className="flex flex-row gap-2 items-center">
+                      <FormLabel>{t('apply.account.financial.trades_per_year')}</FormLabel>
+                      <FormMessage />
+                    </div>
+                  }
                   <FormControl>
                     <Input
                       placeholder=""
@@ -195,8 +268,13 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
               name={`${basePath}.0.investmentExperience.${index}.knowledgeLevel` as any}
               render={({ field }) => (
                 <FormItem>
-                  {index === 0 && <FormLabel>{t('apply.account.account_holder_info.knowledge_level')}</FormLabel>}
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    {index === 0 && 
+                    <div className="flex flex-row gap-2 items-center">
+                      <FormLabel>{t('apply.account.financial.knowledge_level')}</FormLabel>
+                      <FormMessage />
+                    </div>
+                  }
+                  <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="" />
@@ -215,15 +293,13 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
             />
 
             {/* Remove button */}
-            {fields.length > 1 && (
-              <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
+            <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         ))}
-        <Button type="button" variant="outline" size="sm" onClick={() => append({ assetClass: '', yearsTrading: 0, tradesPerYear: 0, knowledgeLevel: '' })}>
-          <Plus className="h-4 w-4 mr-2" /> {t('apply.account.account_holder_info.add_experience')}
+        <Button type="button" variant="outline" size="sm" onClick={() => append({ assetClass: 'STK', yearsTrading: 1, tradesPerYear: 10, knowledgeLevel: 'Limited' })}>
+          <Plus className="h-4 w-4 mr-2" /> {t('apply.account.financial.add_experience')}
         </Button>
       </div>
     );
@@ -232,26 +308,117 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
   return (
     <Card className="p-6 space-y-6">
       <CardHeader>
-        <CardTitle>{t('apply.account.account_holder_info.financial_information')}</CardTitle>
+        <CardTitle>{t('apply.account.financial.financial_information')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Net Worth */}
+        <div className="space-y-6">
+          <h4 className="text-lg font-semibold">{t('apply.account.account_setup.account_setup')}</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="accounts.0.baseCurrency"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex flex-row gap-2 items-center">
+                    <FormLabel>{t('apply.account.account_setup.base_currency')}</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {currencies.map((currency: { value: string; label: string }) => (
+                        <SelectItem key={currency.value} value={currency.value}>
+                          {currency.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex flex-row gap-2 items-center">
+            <h4 className="text-lg font-semibold">
+              {t('apply.account.account_setup.trading_permissions')}
+            </h4>
+          </div>
+          <p className="text-subtitle text-sm mb-4">
+            {t('apply.account.account_setup.trading_permissions_description')}
+          </p>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {products(t).map((product) => {
+                const isSelected = tradingPermissions.some(p => p.product === product.id);
+                return (
+                  <div key={product.id} className="flex items-center space-x-2 border p-4 rounded-md">
+                    <Checkbox
+                      id={`product-${product.id}`}
+                      checked={isSelected}
+                      onCheckedChange={(checked) => toggleProduct(product.id, checked as boolean)}
+                    />
+                    <label
+                      htmlFor={`product-${product.id}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer w-full"
+                    >
+                      {product.label}
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <h1 className="text-lg font-semibold">
+          Wealth Information
+        </h1>
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FormField
             control={form.control}
             name={`${basePath}.0.netWorth` as any}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('apply.account.account_holder_info.net_worth')}</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder=""
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
-                  />
-                </FormControl>
-                <p className="text-xs text-subtitle">{t('apply.account.account_holder_info.net_worth_help')}</p>
-                <FormMessage />
+                <div className='flex flex-row gap-2 items-center'>
+                  <FormLabel>{t('apply.account.financial.net_worth')} (USD)</FormLabel>
+                  <FormMessage />
+                </div>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={financialRangesLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {rangeByType.netWorth.map((range) => (
+                      <SelectItem key={range.id} value={range.id}>
+                        {formatRangeLabel(range)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-subtitle">{t('apply.account.financial.net_worth_help')}</p>
+                {financialRangesLoading && (
+                  <p className="text-xs text-subtitle">Loading ranges...</p>
+                )}
+                {financialRangesError && (
+                  <p className="text-xs text-destructive">{financialRangesError}</p>
+                )}
+                {!financialRangesLoading && !financialRangesError && !rangeByType.netWorth.length && (
+                  <p className="text-xs text-subtitle">No ranges available</p>
+                )}
               </FormItem>
             )}
           />
@@ -260,16 +427,38 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
             name={`${basePath}.0.liquidNetWorth` as any}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('apply.account.account_holder_info.liquid_net_worth')}</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder=""
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
-                  />
-                </FormControl>
-                <p className="text-xs text-subtitle">{t('apply.account.account_holder_info.liquid_net_worth_help')}</p>
-                <FormMessage />
+                <div className='flex flex-row gap-2 items-center'>
+                  <FormLabel>{t('apply.account.financial.liquid_net_worth')} (USD)</FormLabel>
+                  <FormMessage />
+                </div>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={financialRangesLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {rangeByType.liquidNetWorth.map((range) => (
+                      <SelectItem key={range.id} value={range.id}>
+                        {formatRangeLabel(range)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-subtitle">{t('apply.account.financial.liquid_net_worth_help')}</p>
+                {financialRangesLoading && (
+                  <p className="text-xs text-subtitle">Loading ranges...</p>
+                )}
+                {financialRangesError && (
+                  <p className="text-xs text-destructive">{financialRangesError}</p>
+                )}
+                {!financialRangesLoading && !financialRangesError && !rangeByType.liquidNetWorth.length && (
+                  <p className="text-xs text-subtitle">No ranges available</p>
+                )}
               </FormItem>
             )}
           />
@@ -277,17 +466,39 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
             control={form.control}
             name={`${basePath}.0.annualNetIncome` as any}
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('apply.account.account_holder_info.annual_net_income')}</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder=""
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value === '' ? null : parseInt(e.target.value))}
-                  />
-                </FormControl>
-                <p className="text-xs text-subtitle">{t('apply.account.account_holder_info.annual_net_income_help')}</p>
-                <FormMessage />
+              <FormItem>  
+                <div className='flex flex-row gap-2 items-center'>
+                  <FormLabel>{t('apply.account.financial.annual_net_income')} (USD)</FormLabel>
+                  <FormMessage />
+                </div>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={financialRangesLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {rangeByType.annualNetIncome.map((range) => (
+                      <SelectItem key={range.id} value={range.id}>
+                        {formatRangeLabel(range)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-subtitle">{t('apply.account.financial.annual_net_income_help')}</p>
+                {financialRangesLoading && (
+                  <p className="text-xs text-subtitle">Loading ranges...</p>
+                )}
+                {financialRangesError && (
+                  <p className="text-xs text-destructive">{financialRangesError}</p>
+                )}
+                {!financialRangesLoading && !financialRangesError && !rangeByType.annualNetIncome.length && (
+                  <p className="text-xs text-subtitle">No ranges available</p>
+                )}
               </FormItem>
             )}
           />
@@ -299,10 +510,13 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
           name={`${basePath}.0.investmentObjectives` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('apply.account.account_holder_info.investment_objectives')}</FormLabel>
-              <FormDescription>{t('apply.account.account_holder_info.investment_objectives_description')}</FormDescription>
+              <div className='flex flex-row gap-2 items-center'>
+                <FormLabel>{t('apply.account.financial.investment_objectives')}</FormLabel>
+                <FormMessage />
+              </div>
+              <FormDescription>{t('apply.account.financial.investment_objectives_description')}</FormDescription>
               <div className="flex flex-col space-y-2">
-                {investmentObjectivesOptions.map((option) => {
+                {investment_objectives(t).map((option: { id: string; label: string }) => {
                   const checked = (field.value || []).includes(option.id);
                   return (
                     <label key={option.id} className="flex items-center space-x-2">
@@ -317,7 +531,7 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
                           }
                           field.onChange(newValue);
 
-                          // Sync to account-level field for display in AccountInformationStep
+                          // Keep account-level investment objectives in sync
                           form.setValue('accounts.0.investmentObjectives' as any, newValue);
                         }}
                       />
@@ -326,25 +540,48 @@ const FinancialInfoStep = ({ form, setEstimatedDeposit, estimatedDeposit }: Fina
                   );
                 })}
               </div>
-              <FormMessage />
             </FormItem>
           )}
         />
 
         {/* Investment Experience */}
-        <h4 className="text-lg font-semibold">
-          {t('apply.account.account_holder_info.investment_experience')}
-        </h4>
-        <InvestmentExperienceFields basePath={basePath} />
+        <div className="space-y-2">
+          <div className="flex flex-row gap-2 items-center">
+            <h4 className="text-lg font-semibold">
+              {t('apply.account.financial.investment_experience')}
+            </h4>
+          </div>
+          <InvestmentExperienceFields basePath={basePath} />
+        </div>
 
         {/* Source of Wealth */}
-        <h4 className="text-lg font-semibold">
-          {t('apply.account.account_holder_info.source_of_wealth')}
-        </h4>
-        <SourcesOfWealthFields basePath={basePath} />
+        <div className="space-y-2">
+          <div className="flex flex-row gap-2 items-center">
+            <h4 className="text-lg font-semibold">
+              {t('apply.account.financial.source_of_wealth')}
+            </h4>
+          </div>
+          <SourcesOfWealthFields basePath={basePath} />
+        </div>
 
         {/* Estimated Deposit */}
-        <Input placeholder={t('apply.account.account_holder_info.estimated_deposit')} value={estimatedDeposit ?? ''} onChange={(e) => setEstimatedDeposit(e.target.value === '' ? null : parseInt(e.target.value))} />
+        <div className="space-y-2">
+          <div className="flex flex-row gap-2 items-center">
+            <Label className={cn(estimatedDepositError && "text-destructive")}>
+              {t('apply.account.financial.estimated_deposit')}
+            </Label>
+            {estimatedDepositError && (
+              <p className={cn("text-md font-medium text-primary")}>
+                {estimatedDepositError}
+              </p>
+            )}
+          </div>
+          <Input 
+            value={estimatedDeposit ?? ''} 
+            onChange={(e) => setEstimatedDeposit(e.target.value === '' ? null : parseInt(e.target.value))} 
+            className={cn(estimatedDepositError && "border-destructive focus-visible:ring-destructive")}
+          />
+        </div>
       </CardContent>
     </Card>
   );

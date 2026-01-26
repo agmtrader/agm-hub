@@ -15,7 +15,7 @@ interface CountriesFormFieldProps {
 
 const CountriesFormField = ({ form, element }: CountriesFormFieldProps) => {
 
-  const { t, lang } = useTranslationProvider();
+  const { t } = useTranslationProvider();
 
   return (
     <FormField

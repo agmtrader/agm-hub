@@ -29,11 +29,13 @@ const StatesFormField = ({ form, country, stateFieldName, label = 'State / Provi
         name={stateFieldName as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{label}</FormLabel>
+            <div className='flex flex-row gap-2 items-center'>
+              <FormLabel>{label}</FormLabel>
+              <FormMessage />
+            </div>
             <FormControl>
               <Input placeholder="" {...field} disabled />
             </FormControl>
-            <FormMessage />
           </FormItem>
         )}
       />
@@ -48,11 +50,13 @@ const StatesFormField = ({ form, country, stateFieldName, label = 'State / Provi
         name={stateFieldName as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{label}</FormLabel>
+            <div className='flex flex-row gap-2 items-center'>
+              <FormLabel>{label}</FormLabel>
+              <FormMessage />
+            </div>
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
-            <FormMessage />
           </FormItem>
         )}
       />
@@ -65,7 +69,10 @@ const StatesFormField = ({ form, country, stateFieldName, label = 'State / Provi
       name={stateFieldName as any}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <div className='flex flex-row gap-2 items-center'>
+            <FormLabel>{label}</FormLabel>
+            <FormMessage />
+          </div>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
               <SelectTrigger>
@@ -78,7 +85,6 @@ const StatesFormField = ({ form, country, stateFieldName, label = 'State / Provi
               ))}
             </SelectContent>
           </Select>
-          <FormMessage />
         </FormItem>
       )}
     />

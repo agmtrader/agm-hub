@@ -100,9 +100,9 @@ export const individual_form: Application = {
             ],
             "financialInformation": [
                 {
-                    "netWorth": 100000,
-                    "liquidNetWorth": 25000,
-                    "annualNetIncome": 100000,
+                    "netWorth": "8",
+                    "liquidNetWorth": "5",
+                    "annualNetIncome": "7",
                     "investmentObjectives": [
                         "Growth"
                     ],

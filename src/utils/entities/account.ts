@@ -1,5 +1,5 @@
 import { accessAPI } from "../api"
-import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, InternalAccount, InternalDocument, InternalDocumentPayload, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction, AccountScreening, FinancialRangesResponse } from "@/lib/entities/account"
+import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, AccountManagementRequests, InternalAccount, InternalDocument, InternalDocumentPayload, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction, AccountScreening, FinancialRangesResponse, BusinessAndOccupationResponse } from "@/lib/entities/account"
 import { InvestmentExperience } from "@/lib/entities/application"
 import { IDResponse } from "@/lib/entities/base"
 import { SecurityQuestionsResponse } from "@/lib/entities/security_question"
@@ -243,7 +243,12 @@ export async function GetProductCountryBundles(): Promise<ProductCountryBundlesR
     return response
 }
 
-export async function GetFinancialRanges(): Promise<ProductCountryBundlesResponse | FinancialRangesResponse> {
+export async function GetFinancialRanges(): Promise<FinancialRangesResponse> {
   const response: FinancialRangesResponse = await accessAPI(`/accounts/ibkr/financial_ranges`, 'GET')
+  return response
+}
+
+export async function GetBusinessAndOccupation(): Promise<BusinessAndOccupationResponse> {
+  const response: BusinessAndOccupationResponse = await accessAPI(`/accounts/ibkr/business_and_occupation`, 'GET')
   return response
 }

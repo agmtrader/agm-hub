@@ -7,14 +7,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import CountriesFormField from '@/components/ui/CountriesFormField';
 import { Input } from '@/components/ui/input';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
+import { regulatory_codes as getRegulatoryCodes } from '@/lib/public/form';
 
 interface RegulatoryInfoStepProps {
   form: UseFormReturn<Application>;
 }
 
 const RegulatoryInfoStep = ({ form }: RegulatoryInfoStepProps) => {
+  
   const { t } = useTranslationProvider();
   const accountType = form.watch('customer.type');
+  const regulatoryOptions = getRegulatoryCodes(t);
 
   // Determine the correct basePath depending on account type
   const basePath = React.useMemo(() => {
@@ -28,32 +31,10 @@ const RegulatoryInfoStep = ({ form }: RegulatoryInfoStepProps) => {
     }
   }, [accountType]);
 
-  // Options reproduced from original code
-  const regulatoryOptions = React.useMemo(() => [
-    {
-      code: 'AFFILIATION',
-      label: t('apply.account.account_holder_info.affiliation') || 'Affiliation',
-      positive: t('apply.account.account_holder_info.affiliation_yes') || 'Affiliated with Interactive Brokers',
-      negative: t('apply.account.account_holder_info.affiliation_no') || 'Not affiliated with Interactive Brokers',
-    },
-    {
-      code: 'EmployeePubTrade',
-      label: t('apply.account.account_holder_info.employee_pub_trade') || 'Employee Public Trading',
-      positive: t('apply.account.account_holder_info.employee_pub_trade_yes') || 'Employee is trading publicly',
-      negative: t('apply.account.account_holder_info.employee_pub_trade_no') || 'Employee is not trading publicly',
-    },
-    {
-      code: 'ControlPubTraded',
-      label: t('apply.account.account_holder_info.control_pub_traded') || 'Controlled Public Trading',
-      positive: t('apply.account.account_holder_info.control_pub_traded_yes') || 'Controlled trading is allowed',
-      negative: t('apply.account.account_holder_info.control_pub_traded_no') || 'Controlled trading is not allowed',
-    },
-  ], [t]);
-
   return (
     <Card className="p-6 space-y-6">
       <CardHeader>
-        <CardTitle>{t('apply.account.account_holder_info.regulatory_information') || 'Regulatory Information'}</CardTitle>
+        <CardTitle>{t('apply.account.regulatory.regulatory_information')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {regulatoryOptions.map((opt, index) => {

@@ -8,11 +8,6 @@
         "fees": "Fees",
         "requirements": "Requirements"
     },
-    "protected": {
-        "noPermissions": "No permissions",
-        "noPermissionsMessage": "You are not authorized to access this page",
-        "goBack": "Go back home"
-    },
     "agm-technology": {
         "title": {
             "title": "Invest anytime / anywhere",
@@ -217,10 +212,6 @@
         }
     },
     "shared": {
-        "account": {
-            "sign_out": "Sign out",
-            "settings": "Settings"
-        },
         "title": {
             "scroll_text": "Scroll to explore"
         },
@@ -300,28 +291,19 @@
                 "description": "Unlock the world of financial opportunities with your AGM account.",
                 "get_started": "Dont know how to get started? Check the requirements",
                 "get_started_link": "here",
-                "startApplication": "Start Application",
-                "previous_applications": {
-                    "title": "Previous Applications",
-                    "button": "View previous applications",
-                    "date": "Start Date",
-                    "status": "Status",
-                    "resume": "Resume"
-                }
+                "startApplication": "Start Application"
             },
             "header": {
-                "title": "IBKR Application Form",
-                "description": "Fill out the form below to apply for an account with AGM.",
+                "title": "Application Form",
+                "description": "Fill out the form below to apply for an account with us.",
                 "account_type": "Account Type",
-                "agreements": "Agreements",
                 "steps": {
-                    "agreements": "Agreements",
                     "account_type": "Account Type",
                     "personal_info": "Personal Information",
                     "financial_info": "Financial Information",
                     "regulatory_info": "Regulatory Information",
                     "account_information": "Account Setup",
-                    "account_holder_info": "Account Holder Information",
+                    "agreements": "Agreements",
                     "documents": "Documents",
                     "complete": "Complete"
                 }
@@ -335,23 +317,12 @@
                 "institutional_description": "An account owned and controlled by a company or organization"
             },
             "account_holder_info": {
+
                 "primary_contact_credentials": "Primary Contact Credentials",
                 "username": "Username",
-                "username_description": "Your desired username (3–6 characters).",
                 "legal_residence_country": "Legal Residence Country",
+
                 "account_holder_information": "Account Holder Information",
-                "mailing_address": "Mailing Address",
-                "same_mailing_address": "Is mailing address the same as residence address?",
-                "regulatory_information": "Regulatory Information",
-                "affiliation": "Is the applicant or any immediate family member who resides in the same household, registered as a broker-dealer or an employee, director or owner of a securities or commodities brokerage firm?",
-                "employee_pub_trade": "Are the owners of, or other non-owners listed on, the account Employees of a publicly traded company? ",
-                "control_pub_traded": "Do the owners of, or other non-owners listed on, the account Control a publicly traded company?",
-                "affiliation_no": "Applicant is not affiliated with a broker-dealer, director, or owner of a securities or commodities brokerage firm",
-                "control_pub_traded_no": "Applicant does not control a publicly traded company",
-                "employee_pub_trade_no": "Applicant is not an employee of a publicly traded company",
-                "affiliation_yes": "Applicant is affiliated with a broker-dealer, director, or owner of a securities or commodities brokerage firm",
-                "control_pub_traded_yes": "Applicant controls a publicly traded company",
-                "employee_pub_trade_yes": "Applicant is an employee of a publicly traded company",
                 "first_name": "First Name",
                 "last_name": "Last Name",
                 "email": "Email",
@@ -362,59 +333,63 @@
                 "married": "Married",
                 "divorced": "Divorced",
                 "widowed": "Widowed",
-                "mobile": "Mobile",
-                "home": "Home",
                 "num_dependents": "Number of Dependents",
+                "residence_address": "Residence Address",
                 "street_address_1": "Street Address 1",
                 "street_address_2": "Street Address 2",
                 "city": "City",
                 "state": "State",
                 "zip": "Zip Code",
                 "country": "Country",
+                "same_mailing_address": "Is mailing address the same as residence address?",
+                "mailing_address": "Mailing Address",
+                "contact_information": "Contact Information",
                 "phone_type": "Phone Type",
                 "phone_country": "Phone Country",
                 "phone_number": "Phone Number",
+                "mobile": "Mobile",
+                "home": "Home",
+                "identification": "Identification",
                 "id_type": "ID Type",
+                "passport": "Passport",
+                "national_id": "National ID Card",
+                "license": "Driver License",
                 "id_number": "ID Number",
                 "expiration_date": "Expiration Date",
                 "issuing_country": "Issuing Country",
                 "citizenship": "Citizenship",
+                "tax_residencies": "Tax Residencies",
                 "tax_residence_country": "Tax Residence Country",
                 "tax_identification_number": "Tax Identification Number (TIN)",
                 "tin_type": "TIN Type",
+                "tin_types": {
+                    "ssn": "SSN",
+                    "ein": "EIN",
+                    "non_us_national_id": "Non-US National ID"
+                },
+                "tin_help": "Tax Identification Number issued by your tax authority.",
+                "employment_details": "Employment Details",
                 "employment_type": "Employment Type",
+                "employment_types": {
+                    "employed": "Employed",
+                    "self_employed": "Self-employed",
+                    "unemployed": "Unemployed",
+                    "student": "Student",
+                    "retired": "Retired",
+                    "other": "Other"
+                },
                 "employer": "Employer",
                 "occupation": "Occupation",
                 "employer_business": "Employer Business",
                 "employer_address": "Employer Address",
-                "financial_information": "Financial Information",
-                "net_worth": "Net Worth",
-                "liquid_net_worth": "Liquid Net Worth",
-                "annual_net_income": "Annual Net Income",
-                "net_worth_help": "Include total assets minus total liabilities.",
-                "liquid_net_worth_help": "Include cash and assets easily converted to cash.",
-                "annual_net_income_help": "Your total income after taxes for the past year.",
-                "tin_help": "Tax Identification Number issued by your tax authority.",
-                "investment_objectives": "Investment Objectives",
-                "investment_objectives_description": "Select all that apply to this account",
-                "investment_experience": "Investment Experience",
-                "source_of_wealth": "Source of Wealth",
-                "source_of_wealth_description": "If you select 'Employed', you must include 'Income' as one of your sources of wealth in the Financial Information section.",
-                "source_type": "Source Type",
-                "percentage": "Percentage",
-                "add_source": "Add Source",
-                "asset_class": "Asset Class",
-                "years_trading": "Years Trading",
-                "trades_per_year": "Trades / Year",
-                "knowledge_level": "Knowledge Level",
-                "add_experience": "Add Experience",
-                "account_setup": "Account Setup",
-                "base_currency": "Base Currency",
-                "account_type": "Account Type",
-                "trading_permissions": "Trading Permissions",
-                "trading_permissions_description": "Specify which markets and products you want permission to trade",
-                "primary_trading_market": "Primary Trading Market",
-                "product_types": "Product Types",
+                "important": "Important",
+                "employment_type_description": "If you select 'Employed', you must include 'Income' as one of your sources of wealth in the Financial Information section.",
+
+                "security_questions": "Security Questions",
+                "security_questions_description": "Select three security questions and provide your answers",
+                "select_question": "Select question",
+                "answer_placeholder": "Type your answer",
+                
                 "organization_information": "Organization Information",
                 "organization_name": "Organization Name",
                 "business_description": "Business Description",
@@ -422,14 +397,6 @@
                 "organization_identification_number": "Organization Identification Number",
                 "owners_reside_in_us": "Owners Reside in US?",
                 "place_of_business_address": "Place of Business Address",
-                "contact_information": "Contact Information (Primary Phone)",
-                "residence_address": "Residence Address",
-                "employment_details": "Employment Details",
-                "tax_residencies": "Tax Residencies",
-                "identification": "Identification",
-                "important": "Important",
-                "contact_information_primary_phone": "Contact Information (Primary Phone)",
-                "employment_type_description": "If you select 'Employed', you must include 'Income' as one of your sources of wealth in the Financial Information section.",
                 "second_account_holder": "Second Account Holder",
                 "first_account_holder": "First Account Holder",
                 "joint_account_type": "Joint Account Type",
@@ -440,68 +407,91 @@
                 "au_joint_account": "AU Joint Account",
                 "yes": "Yes",
                 "no": "No",
-                "united_states": "United States",
-                "germany": "Germany",
-                "japan": "Japan",
-                "united_kingdom": "United Kingdom",
-                "australia": "Australia",
-                "canada": "Canada",
-                "cash_account": "Cash Account",
-                "margin_account": "Margin Account",
-                "usd": "USD",
-                "eur": "EUR",
-                "gbp": "GBP",
-                "cad": "CAD",
-                "aud": "AUD",
-                "ssn": "SSN",
-                "ein": "EIN",
-                "non_us_national_id": "Non-US National ID",
-                "passport": "Passport",
-                "national_id": "National ID Card",
-                "license": "Driver License",
-                "secondary_contact_credentials": "Secondary Contact Credentials",
-                "add_trading_permission": "Add Trading Permission",
-                "security_questions": "Security Questions",
-                "security_questions_description": "Select three security questions and provide your answers",
-                "select_question": "Select question",
-                "answer_placeholder": "Type your answer",
-                "estimated_deposit": "Estimated Deposit",
-                "estimated_deposit_help": "Approximate amount you plan to deposit initially."
+                "secondary_contact_credentials": "Secondary Contact Credentials"
             },
             "regulatory": {
-                "title": "Regulatory Information",
-                "annual_net_income": "Annual Net Income",
-                "liquid_net_worth": "Liquid Net Worth",
+                "regulatory_information": "Regulatory Information",
+                "affiliation": "Is the applicant or any immediate family member who resides in the same household, registered as a broker-dealer or an employee, director or owner of a securities or commodities brokerage firm?",
+                "employee_pub_trade": "Are the owners of, or other non-owners listed on, the account Employees of a publicly traded company? ",
+                "control_pub_traded": "Do the owners of, or other non-owners listed on, the account Control a publicly traded company?",
+                "affiliation_no": "Applicant is not affiliated with a broker-dealer, director, or owner of a securities or commodities brokerage firm",
+                "control_pub_traded_no": "Applicant does not control a publicly traded company",
+                "employee_pub_trade_no": "Applicant is not an employee of a publicly traded company",
+                "affiliation_yes": "Applicant is affiliated with a broker-dealer, director, or owner of a securities or commodities brokerage firm",
+                "control_pub_traded_yes": "Applicant controls a publicly traded company",
+                "employee_pub_trade_yes": "Applicant is an employee of a publicly traded company"
+            },
+            "financial": {
+                "financial_information": "Financial Information",
+
                 "net_worth": "Net Worth",
+                "liquid_net_worth": "Liquid Net Worth",
+                "annual_net_income": "Annual Net Income",
+                "net_worth_help": "Include total assets minus total liabilities.",
+                "liquid_net_worth_help": "Include cash and assets easily converted to cash.",
+                "annual_net_income_help": "Your total income after taxes for the past year.",
+
                 "investment_objectives": "Investment Objectives",
+                "investment_objectives_description": "Select all that apply to this account",
                 "investment_objectives_list": {
                     "growth": "Growth",
                     "trading": "Trading",
                     "income": "Income",
                     "hedging": "Hedging"
                 },
-                "products_to_trade": "Products to Trade",
-                "amount_to_invest": "Amount to Invest",
-                "source_of_wealth": {
+
+                "investment_experience": "Investment Experience",
+                "asset_class": "Asset Class",
+                "years_trading": "Years Trading",
+                "trades_per_year": "Trades / Year",
+                "knowledge_level": "Knowledge Level",
+                "add_experience": "Add Experience",
+                
+                "source_of_wealth": "Source of Wealth",
+                "source_type": "Source Type",
+                "percentage": "Percentage",
+                "add_source": "Add Source",
+                "sources_of_wealth": {
                     "income": "Income",
                     "inheritance": "Inheritance",
-                    "investments": "Investments",
-                    "business": "Business",
-                    "property": "Property",
-                    "pension": "Pension",
-                    "other": "Other",
-                    "allowance": "Allowance",
                     "interest": "Interest",
                     "market_profit": "Market Profit",
-                    "disability": "Disability"
+                    "property": "Property",
+                    "pension": "Pension",
+                    "allowance": "Allowance",
+                    "disability": "Disability",
+                    "other": "Other"
                 },
+
+                "estimated_deposit": "Estimated Deposit",
+                "estimated_deposit_help": "Approximate amount you plan to deposit initially."
+            },
+            "account_setup": {
+                "account_setup": "Account Setup",
+                "base_currency": "Base Currency",
+                "trading_permissions": "Trading Permissions",
+                "trading_permissions_description": "Specify which markets and products you want permission to trade",
+                "primary_trading_market": "Primary Trading Market",
+                "primary_trading_markets": {
+                    "united_states": "United States",
+                    "canada": "Canada",
+                    "united_kingdom": "United Kingdom",
+                    "germany": "Germany",
+                    "japan": "Japan",
+                    "australia": "Australia"
+                },
+                "product_types": "Product Types",
                 "products": {
                     "bonds": "Bonds",
-                    "mutual_funds": "ETFs",
+                    "mutual_funds": "Mutual Funds",
                     "stocks": "Stocks",
                     "options": "Options",
                     "futures": "Futures"
-                }
+                },
+                "account_type": "Account Type",
+                "cash_account": "Cash Account",
+                "margin_account": "Margin Account",
+                "add_trading_permission": "Add Trading Permission"
             },
             "organization": {
                 "title": "Organization Information",
@@ -517,8 +507,8 @@
                 "website": "Website",
                 "legal_entity_id": "Legal Entity ID",
 
-                "purpose_list": {
-                    "title": "Purpose",
+                "purpose": "Purpose",
+                "purposes": {
                     "operating_business": "An operating business formed to offer goods or services to customers that was not formed for the purpose of trading or holding financial assets. Please select this option only for actual businesses, such as manufacturers, restaurants, oil companies, etc.",
                     "family_investment": "A personal or family investment vehicle beneficially owned by a single person or by a group of close family members who created the organization for the purpose of making financial investments for the owner and/or the owners close family.",
                     "proprietary_trading": "A closely-held proprietary trading company (or corporation or similar vehicle) created for the purpose of trading the company's proprietary capital. This includes any corporation or LLC where the members contribute their own capital to the LLC and the profits belong to the company.",
@@ -797,43 +787,6 @@
             "submit": "Apply for an account"
         }
     },
-    "dashboard": {
-        "risk": {
-            "profile": {
-                "title": {
-                    "conservative_a": "Conservative A",
-                    "conservative_b": "Conservative B",
-                    "moderate_a": "Moderate A",
-                    "moderate_b": "Moderate B",
-                    "moderate_c": "Moderate C",
-                    "aggressive_a": "Aggressive A",
-                    "aggressive_b": "Aggressive B",
-                    "aggressive_c": "Aggressive C"
-                },
-                "asset_allocation": {
-                    "title": "Asset Allocation",
-                    "table": {
-                        "header": {
-                            "asset_class": "Asset Class",
-                            "allocation": "Allocation",
-                            "risk_level": "Risk Level"
-                        },
-                        "rows": {
-                            "bonds_aaa_a": "Bonds AAA - A",
-                            "bonds_bbb": "Bonds BBB",
-                            "bonds_bb": "Bonds BB",
-                            "etfs": "Stocks (ETFs)",
-                            "most_conservative": "Most Conservative",
-                            "moderately_conservative": "Moderately Conservative",
-                            "moderate": "Moderate",
-                            "most_aggressive": "Most Aggressive"
-                        }
-                    }
-                },
-                "average_yield": "Estimated Average Annual Yield"
-            }
-        }
-    },
     "forms": {
         "search": "Search...",
         "no_results": "No results found.",
@@ -852,32 +805,6 @@
             "security_answer": "Please enter an answer for the security question.",
             "true_required": "Checkbox must be checked."
         }
-    },
-    "signin": {
-        "title": "Sign In",
-        "signin": "Sign in",
-        "signingIn": "Signing in...",
-        "email": "Email",
-        "password": "Password",
-        "register": {
-            "message": "Don't have an account? ",
-            "link": "Register"
-        },
-        "no_account_warning": "To use our web services you need to create an account."
-    },
-    "createAccount": {
-        "title": "Create an AGM Account",
-        "message": "Please fill out the form below to create an AGM account.",
-        "name": "Name",
-        "email": "Email",
-        "username": "Username",
-        "password": "Password",
-        "country": "Country",
-        "confirmPassword": "Confirm Password",
-        "createAccount": "Create Account",
-        "creating": "Creating account...",
-        "goBack": "Go back",
-        "goBackHome": "Go back home"
     },
     "ada": {
         "title": "Chat with ADA",
