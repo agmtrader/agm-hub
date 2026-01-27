@@ -14,19 +14,16 @@ export function getApplicationDefaults<Schema extends z.AnyZodObject>(schema: Sc
     
     return {
         ...defaults,
-        documents: [], // Start with empty documents, W8 forms will be generated dynamically
+        documents: [],
         accounts: [{
-            tradingPermissions: [{ country: '', product: '' }]
+            tradingPermissions: []
         }],
         customer: {
             accountHolder: {
             financialInformation: [{
-                sourcesOfWealth: [{ sourceType: '', percentage: 100 }],
+                sourcesOfWealth: [{ sourceType: 'SOW-IND-Income', percentage: 100 }],
                 investmentExperience: [{ assetClass: 'STK', yearsTrading: 1, tradesPerYear: 10, knowledgeLevel: 'Limited' }],
-                investmentObjectives: [],
-                netWorth: null,
-                liquidNetWorth: null,
-                annualNetIncome: null
+                investmentObjectives: []
             }]
             }
         }

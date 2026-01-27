@@ -9,7 +9,7 @@ import {
 import { application_schema } from '@/lib/entities/schemas/application'
 import { Application, InternalApplicationPayload } from '@/lib/entities/application';
 import { toast } from '@/hooks/use-toast'
-import PersonalInfoStep, { handleApplicationContact } from './PersonalInfoStep'
+import PersonalInfoStep from './PersonalInfoStep'
 import { CreateApplication, UpdateApplicationByID } from '@/utils/entities/application'
 import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
@@ -24,6 +24,7 @@ import { getApplicationDefaults } from '@/utils/form'
 import ProgressMeter from './ProgressMeter'
 import { FinancialRange } from '@/lib/entities/account'
 import { GetFinancialRanges } from '@/utils/entities/account'
+import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
 
 export enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -73,6 +74,58 @@ const IBKRApplicationForm = () => {
 
     fetchFinancialRanges();
   }, []);
+
+
+  async function handleApplicationContact(values: Application) {
+    let contact_id: string | null = null;
+    const contacts: { name: string; email: string }[] = [];
+    const { customer } = values;
+
+    switch (customer.type) {
+      case 'INDIVIDUAL': {
+        const holder = customer.accountHolder?.accountHolderDetails?.[0];
+        if (holder?.email) {
+          contacts.push({
+            name: `${holder.name.first} ${holder.name.last}`.trim(),
+            email: holder.email,
+          });
+        }
+        break;
+      }
+      case 'JOINT': {
+        const first = customer.jointHolders?.firstHolderDetails?.[0];
+        const second = customer.jointHolders?.secondHolderDetails?.[0];
+        if (first?.email) {
+          contacts.push({ name: `${first.name.first} ${first.name.last}`.trim(), email: first.email });
+        }
+        if (second?.email) {
+          contacts.push({ name: `${second.name.first} ${second.name.last}`.trim(), email: second.email });
+        }
+        break;
+      }
+      case 'ORG': {
+        const individuals = customer.organization?.associatedEntities?.associatedIndividuals || [];
+        individuals.forEach((ind) => {
+          if (ind?.email) {
+            contacts.push({ name: `${ind.name.first} ${ind.name.last}`.trim(), email: ind.email });
+          }
+        });
+        break;
+      }
+    }
+    for (const c of contacts) {
+      if (!c.email) continue;
+      let existingContact = await ReadContactByEmail(c.email);
+      if (!existingContact) {
+        const createResp = await CreateContact({ name: c.name, email: c.email });
+        existingContact = { id: createResp.id } as any;
+      }
+      if (!contact_id && existingContact?.id) {
+        contact_id = existingContact.id;
+      }
+    }
+    return contact_id;
+  }
 
   const sanitizeDocuments = (values: Application) => {
     const sanitizedDocuments = (values.documents || []).map((doc: any) => {

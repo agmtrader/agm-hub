@@ -1,5 +1,5 @@
 import React from 'react';
-import { UseFormReturn, useFieldArray } from 'react-hook-form';
+import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
 import { Application } from '@/lib/entities/application';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -35,12 +35,15 @@ const FinancialInfoStep = ({
 }: FinancialInfoStepProps) => {
 
   const { t } = useTranslationProvider();
-  const { formState } = form;
   const accountType = form.watch('customer.type');
-  const tradingPermissions = form.watch('accounts.0.tradingPermissions') || [];
+  const tradingPermissions =
+    useWatch({
+      control: form.control,
+      name: 'accounts.0.tradingPermissions',
+    }) || [];
 
 
-  console.log(form.getValues('customer'));
+  console.log(form.getValues('accounts'));
 
   const TRADING_COUNTRIES = [
     "UNITED STATES",
@@ -80,6 +83,26 @@ const FinancialInfoStep = ({
         return 'customer.accountHolder.financialInformation';
     }
   }, [accountType]);
+
+  React.useEffect(() => {
+    const sourcesOfWealth = form.getValues(`${basePath}.0.sourcesOfWealth` as any);
+    if (!sourcesOfWealth || sourcesOfWealth.length === 0) {
+      form.setValue(
+        `${basePath}.0.sourcesOfWealth` as any,
+        [{ sourceType: 'SOW-IND-Income', percentage: 100 }],
+        { shouldDirty: false, shouldTouch: false }
+      );
+    }
+
+    const investmentExperience = form.getValues(`${basePath}.0.investmentExperience` as any);
+    if (!investmentExperience || investmentExperience.length === 0) {
+      form.setValue(
+        `${basePath}.0.investmentExperience` as any,
+        [{ assetClass: 'STK', yearsTrading: 3, tradesPerYear: 25, knowledgeLevel: 'Good' }],
+        { shouldDirty: false, shouldTouch: false }
+      );
+    }
+  }, [basePath, form]);
 
   const formatRangeLabel = (range: FinancialRange) => {
     const lower = Number(range.lowerBound).toLocaleString();
@@ -348,6 +371,9 @@ const FinancialInfoStep = ({
             <h4 className="text-lg font-semibold">
               {t('apply.account.account_setup.trading_permissions')}
             </h4>
+            {tradingPermissions.length === 0 && (
+              <p className="text-md text-primary font-medium">Required</p>
+            )}
           </div>
           <p className="text-subtitle text-sm mb-4">
             {t('apply.account.account_setup.trading_permissions_description')}

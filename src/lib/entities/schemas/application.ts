@@ -221,20 +221,20 @@ export const source_of_wealth_schema = z.object({
 });
 
 export const financial_information_schema = z.object({
-  investmentExperience: z.array(investment_experience_schema).default([]),
-  investmentObjectives: z.array(z.string()).default([]),
-  sourcesOfWealth: z.array(source_of_wealth_schema).default([]),
+  investmentExperience: z.array(investment_experience_schema).min(1, { message: 'Required' }).default([]),
+  investmentObjectives: z.array(z.string()).min(1, { message: 'Required' }).default([]),
+  sourcesOfWealth: z.array(source_of_wealth_schema).min(1, { message: 'Required' }).default([]),
   netWorth: z.preprocess(
     (val) => (typeof val === 'number' ? String(val) : val),
-    z.string().nullable().default(null)
+    z.string({errorMap: () => ({ message: 'Required' })})
   ),
   liquidNetWorth: z.preprocess(
     (val) => (typeof val === 'number' ? String(val) : val),
-    z.string().nullable().default(null)
+    z.string({errorMap: () => ({ message: 'Required' })})
   ),
   annualNetIncome: z.preprocess(
     (val) => (typeof val === 'number' ? String(val) : val),
-    z.string().nullable().default(null)
+    z.string({errorMap: () => ({ message: 'Required' })})
   ),
   taxBracket: z.string().optional().nullable(),
   accreditedInvestor: z.boolean().optional().nullable(),

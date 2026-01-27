@@ -22,7 +22,6 @@ import { format as formatDateFns } from "date-fns";
 import { SecurityQuestion } from '@/lib/entities/security_question';
 import { GetBusinessAndOccupation, GetSecurityQuestions } from '@/utils/entities/account';
 import StatesFormField from "@/components/ui/StatesFormField";
-import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact';
 import { BusinessAndOccupation } from '@/lib/entities/account';
 
 const generateUUID = () => {
@@ -33,57 +32,6 @@ const generateUUID = () => {
   });
 };
 
-export async function handleApplicationContact(values: Application) {
-  let contact_id: string | null = null;
-  const contacts: { name: string; email: string }[] = [];
-  const { customer } = values;
-
-  switch (customer.type) {
-    case 'INDIVIDUAL': {
-      const holder = customer.accountHolder?.accountHolderDetails?.[0];
-      if (holder?.email) {
-        contacts.push({
-          name: `${holder.name.first} ${holder.name.last}`.trim(),
-          email: holder.email,
-        });
-      }
-      break;
-    }
-    case 'JOINT': {
-      const first = customer.jointHolders?.firstHolderDetails?.[0];
-      const second = customer.jointHolders?.secondHolderDetails?.[0];
-      if (first?.email) {
-        contacts.push({ name: `${first.name.first} ${first.name.last}`.trim(), email: first.email });
-      }
-      if (second?.email) {
-        contacts.push({ name: `${second.name.first} ${second.name.last}`.trim(), email: second.email });
-      }
-      break;
-    }
-    case 'ORG': {
-      const individuals = customer.organization?.associatedEntities?.associatedIndividuals || [];
-      individuals.forEach((ind) => {
-        if (ind?.email) {
-          contacts.push({ name: `${ind.name.first} ${ind.name.last}`.trim(), email: ind.email });
-        }
-      });
-      break;
-    }
-  }
-  for (const c of contacts) {
-    if (!c.email) continue;
-    let existingContact = await ReadContactByEmail(c.email);
-    if (!existingContact) {
-      const createResp = await CreateContact({ name: c.name, email: c.email });
-      // CreateContact returns IDResponse
-      existingContact = { id: createResp.id } as any;
-    }
-    if (!contact_id && existingContact?.id) {
-      contact_id = existingContact.id;
-    }
-  }
-  return contact_id;
-}
 
 interface PersonalInfoStepProps {
   form: UseFormReturn<Application>;
