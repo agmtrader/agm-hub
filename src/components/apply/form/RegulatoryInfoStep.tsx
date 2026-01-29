@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import CountriesFormField from '@/components/ui/CountriesFormField';
 import { Input } from '@/components/ui/input';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { regulatory_codes as getRegulatoryCodes } from '@/lib/public/form';
+import { regulatory_codes } from '@/lib/public/form';
 
 interface RegulatoryInfoStepProps {
   form: UseFormReturn<Application>;
@@ -17,7 +17,7 @@ const RegulatoryInfoStep = ({ form }: RegulatoryInfoStepProps) => {
   
   const { t } = useTranslationProvider();
   const accountType = form.watch('customer.type');
-  const regulatoryOptions = getRegulatoryCodes(t);
+  const regulatoryOptions = regulatory_codes(t);
 
   // Determine the correct basePath depending on account type
   const basePath = React.useMemo(() => {

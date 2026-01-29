@@ -17,8 +17,8 @@ const ProgressMeter = ({form, currentStep}: Props) => {
         { name: t('apply.account.header.steps.personal_info'), step: FormStep.PERSONAL_INFO },
         { name: t('apply.account.header.steps.financial_info'), step: FormStep.FINANCIAL_INFO },
         { name: t('apply.account.header.steps.regulatory_info'), step: FormStep.REGULATORY_INFO },
-        { name: t('apply.account.header.steps.agreements'), step: FormStep.AGREEMENTS },
         { name: t('apply.account.header.steps.documents'), step: FormStep.DOCUMENTS },
+        { name: t('apply.account.header.steps.agreements'), step: FormStep.AGREEMENTS },
         { name: t('apply.account.header.steps.complete'), step: FormStep.SUCCESS },
     ];
 

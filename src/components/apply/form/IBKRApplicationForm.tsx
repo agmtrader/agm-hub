@@ -14,7 +14,6 @@ import { CreateApplication, UpdateApplicationByID } from '@/utils/entities/appli
 import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
-import LoaderButton from '@/components/misc/LoaderButton'
 import ApplicationSuccess from './ApplicationSuccess'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import FinancialInfoStep from './FinancialInfoStep'
@@ -22,17 +21,18 @@ import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AgreementsStep from './AgreementsStep'
 import { getApplicationDefaults } from '@/utils/form'
 import ProgressMeter from './ProgressMeter'
-import { FinancialRange } from '@/lib/entities/account'
-import { GetFinancialRanges } from '@/utils/entities/account'
+import { BusinessAndOccupation, FinancialRange, FormDetails } from '@/lib/entities/account'
+import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/entities/account'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
+import { test } from './samples'
 
 export enum FormStep {
   ACCOUNT_TYPE = 0,
   PERSONAL_INFO = 1,
   FINANCIAL_INFO = 2,
   REGULATORY_INFO = 3,
-  AGREEMENTS = 4,
-  DOCUMENTS = 5,
+  DOCUMENTS = 4,
+  AGREEMENTS = 5,
   SUCCESS = 6,
 }
 
@@ -43,38 +43,46 @@ const IBKRApplicationForm = () => {
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
-  const [securityQA, setSecurityQA] = useState<Record<string, string>>({});
-  const [estimatedDeposit, setEstimatedDeposit] = useState<number | null>(null);
-  const [userSignature, setUserSignature] = useState<string | null>(null);
+
   const [financialRanges, setFinancialRanges] = useState<FinancialRange[]>([]);
-  const [financialRangesLoading, setFinancialRangesLoading] = useState(false);
-  const [financialRangesError, setFinancialRangesError] = useState<string | null>(null);
+  const [businessAndOccupations, setBusinessAndOccupations] = useState<BusinessAndOccupation[]>([]);
+  const [estimatedDeposit, setEstimatedDeposit] = useState<number | null>(null);
   const [estimatedDepositError, setEstimatedDepositError] = useState<string | null>(null);
+
+  const [agreementForms, setAgreementForms] = useState<FormDetails[] | null>(null);
+  const [userSignature, setUserSignature] = useState<string | null>(null);
+  
+  const agreementFormNumbers = [
+    '3230', '3024', '4070', '3044', '3089', '4304', '4404', '5013', '5001', '4024', '9130', '3074', '3203',
+    '3070', '3094', '3071', '4587', '2192', '2191', '3077', '4399', '4684', '2109', '4016', '4289',
+  ];
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: test,
     mode: 'onChange',
     shouldUnregister: false,
   });
 
   useEffect(() => {
-    const fetchFinancialRanges = async () => {
+    const fetchData = async () => {
       try {
-        setFinancialRangesLoading(true);
-        const response = await GetFinancialRanges();
-        setFinancialRanges(response?.jsonData ?? []);
-      } catch (error) {
-        console.error('Error fetching financial ranges', error);
-        setFinancialRangesError('Failed to load financial ranges');
-      } finally {
-        setFinancialRangesLoading(false);
+        const [financialRangesResult, businessResult, agreementsResult] = await Promise.all([
+          GetFinancialRanges(),
+          GetBusinessAndOccupation(),
+          GetForms(agreementFormNumbers, 'br'),
+        ]);
+
+        setFinancialRanges(financialRangesResult?.jsonData ?? []);  
+        setAgreementForms(agreementsResult?.formDetails ?? null);
+        setBusinessAndOccupations(businessResult?.jsonData ?? []);
+
+      } catch {
+        toast({ title: 'Error', description: 'Failed to load financial ranges, business and occupations, and agreements.', variant: 'destructive' }); 
       }
     };
-
-    fetchFinancialRanges();
+    fetchData();
   }, []);
-
 
   async function handleApplicationContact(values: Application) {
     let contact_id: string | null = null;
@@ -126,14 +134,6 @@ const IBKRApplicationForm = () => {
     }
     return contact_id;
   }
-
-  const sanitizeDocuments = (values: Application) => {
-    const sanitizedDocuments = (values.documents || []).map((doc: any) => {
-      const { holderId, ...rest } = doc;
-      return rest;
-    });
-    return { ...values, documents: sanitizedDocuments };
-  };
 
   const sanitizeEmploymentDetails = (application: Application): Application => {
     const clone = structuredClone(application);
@@ -235,11 +235,17 @@ const IBKRApplicationForm = () => {
   };
   
   function sanitizeApplication(application: Application): Application {
-    return sanitizeAccents(sanitizeDocuments(sanitizeEmploymentDetails(sanitizeMailingAddress(sanitizeIdentificationType(application)))));
+    return sanitizeAccents(sanitizeEmploymentDetails(sanitizeMailingAddress(sanitizeIdentificationType(application))));
   }
 
   const handlePreviousStep = () => {
     const prev = currentStep - 1;
+    if (prev === FormStep.ACCOUNT_TYPE) {
+      form.reset(getApplicationDefaults(application_schema));
+      setEstimatedDeposit(null);
+      setEstimatedDepositError(null);
+      setUserSignature(null);
+    }
     setCurrentStep(prev as FormStep);
   };
 
@@ -308,6 +314,7 @@ const IBKRApplicationForm = () => {
 
       if (fieldsToValidate.length > 0) {
         isValid = await form.trigger(fieldsToValidate);
+        console.log('isValid', isValid);
       } else if (currentStep === FormStep.AGREEMENTS) {
         isValid = true;
       }
@@ -328,6 +335,29 @@ const IBKRApplicationForm = () => {
         description: 'Please correct the highlighted errors before continuing.',
         variant: 'destructive'
       });
+      return;
+    }
+
+    if (currentStep === FormStep.AGREEMENTS) {
+      try {
+        setIsSubmitting(true);
+        await saveProgress();
+        toast({
+          title: "Application Submitted",
+          description: "Your IBKR application has been successfully submitted.",
+          variant: "success"
+        });
+        setCurrentStep(FormStep.SUCCESS);
+        setApplicationId(null);
+      } catch (error) {
+        toast({
+          title: "Submission Failed",
+          description: "There was an error submitting your application. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
       return;
     }
 
@@ -361,7 +391,7 @@ const IBKRApplicationForm = () => {
     }
 
     let status = 'Started';
-    if (currentStep === FormStep.DOCUMENTS) {
+    if (currentStep === FormStep.AGREEMENTS) {
       status = 'Completed';
     }
 
@@ -375,7 +405,7 @@ const IBKRApplicationForm = () => {
         date_sent_to_ibkr: null,
         status,
         contact_id: contact_id,
-        security_questions: securityQA,
+        security_questions: null,
         estimated_deposit: estimatedDeposit ?? null,
         risk_profile_id: null,
       };
@@ -383,9 +413,6 @@ const IBKRApplicationForm = () => {
       setApplicationId(createResp.id);
     } else {
       const updatePayload:any = { application: sanitizedValues, status: status };
-      if (Object.keys(securityQA).length) {
-        updatePayload.security_questions = securityQA;
-      }
       if (estimatedDeposit !== null) {
         updatePayload.estimated_deposit = estimatedDeposit;
       }
@@ -393,33 +420,6 @@ const IBKRApplicationForm = () => {
         updatePayload.contact_id = contact_id;
       }
       await UpdateApplicationByID(applicationId, updatePayload);
-    }
-  }
-
-  async function onSubmit(_values: Application) {
-
-    if (currentStep !== FormStep.DOCUMENTS) return;
-
-    try {
-      setIsSubmitting(true);
-      await saveProgress();
-
-      toast({
-        title: "Application Submitted",
-        description: "Your IBKR application has been successfully submitted.",
-        variant: "success"
-      });
-
-      setCurrentStep(FormStep.SUCCESS);
-      setApplicationId(null);
-    } catch (error) {
-      toast({
-        title: "Submission Failed",
-        description: "There was an error submitting your application. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -434,7 +434,7 @@ const IBKRApplicationForm = () => {
       <ProgressMeter form={form} currentStep={currentStep} />
       <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(() => handleNextStep())} className="space-y-8">
             {currentStep === FormStep.ACCOUNT_TYPE && (
               <>
                 <AccountTypeStep form={form} />
@@ -452,7 +452,7 @@ const IBKRApplicationForm = () => {
             )}
             {currentStep === FormStep.PERSONAL_INFO && (
               <>
-                <PersonalInfoStep form={form} onSecurityQuestionsChange={setSecurityQA} />
+                <PersonalInfoStep form={form} businessAndOccupations={businessAndOccupations} />
                 <div className="flex justify-between">
                   <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
                   <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>
@@ -470,8 +470,6 @@ const IBKRApplicationForm = () => {
                   }}
                   estimatedDeposit={estimatedDeposit}
                   financialRanges={financialRanges}
-                  financialRangesLoading={financialRangesLoading}
-                  financialRangesError={financialRangesError}
                   estimatedDepositError={estimatedDepositError}
                 />
                 <div className="flex justify-between">
@@ -491,16 +489,6 @@ const IBKRApplicationForm = () => {
               </div>
             )}
 
-            {currentStep === FormStep.AGREEMENTS && (
-              <AgreementsStep
-                form={form}
-                userSignature={userSignature}
-                onSignatureChange={setUserSignature}
-                onPrevious={handlePreviousStep}
-                onNext={handleNextStep}
-              />
-            )}
-
             {currentStep === FormStep.DOCUMENTS && (
               <>
                 <DocumentsStep form={form} />
@@ -512,9 +500,23 @@ const IBKRApplicationForm = () => {
                   >
                     Previous
                   </Button>
-                  <LoaderButton onClick={form.handleSubmit(onSubmit)} isLoading={isSubmitting} text="Submit Application"/>
+                  <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">
+                    Next
+                  </Button>
                 </div>
               </>
+            )}
+
+            {currentStep === FormStep.AGREEMENTS && (
+              <AgreementsStep
+                form={form}
+                forms={agreementForms}
+                userSignature={userSignature}
+                onSignatureChange={setUserSignature}
+                onPrevious={handlePreviousStep}
+                onNext={form.handleSubmit(() => handleNextStep())}
+                isSubmitting={isSubmitting}
+              />
             )}
           </form>
         </Form>

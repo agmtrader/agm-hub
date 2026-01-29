@@ -279,6 +279,9 @@ export const identification_schema = z.object({
   passport: z.string().optional().nullable(),
   nationalCard: z.string().optional().nullable(),
   driversLicense: z.string().optional().nullable()
+}).refine((data) => data.passport || data.nationalCard || data.driversLicense, {
+  message: "Required",
+  path: ["passport"],
 });
 
 export const tax_residency_schema = z.object({

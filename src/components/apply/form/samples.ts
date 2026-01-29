@@ -157,3 +157,179 @@ export const individual_form: Application = {
     "paperAccount": null,
     "documents": []
 }
+
+
+export const test:Application = {
+    "customer": {
+        "accountHolder": {
+            "accountHolderDetails": [
+                {
+                    "w8Ben": {
+                        "localTaxForms": [],
+                        "name": "Andres Aguilar",
+                        "foreignTaxId": "118490741",
+                        "tinOrExplanationRequired": true,
+                        "part29ACountry": "N/A",
+                        "cert": true,
+                        "signatureType": "Electronic",
+                        "blankForm": true,
+                        "taxFormFile": "Form5001.pdf",
+                        "electronicFormat": true
+                    },
+                    "name": {
+                        "first": "Andres",
+                        "last": "Aguilar"
+                    },
+                    "email": "aguilarcarboni@gmail.com",
+                    "dateOfBirth": "2026-01-15",
+                    "countryOfBirth": "CRI",
+                    "maritalStatus": "M",
+                    "numDependents": 0,
+                    "residenceAddress": {
+                        "street1": "Calle San Miguel",
+                        "country": "CRI",
+                        "state": "CR-SJ",
+                        "city": "San Jose",
+                        "postalCode": "30301"
+                    },
+                    "sameMailAddress": true,
+                    "phones": [
+                        {
+                            "type": "Mobile",
+                            "country": "CRI",
+                            "number": "83027366"
+                        }
+                    ],
+                    "identification": {
+                        "expirationDate": "2026-01-21",
+                        "issuingCountry": "CRI",
+                        "citizenship": "CRI",
+                    },
+                    "employmentType": "UNEMPLOYED",
+                    "employmentDetails": {
+                        "description": null
+                    },
+                    "externalId": "cd45acf9-2528-484b-9d9d-65a63c290e40",
+                    "taxResidencies": [
+                        {
+                            "country": "CRI",
+                            "tinType": "NonUS_NationalId",
+                            "tin": "118490741"
+                        }
+                    ],
+                    "mailingAddress": {
+                        "street1": "Calle San Miguel",
+                        "country": "CRI",
+                        "state": "CR-SJ",
+                        "city": "San Jose",
+                        "postalCode": "30301"
+                    }
+                }
+            ],
+            "financialInformation": [
+                {
+                    "sourcesOfWealth": [
+                        {
+                            "sourceType": "SOW-IND-Income",
+                            "percentage": 100
+                        }
+                    ],
+                    "investmentExperience": [
+                        {
+                            "assetClass": "STK",
+                            "yearsTrading": 1,
+                            "tradesPerYear": 10,
+                            "knowledgeLevel": "Limited"
+                        }
+                    ],
+                    "investmentObjectives": [
+                        "Growth"
+                    ],
+                    "netWorth": "7",
+                    "liquidNetWorth": "7",
+                    "annualNetIncome": "6"
+                }
+            ],
+            "regulatoryInformation": [
+                {
+                    "regulatoryDetails": [
+                        {
+                            "code": "AFFILIATION",
+                            "status": false,
+                            "details": "Affiliated with Interactive Brokers"
+                        },
+                        {
+                            "code": "EmployeePubTrade",
+                            "status": false,
+                            "details": "Employee is not trading publicly"
+                        },
+                        {
+                            "code": "ControlPubTraded",
+                            "status": false,
+                            "details": "Controlled trading is not allowed"
+                        }
+                    ]
+                }
+            ]
+        },
+        "type": "INDIVIDUAL",
+        "externalId": "cd45acf9-2528-484b-9d9d-65a63c290e40",
+        "prefix": "aaguil",
+        "email": "aguilarcarboni@gmail.com",
+        "mdStatusNonPro": true,
+        "meetAmlStandard": "true",
+        "directTradingAccess": true,
+        "legalResidenceCountry": "CRI"
+    },
+    "accounts": [
+        {
+            "tradingPermissions": [
+                {
+                    "country": "UNITED STATES",
+                    "product": "BONDS"
+                },
+                {
+                    "country": "CANADA",
+                    "product": "BONDS"
+                },
+                {
+                    "country": "UNITED KINGDOM",
+                    "product": "BONDS"
+                },
+                {
+                    "country": "GERMANY",
+                    "product": "BONDS"
+                },
+                {
+                    "country": "JAPAN",
+                    "product": "BONDS"
+                },
+                {
+                    "country": "AUSTRALIA",
+                    "product": "BONDS"
+                }
+            ],
+            "multiCurrency": true,
+            "margin": "Cash",
+            "externalId": "cd45acf9-2528-484b-9d9d-65a63c290e40",
+            "baseCurrency": "USD",
+            "investmentObjectives": [
+                "Growth"
+            ]
+        }
+    ],
+    "users": [
+        {
+            "externalUserId": "cd45acf9-2528-484b-9d9d-65a63c290e40",
+            "externalIndividualId": "cd45acf9-2528-484b-9d9d-65a63c290e40",
+            "prefix": "aaguil"
+        }
+    ],
+    "documents": [],
+    "additionalAccounts": null,
+    "inputLanguage": null,
+    "translation": null,
+    "paperAccount": null,
+    "masterAccountId": null,
+    "id": null
+}

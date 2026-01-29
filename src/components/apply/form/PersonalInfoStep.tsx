@@ -12,15 +12,12 @@ import {
 import CountriesFormField from "@/components/ui/CountriesFormField";
 import { Application } from "@/lib/entities/application";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { phone_types, id_type, marital_status, employment_status, tin_types, account_types } from '@/lib/public/form';
+import { phone_types, id_type, marital_status, employment_status, account_types } from '@/lib/public/form';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { createW8FormDocument } from '@/utils/form';
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { format as formatDateFns } from "date-fns";
-import { SecurityQuestion } from '@/lib/entities/security_question';
-import { GetBusinessAndOccupation, GetSecurityQuestions } from '@/utils/entities/account';
 import StatesFormField from "@/components/ui/StatesFormField";
 import { BusinessAndOccupation } from '@/lib/entities/account';
 
@@ -32,19 +29,15 @@ const generateUUID = () => {
   });
 };
 
-
 interface PersonalInfoStepProps {
   form: UseFormReturn<Application>;
   onSecurityQuestionsChange?: (qa: Record<string, string>) => void;
+  businessAndOccupations: BusinessAndOccupation[];
 }
 
-const PersonalInfoStep = ({ form, onSecurityQuestionsChange }: PersonalInfoStepProps) => {
+const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProps) => {
 
   const { t } = useTranslationProvider();
-
-  const [questions, setQuestions] = React.useState<SecurityQuestion[]>([]);
-  const [businessAndOccupations, setBusinessAndOccupations] = React.useState<BusinessAndOccupation[]>([]);
-  const [selectedQA, setSelectedQA] = React.useState<Record<string, string>>({});
 
   const externalIdRef = useRef<string>(generateUUID())
   const secondHolderIdRef = useRef<string>(generateUUID())
@@ -60,60 +53,97 @@ const PersonalInfoStep = ({ form, onSecurityQuestionsChange }: PersonalInfoStepP
     ORG: ["customer.organization.associatedEntities.associatedIndividuals.0"],
   };
 
-  const getIdNumberForPath = (basePath: string) => {
-    const identification = form.getValues(`${basePath}.identification` as any) || {};
-    return (
-      identification.passport ??
-      identification.driversLicense ??
-      identification.nationalCard ??
-      ""
-    );
+  // Base Syncing
+  const syncDefaults = (path: string, value: unknown) => {
+    if (form.getValues(path as any) !== value) {
+      form.setValue(path as any, value, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+    }
   };
 
-  const syncTaxResidencyFields = (
-    paths: string[],
-    { syncTin, syncCountry }: { syncTin?: boolean; syncCountry?: boolean } = {}
+  const syncIfEmpty = (path: string, value: unknown) => {
+    const currentValue = form.getValues(path as any);
+    if (currentValue === undefined || currentValue === null || currentValue === "") {
+      form.setValue(path as any, value, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+    }
+  };
+
+  // External IDs are used to identify the account holder in IBKR, and need to be unique per person. This function sets the unique external IDs for the customer, account, account holders, and users.
+  // All accounts have a primary holder, so the external ID for the customer, account, first user and first account holder are the same.
+  const syncExternalIds = (
+    currentAccountType?: string,
+    value?: Application,
+    name?: string
   ) => {
-    const legalCountry = form.getValues("customer.legalResidenceCountry" as any);
+    syncIfEmpty("customer.externalId", externalIdRef.current);
+    syncIfEmpty("accounts.0.externalId", externalIdRef.current);
+    syncIfEmpty("users.0.externalUserId", externalIdRef.current);
+    syncIfEmpty("users.0.externalIndividualId", externalIdRef.current);
 
-    paths.forEach((path) => {
-      const countryPath = `${path}.taxResidencies.0.country` as any;
-      if (
-        syncCountry &&
-        legalCountry &&
-        form.getValues(countryPath) !== legalCountry
-      ) {
-        form.setValue(countryPath, legalCountry, {
-          shouldDirty: false,
-          shouldTouch: false,
-          shouldValidate: false,
-        });
-      }
+    if (currentAccountType === "INDIVIDUAL") {
+      syncIfEmpty(
+        "customer.accountHolder.accountHolderDetails.0.externalId",
+        externalIdRef.current
+      );
+    } else if (currentAccountType === "JOINT") {
+      syncIfEmpty(
+        "customer.jointHolders.firstHolderDetails.0.externalId",
+        externalIdRef.current
+      );
+      syncIfEmpty(
+        "customer.jointHolders.secondHolderDetails.0.externalId",
+        secondHolderIdRef.current
+      );
+      syncIfEmpty("users.1.externalUserId", secondHolderIdRef.current);
+      syncIfEmpty("users.1.externalIndividualId", secondHolderIdRef.current);
+    } else if (currentAccountType === "ORG") {
+      syncIfEmpty(
+        "customer.organization.associatedEntities.associatedIndividuals.0.externalId",
+        externalIdRef.current
+      );
+    }
 
-      if (syncTin) {
-        const idNumber = getIdNumberForPath(path);
-        const tinPath = `${path}.taxResidencies.0.tin` as any;
-        if (form.getValues(tinPath) !== idNumber) {
-          form.setValue(tinPath, idNumber, {
-            shouldDirty: false,
-            shouldTouch: false,
-            shouldValidate: false,
-          });
-        }
+    if (currentAccountType === "JOINT") {
+      const firstHolderExternalId = form.getValues(
+        "customer.jointHolders.firstHolderDetails.0.externalId"
+      );
+      if (firstHolderExternalId) {
+        syncDefaults("customer.externalId", firstHolderExternalId);
+        syncDefaults("accounts.0.externalId", firstHolderExternalId);
       }
+    } else {
+      if ((form.getValues("users") || []).length > 1) {
+        form.setValue("users", (form.getValues("users") as any[]).slice(0, 1));
+      }
+    }
 
-      const tinTypePath = `${path}.taxResidencies.0.tinType` as any;
-      if (form.getValues(tinTypePath) !== "NonUS_NationalId") {
-        form.setValue(tinTypePath, "NonUS_NationalId", {
-          shouldDirty: false,
-          shouldTouch: false,
-          shouldValidate: false,
-        });
-      }
-    });
+    if (!name || !name.startsWith("customer.jointHolders")) return;
+
+    const firstId = value?.customer?.jointHolders?.firstHolderDetails?.[0]?.externalId;
+    const secondId = value?.customer?.jointHolders?.secondHolderDetails?.[0]?.externalId;
+
+    if (firstId) {
+      syncDefaults("users.0.externalUserId", firstId);
+      syncDefaults("users.0.externalIndividualId", firstId);
+      syncDefaults("customer.externalId", firstId);
+      syncDefaults("accounts.0.externalId", firstId);
+    }
+
+    if (secondId) {
+      syncDefaults("users.1.externalUserId", secondId);
+      syncDefaults("users.1.externalIndividualId", secondId);
+    }
   };
 
-  const syncPrimaryPrefixFromName = (basePath: string) => {
+  // Prefixes are used to identify the account holder in IBKR, and need to be set to all users and the customer.
+  const applyPrefixToAccountHolder = (basePath: string) => {
     const first = (form.getValues(`${basePath}.name.first` as any) || "").trim();
     const last = (form.getValues(`${basePath}.name.last` as any) || "").trim();
     if (!first || !last) return;
@@ -136,517 +166,566 @@ const PersonalInfoStep = ({ form, onSecurityQuestionsChange }: PersonalInfoStepP
     }
   };
 
-  // Simplified form watchers for essential syncing
-  useEffect(() => {
-    const subscription = form.watch((value, { name }) => {
-      
-      // Sync customer prefix with user prefix
-      if (name === "customer.prefix") {
-        const customerPrefix = value.customer?.prefix;
-        if (customerPrefix) {
-          form.setValue("users.0.prefix", customerPrefix);
+  const syncPrefixes = (
+    currentAccountType?: string,
+    value?: Application,
+    name?: string
+  ) => {
+    const customerPrefix = value?.customer?.prefix ?? form.getValues("customer.prefix") ?? "";
+    if (customerPrefix) {
+      syncIfEmpty("users.0.prefix", customerPrefix);
+      if (currentAccountType === "JOINT") {
+        syncIfEmpty("users.1.prefix", customerPrefix);
+      }
+    }
+
+    if (!name) return;
+
+    if (name === "customer.prefix") {
+      if (customerPrefix) {
+        syncDefaults("users.0.prefix", customerPrefix);
+        if (currentAccountType === "JOINT") {
+          syncIfEmpty("users.1.prefix", customerPrefix);
         }
       }
+      return;
+    }
 
+    if (currentAccountType === "INDIVIDUAL") {
       if (
-        name === "customer.accountHolder.accountHolderDetails.0.email" ||
-        name === "customer.jointHolders.firstHolderDetails.0.email" ||
-        name === "customer.organization.associatedEntities.associatedIndividuals.0.email"
+        name.includes("customer.accountHolder.accountHolderDetails.0.name.first") ||
+        name.includes("customer.accountHolder.accountHolderDetails.0.name.last")
       ) {
-        const email =
-          name === "customer.accountHolder.accountHolderDetails.0.email"
-            ? value.customer?.accountHolder?.accountHolderDetails?.[0]?.email
-            : name === "customer.jointHolders.firstHolderDetails.0.email"
-              ? value.customer?.jointHolders?.firstHolderDetails?.[0]?.email
-              : value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.email;
-
-        if (email) {
-          form.setValue("customer.email", email);
-        }
+        applyPrefixToAccountHolder("customer.accountHolder.accountHolderDetails.0");
       }
-      
-      // Sync business description for organizations
-      if (name === "customer.organization.identifications.0.businessDescription") {
-        const businessDescription = value.customer?.organization?.identifications?.[0]?.businessDescription;
-        if (businessDescription) {
-          form.setValue("customer.organization.accountSupport.businessDescription", businessDescription);
-        }
+    } else if (currentAccountType === "JOINT") {
+      if (
+        name.includes("customer.jointHolders.firstHolderDetails.0.name.first") ||
+        name.includes("customer.jointHolders.firstHolderDetails.0.name.last")
+      ) {
+        applyPrefixToAccountHolder("customer.jointHolders.firstHolderDetails.0");
       }
-      
-      // Sync investment objectives between account setup and financial information
-      if (name && name.startsWith("accounts.0.investmentObjectives")) {
-        const invObjectives = (value.accounts?.[0]?.investmentObjectives || []).filter(Boolean) as string[];
-        const acctType = value.customer?.type;
-        if (acctType === 'INDIVIDUAL') {
-          form.setValue("customer.accountHolder.financialInformation.0.investmentObjectives", invObjectives);
-        } else if (acctType === 'JOINT') {
-          form.setValue("customer.jointHolders.financialInformation.0.investmentObjectives", invObjectives);
-        } else if (acctType === 'ORG') {
-          form.setValue("customer.organization.financialInformation.0.investmentObjectives", invObjectives);
-        }
-      }
-
-      // Update W8 documents when names change
-      const accountType = value.customer?.type;
-      let shouldUpdateW8Documents = false;
-      const holderPaths = taxResidencyPathsByType[accountType ?? ""] ?? [];
-      
-      // Helper function to update W8Ben form while preserving all existing fields
-      const updateW8BenForm = (basePath: string, firstName?: string, lastName?: string, tin?: string) => {
-        const currentW8Ben = form.getValues(`${basePath}.w8Ben` as any);
-        const updatedW8Ben = { ...currentW8Ben };
-        
-        if (firstName && lastName) {
-          updatedW8Ben.name = `${firstName} ${lastName}`;
-          shouldUpdateW8Documents = true;
-        }
-        if (tin) {
-          updatedW8Ben.foreignTaxId = tin;
-        }
-        
-        form.setValue(`${basePath}.w8Ben` as any, updatedW8Ben);
-      };
-      
-      if (accountType === 'INDIVIDUAL') {
-        if (name?.includes("customer.accountHolder.accountHolderDetails.0.name.first") || 
-            name?.includes("customer.accountHolder.accountHolderDetails.0.name.last")) {
-          const firstName = value.customer?.accountHolder?.accountHolderDetails?.[0]?.name?.first;
-          const lastName = value.customer?.accountHolder?.accountHolderDetails?.[0]?.name?.last;
-          updateW8BenForm("customer.accountHolder.accountHolderDetails.0", firstName ?? undefined, lastName ?? undefined);
-          syncPrimaryPrefixFromName("customer.accountHolder.accountHolderDetails.0");
-        }
-        if (name?.includes("customer.accountHolder.accountHolderDetails.0.taxResidencies.0.tin")) {
-          const tin = value.customer?.accountHolder?.accountHolderDetails?.[0]?.taxResidencies?.[0]?.tin;
-          updateW8BenForm("customer.accountHolder.accountHolderDetails.0", undefined, undefined, tin ?? undefined);
-        }
-      } else if (accountType === 'JOINT') {
-        // First holder
-        if (name?.includes("customer.jointHolders.firstHolderDetails.0.name.first") || 
-            name?.includes("customer.jointHolders.firstHolderDetails.0.name.last")) {
-          const firstName = value.customer?.jointHolders?.firstHolderDetails?.[0]?.name?.first;
-          const lastName = value.customer?.jointHolders?.firstHolderDetails?.[0]?.name?.last;
-          updateW8BenForm("customer.jointHolders.firstHolderDetails.0", firstName ?? undefined, lastName ?? undefined);
-          syncPrimaryPrefixFromName("customer.jointHolders.firstHolderDetails.0");
-        }
-        if (name?.includes("customer.jointHolders.firstHolderDetails.0.taxResidencies.0.tin")) {
-          const tin = value.customer?.jointHolders?.firstHolderDetails?.[0]?.taxResidencies?.[0]?.tin;
-          updateW8BenForm("customer.jointHolders.firstHolderDetails.0", undefined, undefined, tin ?? undefined);
-        }
-        
-        // Second holder
-        if (name?.includes("customer.jointHolders.secondHolderDetails.0.name.first") || 
-            name?.includes("customer.jointHolders.secondHolderDetails.0.name.last")) {
-          const firstName = value.customer?.jointHolders?.secondHolderDetails?.[0]?.name?.first;
-          const lastName = value.customer?.jointHolders?.secondHolderDetails?.[0]?.name?.last;
-          updateW8BenForm("customer.jointHolders.secondHolderDetails.0", firstName ?? undefined, lastName ?? undefined);
-        }
-        if (name?.includes("customer.jointHolders.secondHolderDetails.0.taxResidencies.0.tin")) {
-          const tin = value.customer?.jointHolders?.secondHolderDetails?.[0]?.taxResidencies?.[0]?.tin;
-          updateW8BenForm("customer.jointHolders.secondHolderDetails.0", undefined, undefined, tin ?? undefined);
-        }
-      } else if (accountType === 'ORG') {
-        if (name?.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.first") || 
-            name?.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.last")) {
-          const firstName = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.name?.first;
-          const lastName = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.name?.last;
-          updateW8BenForm("customer.organization.associatedEntities.associatedIndividuals.0", firstName ?? undefined, lastName ?? undefined);
-          syncPrimaryPrefixFromName("customer.organization.associatedEntities.associatedIndividuals.0");
-        }
-        if (name?.includes("customer.organization.associatedEntities.associatedIndividuals.0.taxResidencies.0.tin")) {
-          const tin = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.taxResidencies?.[0]?.tin;
-          updateW8BenForm("customer.organization.associatedEntities.associatedIndividuals.0", undefined, undefined, tin ?? undefined);
-        }
-      }
-
-      // Update W8 documents in the documents array when names change
-      if (shouldUpdateW8Documents) {
-        setTimeout(() => updateW8Documents(), 100);
-      }
-
-      // Auto-set source of wealth to Income when employment type is EMPLOYED
-      if (name?.includes("employmentType")) {
-        const employmentType = name.includes("customer.accountHolder.accountHolderDetails.0.employmentType") 
-          ? value.customer?.accountHolder?.accountHolderDetails?.[0]?.employmentType
-          : name.includes("customer.jointHolders.firstHolderDetails.0.employmentType")
-          ? value.customer?.jointHolders?.firstHolderDetails?.[0]?.employmentType
-          : name.includes("customer.jointHolders.secondHolderDetails.0.employmentType")
-          ? value.customer?.jointHolders?.secondHolderDetails?.[0]?.employmentType
-          : name.includes("customer.organization.associatedEntities.associatedIndividuals.0.employmentType")
-          ? value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.employmentType
-          : null;
-
-        if (employmentType === 'EMPLOYED') {
-          if (accountType === 'INDIVIDUAL') {
-            form.setValue("customer.accountHolder.financialInformation.0.sourcesOfWealth.0.sourceType", "SOW-IND-Income");
-          } else if (accountType === 'JOINT') {
-            form.setValue("customer.jointHolders.financialInformation.0.sourcesOfWealth.0.sourceType", "SOW-IND-Income");
-          } else if (accountType === 'ORG') {
-            form.setValue("customer.organization.financialInformation.0.sourcesOfWealth.0.sourceType", "SOW-IND-Income");
-          }
-        }
-
-        // Initialize employer address with nulls when EMPLOYED or SELFEMPLOYED
-        if (['EMPLOYED', 'SELFEMPLOYED'].includes(employmentType as string)) {
-          const employmentDetailsPath = name.replace(/employmentType$/, 'employmentDetails');
-          const currentDetails = form.getValues(employmentDetailsPath as any);
-          
-          if (!currentDetails?.employerAddress) {
-             form.setValue(`${employmentDetailsPath}.employerAddress` as any, {
-                country: null,
-                street1: null,
-                street2: null,
-                city: null,
-                state: null,
-                postalCode: null
-             }, {
-                shouldValidate: false,
-                shouldDirty: true,
-                shouldTouch: false,
-             });
-          }
-        }
-
-        // Clear employment details when not EMPLOYED or SELFEMPLOYED
-        if (employmentType && employmentType !== 'EMPLOYED' && employmentType !== 'SELFEMPLOYED') {
-          const employmentDetailsPath = name.replace(/employmentType$/, 'employmentDetails');
-          form.setValue(employmentDetailsPath as any, null, {
-            shouldValidate: false,
-            shouldDirty: true,
-            shouldTouch: false,
-          });
-        }
-      }
-
-      // Keep tax residency in sync with legal residence country
-      if (name === "customer.legalResidenceCountry") {
-        syncTaxResidencyFields(holderPaths, { syncCountry: true });
-      }
-
-      // When residence address country changes, set legal residence + tax country
-      if (name?.endsWith("residenceAddress.country")) {
-        const newCountry = form.getValues(name as any);
-        if (newCountry) {
-          if (form.getValues("customer.legalResidenceCountry" as any) !== newCountry) {
-            form.setValue("customer.legalResidenceCountry", newCountry, {
-              shouldDirty: false,
-              shouldTouch: false,
-              shouldValidate: false,
-            });
-          }
-          syncTaxResidencyFields(holderPaths, { syncCountry: true });
-        }
-      }
-
-      // Auto-fill tax residency TIN/country from identification + legal residence
-      if (name?.includes(".identification.")) {
-        const targetPath = holderPaths.find((path) =>
-          name?.startsWith(`${path}.identification`)
+    } else if (currentAccountType === "ORG") {
+      if (
+        name.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.first") ||
+        name.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.last")
+      ) {
+        applyPrefixToAccountHolder(
+          "customer.organization.associatedEntities.associatedIndividuals.0"
         );
-        if (targetPath) {
-          syncTaxResidencyFields([targetPath], {
-            syncTin: true,
-            syncCountry: true,
+      }
+    }
+  };
+
+  // The email is set to the customer and all account holders.
+  const syncCustomerEmail = (value: Application, name?: string) => {
+    if (
+      name !== "customer.accountHolder.accountHolderDetails.0.email" &&
+      name !== "customer.jointHolders.firstHolderDetails.0.email" &&
+      name !== "customer.organization.associatedEntities.associatedIndividuals.0.email"
+    ) {
+      return;
+    }
+
+    const email =
+      name === "customer.accountHolder.accountHolderDetails.0.email"
+        ? value.customer?.accountHolder?.accountHolderDetails?.[0]?.email
+        : name === "customer.jointHolders.firstHolderDetails.0.email"
+          ? value.customer?.jointHolders?.firstHolderDetails?.[0]?.email
+          : value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.email;
+
+    if (email) {
+      form.setValue("customer.email", email);
+    }
+  };
+
+  // The ID number is picked with a identificationType which is later removed since IBKR does not ask for it later.
+  // This function removes the identificationType and parses it so that it fits the format IBKR requires.
+  const syncIdentificationNumber = (name?: string) => {
+    if (!name?.endsWith("identificationType")) return;
+    const selectedIdType = form.getValues(name as any) as string | undefined;
+    const basePath = name.replace(/\.identificationType$/, "");
+
+    const idFieldMapping: Record<string, string> = {
+      Passport: "passport",
+      "Driver License": "driversLicense",
+      "National ID Card": "nationalCard",
+    };
+
+    const selectedKey = idFieldMapping[selectedIdType ?? ""] ?? "";
+    const currentIdentification = form.getValues(`${basePath}.identification` as any) || {};
+
+    const cleanedIdentification: Record<string, any> = {};
+    Object.entries(currentIdentification).forEach(([k, v]) => {
+      if (!Object.values(idFieldMapping).includes(k)) {
+        cleanedIdentification[k] = v;
+      }
+    });
+
+    if (selectedKey) {
+      const idNumberKeys = Object.values(idFieldMapping);
+      let carriedValue = currentIdentification[selectedKey];
+
+      if (!carriedValue) {
+        carriedValue = idNumberKeys
+          .filter((k) => k !== selectedKey)
+          .map((k) => currentIdentification[k])
+          .find((v) => v !== undefined && v !== "");
+      }
+
+      cleanedIdentification[selectedKey] = carriedValue ?? "";
+    }
+
+    form.setValue(`${basePath}.identification` as any, cleanedIdentification);
+  };
+
+  // Tax Residencies require the account holder's country and identification number so we auto fill it here.
+  const applyTaxResidencyToAccountHolder = ( paths: string[], { syncTin, syncCountry }: { syncTin?: boolean; syncCountry?: boolean } = {}) => {
+
+    const legalCountry = form.getValues("customer.legalResidenceCountry" as any);
+
+    paths.forEach((path) => {
+      const countryPath = `${path}.taxResidencies.0.country` as any;
+      if (
+        syncCountry &&
+        legalCountry &&
+        form.getValues(countryPath) !== legalCountry
+      ) {
+        form.setValue(countryPath, legalCountry, {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        });
+      }
+
+      if (syncTin) {
+        const identification = form.getValues(`${path}.identification` as any) || {};
+        const idNumber = 
+          identification.passport ??
+          identification.driversLicense ??
+          identification.nationalCard ?? ""
+
+        const tinPath = `${path}.taxResidencies.0.tin` as any;
+        if (form.getValues(tinPath) !== idNumber) {
+          form.setValue(tinPath, idNumber, {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
           });
         }
       }
 
-      // When ID type changes, re-sync TIN with the active ID number and defaults
-      if (name?.endsWith("identificationType")) {
-        const basePath = name.replace(/\.identificationType$/, "");
-        if (holderPaths.includes(basePath)) {
-          syncTaxResidencyFields([basePath], {
-            syncTin: true,
-            syncCountry: true,
+      const tinTypePath = `${path}.taxResidencies.0.tinType` as any;
+      if (form.getValues(tinTypePath) !== "NonUS_NationalId") {
+        form.setValue(tinTypePath, "NonUS_NationalId", {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        });
+      }
+    });
+  };
+
+  const syncTaxResidencies = (
+    value: Application,
+    name?: string,
+    holderPaths: string[] = []
+  ) => {
+    if (name === "customer.legalResidenceCountry") {
+      applyTaxResidencyToAccountHolder(holderPaths, { syncCountry: true });
+    }
+
+    if (name?.endsWith("residenceAddress.country")) {
+      const newCountry = form.getValues(name as any);
+      if (newCountry) {
+        if (form.getValues("customer.legalResidenceCountry" as any) !== newCountry) {
+          form.setValue("customer.legalResidenceCountry", newCountry, {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
           });
         }
+        applyTaxResidencyToAccountHolder(holderPaths, { syncCountry: true });
       }
+    }
 
-      // Ensure defaults are applied when switching account type
-      if (name === "customer.type") {
-        syncTaxResidencyFields(holderPaths, {
+    if (name?.includes(".identification.")) {
+      const targetPath = holderPaths.find((path) =>
+        name?.startsWith(`${path}.identification`)
+      );
+      if (targetPath) {
+        applyTaxResidencyToAccountHolder([targetPath], {
           syncTin: true,
           syncCountry: true,
         });
       }
+    }
 
-      // Ensure only the selected identification number field is kept
-      if (name?.endsWith("identificationType")) {
-        const selectedIdType = form.getValues(name as any) as string | undefined;
-        const basePath = name.replace(/\.identificationType$/, "");
-
-        const idFieldMapping: Record<string, string> = {
-          Passport: "passport",
-          "Driver License": "driversLicense",
-          "National ID Card": "nationalCard",
-        };
-
-        const selectedKey = idFieldMapping[selectedIdType ?? ""] ?? "";
-
-        // Build a clean identification object retaining misc keys (issuingCountry, etc.)
-        const currentIdentification = form.getValues(`${basePath}.identification` as any) || {};
-
-        // 1. Preserve non ID-number fields (e.g., issuingCountry, citizenship, expirationDate)
-        const cleanedIdentification: Record<string, any> = {};
-        Object.entries(currentIdentification).forEach(([k, v]) => {
-          if (!Object.values(idFieldMapping).includes(k)) {
-            cleanedIdentification[k] = v; // keep misc keys
-          }
+    if (name?.endsWith("identificationType")) {
+      const basePath = name.replace(/\.identificationType$/, "");
+      if (holderPaths.includes(basePath)) {
+        applyTaxResidencyToAccountHolder([basePath], {
+          syncTin: true,
+          syncCountry: true,
         });
-
-        if (selectedKey) {
-          // 2. Attempt to carry over any existing ID number value from the previous key(s)
-          const idNumberKeys = Object.values(idFieldMapping);
-          // Prefer the value already stored under the new key (if any)
-          let carriedValue = currentIdentification[selectedKey];
-
-          // If new key is empty, look for the first non-empty value from other ID keys
-          if (!carriedValue) {
-            carriedValue = idNumberKeys
-              .filter((k) => k !== selectedKey)
-              .map((k) => currentIdentification[k])
-              .find((v) => v !== undefined && v !== "");
-          }
-
-          cleanedIdentification[selectedKey] = carriedValue ?? "";
-        }
-
-        // 3. Update the form with the cleaned + migrated identification object
-        form.setValue(`${basePath}.identification` as any, cleanedIdentification);
       }
+    }
+
+    if (name === "customer.type") {
+      applyTaxResidencyToAccountHolder(holderPaths, {
+        syncTin: true,
+        syncCountry: true,
+      });
+    }
+  };
+
+  // The W8 Form requires the account holder's full name and identification number so we auto fill it here.
+  const applyW8BenToAccountHolder = (
+    basePath: string,
+    firstName?: string,
+    lastName?: string,
+    tin?: string
+  ) => {
+    const currentW8Ben = form.getValues(`${basePath}.w8Ben` as any);
+    const updatedW8Ben = { ...(currentW8Ben) };
+
+    if (firstName && lastName) {
+      updatedW8Ben.name = `${firstName} ${lastName}`;
+    }
+    if (tin) {
+      updatedW8Ben.foreignTaxId = tin;
+    }
+
+    form.setValue(`${basePath}.w8Ben` as any, updatedW8Ben);
+  };
+
+  const syncW8BenForm = (value: Application, name?: string) => {
+    const currentAccountType = value.customer?.type;
+
+    if (currentAccountType === "INDIVIDUAL") {
+      if (name?.includes("customer.accountHolder.accountHolderDetails.0.name.first") || name?.includes("customer.accountHolder.accountHolderDetails.0.name.last")) {
+        const firstName = value.customer?.accountHolder?.accountHolderDetails?.[0]?.name?.first;
+        const lastName = value.customer?.accountHolder?.accountHolderDetails?.[0]?.name?.last;
+        applyW8BenToAccountHolder(
+          "customer.accountHolder.accountHolderDetails.0",
+          firstName ?? undefined,
+          lastName ?? undefined
+        );
+      }
+      if (name?.includes("customer.accountHolder.accountHolderDetails.0.taxResidencies.0.tin")) {
+        const tin = value.customer?.accountHolder?.accountHolderDetails?.[0]?.taxResidencies?.[0]?.tin;
+        applyW8BenToAccountHolder(
+          "customer.accountHolder.accountHolderDetails.0",
+          undefined,
+          undefined,
+          tin ?? undefined
+        );
+      }
+    } else if (currentAccountType === "JOINT") {
+      if (name?.includes("customer.jointHolders.firstHolderDetails.0.name.first") || name?.includes("customer.jointHolders.firstHolderDetails.0.name.last")) {
+        const firstName = value.customer?.jointHolders?.firstHolderDetails?.[0]?.name?.first;
+        const lastName = value.customer?.jointHolders?.firstHolderDetails?.[0]?.name?.last;
+        applyW8BenToAccountHolder(
+          "customer.jointHolders.firstHolderDetails.0",
+          firstName ?? undefined,
+          lastName ?? undefined
+        );
+      }
+      if (name?.includes("customer.jointHolders.firstHolderDetails.0.taxResidencies.0.tin")) {
+        const tin = value.customer?.jointHolders?.firstHolderDetails?.[0]?.taxResidencies?.[0]?.tin;
+        applyW8BenToAccountHolder(
+          "customer.jointHolders.firstHolderDetails.0",
+          undefined,
+          undefined,
+          tin ?? undefined
+        );
+      }
+
+      if (
+        name?.includes("customer.jointHolders.secondHolderDetails.0.name.first") ||
+        name?.includes("customer.jointHolders.secondHolderDetails.0.name.last")
+      ) {
+        const firstName = value.customer?.jointHolders?.secondHolderDetails?.[0]?.name?.first;
+        const lastName = value.customer?.jointHolders?.secondHolderDetails?.[0]?.name?.last;
+        applyW8BenToAccountHolder(
+          "customer.jointHolders.secondHolderDetails.0",
+          firstName ?? undefined,
+          lastName ?? undefined
+        );
+      }
+      if (name?.includes("customer.jointHolders.secondHolderDetails.0.taxResidencies.0.tin")) {
+        const tin = value.customer?.jointHolders?.secondHolderDetails?.[0]?.taxResidencies?.[0]?.tin;
+        applyW8BenToAccountHolder(
+          "customer.jointHolders.secondHolderDetails.0",
+          undefined,
+          undefined,
+          tin ?? undefined
+        );
+      }
+    } else if (currentAccountType === "ORG") {
+      if (name?.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.first") || name?.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.last")) {
+        const firstName = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.name?.first;
+        const lastName = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.name?.last;
+        applyW8BenToAccountHolder(
+          "customer.organization.associatedEntities.associatedIndividuals.0",
+          firstName ?? undefined,
+          lastName ?? undefined
+        );
+      }
+      if (name?.includes("customer.organization.associatedEntities.associatedIndividuals.0.taxResidencies.0.tin")) {
+        const tin = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.taxResidencies?.[0]?.tin;
+        applyW8BenToAccountHolder(
+          "customer.organization.associatedEntities.associatedIndividuals.0",
+          undefined,
+          undefined,
+          tin ?? undefined
+        );
+      }
+    }
+
+  };
+
+  // When an account holder is employed, we auto fill the source of wealth here because Income is required as a source of wealth for employed account holders.
+  const syncSourcesOfWealth = (value: Application, name?: string) => {
+    if (!name?.includes("employmentType")) return;
+    const currentAccountType = value.customer?.type;
+    const employmentType = name.includes("customer.accountHolder.accountHolderDetails.0.employmentType")
+      ? value.customer?.accountHolder?.accountHolderDetails?.[0]?.employmentType
+      : name.includes("customer.jointHolders.firstHolderDetails.0.employmentType")
+        ? value.customer?.jointHolders?.firstHolderDetails?.[0]?.employmentType
+        : name.includes("customer.jointHolders.secondHolderDetails.0.employmentType")
+          ? value.customer?.jointHolders?.secondHolderDetails?.[0]?.employmentType
+          : name.includes("customer.organization.associatedEntities.associatedIndividuals.0.employmentType")
+            ? value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]
+                ?.employmentType
+            : null;
+
+    if (employmentType === "EMPLOYED") {
+      if (currentAccountType === "INDIVIDUAL") {
+        form.setValue(
+          "customer.accountHolder.financialInformation.0.sourcesOfWealth.0.sourceType",
+          "SOW-IND-Income"
+        );
+      } else if (currentAccountType === "JOINT") {
+        form.setValue(
+          "customer.jointHolders.financialInformation.0.sourcesOfWealth.0.sourceType",
+          "SOW-IND-Income"
+        );
+      } else if (currentAccountType === "ORG") {
+        form.setValue(
+          "customer.organization.financialInformation.0.sourcesOfWealth.0.sourceType",
+          "SOW-IND-Income"
+        );
+      }
+    }
+
+    if (["EMPLOYED", "SELFEMPLOYED"].includes(employmentType as string)) {
+      const employmentDetailsPath = name.replace(/employmentType$/, "employmentDetails");
+      const currentDetails = form.getValues(employmentDetailsPath as any);
+
+      if (!currentDetails?.employerAddress) {
+        form.setValue(
+          `${employmentDetailsPath}.employerAddress` as any,
+          {
+            country: null,
+            street1: null,
+            street2: null,
+            city: null,
+            state: null,
+            postalCode: null,
+          },
+          {
+            shouldValidate: false,
+            shouldDirty: true,
+            shouldTouch: false,
+          }
+        );
+      }
+    }
+
+    if (employmentType && employmentType !== "EMPLOYED" && employmentType !== "SELFEMPLOYED") {
+      const employmentDetailsPath = name.replace(/employmentType$/, "employmentDetails");
+      form.setValue(employmentDetailsPath as any, null, {
+        shouldValidate: false,
+        shouldDirty: true,
+        shouldTouch: false,
+      });
+    }
+  };
+
+  const syncOrganizationBusinessDescription = (value: Application, name?: string) => {
+    if (name !== "customer.organization.identifications.0.businessDescription") return;
+    const businessDescription =
+      value.customer?.organization?.identifications?.[0]?.businessDescription;
+    if (businessDescription) {
+      form.setValue(
+        "customer.organization.accountSupport.businessDescription",
+        businessDescription
+      );
+    }
+  };
+
+  const updateW8Documents = () => {
+    const accountType = form.getValues('customer.type');
+    const currentDocs = form.getValues('documents') || [];
+    const existingIndex = currentDocs.findIndex(
+      (doc: any) => doc.formNumber === 5001
+    );
+    if (existingIndex < 0) return;
+
+    const signedBy: string[] = [];
+    if (accountType === 'INDIVIDUAL') {
+      const holder = form.getValues('customer.accountHolder.accountHolderDetails.0');
+      if (holder?.name?.first && holder?.name?.last) {
+        signedBy.push(`${holder.name.first} ${holder.name.last}`);
+      }
+    } else if (accountType === 'JOINT') {
+      const firstHolder = form.getValues('customer.jointHolders.firstHolderDetails.0');
+      const secondHolder = form.getValues('customer.jointHolders.secondHolderDetails.0');
+      if (firstHolder?.name?.first && firstHolder?.name?.last) {
+        signedBy.push(`${firstHolder.name.first} ${firstHolder.name.last}`);
+      }
+      if (secondHolder?.name?.first && secondHolder?.name?.last) {
+        signedBy.push(`${secondHolder.name.first} ${secondHolder.name.last}`);
+      }
+    } else if (accountType === 'ORG') {
+      const associatedIndividual = form.getValues(
+        'customer.organization.associatedEntities.associatedIndividuals.0'
+      );
+      if (associatedIndividual?.name?.first && associatedIndividual?.name?.last) {
+        signedBy.push(
+          `${associatedIndividual.name.first} ${associatedIndividual.name.last}`
+        );
+      }
+    }
+
+    if (!signedBy.length) return;
+
+    const newDocs = [...currentDocs];
+    const existingDoc = newDocs[existingIndex] as any;
+    newDocs[existingIndex] = {
+      ...existingDoc,
+      signedBy,
+    } as any;
+
+    form.setValue('documents', newDocs);
+  };
+
+  const syncInvestmentObjectives = (value: Application, name?: string) => {
+    if (!name || !name.startsWith("accounts.0.investmentObjectives")) return;
+    const invObjectives = (value.accounts?.[0]?.investmentObjectives || []).filter(
+      Boolean
+    ) as string[];
+    const acctType = value.customer?.type;
+    if (acctType === "INDIVIDUAL") {
+      form.setValue(
+        "customer.accountHolder.financialInformation.0.investmentObjectives",
+        invObjectives
+      );
+    } else if (acctType === "JOINT") {
+      form.setValue(
+        "customer.jointHolders.financialInformation.0.investmentObjectives",
+        invObjectives
+      );
+    } else if (acctType === "ORG") {
+      form.setValue(
+        "customer.organization.financialInformation.0.investmentObjectives",
+        invObjectives
+      );
+    }
+  };
+
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+
+      const currentAccountType = value.customer?.type;
+      const holderPaths = taxResidencyPathsByType[currentAccountType ?? ""] ?? [];
+
+      // Account Type Changes
+      syncExternalIds(currentAccountType, value as Application, name);
+      syncPrefixes(currentAccountType, value as Application, name);
+
+      // Application Wide Changes
+      syncCustomerEmail(value as Application, name);
+      syncIdentificationNumber(name);
+      syncTaxResidencies(value as Application, name, holderPaths);
+      syncW8BenForm(value as Application, name);
+      syncSourcesOfWealth(value as Application, name);
+      syncOrganizationBusinessDescription(value as Application, name);
+
+      updateW8Documents();
+
     });
 
     return () => subscription.unsubscribe();
   }, [form]);
 
-  // ensure multiCurrency is always true
+  // Manual validation for Identification fields (Type and Number)
   useEffect(() => {
-    form.setValue("accounts.0.multiCurrency", true, {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: false,
-    });
-    form.setValue("accounts.0.feesTemplateName", "Default", {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: false,
-    });
-  }, [form]);
+    const validateIdentities = () => {
+      const type = form.getValues("customer.type");
+      const paths: string[] = [];
 
-  // Fetch available questions once
-  useEffect(() => {
-    (async () => {
-      try {
-        const [questionsResp, businessResp] = await Promise.all([
-          GetSecurityQuestions(),
-          GetBusinessAndOccupation()
-        ]);
-        setQuestions(questionsResp.jsonData || []);
-        setBusinessAndOccupations(businessResp.jsonData || []);
-      } catch (err) {
-        console.error('Failed to fetch initial data', err);
-      }
-    })();
-  }, []);
-
-  // Whenever the selected Q&A changes, bubble up a mapping where the keys
-  // are the actual question texts (labels) instead of their numeric IDs so that
-  // future backend changes to question IDs do not break persisted answers.
-  useEffect(() => {
-    if (!onSecurityQuestionsChange) return;
-
-    const qaByText: Record<string, string> = {};
-    Object.entries(selectedQA).forEach(([id, answer]) => {
-      const label = questions.find((q) => q.id === id)?.question || id;
-      qaByText[label] = answer;
-    });
-
-    onSecurityQuestionsChange(qaByText);
-  }, [selectedQA, onSecurityQuestionsChange, questions]);
-
-  // When the account type changes
-
-  // Generate external IDs if not already set
-  useEffect(() => {
-    const currentCustomerExternalId = form.getValues("customer.externalId");
-    if (!currentCustomerExternalId) {
-      form.setValue("customer.externalId", externalIdRef.current);
-    }
-
-    if (accountType === 'INDIVIDUAL') {
-      const currentAccountHolderExternalId = form.getValues("customer.accountHolder.accountHolderDetails.0.externalId");
-      if (!currentAccountHolderExternalId) {
-        form.setValue("customer.accountHolder.accountHolderDetails.0.externalId", externalIdRef.current);
-      }
-    } else if (accountType === 'JOINT') {
-      const firstHolderExternalId = form.getValues("customer.jointHolders.firstHolderDetails.0.externalId");
-      if (!firstHolderExternalId) {
-        form.setValue("customer.jointHolders.firstHolderDetails.0.externalId", externalIdRef.current);
-      }
-      const secondHolderExternalId = form.getValues("customer.jointHolders.secondHolderDetails.0.externalId");
-      if (!secondHolderExternalId) {
-        form.setValue("customer.jointHolders.secondHolderDetails.0.externalId", secondHolderIdRef.current);
-      }
-    } else if (accountType === 'ORG') {
-      const orgIndividualExternalId = form.getValues("customer.organization.associatedEntities.associatedIndividuals.0.externalId");
-      if (!orgIndividualExternalId) {
-        form.setValue("customer.organization.associatedEntities.associatedIndividuals.0.externalId", externalIdRef.current);
-      }
-    }
-
-    // Generate account external ID
-      const accountExternalId = form.getValues("accounts.0.externalId");
-      if (!accountExternalId) {
-        form.setValue("accounts.0.externalId", externalIdRef.current);
+      if (type === "INDIVIDUAL") {
+        paths.push("customer.accountHolder.accountHolderDetails.0");
+      } else if (type === "JOINT") {
+        paths.push("customer.jointHolders.firstHolderDetails.0");
+        paths.push("customer.jointHolders.secondHolderDetails.0");
+      } else if (type === "ORG") {
+        paths.push("customer.organization.associatedEntities.associatedIndividuals.0");
       }
 
-      // Keep customer & account external IDs aligned with first holder in JOINT accounts
-      const firstHolderExternalId = form.getValues("customer.jointHolders.firstHolderDetails.0.externalId");
-      if (accountType === 'JOINT' && firstHolderExternalId) {
-        if (form.getValues('customer.externalId') !== firstHolderExternalId) {
-          form.setValue('customer.externalId', firstHolderExternalId);
-        }
-        if (form.getValues('accounts.0.externalId') !== firstHolderExternalId) {
-          form.setValue('accounts.0.externalId', firstHolderExternalId);
-        }
-      }
+      const idFieldMapping: Record<string, string> = {
+        Passport: 'passport',
+        'Driver License': 'driversLicense',
+        'National ID Card': 'nationalCard',
+      };
 
-    // Generate user external IDs (ensure one per account holder)
-    // Primary user (always present)
-    const userExternalId0 = form.getValues("users.0.externalUserId");
-    if (!userExternalId0) {
-      form.setValue("users.0.externalUserId", externalIdRef.current);
-    }
-    const userIndividualId0 = form.getValues("users.0.externalIndividualId");
-    if (!userIndividualId0) {
-      form.setValue("users.0.externalIndividualId", externalIdRef.current);
-    }
-    // Ensure primary user prefix exists
-    const userPrefix0 = form.getValues("users.0.prefix");
-    if (!userPrefix0) {
-      form.setValue("users.0.prefix", form.getValues("customer.prefix") ?? "");
-    }
+      paths.forEach((basePath) => {
+        const idTypePath = `${basePath}.identificationType` as any;
+        const idType = form.getValues(idTypePath) as string | undefined;
 
-    // Secondary user for JOINT accounts
-    if (accountType === 'JOINT') {
-      const userExternalId1 = form.getValues("users.1.externalUserId");
-      if (!userExternalId1) {
-        form.setValue("users.1.externalUserId", secondHolderIdRef.current);
-      }
-      const userIndividualId1 = form.getValues("users.1.externalIndividualId");
-      if (!userIndividualId1) {
-        form.setValue("users.1.externalIndividualId", secondHolderIdRef.current);
-      }
-      const userPrefix1 = form.getValues("users.1.prefix");
-      if (!userPrefix1) {
-        form.setValue("users.1.prefix", form.getValues("customer.prefix") ?? "");
-      }
-    } else {
-      // For non-joint accounts, ensure we keep only one user entry to avoid stale data
-      if ((form.getValues("users") || []).length > 1) {
-        form.setValue("users", (form.getValues("users") as any[]).slice(0, 1));
-      }
-    }
-    // Keep user external IDs in sync with joint holder IDs on every change
-    let unsubscribe: (() => void) | undefined;
-    if (accountType === 'JOINT') {
-      const subscription = form.watch((value, { name }) => {
-        if (!name) return;
-        if (!name.startsWith('customer.jointHolders')) return;
-
-        const firstId = value.customer?.jointHolders?.firstHolderDetails?.[0]?.externalId;
-        const secondId = value.customer?.jointHolders?.secondHolderDetails?.[0]?.externalId;
-
-        if (firstId) {
-          if (value.users?.[0]?.externalUserId !== firstId) {
-            form.setValue('users.0.externalUserId', firstId);
+        // Validate Identification Type
+        if (!idType) {
+          form.setError(idTypePath, {
+            type: "manual",
+            message: "Required",
+          });
+        } else {
+          const currentError = form.getFieldState(idTypePath).error;
+          if (currentError?.type === "manual") {
+            form.clearErrors(idTypePath);
           }
-          if (value.users?.[0]?.externalIndividualId !== firstId) {
-            form.setValue('users.0.externalIndividualId', firstId);
-          }
-        }
 
-        if (secondId) {
-          if ((value.users?.[1] ?? {}).externalUserId !== secondId) {
-            form.setValue('users.1.externalUserId', secondId);
-          }
-          if ((value.users?.[1] ?? {}).externalIndividualId !== secondId) {
-            form.setValue('users.1.externalIndividualId', secondId);
+          // Validate Identification Number
+          const mappedField = idFieldMapping[idType];
+          if (mappedField) {
+            const idNumberPath = `${basePath}.identification.${mappedField}` as any;
+            const idNumber = form.getValues(idNumberPath);
+
+            if (!idNumber) {
+              form.setError(idNumberPath, {
+                type: "manual",
+                message: "Required",
+              });
+            } else {
+              const currentIdError = form.getFieldState(idNumberPath).error;
+              if (currentIdError?.type === "manual") {
+                form.clearErrors(idNumberPath);
+              }
+            }
           }
         }
       });
-
-      unsubscribe = () => {
-        if (subscription?.unsubscribe) subscription.unsubscribe();
-      };
-    }
-
-    return () => {
-      unsubscribe?.();
     };
-  }, [accountType, form]);
 
-  // Initialize W8 documents when account type changes
-  useEffect(() => {
-    updateW8Documents();
-  }, [accountType]);
-
-  // Ensure financialInformation.0.investmentObjectives is initialized from accounts.0.investmentObjectives
-  useEffect(() => {
-    const objectives = (form.getValues("accounts.0.investmentObjectives") || []).filter(Boolean) as string[];
-    const type = form.getValues("customer.type");
-    if (objectives && objectives.length) {
-      if (type === 'INDIVIDUAL') {
-        form.setValue("customer.accountHolder.financialInformation.0.investmentObjectives", objectives, { shouldValidate: false, shouldDirty: false });
-      } else if (type === 'JOINT') {
-        form.setValue("customer.jointHolders.financialInformation.0.investmentObjectives", objectives, { shouldValidate: false, shouldDirty: false });
-      } else if (type === 'ORG') {
-        form.setValue("customer.organization.financialInformation.0.investmentObjectives", objectives, { shouldValidate: false, shouldDirty: false });
-      }
-    }
-  }, [accountType, form]);
-
-  // Ensure customer.email is initialized/synced with the appropriate holder email when account type changes
-  useEffect(() => {
-    let email: string | undefined;
-
-    if (accountType === 'INDIVIDUAL') {
-      email = form.getValues("customer.accountHolder.accountHolderDetails.0.email") ?? undefined;
-    } else if (accountType === 'JOINT') {
-      email = form.getValues("customer.jointHolders.firstHolderDetails.0.email") ?? undefined;
-    } else if (accountType === 'ORG') {
-      email = form.getValues("customer.organization.associatedEntities.associatedIndividuals.0.email") ?? undefined;
-    }
-
-    if (email) {
-      form.setValue("customer.email", email);
-    }
-  }, [accountType, form]);
-
-  // Ensure employer address structure exists for existing data
-  useEffect(() => {
-    const paths = [
-      "customer.accountHolder.accountHolderDetails.0",
-      "customer.jointHolders.firstHolderDetails.0",
-      "customer.jointHolders.secondHolderDetails.0",
-      "customer.organization.associatedEntities.associatedIndividuals.0"
-    ];
-
-    paths.forEach(path => {
-      const type = form.getValues(`${path}.employmentType` as any);
-      if (['EMPLOYED', 'SELFEMPLOYED'].includes(type)) {
-         const address = form.getValues(`${path}.employmentDetails.employerAddress` as any);
-         if (!address) {
-             form.setValue(`${path}.employmentDetails.employerAddress` as any, {
-                country: null,
-                street1: null,
-                street2: null,
-                city: null,
-                state: null,
-                postalCode: null
-             }, { shouldValidate: false, shouldDirty: true });
-         }
-      }
+    const subscription = form.watch(() => {
+      validateIdentities();
     });
+
+    validateIdentities();
+
+    return () => subscription.unsubscribe();
   }, [form]);
 
   const renderAddressFields = (basePath: string) => (
@@ -1078,7 +1157,10 @@ const PersonalInfoStep = ({ form, onSecurityQuestionsChange }: PersonalInfoStepP
           name={`${basePath}.identificationType` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('apply.account.account_holder_info.id_type')}</FormLabel>
+              <div className='flex flex-row gap-2 items-center'> 
+                <FormLabel>{t('apply.account.account_holder_info.id_type')}</FormLabel>
+                <FormMessage />
+              </div>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -1093,7 +1175,6 @@ const PersonalInfoStep = ({ form, onSecurityQuestionsChange }: PersonalInfoStepP
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -1307,48 +1388,6 @@ const PersonalInfoStep = ({ form, onSecurityQuestionsChange }: PersonalInfoStepP
     </Card>
     );
   }
-
-  const updateW8Documents = () => {
-    const accountType = form.getValues('customer.type');
-    const currentDocs = form.getValues('documents') || [];
-    
-    // Remove existing W8 forms and rebuild them
-    let newDocs = currentDocs.filter((doc: any) => doc.formNumber !== 5001);
-    
-    // Add W8 forms based on account type with proper signatures
-    if (accountType === 'INDIVIDUAL') {
-      const holder = form.getValues('customer.accountHolder.accountHolderDetails.0');
-      if (holder?.name?.first && holder?.name?.last) {
-        const holderName = `${holder.name.first} ${holder.name.last}`;
-        newDocs.push(createW8FormDocument(holderName, 'primary'));
-      }
-    } else if (accountType === 'JOINT') {
-      // Only one W8 form for the account, use both holders' names in signedBy and 'joint' as holderId
-      const firstHolder = form.getValues('customer.jointHolders.firstHolderDetails.0');
-      const secondHolder = form.getValues('customer.jointHolders.secondHolderDetails.0');
-      const signedBy = [];
-      if (firstHolder?.name?.first && firstHolder?.name?.last) {
-        signedBy.push(`${firstHolder.name.first} ${firstHolder.name.last}`);
-      }
-      if (secondHolder?.name?.first && secondHolder?.name?.last) {
-        signedBy.push(`${secondHolder.name.first} ${secondHolder.name.last}`);
-      }
-      if (signedBy.length > 0) {
-        // Pass both names to createW8FormDocument, but override signedBy after creation
-        const w8Doc = createW8FormDocument(signedBy[0], 'joint');
-        w8Doc.signedBy = signedBy;
-        newDocs.push(w8Doc);
-      }
-    } else if (accountType === 'ORG') {
-      const associatedIndividual = form.getValues('customer.organization.associatedEntities.associatedIndividuals.0');
-      if (associatedIndividual?.name?.first && associatedIndividual?.name?.last) {
-        const holderName = `${associatedIndividual.name.first} ${associatedIndividual.name.last}`;
-        newDocs.push(createW8FormDocument(holderName, 'individual-0'));
-      }
-    }
-    
-    form.setValue('documents', newDocs);
-  };
   
   return (
     <div className="space-y-6">
@@ -1480,60 +1519,6 @@ const PersonalInfoStep = ({ form, onSecurityQuestionsChange }: PersonalInfoStepP
           </CardContent>
         </Card>
       )}
-      
-      <Card className="p-6 space-y-6">
-        <CardHeader>
-          <CardTitle>{t('apply.account.account_holder_info.security_questions') || 'Security Questions'}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <p className="text-sm text-subtitle">
-            {t('apply.account.account_holder_info.security_questions_description') || 'Select three security questions and provide your answers.'}
-          </p>
-          {[0, 1, 2].map((idx) => (
-            <div key={idx} className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
-              {/* Question selector */}
-              <Select
-                onValueChange={(val) => {
-                  setSelectedQA((prev) => {
-                    const newQA = { ...prev } as Record<string, string>;
-                    // Remove any previous key having this index
-                    const keys = Object.keys(newQA);
-                    const currentKey = keys[idx];
-                    if (currentKey) delete newQA[currentKey];
-                    newQA[val] = '';
-                    return newQA;
-                  });
-                }}
-                defaultValue={Object.keys(selectedQA)[idx] ?? undefined}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('apply.account.account_holder_info.select_question') || 'Select Question'} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="max-h-60 overflow-y-auto">
-                  {questions.map((q) => (
-                    <SelectItem key={q.id} value={q.id} disabled={Object.keys(selectedQA).includes(q.id) && Object.keys(selectedQA)[idx] !== q.id}>
-                      {q.question}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {/* Answer input */}
-              <Input
-                placeholder={t('apply.account.account_holder_info.answer_placeholder') || 'Answer'}
-                value={selectedQA[Object.keys(selectedQA)[idx]] || ''}
-                onChange={(e) => {
-                  const key = Object.keys(selectedQA)[idx];
-                  if (!key) return;
-                  setSelectedQA((prev) => ({ ...prev, [key]: e.target.value }));
-                }}
-              />
-            </div>
-          ))}
-        </CardContent>
-      </Card>
 
     </div>
   )

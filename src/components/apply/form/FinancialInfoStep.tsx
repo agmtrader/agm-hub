@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
 import { Application } from '@/lib/entities/application';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,8 +19,6 @@ interface FinancialInfoStepProps {
   setEstimatedDeposit: (value: number | null) => void;
   estimatedDeposit: number | null;
   financialRanges: FinancialRange[];
-  financialRangesLoading: boolean;
-  financialRangesError: string | null;
   estimatedDepositError?: string | null;
 }
 
@@ -29,21 +27,12 @@ const FinancialInfoStep = ({
   setEstimatedDeposit,
   estimatedDeposit,
   financialRanges,
-  financialRangesLoading,
-  financialRangesError,
   estimatedDepositError,
 }: FinancialInfoStepProps) => {
 
   const { t } = useTranslationProvider();
   const accountType = form.watch('customer.type');
-  const tradingPermissions =
-    useWatch({
-      control: form.control,
-      name: 'accounts.0.tradingPermissions',
-    }) || [];
-
-
-  console.log(form.getValues('accounts'));
+  const tradingPermissions = useWatch({ control: form.control, name: 'accounts.0.tradingPermissions' }) || [];
 
   const TRADING_COUNTRIES = [
     "UNITED STATES",
@@ -84,7 +73,20 @@ const FinancialInfoStep = ({
     }
   }, [accountType]);
 
-  React.useEffect(() => {
+  // Ensure financialInformation.0.investmentObjectives is initialized
+  useEffect(() => {
+    const objectives = (form.getValues('accounts.0.investmentObjectives') || []).filter(Boolean) as string[];
+    if (objectives.length) {
+      form.setValue(
+        `${basePath}.0.investmentObjectives` as any,
+        objectives,
+        { shouldValidate: false, shouldDirty: false }
+      );
+    }
+  }, [basePath, form]);
+
+  // Ensure financialInformation.0.sourcesOfWealth is initialized
+  useEffect(() => {
     const sourcesOfWealth = form.getValues(`${basePath}.0.sourcesOfWealth` as any);
     if (!sourcesOfWealth || sourcesOfWealth.length === 0) {
       form.setValue(
@@ -93,14 +95,17 @@ const FinancialInfoStep = ({
         { shouldDirty: false, shouldTouch: false }
       );
     }
+  }, [basePath, form]);
 
+  // Ensure financialInformation.0.investmentExperience is initialized
+  useEffect(() => {
     const investmentExperience = form.getValues(`${basePath}.0.investmentExperience` as any);
     if (!investmentExperience || investmentExperience.length === 0) {
       form.setValue(
         `${basePath}.0.investmentExperience` as any,
         [{ assetClass: 'STK', yearsTrading: 3, tradesPerYear: 25, knowledgeLevel: 'Good' }],
         { shouldDirty: false, shouldTouch: false }
-      );
+      );    
     }
   }, [basePath, form]);
 
@@ -194,7 +199,6 @@ const FinancialInfoStep = ({
     );
   };
 
-  /** Sub-component: dynamic Investment Experience list */
   const InvestmentExperienceFields = ({ basePath }: { basePath: string }) => {
     const { fields, append, remove } = useFieldArray({
       control: form.control,
@@ -420,7 +424,6 @@ const FinancialInfoStep = ({
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
-                  disabled={financialRangesLoading}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -436,15 +439,6 @@ const FinancialInfoStep = ({
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-subtitle">{t('apply.account.financial.net_worth_help')}</p>
-                {financialRangesLoading && (
-                  <p className="text-xs text-subtitle">Loading ranges...</p>
-                )}
-                {financialRangesError && (
-                  <p className="text-xs text-destructive">{financialRangesError}</p>
-                )}
-                {!financialRangesLoading && !financialRangesError && !rangeByType.netWorth.length && (
-                  <p className="text-xs text-subtitle">No ranges available</p>
-                )}
               </FormItem>
             )}
           />
@@ -460,7 +454,6 @@ const FinancialInfoStep = ({
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
-                  disabled={financialRangesLoading}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -476,15 +469,6 @@ const FinancialInfoStep = ({
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-subtitle">{t('apply.account.financial.liquid_net_worth_help')}</p>
-                {financialRangesLoading && (
-                  <p className="text-xs text-subtitle">Loading ranges...</p>
-                )}
-                {financialRangesError && (
-                  <p className="text-xs text-destructive">{financialRangesError}</p>
-                )}
-                {!financialRangesLoading && !financialRangesError && !rangeByType.liquidNetWorth.length && (
-                  <p className="text-xs text-subtitle">No ranges available</p>
-                )}
               </FormItem>
             )}
           />
@@ -500,7 +484,6 @@ const FinancialInfoStep = ({
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
-                  disabled={financialRangesLoading}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -516,15 +499,6 @@ const FinancialInfoStep = ({
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-subtitle">{t('apply.account.financial.annual_net_income_help')}</p>
-                {financialRangesLoading && (
-                  <p className="text-xs text-subtitle">Loading ranges...</p>
-                )}
-                {financialRangesError && (
-                  <p className="text-xs text-destructive">{financialRangesError}</p>
-                )}
-                {!financialRangesLoading && !financialRangesError && !rangeByType.annualNetIncome.length && (
-                  <p className="text-xs text-subtitle">No ranges available</p>
-                )}
               </FormItem>
             )}
           />

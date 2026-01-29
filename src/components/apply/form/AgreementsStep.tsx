@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -15,20 +15,23 @@ import { toast } from '@/hooks/use-toast'
 
 interface AgreementsStepProps {
   form: UseFormReturn<Application>
+  forms: FormDetails[] | null
   userSignature: string | null
   onSignatureChange: (value: string) => void
   onPrevious: () => void
   onNext: () => void
+  isSubmitting?: boolean
 }
 
 const AgreementsStep = ({
   form,
+  forms,
   userSignature,
   onSignatureChange,
   onPrevious,
   onNext,
+  isSubmitting = false,
 }: AgreementsStepProps) => {
-  const [fetchedForms, setFetchedForms] = useState<FormDetails[] | null>(null)
   const [isFormViewerOpen, setIsFormViewerOpen] = useState(false)
   const [selectedFormName, setSelectedFormName] = useState<string | null>(null)
   const [selectedFormData, setSelectedFormData] = useState<string | null>(null)
@@ -68,24 +71,6 @@ const AgreementsStep = ({
     return names;
   };
 
-  useEffect(() => {
-    const fetchForms = async () => {
-      try {
-        const forms = await GetForms(
-          [
-            '3230', '3024', '4070', '3044', '3089', '4304', '4404', '5013', '5001', '4024', '9130', '3074', '3203',
-            '3070', '3094', '3071', '4587', '2192', '2191', '3077', '4399', '4684', '2109', '4016', '4289',
-          ],
-          'br'
-        )
-        setFetchedForms(forms.formDetails)
-      } catch (error) {
-        toast({ title: 'Error', description: 'Failed to fetch forms.', variant: 'destructive' })
-      }
-    }
-    fetchForms()
-  }, [])
-
   const handleViewForm = async (formNumber: string, formName: string) => {
     try {
       const forms = await GetForms([formNumber], 'br')
@@ -113,8 +98,8 @@ const AgreementsStep = ({
     <>
       <div className="flex flex-col gap-4">
         <h2 className="text-xl font-semibold mb-2">Agreements and Disclosures</h2>
-        {fetchedForms ? (
-          fetchedForms.map((form) => (
+        {forms ? (
+          forms.map((form) => (
             <Card key={form.formNumber} className="flex justify-between p-4 items-center">
               <div className="flex flex-col">
                 <p className="text-md font-semibold">{form.formName}</p>
@@ -149,10 +134,10 @@ const AgreementsStep = ({
         <Button
           type="button"
           onClick={onNext}
-          disabled={!isSignatureValid}
+          disabled={!isSignatureValid || isSubmitting}
           className="bg-primary text-background hover:bg-primary/90"
         >
-          Next
+          {isSubmitting ? 'Submitting...' : 'Submit Application'}
         </Button>
       </div>
       <Dialog open={isFormViewerOpen} onOpenChange={setIsFormViewerOpen}>

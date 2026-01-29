@@ -382,6 +382,10 @@ export const investment_objectives = (t: (key: string) => string) => [
   {
     id: "Hedging",
     label: t('apply.account.financial.investment_objectives_list.hedging')
+  },
+  {
+    id: "Speculation",
+    label: t('apply.account.financial.investment_objectives_list.speculation')
   }
 ]
 
