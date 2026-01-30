@@ -18,9 +18,9 @@ import { FileUploader, FileInput, FileUploaderContent, FileUploaderItem } from '
 import { Button } from '@/components/ui/button'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { IBKRDocument, Application } from '@/lib/entities/application'
-import type { InternalDocument } from '@/lib/entities/account'
+import { InternalDocument, documentCategories } from '@/lib/entities/documents'
 import { FormField } from '@/components/ui/form'
-import { applicationDocumentCategories, calculateSHA1, getBase64 } from '@/utils/docs'
+import { calculateSHA1, getBase64 } from '@/utils/entities/documents'
 
 function getIBKRTimestamp() {
   const now = new Date()
@@ -241,16 +241,17 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     : null
 
   const viewerName = selectedDocument
-    ? Object.keys(applicationDocumentCategories).find(
-        (key) => applicationDocumentCategories[key] === selectedDocument.formNumber
-      ) ?? ''
+    ? documentCategories.find(
+        (cat) => cat.formNumber === selectedDocument.formNumber
+      )?.name ?? ''
     : ''
 
   const missingDocuments = useMemo(() => {
     const uploadedFormNumbers = new Set(
       documents.map((doc) => doc?.formNumber).filter((num): num is number => typeof num === 'number')
     )
-    return Object.entries(applicationDocumentCategories).filter(([, formNumber]) => !uploadedFormNumbers.has(formNumber))
+    return documentCategories
+      .filter((cat) => cat.formNumber !== null && !uploadedFormNumbers.has(cat.formNumber))
   }, [documents])
 
   return (
@@ -278,11 +279,13 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                       <SelectValue placeholder="Select Document Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(applicationDocumentCategories).map(([label, value]) => (
-                        <SelectItem key={value} value={value.toString()}>
-                          {label}
-                        </SelectItem>
-                      ))}
+                      {documentCategories
+                        .filter((cat) => cat.formNumber !== null)
+                        .map((category) => (
+                          <SelectItem key={category.formNumber} value={category.formNumber!.toString()}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <FileUploader
@@ -342,7 +345,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
             <div className="mb-4 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
               <p className="text-sm font-medium text-foreground">Missing documents</p>
               <p className="text-sm text-subtitle">
-                {missingDocuments.map(([label]) => label).join(', ')}
+                {missingDocuments.map((cat) => cat.name).join(', ')}
               </p>
             </div>
           )}

@@ -166,6 +166,22 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
     }
   };
 
+  const applyPrefixToSecondHolder = (basePath: string) => {
+    const first = (form.getValues(`${basePath}.name.first` as any) || "").trim();
+    const last = (form.getValues(`${basePath}.name.last` as any) || "").trim();
+    if (!first || !last) return;
+    const prefix = `${first.charAt(0)}${last.slice(0, 5)}`.toLowerCase();
+    if (!prefix) return;
+
+    if (form.getValues("users.1.prefix" as any) !== prefix) {
+      form.setValue("users.1.prefix" as any, prefix, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+    }
+  };
+
   const syncPrefixes = (
     currentAccountType?: string,
     value?: Application,
@@ -204,6 +220,12 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
         name.includes("customer.jointHolders.firstHolderDetails.0.name.last")
       ) {
         applyPrefixToAccountHolder("customer.jointHolders.firstHolderDetails.0");
+      }
+      if (
+        name.includes("customer.jointHolders.secondHolderDetails.0.name.first") ||
+        name.includes("customer.jointHolders.secondHolderDetails.0.name.last")
+      ) {
+        applyPrefixToSecondHolder("customer.jointHolders.secondHolderDetails.0");
       }
     } else if (currentAccountType === "ORG") {
       if (
@@ -1433,40 +1455,6 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
 
       {accountType === 'JOINT' ? (
         <div className="space-y-6">
-          {/* Joint Account Type Selection */}
-          <Card className="p-6">
-            <CardHeader>
-              <CardTitle>{t('apply.account.account_holder_info.joint_account_type')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="customer.jointHolders.type"
-              render={({ field }) => (
-                <FormItem>
-                  <div className='flex flex-row gap-2 items-center'>
-                    <FormLabel>{t('apply.account.account_holder_info.joint_account_type')}</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="community">{t('apply.account.account_holder_info.community_property')}</SelectItem>
-                      <SelectItem value="joint_tenants">{t('apply.account.account_holder_info.joint_tenants_with_rights_of_survivorship')}</SelectItem>
-                      <SelectItem value="tenants_common">{t('apply.account.account_holder_info.tenants_in_common')}</SelectItem>
-                      <SelectItem value="tbe">{t('apply.account.account_holder_info.tenants_by_the_entirety')}</SelectItem>
-                      <SelectItem value="au_joint_account">{t('apply.account.account_holder_info.au_joint_account')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            </CardContent>
-          </Card>
 
           {/* First Holder */}
           {renderAccountHolderFields("customer.jointHolders.firstHolderDetails.0", t('apply.account.account_holder_info.first_account_holder'))}
@@ -1494,31 +1482,6 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
         </div>
       )}
 
-      {accountType === 'JOINT' && (
-        <Card className="p-6 space-y-6">
-          <CardHeader>
-            <CardTitle>{t('apply.account.account_holder_info.secondary_contact_credentials')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name={"users.1.prefix" as any}
-              render={({ field }) => (
-                <FormItem>
-                  <div className='flex flex-row gap-2 items-center'>
-                    <FormLabel>{t('apply.account.account_holder_info.username')}</FormLabel>
-                    <FormMessage />
-                  </div>
-                  <FormDescription>{t('apply.account.account_holder_info.username_description')}</FormDescription>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-      )}
 
     </div>
   )

@@ -19,15 +19,6 @@ export type InternalAccount = AccountPayload & {
 }
 export type Account = Base & InternalAccount
 
-export interface InternalDocumentPayload {
-  mime_type: string;
-  file_name: string;
-  file_length: number;
-  sha1_checksum: string;
-  data: string;
-}
-export type InternalDocument = InternalDocumentPayload & Base
-
 // Account Management API
 export interface AllForms {
   formDetails: FormDetails[]

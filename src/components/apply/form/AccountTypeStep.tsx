@@ -47,6 +47,9 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
     } else if (accountType === 'JOINT') {
       nextCustomer.accountHolder = undefined
       nextCustomer.organization = undefined
+      if (nextCustomer.jointHolders) {
+        nextCustomer.jointHolders.type = 'joint_tenants'
+      }
     } else {
       nextCustomer.accountHolder = undefined
       nextCustomer.jointHolders = undefined

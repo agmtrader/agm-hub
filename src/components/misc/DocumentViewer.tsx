@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { ExternalLink } from 'lucide-react'
-import type { InternalDocument } from '@/lib/entities/account'
+import type { InternalDocument } from '@/lib/entities/documents'
 
 interface DocumentViewerProps {
   isOpen: boolean

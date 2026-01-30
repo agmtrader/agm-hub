@@ -30,13 +30,8 @@ import {
     local_tax_form_schema,
     w8ben_schema
 } from './schemas/application';
-
-import { poa_schema, poi_schema } from './schemas/application';
 import { Base } from './base';
 import { Map } from '../public/types';
-
-export type POADocumentInfo = z.infer<typeof poa_schema>
-export type POIDocumentInfo = z.infer<typeof poi_schema>
 
 export type Application = z.infer<typeof application_schema>;
 export type Customer = z.infer<typeof customer_schema>;

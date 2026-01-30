@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { getDefaults } from '@/utils/form'
-import { poi_schema } from "@/lib/entities/schemas/application"
+import { poi_schema } from "@/lib/entities/schemas/documents"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {

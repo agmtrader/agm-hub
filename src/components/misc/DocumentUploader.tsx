@@ -12,8 +12,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from '@/components/ui/file-upload'
-import POAForm from './POAForm'
-import POIForm from './POIForm'
+import POAForm from '../apply/form/POAForm'
+import POIForm from '../apply/form/POIForm'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 
 export type DocumentType = 'POA' | 'POI';
