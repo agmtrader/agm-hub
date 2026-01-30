@@ -477,7 +477,8 @@
                     "growth": "Crecimiento",
                     "trading": "Operar",
                     "income": "Ingresos",
-                    "hedging": "Cobertura"
+                    "hedging": "Cobertura",
+                    "speculation": "Especulación"
                 },
                 "products_to_trade": "Productos a Operar",
                 "amount_to_invest": "Monto a Invertir",

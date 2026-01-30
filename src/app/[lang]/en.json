@@ -437,7 +437,8 @@
                     "growth": "Growth",
                     "trading": "Trading",
                     "income": "Income",
-                    "hedging": "Hedging"
+                    "hedging": "Hedging",
+                    "speculation": "Speculation"
                 },
 
                 "investment_experience": "Investment Experience",

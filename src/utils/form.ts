@@ -25,6 +25,28 @@ export function getApplicationDefaults<Schema extends z.AnyZodObject>(schema: Sc
         electronicFormat: true,
     };
     
+    const defaultRegulatoryInfo = [
+        {
+            regulatoryDetails: [
+                {
+                    code: "AFFILIATION",
+                    status: false,
+                    details: "Affiliated with Interactive Brokers"
+                },
+                {
+                    code: "EmployeePubTrade",
+                    status: false,
+                    details: "Employee is not trading publicly"
+                },
+                {
+                    code: "ControlPubTraded",
+                    status: false,
+                    details: "Controlled trading is not allowed"
+                }
+            ]
+        }
+    ];
+
     return {
         ...defaults,
         documents: [],
@@ -42,27 +64,7 @@ export function getApplicationDefaults<Schema extends z.AnyZodObject>(schema: Sc
                     investmentExperience: [{ assetClass: 'STK', yearsTrading: 1, tradesPerYear: 10, knowledgeLevel: 'Limited' }],
                     investmentObjectives: []
                 }],
-                regulatoryInformation: [
-                    {
-                        regulatoryDetails: [
-                            {
-                                code: "AFFILIATION",
-                                status: false,
-                                details: "Affiliated with Interactive Brokers"
-                            },
-                            {
-                                code: "EmployeePubTrade",
-                                status: false,
-                                details: "Employee is not trading publicly"
-                            },
-                            {
-                                code: "ControlPubTraded",
-                                status: false,
-                                details: "Controlled trading is not allowed"
-                            }
-                        ]
-                    }
-                ],
+                regulatoryInformation: defaultRegulatoryInfo,
             },
             jointHolders: {
                 firstHolderDetails: [{
@@ -70,14 +72,16 @@ export function getApplicationDefaults<Schema extends z.AnyZodObject>(schema: Sc
                 }],
                 secondHolderDetails: [{
                     w8Ben: { ...defaultW8Ben }
-                }]
+                }],
+                regulatoryInformation: defaultRegulatoryInfo,
             },
             organization: {
                 associatedEntities: {
                     associatedIndividuals: [{
                         w8Ben: { ...defaultW8Ben }
                     }]
-                }
+                },
+                regulatoryInformation: defaultRegulatoryInfo,
             }
         }
     }

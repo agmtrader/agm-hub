@@ -246,13 +246,19 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       )?.name ?? ''
     : ''
 
-  const missingDocuments = useMemo(() => {
-    const uploadedFormNumbers = new Set(
-      documents.map((doc) => doc?.formNumber).filter((num): num is number => typeof num === 'number')
-    )
-    return documentCategories
-      .filter((cat) => cat.formNumber !== null && !uploadedFormNumbers.has(cat.formNumber))
-  }, [documents])
+  const missingPerHolder = useMemo(() => {
+    return signerOptions.map(signer => {
+      const holderDocs = documents.filter(doc => doc.signedBy?.includes(signer));
+      const hasPOI = holderDocs.some(doc => doc.formNumber === 8001);
+      const hasPOA = holderDocs.some(doc => doc.formNumber === 8002);
+      
+      const missing = [];
+      if (!hasPOI) missing.push('Proof of Identity');
+      if (!hasPOA) missing.push('Proof of Address');
+      
+      return { holder: signer, missing };
+    }).filter(res => res.missing.length > 0);
+  }, [documents, signerOptions])
 
   return (
     <div className="mb-8">
@@ -341,12 +347,14 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
           </div>
         </CardHeader>
         <CardContent>
-          {missingDocuments.length > 0 && (
-            <div className="mb-4 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
+          {missingPerHolder.length > 0 && (
+            <div className="mb-4 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 space-y-1">
               <p className="text-sm font-medium text-foreground">Missing documents</p>
-              <p className="text-sm text-subtitle">
-                {missingDocuments.map((cat) => cat.name).join(', ')}
-              </p>
+              {missingPerHolder.map(({ holder, missing }) => (
+                <p key={holder} className="text-sm text-subtitle">
+                  {holder}: {missing.join(', ')} missing
+                </p>
+              ))}
             </div>
           )}
           <DataTable
