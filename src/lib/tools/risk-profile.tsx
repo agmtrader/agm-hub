@@ -1,4 +1,3 @@
-import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Base } from '../entities/base';
 
 export interface RiskProfilePayload {
