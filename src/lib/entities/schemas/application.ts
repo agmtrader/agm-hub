@@ -334,10 +334,10 @@ export const organization_identification_schema = z.object({
   placeOfBusinessAddress: address_schema.optional().nullable(),
   mailingAddress: address_schema.optional().nullable(),
   phones: z.array(phone_schema).optional().nullable(),
-  name: z.string().optional().nullable(),
-  businessDescription: z.string().optional().nullable(),
+  name: z.string({errorMap: () => ({ message: 'Required' })}),
+  businessDescription: z.string({errorMap: () => ({ message: 'Required' })}),
   websiteAddress: z.string().optional().nullable(),
-  identification: z.string().optional().nullable(),
+  identification: z.string({errorMap: () => ({ message: 'Required' })}),
   identificationCountry: z.string().optional().nullable(),
   formationCountry: z.string().optional().nullable(),
   formationState: z.string().optional().nullable(),
@@ -351,8 +351,8 @@ export const organization_associated_entities_schema = z.object({
 });
 
 export const organization_account_support_schema = z.object({
-  businessDescription: z.string().optional().nullable(),
-  ownersResideUS: z.boolean().optional().nullable(),
+  businessDescription: z.string({errorMap: () => ({ message: 'Required' })}),
+  ownersResideUS: z.boolean({errorMap: () => ({ message: 'Required' })}),
   type: z.string().optional().nullable(),
 });
 

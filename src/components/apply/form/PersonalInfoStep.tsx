@@ -623,8 +623,17 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
 
     if (!signedBy.length) return;
 
+    const existingDoc = currentDocs[existingIndex] as any;
+    const currentSignedBy = existingDoc.signedBy || [];
+
+    // Check if signedBy has actually changed to avoid infinite loops
+    const hasChanged = 
+      currentSignedBy.length !== signedBy.length ||
+      !currentSignedBy.every((val: string, index: number) => val === signedBy[index]);
+
+    if (!hasChanged) return;
+
     const newDocs = [...currentDocs];
-    const existingDoc = newDocs[existingIndex] as any;
     newDocs[existingIndex] = {
       ...existingDoc,
       signedBy,
@@ -659,6 +668,8 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
+
+      if (name === 'documents' || name?.startsWith('documents.')) return;
 
       const currentAccountType = value.customer?.type;
       const holderPaths = taxResidencyPathsByType[currentAccountType ?? ""] ?? [];
@@ -844,11 +855,13 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
         name={`customer.organization.identifications.0.name` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('apply.account.account_holder_info.organization_name')}</FormLabel>
+            <div className='flex flex-row gap-2 items-center'>
+              <FormLabel>{t('apply.account.account_holder_info.organization_name')}</FormLabel>
+              <FormMessage />
+            </div>  
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
-            <FormMessage />
           </FormItem>
         )}
       />
@@ -857,11 +870,13 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
         name={`customer.organization.identifications.0.businessDescription` as any}
         render={({ field }) => (
           <FormItem>
+            <div className='flex flex-row gap-2 items-center'>
             <FormLabel>{t('apply.account.account_holder_info.business_description')}</FormLabel>
+            <FormMessage />
+            </div>
             <FormControl>
               <Textarea placeholder="" {...field} />
             </FormControl>
-            <FormMessage />
           </FormItem>
         )}
       />
@@ -870,11 +885,13 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
         name={`customer.organization.identifications.0.identification` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('apply.account.account_holder_info.organization_identification_number')}</FormLabel>
+            <div className='flex flex-row gap-2 items-center'>
+              <FormLabel>{t('apply.account.account_holder_info.organization_identification_number')}</FormLabel>
+              <FormMessage />
+            </div>
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
-            <FormMessage />
           </FormItem>
         )}
       />
@@ -883,7 +900,10 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
         name={`customer.organization.accountSupport.ownersResideUS` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('apply.account.account_holder_info.owners_reside_in_us')}</FormLabel>
+            <div className='flex flex-row gap-2 items-center'>
+              <FormLabel>{t('apply.account.account_holder_info.owners_reside_in_us')}</FormLabel>
+              <FormMessage />
+            </div>
             <Select onValueChange={(val)=>field.onChange(val==='true')} defaultValue={field.value?.toString() ?? null}>
               <FormControl>
                 <SelectTrigger>
@@ -895,7 +915,6 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
                 <SelectItem value="false">{t('apply.account.account_holder_info.no')}</SelectItem>
               </SelectContent>
             </Select>
-            <FormMessage />
           </FormItem>
         )}
       />

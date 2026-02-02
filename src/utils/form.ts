@@ -52,7 +52,10 @@ export function getApplicationDefaults<Schema extends z.AnyZodObject>(schema: Sc
         documents: [],
         accounts: [{
             tradingPermissions: [],
-            multiCurrency: true
+            multiCurrency: true,
+            capabilities: [
+                'CLP'
+            ]
         }],
         customer: {
             accountHolder: {
