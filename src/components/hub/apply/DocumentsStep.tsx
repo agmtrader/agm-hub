@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { IBKRDocument, Application } from '@/lib/entities/application'
 import { InternalDocument, documentCategories } from '@/lib/entities/documents'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { FormField } from '@/components/ui/form'
 import { calculateSHA1, getBase64 } from '@/utils/entities/documents'
 
@@ -34,6 +35,7 @@ interface DocumentsStepProps {
 }
 
 const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
+  const { t } = useTranslationProvider()
   const actualForm = form as UseFormReturn<Application>
   const actualFormData = formData || (actualForm ? actualForm.getValues() : null)
 
@@ -139,8 +141,8 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     actualForm.setValue('documents', updatedDocuments, { shouldValidate: true, shouldDirty: true })
 
     toast({
-      title: 'Document Deleted',
-      description: 'The document has been removed successfully.',
+      title: t('apply.account.documents.messages.document_deleted'),
+      description: t('apply.account.documents.messages.document_removed'),
       variant: 'success',
     })
   }
@@ -153,17 +155,17 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
 
   async function handleUpload() {
     if (!files || files.length === 0) {
-      toast({ title: 'No file selected', description: 'Please choose a file to upload', variant: 'warning' })
+      toast({ title: t('apply.account.documents.messages.no_file_selected'), description: t('apply.account.documents.messages.choose_file'), variant: 'warning' })
       return
     }
 
     if (!documentCategoryId) {
-      toast({ title: 'No document type selected', description: 'Please select a document type', variant: 'warning' })
+      toast({ title: t('apply.account.documents.messages.no_document_type'), description: t('apply.account.documents.messages.select_document_type'), variant: 'warning' })
       return
     }
 
     if (selectedSigners.length === 0) {
-      toast({ title: 'No signer selected', description: 'Select at least one signer', variant: 'warning' })
+      toast({ title: t('apply.account.documents.messages.no_signer'), description: t('apply.account.documents.messages.select_signer'), variant: 'warning' })
       return
     }
 
@@ -199,14 +201,14 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       actualForm?.setValue('documents', updatedDocuments, { shouldValidate: true, shouldDirty: true })
 
       toast({
-        title: 'Document Uploaded',
-        description: 'The document has been added successfully.',
+        title: t('apply.account.documents.messages.document_uploaded'),
+        description: t('apply.account.documents.messages.document_added'),
         variant: 'success',
       })
 
       setIsDialogOpen(false)
     } catch (error: any) {
-      toast({ title: 'Error', description: error?.message || 'Failed to upload document', variant: 'destructive' })
+      toast({ title: t('apply.account.documents.messages.error'), description: error?.message || t('apply.account.documents.messages.upload_failed'), variant: 'destructive' })
     } finally {
       setIsUploading(false)
     }
@@ -214,18 +216,18 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
 
   const columns = [
     {
-      header: 'File Name',
+      header: t('apply.account.documents.file_name'),
       accessorKey: 'attachedFile.fileName',
     },
     {
-      header: 'Signed By',
+      header: t('apply.account.documents.signed_by'),
       accessorKey: 'signedBy',
       cell: ({ row }: any) => {
         return row.original.signedBy?.join(', ') ?? ''
       },
     },
     {
-      header: 'Uploaded',
+      header: t('apply.account.documents.uploaded'),
       accessorKey: 'execTimestamp',
     },
   ] as ColumnDefinition<IBKRDocument>[]
@@ -241,7 +243,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     : null
 
   const viewerName = selectedDocument
-    ? documentCategories.find(
+    ? documentCategories(t).find(
         (cat) => cat.formNumber === selectedDocument.formNumber
       )?.name ?? ''
     : ''
@@ -253,12 +255,12 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       const hasPOA = holderDocs.some(doc => doc?.formNumber === 8002);
       
       const missing = [];
-      if (!hasPOI) missing.push('Proof of Identity');
-      if (!hasPOA) missing.push('Proof of Address');
+      if (!hasPOI) missing.push(t('apply.account.documents.proof_of_identity'));
+      if (!hasPOA) missing.push(t('apply.account.documents.proof_of_address'));
       
       return { holder: signer, missing };
     }).filter(res => res.missing.length > 0);
-  }, [documents, signerOptions])
+  }, [documents, signerOptions, t])
 
   return (
     <div className="mb-8">
@@ -267,25 +269,25 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
-              <CardTitle>Documents</CardTitle>
+              <CardTitle>{t('apply.account.documents.title')}</CardTitle>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2">
-                  <Upload className="h-4 w-4" /> Upload
+                  <Upload className="h-4 w-4" /> {t('apply.account.documents.upload')}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-xl">
                 <DialogHead>
-                  <DialogTit>Upload Document</DialogTit>
+                  <DialogTit>{t('apply.account.documents.upload_document')}</DialogTit>
                 </DialogHead>
                 <div className="space-y-4">
                   <Select value={documentCategoryId?.toString() ?? ''} onValueChange={(v) => setDocumentCategoryId(Number(v))}>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select Document Type" />
+                      <SelectValue placeholder={t('apply.account.documents.select_document_type')} />
                     </SelectTrigger>
                     <SelectContent>
-                      {documentCategories
+                      {documentCategories(t)
                         .filter((cat) => cat.formNumber !== null)
                         .map((category) => (
                           <SelectItem key={category.formNumber} value={category.formNumber!.toString()}>
@@ -309,7 +311,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                     <FileInput>
                       <div className="flex flex-col items-center justify-center p-4 text-center">
                         <Upload className="h-10 w-10 text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground">Drag & drop or click to upload</p>
+                        <p className="text-sm text-muted-foreground">{t('apply.account.documents.drag_drop')}</p>
                       </div>
                     </FileInput>
                     <FileUploaderContent>
@@ -321,7 +323,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                     </FileUploaderContent>
                   </FileUploader>
                   <div className="space-y-2">
-                    <p className="text-sm font-medium">Select Signers</p>
+                    <p className="text-sm font-medium">{t('apply.account.documents.select_signers')}</p>
                     <div className="grid grid-cols-1 gap-2 max-h-40 overflow-auto">
                       {signerOptions.map((name) => (
                         <label key={name} className="flex items-center gap-2 text-sm">
@@ -334,12 +336,12 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
                         </label>
                       ))}
                       {!signerOptions.length && (
-                        <p className="text-sm text-subtitle">Add account holders to select signers.</p>
+                        <p className="text-sm text-subtitle">{t('apply.account.documents.add_account_holders')}</p>
                       )}
                     </div>
                   </div>
                   <Button onClick={handleUpload} disabled={isUploading || !files?.length} className="w-full bg-primary text-background hover:bg-primary/90">
-                    {isUploading ? 'Uploading...' : 'Upload'}
+                    {isUploading ? t('apply.account.documents.uploading') : t('apply.account.documents.upload')}
                   </Button>
                 </div>
               </DialogContent>
@@ -349,10 +351,10 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
         <CardContent>
           {missingPerHolder.length > 0 && (
             <div className="mb-4 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 space-y-1">
-              <p className="text-sm font-medium text-foreground">Missing documents</p>
+              <p className="text-sm font-medium text-foreground">{t('apply.account.documents.missing_documents')}</p>
               {missingPerHolder.map(({ holder, missing }) => (
                 <p key={holder} className="text-sm text-subtitle">
-                  {holder}: {missing.join(', ')} missing
+                  {holder}: {missing.join(', ')} {t('apply.account.documents.missing')}
                 </p>
               ))}
             </div>
@@ -363,13 +365,13 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
             enableRowActions
             rowActions={[
               {
-                label: 'View',
+                label: t('apply.account.documents.view'),
                 onClick: (row) => {
                   setSelectedDocument(row)
                 },
               },
               {
-                label: 'Delete',
+                label: t('apply.account.documents.delete'),
                 onClick: (row) => {
                   handleDelete(row)
                 },

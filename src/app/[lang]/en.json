@@ -418,7 +418,28 @@
                 "employee_pub_trade_no": "Applicant is not an employee of a publicly traded company",
                 "affiliation_yes": "Applicant is affiliated with a broker-dealer, director, or owner of a securities or commodities brokerage firm",
                 "control_pub_traded_yes": "Applicant controls a publicly traded company",
-                "employee_pub_trade_yes": "Applicant is an employee of a publicly traded company"
+                "employee_pub_trade_yes": "Applicant is an employee of a publicly traded company",
+                "yes": "Yes",
+                "no": "No",
+                "company_stock_symbols": "Company Stock Symbols",
+                "company_stock_symbols_description": "Enter one or more stock symbols separated by commas. Symbols must be UPPER CASE.",
+                "affiliation_fields": {
+                    "relationship": "Relationship",
+                    "relationships": {
+                        "other": "Other",
+                        "spouse": "Spouse",
+                        "parent": "Parent",
+                        "child": "Child",
+                        "self": "Self"
+                    },
+                    "affiliated_person_name": "Affiliated Person Name",
+                    "company": "Company",
+                    "compliance_officer_phone": "Compliance Officer Phone",
+                    "compliance_officer_email": "Compliance Officer Email",
+                    "state_province": "State/Province",
+                    "city": "City",
+                    "postal_code": "Postal Code"
+                }
             },
             "financial": {
                 "financial_information": "Financial Information",
@@ -456,6 +477,7 @@
                 "products": {
                     "bonds": "Bonds",
                     "mutual_funds": "Mutual Funds",
+                    "etfs": "ETFs",
                     "stocks": "Stocks",
                     "options": "Options",
                     "futures": "Futures"
@@ -468,6 +490,12 @@
                 "years_trading": "Years Trading",
                 "trades_per_year": "Trades / Year",
                 "knowledge_level": "Knowledge Level",
+                "knowledge_levels": {
+                    "none": "None",
+                    "limited": "Limited",
+                    "good": "Good",
+                    "extensive": "Extensive"
+                },
                 "add_experience": "Add Experience",
                 
                 "source_of_wealth": "Source of Wealth",
@@ -488,6 +516,71 @@
 
                 "estimated_deposit": "Estimated Deposit",
                 "estimated_deposit_help": "Approximate amount you plan to deposit initially."
+            },
+            "documents": {
+                "title": "Documents",
+                "upload_document": "Upload Document",
+                "upload": "Upload",
+                "uploading": "Uploading...",
+                "select_document_type": "Select Document Type",
+                "drag_drop": "Drag & drop or click to upload",
+                "select_signers": "Select Signers",
+                "add_account_holders": "Add account holders to select signers.",
+                "file_name": "File Name",
+                "signed_by": "Signed By",
+                "uploaded": "Uploaded",
+                "view": "View",
+                "delete": "Delete",
+                "missing_documents": "Missing documents",
+                "missing": "missing",
+                "proof_of_identity": "Proof of Identity",
+                "proof_of_address": "Proof of Address",
+                "messages": {
+                    "no_file_selected": "No file selected",
+                    "choose_file": "Please choose a file to upload",
+                    "no_document_type": "No document type selected",
+                    "select_document_type": "Please select a document type",
+                    "no_signer": "No signer selected",
+                    "select_signer": "Select at least one signer",
+                    "document_deleted": "Document Deleted",
+                    "document_removed": "The document has been removed successfully.",
+                    "document_uploaded": "Document Uploaded",
+                    "document_added": "The document has been added successfully.",
+                    "error": "Error",
+                    "upload_failed": "Failed to upload document"
+                },
+                "document_categories": {
+                    "w8_form": "W8 Form",
+                    "proof_of_identity": "Proof of Identity",
+                    "proof_of_address": "Proof of Address",
+                    "source_of_wealth": "Source of Wealth",
+                    "proof_of_existence": "Proof of Existence",
+                    "manifest": "Manifest",
+                    "new_application_form": "New Application Form",
+                    "tax": "Tax",
+                    "other": "Other"
+                }
+            },
+            "application_success": {
+                "title": "Application Submitted Successfully!",
+                "description": "Your IBKR application has been submitted and is being reviewed.",
+                "description_2": "You will receive a confirmation email in the next day or two with next steps.",
+                "go_back_home": "Go Back Home"
+            },
+            "agreements": {
+                "title": "Agreements and Disclosures",
+                "form_number": "Form #",
+                "digital_signature_note": "Please note this field counts as a digital signature and must match the account holder's first and last name as entered in the application.",
+                "enter_signature": "Enter your first and last name exactly as in the application",
+                "signature_error": "Signature must exactly match the account holder's first and last name.",
+                "previous": "Previous",
+                "submitting": "Submitting...",
+                "submit_application": "Submit Application",
+                "loading": "Loading...",
+                "messages": {
+                    "fetch_content_error": "Failed to fetch form content.",
+                    "fetch_form_error": "Failed to fetch form."
+                }
             }
         }
     },
@@ -495,7 +588,9 @@
         "search": "Search...",
         "no_results": "No results found.",
         "submit": "Submit",
-        "submitting": "Submitting..."
+        "submitting": "Submitting...",
+        "form_errors_title": "Form Errors",
+        "form_errors_description": "Please correct the highlighted errors before continuing."
     },
     "fees": {
         "title": "Fees",

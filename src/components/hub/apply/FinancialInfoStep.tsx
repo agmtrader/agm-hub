@@ -219,7 +219,7 @@ const FinancialInfoStep = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {asset_classes.map((opt) => (
+                      {asset_classes(t).map((opt) => (
                         <SelectItem key={opt.value} value={opt.value}>
                           {opt.label}
                         </SelectItem>
@@ -299,7 +299,7 @@ const FinancialInfoStep = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {knowledge_levels.map((lvl) => (
+                      {knowledge_levels(t).map((lvl) => (
                         <SelectItem key={lvl.value} value={lvl.value}>
                           {lvl.label}
                         </SelectItem>
@@ -412,6 +412,7 @@ const FinancialInfoStep = ({
                   <FormLabel>{t('apply.account.financial.net_worth')} (USD)</FormLabel>
                   <FormMessage />
                 </div>
+                <p className="text-xs text-subtitle">{t('apply.account.financial.net_worth_help')}</p>
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
@@ -429,7 +430,6 @@ const FinancialInfoStep = ({
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-subtitle">{t('apply.account.financial.net_worth_help')}</p>
               </FormItem>
             )}
           />
@@ -442,6 +442,7 @@ const FinancialInfoStep = ({
                   <FormLabel>{t('apply.account.financial.liquid_net_worth')} (USD)</FormLabel>
                   <FormMessage />
                 </div>
+                <p className="text-xs text-subtitle">{t('apply.account.financial.liquid_net_worth_help')}</p>
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
@@ -459,7 +460,6 @@ const FinancialInfoStep = ({
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-subtitle">{t('apply.account.financial.liquid_net_worth_help')}</p>
               </FormItem>
             )}
           />
@@ -472,6 +472,7 @@ const FinancialInfoStep = ({
                   <FormLabel>{t('apply.account.financial.annual_net_income')} (USD)</FormLabel>
                   <FormMessage />
                 </div>
+                <p className="text-xs text-subtitle">{t('apply.account.financial.annual_net_income_help')}</p>
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
@@ -489,7 +490,6 @@ const FinancialInfoStep = ({
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-subtitle">{t('apply.account.financial.annual_net_income_help')}</p>
               </FormItem>
             )}
           />

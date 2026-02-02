@@ -330,9 +330,9 @@ const IBKRApplicationForm = () => {
     }
 
     if (!isValid) {
-      toast({
-        title: 'Form Errors',
-        description: 'Please correct the highlighted errors before continuing.',
+      toast({ 
+        title: t('forms.form_errors_title'),
+        description: t('forms.form_errors_description'),
         variant: 'destructive'
       });
       return;

@@ -306,19 +306,19 @@ export const currencies = [
   { label: "KRW", value: "KRW" },
 ]
 
-export const knowledge_levels = [
-  { label: "None", value: "None" },
-  { label: "Limited", value: "Limited" },
-  { label: "Good", value: "Good" },
-  { label: "Extensive", value: "Extensive" },
+export const knowledge_levels = (t: (key: string) => string) => [
+  { label: t('apply.account.financial.knowledge_levels.none'), value: "None" },
+  { label: t('apply.account.financial.knowledge_levels.limited'), value: "Limited" },
+  { label: t('apply.account.financial.knowledge_levels.good'), value: "Good" },
+  { label: t('apply.account.financial.knowledge_levels.extensive'), value: "Extensive" },
 ]
 
-export const asset_classes = [
-  { label: "Bonds", value: "BOND" },
-  { label: "ETFs", value: "FUND" },
-  { label: "Stocks", value: "STK" },
-  { label: "Options", value: "OPT" },
-  { label: "Futures", value: "FUT" },
+export const asset_classes = (t: (key: string) => string) => [
+  { label: t('apply.account.financial.products.bonds'), value: "BOND" },
+  { label: t('apply.account.financial.products.etfs'), value: "FUND" },
+  { label: t('apply.account.financial.products.stocks'), value: "STK" },
+  { label: t('apply.account.financial.products.options'), value: "OPT" },
+  { label: t('apply.account.financial.products.futures'), value: "FUT" },
 ]
 
 export const marital_status = (t: (key: string) => string) => [
@@ -434,6 +434,14 @@ export const regulatory_codes = (t: (key: string) => string) => [
     positive: t('apply.account.regulatory.control_pub_traded_yes'),
     negative: t('apply.account.regulatory.control_pub_traded_no')
   }
+]
+
+export const affiliation_relationships = (t: (key: string) => string) => [
+  { label: t('apply.account.regulatory.affiliation_fields.relationships.other'), value: "Other" },
+  { label: t('apply.account.regulatory.affiliation_fields.relationships.spouse'), value: "Spouse" },
+  { label: t('apply.account.regulatory.affiliation_fields.relationships.parent'), value: "Parent" },
+  { label: t('apply.account.regulatory.affiliation_fields.relationships.child'), value: "Child" },
+  { label: t('apply.account.regulatory.affiliation_fields.relationships.self'), value: "Self" },
 ]
 
 export const trading_products = (t: (key: string) => string) => [

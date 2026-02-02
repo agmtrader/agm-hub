@@ -426,7 +426,28 @@
                 "employee_pub_trade_no": "El solicitante no es empleado de una empresa que cotiza en bolsa",
                 "affiliation_yes": "El solicitante está afiliado a un corredor de bolsa, director o propietario de una firma de corretaje de valores o materias primas",
                 "control_pub_traded_yes": "El solicitante controla una empresa que cotiza en bolsa",
-                "employee_pub_trade_yes": "El solicitante es empleado de una empresa que cotiza en bolsa"
+                "employee_pub_trade_yes": "El solicitante es empleado de una empresa que cotiza en bolsa",
+                "yes": "Sí",
+                "no": "No",
+                "company_stock_symbols": "Símbolos de acciones de la empresa",
+                "company_stock_symbols_description": "Ingrese uno o más símbolos de acciones separados por comas. Los símbolos deben estar en MAYÚSCULAS.",
+                "affiliation_fields": {
+                    "relationship": "Relación",
+                    "relationships": {
+                        "other": "Otro",
+                        "spouse": "Cónyuge",
+                        "parent": "Padre/Madre",
+                        "child": "Hijo/a",
+                        "self": "Yo mismo"
+                    },
+                    "affiliated_person_name": "Nombre de la persona afiliada",
+                    "company": "Empresa",
+                    "compliance_officer_phone": "Teléfono del oficial de cumplimiento",
+                    "compliance_officer_email": "Correo electrónico del oficial de cumplimiento",
+                    "state_province": "Estado/Provincia",
+                    "city": "Ciudad",
+                    "postal_code": "Código Postal"
+                }
             },
             "financial": {
                 "financial_information": "Información Financiera",
@@ -464,6 +485,7 @@
                 "products": {
                     "bonds": "Bonos",
                     "mutual_funds": "Fondos Mutuos",
+                    "etfs": "ETFs",
                     "stocks": "Acciones",
                     "options": "Opciones",
                     "futures": "Futuros"
@@ -476,6 +498,12 @@
                 "years_trading": "Años Negociando",
                 "trades_per_year": "Operaciones / Año",
                 "knowledge_level": "Nivel de Conocimiento",
+                "knowledge_levels": {
+                    "none": "Ninguno",
+                    "limited": "Limitado",
+                    "good": "Bueno",
+                    "extensive": "Extenso"
+                },
                 "add_experience": "Añadir Experiencia",
                 
                 "source_of_wealth": "Fuente de Riqueza",
@@ -496,6 +524,71 @@
 
                 "estimated_deposit": "Depósito Estimado",
                 "estimated_deposit_help": "Monto aproximado que planea depositar inicialmente."
+            },
+            "documents": {
+                "title": "Documentos",
+                "upload_document": "Subir Documento",
+                "upload": "Subir",
+                "uploading": "Subiendo...",
+                "select_document_type": "Seleccione Tipo de Documento",
+                "drag_drop": "Arrastre y suelte o haga clic para subir",
+                "select_signers": "Seleccione Firmantes",
+                "add_account_holders": "Agregue titulares de cuenta para seleccionar firmantes.",
+                "file_name": "Nombre del Archivo",
+                "signed_by": "Firmado Por",
+                "uploaded": "Subido",
+                "view": "Ver",
+                "delete": "Eliminar",
+                "missing_documents": "Documentos faltantes",
+                "missing": "faltante",
+                "proof_of_identity": "Prueba de Identidad",
+                "proof_of_address": "Prueba de Dirección",
+                "messages": {
+                    "no_file_selected": "Ningún archivo seleccionado",
+                    "choose_file": "Por favor elija un archivo para subir",
+                    "no_document_type": "Ningún tipo de documento seleccionado",
+                    "select_document_type": "Por favor seleccione un tipo de documento",
+                    "no_signer": "Ningún firmante seleccionado",
+                    "select_signer": "Seleccione al menos un firmante",
+                    "document_deleted": "Documento Eliminado",
+                    "document_removed": "El documento ha sido eliminado exitosamente.",
+                    "document_uploaded": "Documento Subido",
+                    "document_added": "El documento ha sido agregado exitosamente.",
+                    "error": "Error",
+                    "upload_failed": "Error al subir documento"
+                },
+                "document_categories": {
+                    "w8_form": "Formulario W8",
+                    "proof_of_identity": "Prueba de Identidad",
+                    "proof_of_address": "Prueba de Dirección",
+                    "source_of_wealth": "Fuente de Riqueza",
+                    "proof_of_existence": "Prueba de Existencia",
+                    "manifest": "Manifiesto",
+                    "new_application_form": "Nuevo Formulario de Solicitud",
+                    "tax": "Impuestos",
+                    "other": "Otro"
+                }
+            },
+            "application_success": {
+                "title": "Aplicación Enviada Exitosamente!",
+                "description": "Su aplicación IBKR ha sido enviada y está siendo revisada.",
+                "description_2": "Recibirá un correo electrónico de confirmación en los próximos días con los siguientes pasos.",
+                "go_back_home": "Volver a la Página Principal"
+            },
+            "agreements": {
+                "title": "Acuerdos y Divulgaciones",
+                "form_number": "Formulario #",
+                "digital_signature_note": "Tenga en cuenta que este campo cuenta como una firma digital y debe coincidir con el nombre y apellido del titular de la cuenta tal como se ingresó en la solicitud.",
+                "enter_signature": "Ingrese su nombre y apellido exactamente como en la solicitud",
+                "signature_error": "La firma debe coincidir exactamente con el nombre y apellido del titular de la cuenta.",
+                "previous": "Anterior",
+                "submitting": "Enviando...",
+                "submit_application": "Enviar Solicitud",
+                "loading": "Cargando...",
+                "messages": {
+                    "fetch_content_error": "Error al obtener el contenido del formulario.",
+                    "fetch_form_error": "Error al obtener el formulario."
+                }
             }
         }
     },
@@ -503,7 +596,9 @@
         "search": "Buscar...",
         "no_results": "No se encontraron resultados.",
         "submit": "Enviar",
-        "submitting": "Enviando..."
+        "submitting": "Enviando...",
+        "form_errors_title": "Errores del Formulario",
+        "form_errors_description": "Por favor, corrija los errores resaltados antes de continuar."
     },
     "fees": {
         "title": "Costos",

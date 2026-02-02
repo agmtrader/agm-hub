@@ -1,49 +1,49 @@
 import { poa_schema, poe_schema, poi_schema, sow_schema } from './schemas/documents';
 import { Base } from './base';
 
-export const documentCategories = [
+export const documentCategories = (t: (key: string) => string) => [
   {
-    name: 'W8 Form',
+    name: t('apply.account.documents.document_categories.w8_form'),
     formNumber: 5001,
     types: poa_schema.shape.type.options,
   },
   {
-    name: 'Proof of Identity',
+    name: t('apply.account.documents.document_categories.proof_of_identity'),
     formNumber: 8001,
     types: poi_schema.shape.type.options,
   },
   {
-    name: 'Proof of Address',
+    name: t('apply.account.documents.document_categories.proof_of_address'),
     formNumber: 8002,
     types: poa_schema.shape.type.options,
   },
   {
-    name: 'Source of Wealth',
+    name: t('apply.account.documents.document_categories.source_of_wealth'),
     formNumber: null,
     types: sow_schema.shape.type.options,
   },
   {
-    name: 'Proof of Existence',
+    name: t('apply.account.documents.document_categories.proof_of_existence'),
     formNumber: null,
     types: poe_schema.shape.type.options,
   },
   {
-    name: 'Manifest',
+    name: t('apply.account.documents.document_categories.manifest'),
     formNumber: null,
     types: null,
   },
   {
-    name: 'New Application Form',
+    name: t('apply.account.documents.document_categories.new_application_form'),
     formNumber: null,
     types: null,
   },
   {
-    name: 'Tax',
+    name: t('apply.account.documents.document_categories.tax'),
     formNumber: null,
     types: null,
   },
   {
-    name: 'Other',
+    name: t('apply.account.documents.document_categories.other'),
     formNumber: null,
     types: null,
   },

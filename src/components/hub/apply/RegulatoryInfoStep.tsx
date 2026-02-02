@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import CountriesFormField from '@/components/misc/CountriesFormField';
 import { Input } from '@/components/ui/input';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { regulatory_codes } from '@/lib/entities/application';
+import { regulatory_codes, affiliation_relationships } from '@/lib/entities/application';
 
 interface RegulatoryInfoStepProps {
   form: UseFormReturn<Application>;
@@ -75,8 +75,8 @@ const RegulatoryInfoStep = ({ form }: RegulatoryInfoStepProps) => {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="false">No</SelectItem>
-                              <SelectItem value="true">Yes</SelectItem>
+                              <SelectItem value="false">{t('apply.account.regulatory.no')}</SelectItem>
+                              <SelectItem value="true">{t('apply.account.regulatory.yes')}</SelectItem>
                             </SelectContent>
                           </Select>
                         </FormControl>
@@ -96,9 +96,9 @@ const RegulatoryInfoStep = ({ form }: RegulatoryInfoStepProps) => {
                       name={detailsPath as any}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Company Stock Symbols</FormLabel>
+                          <FormLabel>{t('apply.account.regulatory.company_stock_symbols')}</FormLabel>
                           <FormDescription>
-                            Enter one or more stock symbols separated by commas. Symbols must be UPPER CASE.
+                            {t('apply.account.regulatory.company_stock_symbols_description')}
                           </FormDescription>
                           <FormControl>
                             <Input
@@ -124,6 +124,7 @@ const RegulatoryInfoStep = ({ form }: RegulatoryInfoStepProps) => {
 
 /** Affiliation extra fields */
 const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseFormReturn<Application> }) => {
+  const { t } = useTranslationProvider();
   return (
     <div className="space-y-4">
       {/* Relationship */}
@@ -132,7 +133,7 @@ const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseForm
         name={`${basePath}.affiliationRelationship` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Relationship</FormLabel>
+            <FormLabel>{t('apply.account.regulatory.affiliation_fields.relationship')}</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
@@ -140,9 +141,9 @@ const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseForm
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {['Other', 'Spouse', 'Parent', 'Child', 'Self'].map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {opt}
+                {affiliation_relationships(t).map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -158,7 +159,7 @@ const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseForm
         name={`${basePath}.personName` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Affiliated Person Name</FormLabel>
+            <FormLabel>{t('apply.account.regulatory.affiliation_fields.affiliated_person_name')}</FormLabel>
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
@@ -173,7 +174,7 @@ const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseForm
         name={`${basePath}.company` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Company</FormLabel>
+            <FormLabel>{t('apply.account.regulatory.affiliation_fields.company')}</FormLabel>
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
@@ -188,7 +189,7 @@ const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseForm
         name={`${basePath}.companyPhone` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Compliance Officer Phone</FormLabel>
+            <FormLabel>{t('apply.account.regulatory.affiliation_fields.compliance_officer_phone')}</FormLabel>
             <FormControl>
               <Input placeholder="" {...field} />
             </FormControl>
@@ -203,7 +204,7 @@ const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseForm
         name={`${basePath}.companyEmailAddress` as any}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Compliance Officer Email</FormLabel>
+            <FormLabel>{t('apply.account.regulatory.affiliation_fields.compliance_officer_email')}</FormLabel>
             <FormControl>
               <Input placeholder="" type="email" {...field} />
             </FormControl>
@@ -214,13 +215,13 @@ const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseForm
 
       {/* Address fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <CountriesFormField form={form} element={{ name: `${basePath}.country`, title: 'Country (3-letter code)' }} />
+        <CountriesFormField form={form} element={{ name: `${basePath}.country`, title: t('apply.account.account_holder_info.country') }} />
         <FormField
           control={form.control}
           name={`${basePath}.state` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>State/Province</FormLabel>
+              <FormLabel>{t('apply.account.regulatory.affiliation_fields.state_province')}</FormLabel>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -235,7 +236,7 @@ const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseForm
           name={`${basePath}.city` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>City</FormLabel>
+              <FormLabel>{t('apply.account.regulatory.affiliation_fields.city')}</FormLabel>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
@@ -248,7 +249,7 @@ const AffiliationFields = ({ basePath, form }: { basePath: string; form: UseForm
           name={`${basePath}.postalCode` as any}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Postal Code</FormLabel>
+              <FormLabel>{t('apply.account.regulatory.affiliation_fields.postal_code')}</FormLabel>
               <FormControl>
                 <Input placeholder="" {...field} />
               </FormControl>
