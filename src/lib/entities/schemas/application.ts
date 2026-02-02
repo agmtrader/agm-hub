@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// Affiliation Details Schema
 export const affiliation_details_schema = z.object({
   isDuplicateStmtRequired: z.boolean().optional().default(true),
   affiliationRelationship: z.enum(['Other', 'Spouse', 'Parent', 'Child', 'Self']).optional().nullable(),
@@ -13,97 +14,7 @@ export const affiliation_details_schema = z.object({
   postalCode: z.string().optional().nullable(),
 });
 
-export const poa_schema = z.object({
-  type: z.enum(["Utility Bill", "Bank Statement", "Tax Return", "Marriage Certificate", "Other"]),
-})
-
-export const poi_schema = z.object({
-  type: z.enum(["National ID Card", "Driver License", "Passport", "Other"]),
-})
-
-// Proof of Existence for legal persons and trusts
-export const poe_schema = z.object({
-  type: z.enum(['Business Registration', 'Articles of Incorporation', 'Company Charter', 'Partnership Agreement', 'Government-issued business license', 'Government-issued Certificate of Good Standing from the Jurisdiction of Incorporation', 'Business Registration', 'Regulatory Registration License', 'Other']),
-})
-
-// Proof of Existence for individuals
-export const sow_schema = z.object({
-  type: z.enum(["Bank Statement", "Tax Return", "Other", "Other"]),
-})
-
-// Base Schemas
-export const name_schema = z.object({
-  first: z.string().optional().nullable(),
-  last: z.string().optional().nullable(),
-  middle: z.string().optional().nullable(),
-  salutation: z.string().optional().nullable(),
-});
-
-export const address_schema = z.object({
-  country: z.string().optional().nullable(),
-  street1: z.string().optional().nullable(),
-  street2: z.string().optional().nullable(),
-  city: z.string().optional().nullable(),
-  state: z.string().optional().nullable(),
-  postalCode: z.string().optional().nullable(),
-  compact: z.string().optional().nullable(),
-  type: z.string().optional().nullable(),
-});
-
-export const phone_schema = z.object({
-  type: z.string().optional().nullable(),
-  country: z.string().optional().nullable(),
-  number: z.string().optional().nullable(),
-  verified: z.boolean().optional(),
-  primary: z.boolean().optional(),
-});
-
-export const identification_schema = z.object({
-  passport: z.string().optional().nullable(),
-  nationalCard: z.string().optional().nullable(),
-  driversLicense: z.string().optional().nullable(),
-  issuingCountry: z.string().optional().nullable(),
-  expirationDate: z.string().optional().nullable(),
-  citizenship: z.string().optional().nullable(),
-});
-
-export const employment_details_schema = z.object({
-  employer: z.string().optional().nullable(),
-  occupation: z.string().optional().nullable(),
-  employerAddress: address_schema.optional().nullable(),
-  yearsWithEmployer: z.number().int().optional().nullable(),
-  employerBusiness: z.string().optional().nullable(),
-  emplCountryResCountryDetails: z.string().optional().nullable()
-});
-
-export const investment_experience_schema = z.object({
-  assetClass: z.string().optional().nullable(),
-  yearsTrading: z.number().int().optional().nullable(),
-  tradesPerYear: z.number().int().optional().nullable(),
-  knowledgeLevel: z.string().optional().nullable(),
-});
-
-export const source_of_wealth_schema = z.object({
-  sourceType: z.string().optional().nullable(),
-  percentage: z.number().int().optional().nullable(),
-  usedForFunds: z.boolean().optional().nullable(),
-  description: z.string().optional().nullable(),
-});
-
-export const regulatory_detail_schema = z.object({
-  code: z.string().optional().nullable(),
-  status: z.boolean(),
-  details: z.string().optional().nullable(),
-  detail: z.string().optional().nullable(),
-  externalIndividualId: z.string().optional().nullable(),
-  affiliation: affiliation_details_schema.optional().nullable(),
-});
-
-export const trading_permission_schema = z.object({
-  country: z.string().optional().nullable(),
-  product: z.string().optional().nullable(),
-});
-
+// Trading Limits Schema
 export const order_value_limits_schema = z.object({
   maxOrderValue: z.number().optional().nullable(),
   maxGrossValue: z.number().optional().nullable(),
@@ -133,29 +44,75 @@ export const trading_limits_schema = z.object({
   efpQuantityLimits: efp_quantity_limits_schema,
   orderQuantityLimits: z.array(order_quantity_limit_schema),
   dayQuantityLimits: z.array(day_quantity_limit_schema),
-}).optional(); // Making optional as it's optional in Account schema based on original types
+})
 
+// User Privilege Schema
 const privilege_enum_values: [string, ...string[]] = ["OWNER", "TRADER", "CUSTOM", "NONE"];
 export const user_privilege_schema = z.object({
   externalAccountId: z.string().optional().nullable(),
   privilege: z.enum(privilege_enum_values),
-}).optional(); // Making optional as it's optional in User schema
+}).optional();
 
-export const tax_residency_schema = z.object({
-  country: z.string().optional().nullable(),
+// IBKR Document Schema
+export const ibkr_document_schema = z.object({
+  signedBy: z.array(z.string()).optional().nullable(),
+  attachedFile: z.object({
+    fileName: z.string().optional().nullable(),
+    fileLength: z.number().optional().nullable(),
+    sha1Checksum: z.string().optional().nullable(),
+  }).optional(),
+  formNumber: z.number().optional().nullable(),
+  validAddress: z.boolean().optional(),
+  execLoginTimestamp: z.number(),
+  execTimestamp: z.number(),
+  proofOfIdentityType: z.string().optional().nullable(),
+  proofOfAddressType: z.string().optional().nullable(),
+  payload: z.object({
+    mimeType: z.string(),
+    data: z.string(),
+  }).optional(),
+  issuedDate: z.string().optional().nullable(),
+  expiryDate: z.string().optional().nullable(),
+}).optional();
+
+// Add Additional Account Schema
+export const add_additional_account_schema = z.object({
+  // Define if needed, similar to ibkr_document_schema
+}).optional();
+
+// Local Tax Form Schema
+export const local_tax_form_schema = z.object({
+  taxAuthority: z.string().optional().nullable(),
+  qualified: z.boolean().optional().nullable(),
+  treatyCountry: z.string().optional().nullable(),
+})
+
+export const w8ben_schema = z.object({
+  localTaxForms: z.array(local_tax_form_schema),
+  name: z.string().optional().nullable(),
   tin: z.string().optional().nullable(),
-  tinType: z.enum(['SSN', 'EIN', 'NonUS_NationalId']).optional().nullable(),
-});
+  foreignTaxId: z.string().optional().nullable(),
+  tinOrExplanationRequired: z.boolean().optional().nullable(),
+  explanation: z.string().optional().nullable(),
+  referenceNumber: z.number().optional().nullable(),
+  part29ACountry: z.string().optional().nullable(),
+  cert: z.boolean().optional().nullable(),
+  signatureType: z.string().optional().nullable(),
+  blankForm: z.boolean().optional().nullable(),
+  taxFormFile: z.string().optional().nullable(),
+  proprietaryFormNumber: z.number().optional().nullable(),
+  electronicFormat: z.boolean().optional().nullable(),
+  submitDate: z.string().optional().nullable(),
+})
 
-export const financial_information_schema = z.object({
-  investmentExperience: z.array(investment_experience_schema).optional().nullable(),
-  investmentObjectives: z.array(z.string()).optional().nullable(),
-  sourcesOfWealth: z.array(source_of_wealth_schema).optional().nullable(),
-  netWorth: z.number().int().optional().nullable(),
-  liquidNetWorth: z.number().int().optional().nullable(),
-  annualNetIncome: z.number().int().optional().nullable(),
-  taxBracket: z.string().optional().nullable(),
-  accreditedInvestor: z.boolean().optional().nullable(),
+// Regulatory Information Schema
+export const regulatory_detail_schema = z.object({
+  code: z.string().optional().nullable(),
+  status: z.boolean(),
+  details: z.string().optional().nullable(),
+  detail: z.string().optional().nullable(),
+  externalIndividualId: z.string().optional().nullable(),
+  affiliation: affiliation_details_schema.optional().nullable(),
 });
 
 export const regulatory_information_schema = z
@@ -228,97 +185,126 @@ export const regulatory_information_schema = z
         }
       }
     });
-  });
-
-export const account_schema = z.object({
-  investmentObjectives: z.array(z.string()).optional().nullable(),
-  tradingPermissions: z.array(trading_permission_schema).nullable().optional(),
-  externalId: z.string().min(1, { message: 'Account external ID is required' }),  
-  baseCurrency: z.string().nullable().optional(),
-  multiCurrency: z.boolean().optional().default(true),
-  margin: z.string().nullable().optional(),
-  tradingLimits: trading_limits_schema,
-  alias: z.string().optional().nullable(),
-  feesTemplateName: z.string().optional().nullable(),
 });
 
-export const user_schema = z.object({
-  userPrivileges: z.array(user_privilege_schema).optional().nullable(),
-  externalUserId: z.string().min(1, { message: 'External user ID is required' }),
-  externalIndividualId: z.string().min(1, { message: 'External individual ID for user is required' }),
-  prefix: z.string().optional().nullable(),
+// Financial Information Schemas
+
+export const investment_experience_schema = z.object({
+  assetClass: z.string({errorMap: () => ({ message: 'Required' })}),
+  yearsTrading: z.number({errorMap: () => ({ message: 'Required' })}).int(),
+  tradesPerYear: z.number({errorMap: () => ({ message: 'Required' })}).int(),
+  knowledgeLevel: z.string({errorMap: () => ({ message: 'Required' })}),
 });
 
-export const ibkr_document_schema = z.object({
-  signedBy: z.array(z.string()).optional().nullable(),
-  attachedFile: z.object({
-    fileName: z.string().optional().nullable(),
-    fileLength: z.number().optional().nullable(),
-    sha1Checksum: z.string().optional().nullable(),
-  }).optional(),
-  formNumber: z.number().optional().nullable(),
-  validAddress: z.boolean().optional(),
-  execLoginTimestamp: z.number(),
-  execTimestamp: z.number(),
-  proofOfIdentityType: z.string().optional().nullable(),
-  proofOfAddressType: z.string().optional().nullable(),
-  payload: z.object({
-    mimeType: z.string(),
-    data: z.string(),
-  }).optional(),
-  issuedDate: z.string().optional().nullable(),
-  expiryDate: z.string().optional().nullable(),
-}).optional();
+export const source_of_wealth_schema = z.object({
+  sourceType: z.string({errorMap: () => ({ message: 'Required' })}),
+  percentage: z.number({errorMap: () => ({ message: 'Required' })}).int(),
+  usedForFunds: z.boolean().optional().nullable(),
+  description: z.string().optional().nullable(),
+});
 
-export const add_additional_account_schema = z.object({
-  // Define if needed, similar to ibkr_document_schema
-}).optional();
+export const financial_information_schema = z.object({
+  investmentExperience: z.array(investment_experience_schema).min(1, { message: 'Required' }).default([]),
+  investmentObjectives: z.array(z.string()).min(1, { message: 'Required' }).default([]),
+  sourcesOfWealth: z.array(source_of_wealth_schema).min(1, { message: 'Required' }).default([]),
+  netWorth: z.preprocess(
+    (val) => (typeof val === 'number' ? String(val) : val),
+    z.string({errorMap: () => ({ message: 'Required' })})
+  ),
+  liquidNetWorth: z.preprocess(
+    (val) => (typeof val === 'number' ? String(val) : val),
+    z.string({errorMap: () => ({ message: 'Required' })})
+  ),
+  annualNetIncome: z.preprocess(
+    (val) => (typeof val === 'number' ? String(val) : val),
+    z.string({errorMap: () => ({ message: 'Required' })})
+  ),
+  taxBracket: z.string().optional().nullable(),
+  accreditedInvestor: z.boolean().optional().nullable(),
+});
 
-export const local_tax_form_schema = z.object({
-  taxAuthority: z.string().optional().nullable(),
-  qualified: z.boolean().optional().nullable(),
-  treatyCountry: z.string().optional().nullable(),
-})
+export const trading_permission_schema = z.object({
+  country: z.string({errorMap: () => ({ message: 'Required' })}),
+  product: z.string({errorMap: () => ({ message: 'Required' })}),
+});
 
-export const w8ben_schema = z.object({
-  localTaxForms: z.array(local_tax_form_schema),
-  name: z.string().optional().nullable(),
-  tin: z.string().optional().nullable(),
-  foreignTaxId: z.string().optional().nullable(),
-  tinOrExplanationRequired: z.boolean().optional().nullable(),
-  explanation: z.string().optional().nullable(),
-  referenceNumber: z.number().optional().nullable(),
-  part29ACountry: z.string().optional().nullable(),
-  cert: z.boolean().optional().nullable(),
-  signatureType: z.string().optional().nullable(),
-  blankForm: z.boolean().optional().nullable(),
-  taxFormFile: z.string().optional().nullable(),
-  proprietaryFormNumber: z.number().optional().nullable(),
-  electronicFormat: z.boolean().optional().nullable(),
-  submitDate: z.string().optional().nullable(),
-})
+// Account Holder Information
+export const name_schema = z.object({
+  first: z.string({errorMap: () => ({ message: 'Required' })}),
+  last: z.string({errorMap: () => ({ message: 'Required' })}),
+  middle: z.string().optional().nullable(),
+  salutation: z.string().optional().nullable(),
+});
 
-// Nested Schemas for Application Structure
+export const address_schema = z.object({
+  country: z.string({errorMap: () => ({ message: 'Required' })}),
+  street1: z.string({errorMap: () => ({ message: 'Required' })}),
+  city: z.string({errorMap: () => ({ message: 'Required' })}),
+  state: z.string({errorMap: () => ({ message: 'Required' })}),
+  postalCode: z.string({errorMap: () => ({ message: 'Required' })}),
+  street2: z.string().optional().nullable(),
+  compact: z.string().optional().nullable(),
+  type: z.string().optional().nullable(),
+});
+
+export const phone_schema = z.object({
+  type: z.string({errorMap: () => ({ message: 'Required' })}),
+  country: z.string({errorMap: () => ({ message: 'Required' })}),
+  number: z.string({errorMap: () => ({ message: 'Required' })}),
+  verified: z.boolean().optional().nullable(),
+  primary: z.boolean().optional().nullable(),
+});
+
+export const identification_schema = z.object({
+  issuingCountry: z.string({errorMap: () => ({ message: 'Required' })}),
+  expirationDate: z.string({errorMap: () => ({ message: 'Required' })}),
+  citizenship: z.string({errorMap: () => ({ message: 'Required' })}),
+  passport: z.string().optional().nullable(),
+  nationalCard: z.string().optional().nullable(),
+  driversLicense: z.string().optional().nullable()
+}).refine((data) => data.passport || data.nationalCard || data.driversLicense, {
+  message: "Required",
+  path: ["passport"],
+});
+
+export const tax_residency_schema = z.object({
+  country: z.string({errorMap: () => ({ message: 'Required' })}),
+  tin: z.string({errorMap: () => ({ message: 'Required' })}),
+  tinType: z.enum(['SSN', 'EIN', 'NonUS_NationalId']).default('NonUS_NationalId'),
+});
+
+export const employment_details_schema = z.object({
+  employerAddress: address_schema,
+  employer: z.string({errorMap: () => ({ message: 'Required' })}),
+  occupation: z.string({errorMap: () => ({ message: 'Required' })}),
+  employerBusiness: z.string({errorMap: () => ({ message: 'Required' })}),
+  yearsWithEmployer: z.number().int().optional().nullable(),
+  emplCountryResCountryDetails: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  businessDescription: z.string().optional().nullable(),
+  occupationDescription: z.string().optional().nullable(),
+});
+
 export const account_holder_details_schema = z.object({
-  externalId: z.string().optional().nullable(),
+  externalId: z.string({errorMap: () => ({ message: 'Required' })}),
   name: name_schema,
-  email: z.string().optional().nullable(),
+  email: z.string({errorMap: () => ({ message: 'Required' })}).email({message: 'Invalid'}),
   residenceAddress: address_schema,
+  sameMailAddress: z.boolean({errorMap: () => ({ message: 'Required' })}),
   mailingAddress: address_schema.optional().nullable(),
-  sameMailAddress: z.boolean().optional().nullable(),
-  countryOfBirth: z.string().optional().nullable(),
-  dateOfBirth: z.string().optional().nullable(),
-  gender: z.string().optional().nullable(),
-  maritalStatus: z.string().optional().nullable(),
-  numDependents: z.number().int().optional().nullable(),
-  phones: z.array(phone_schema).optional().nullable(),
+  countryOfBirth: z.string({errorMap: () => ({ message: 'Required' })}),
+  dateOfBirth: z.string({errorMap: () => ({ message: 'Required' })}),
+  maritalStatus: z.string({errorMap: () => ({ message: 'Required' })}),
+  numDependents: z.number({errorMap: () => ({ message: 'Required' })}).int(),
+  phones: z.array(phone_schema),
   identification: identification_schema,
-  employmentDetails: employment_details_schema.optional().nullable(),
+  employmentType: z.string({errorMap: () => ({ message: 'Required' })}),
+  employmentDetails: z.any().optional().nullable(),
+  taxResidencies: z.array(tax_residency_schema).min(1, { message: 'Required' }),
+  w8Ben: w8ben_schema.optional().nullable(),
+  gender: z.string().optional().nullable(),
   isPEP: z.boolean().optional().nullable(),
   isControlPerson: z.boolean().optional().nullable(),
-  employmentType: z.string().optional().nullable(),
-  taxResidencies: z.array(tax_residency_schema).optional().nullable(),
-  w8Ben: w8ben_schema.optional().nullable(),
   authorizedToSignOnBehalfOfOwner: z.boolean().optional().nullable(),
   authorizedTrader: z.boolean().optional().nullable(),
   usTaxResident: z.boolean().optional().nullable(),
@@ -327,38 +313,31 @@ export const account_holder_details_schema = z.object({
     value: z.string().optional().nullable(),
     code: z.string().optional().nullable()
   })).optional(),
+}).superRefine((data, ctx) => {
+  if (['EMPLOYED', 'SELFEMPLOYED'].includes(data.employmentType)) {
+    if (data.employmentDetails) {
+      const result = employment_details_schema.safeParse(data.employmentDetails);
+      if (!result.success) {
+        result.error.issues.forEach(issue => {
+          ctx.addIssue({
+            ...issue,
+            path: ['employmentDetails', ...issue.path]
+          });
+        });
+      }
+    }
+  }
 });
-
-export const individual_applicant_schema = z.object({
-  accountHolderDetails: z.array(account_holder_details_schema).optional().nullable(),
-  financialInformation: z.array(financial_information_schema).optional().nullable(),
-  regulatoryInformation: z.array(regulatory_information_schema).optional().nullable(),
-});
-
-export const joint_applicant_schema = z.object({
-  accountHolderDetails: z.array(account_holder_details_schema).optional().nullable(),
-  financialInformation: z.array(financial_information_schema).optional().nullable(),
-  regulatoryInformation: z.array(regulatory_information_schema).optional().nullable(),
-});
-
-// Joint Holders Schema - matching IBKR API structure
-export const joint_holders_schema = z.object({
-  firstHolderDetails: z.array(account_holder_details_schema).optional().nullable(),
-  secondHolderDetails: z.array(account_holder_details_schema).optional().nullable(),
-  financialInformation: z.array(financial_information_schema).optional().nullable(),
-  regulatoryInformation: z.array(regulatory_information_schema).optional().nullable(),
-  type: z.enum(['community', 'joint_tenants', 'tenants_common', 'tbe', 'au_joint_account']).optional().nullable(),
-}).optional();
 
 // Organization Account Schemas
 export const organization_identification_schema = z.object({
   placeOfBusinessAddress: address_schema.optional().nullable(),
   mailingAddress: address_schema.optional().nullable(),
   phones: z.array(phone_schema).optional().nullable(),
-  name: z.string().optional().nullable(),
-  businessDescription: z.string().optional().nullable(),
+  name: z.string({errorMap: () => ({ message: 'Required' })}),
+  businessDescription: z.string({errorMap: () => ({ message: 'Required' })}),
   websiteAddress: z.string().optional().nullable(),
-  identification: z.string().optional().nullable(),
+  identification: z.string({errorMap: () => ({ message: 'Required' })}),
   identificationCountry: z.string().optional().nullable(),
   formationCountry: z.string().optional().nullable(),
   formationState: z.string().optional().nullable(),
@@ -372,8 +351,8 @@ export const organization_associated_entities_schema = z.object({
 });
 
 export const organization_account_support_schema = z.object({
-  businessDescription: z.string().optional().nullable(),
-  ownersResideUS: z.boolean().optional().nullable(),
+  businessDescription: z.string({errorMap: () => ({ message: 'Required' })}),
+  ownersResideUS: z.boolean({errorMap: () => ({ message: 'Required' })}),
   type: z.string().optional().nullable(),
 });
 
@@ -385,21 +364,37 @@ export const organization_schema = z.object({
   regulatoryInformation: z.array(regulatory_information_schema).optional().nullable(),
   accreditedInvestorInformation: z.any().optional().nullable(),
   regulatedMemberships: z.any().optional().nullable(),
-}).optional();
+})
 
-// Main Schemas
+// Individual Account Schemas
+export const individual_applicant_schema = z.object({
+  accountHolderDetails: z.array(account_holder_details_schema).optional().nullable(),
+  financialInformation: z.array(financial_information_schema).optional().nullable(),
+  regulatoryInformation: z.array(regulatory_information_schema).optional().nullable(),
+});
+
+// Joint Account Schemas
+export const joint_holders_schema = z.object({
+  firstHolderDetails: z.array(account_holder_details_schema).optional().nullable(),
+  secondHolderDetails: z.array(account_holder_details_schema).optional().nullable(),
+  financialInformation: z.array(financial_information_schema).optional().nullable(),
+  regulatoryInformation: z.array(regulatory_information_schema).optional().nullable(),
+  type: z.enum(['community', 'joint_tenants', 'tenants_common', 'tbe', 'au_joint_account']).optional().nullable(),
+})
+
+// Base Schemas
 export const customer_schema = z.object({
   accountHolder: individual_applicant_schema.optional(),
-  jointHolders: joint_holders_schema,
-  organization: organization_schema,
-  externalId: z.string().optional().nullable(),
-  type: z.enum(['INDIVIDUAL', 'JOINT', 'ORG'], { message: 'Account type is required' }),
-  prefix: z.string().optional().nullable(),
-  email: z.string().email().optional().nullable(),
+  jointHolders: joint_holders_schema.optional(),
+  organization: organization_schema.optional(),
+  externalId: z.string({errorMap: () => ({ message: 'Required' })}),
+  type: z.enum(['INDIVIDUAL', 'JOINT', 'ORG'], { message: 'Required' }),
+  prefix: z.string({errorMap: () => ({ message: 'Required' })}).max(6, { message: 'Prefix must be less than 6 characters' }),
+  email: z.string({errorMap: () => ({ message: 'Required' })}).email({ message: 'Invalid email address' }),
+  legalResidenceCountry: z.string({errorMap: () => ({ message: 'Required' })}),
   mdStatusNonPro: z.boolean().optional().default(true),
   meetAmlStandard: z.string().optional().default('true'),
   directTradingAccess: z.boolean().optional().default(true),
-  legalResidenceCountry: z.string().optional().nullable(),
 }).refine((data) => {
   if (data.type === 'INDIVIDUAL' && !data.accountHolder) return false;
   if (data.type === 'JOINT' && !data.jointHolders) return false;
@@ -409,15 +404,34 @@ export const customer_schema = z.object({
   message: 'Customer information does not match account type',
 });
 
+export const account_schema = z.object({
+  externalId: z.string({errorMap: () => ({ message: 'Required' })}),  
+  margin: z.string({errorMap: () => ({ message: 'Required' })}),
+  investmentObjectives: z.array(z.string()).min(1, { message: 'Required' }),
+  tradingPermissions: z.array(trading_permission_schema).min(1, { message: 'Required' }),
+  baseCurrency: z.string({errorMap: () => ({ message: 'Required' })}),
+  tradingLimits: trading_limits_schema.optional().nullable(),
+  multiCurrency: z.boolean().default(true),
+  alias: z.string().optional().nullable(),
+  feesTemplateName: z.string().optional().nullable(),
+});
+
+export const user_schema = z.object({
+  externalUserId: z.string({errorMap: () => ({ message: 'Required' })}),
+  externalIndividualId: z.string().min(1, { message: 'Required' }),
+  prefix: z.string({errorMap: () => ({ message: 'Required' })}).max(6, { message: 'Prefix must be less than 6 characters' }),
+  userPrivileges: z.array(user_privilege_schema).optional().nullable(),
+});
+
 export const application_schema = z.object({
   customer: customer_schema,
   accounts: z.array(account_schema).optional().nullable(),
   users: z.array(user_schema).optional().nullable(),
   documents: z.array(ibkr_document_schema).optional().nullable(),
   additionalAccounts: z.array(add_additional_account_schema).optional().nullable(),
-  masterAccountId: z.string().optional().nullable(),
-  id: z.string().optional().nullable(),
   inputLanguage: z.enum(['en', 'zh-Hans', 'ja', 'ru', 'fr', 'pt', 'es', 'it', 'ar-AE', 'de', 'he-IL', 'hu']).optional().nullable(),
   translation: z.boolean().optional().nullable(),
-  paperAccount: z.boolean().optional().nullable()
+  paperAccount: z.boolean().optional().nullable(),
+  masterAccountId: z.string().optional().nullable(),
+  id: z.string().optional().nullable()
 });

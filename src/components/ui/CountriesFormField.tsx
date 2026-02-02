@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from './button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from './form'
 import { Popover, PopoverTrigger, PopoverContent } from './popover'
@@ -15,7 +15,8 @@ interface CountriesFormFieldProps {
 
 const CountriesFormField = ({ form, element }: CountriesFormFieldProps) => {
 
-  const { t, lang } = useTranslationProvider();
+  const { t } = useTranslationProvider();
+  const [open, setOpen] = useState(false)
 
   return (
     <FormField
@@ -27,7 +28,7 @@ const CountriesFormField = ({ form, element }: CountriesFormFieldProps) => {
             <FormLabel className='capitalize'>{element.title}</FormLabel>
             <FormMessage />
           </div>
-          <Popover>
+          <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
@@ -56,7 +57,8 @@ const CountriesFormField = ({ form, element }: CountriesFormFieldProps) => {
                         value={country.label}
                         key={country.value}
                         onSelect={() => {
-                          form.setValue(element.name, country.value)
+                          field.onChange(country.value)
+                          setOpen(false)
                         }}
                       >
                         {country.label}

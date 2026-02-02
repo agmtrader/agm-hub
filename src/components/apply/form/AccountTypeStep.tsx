@@ -12,7 +12,8 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Card } from '@/components/ui/card'
 import { Application } from '@/lib/entities/application'
-import { getDefaultRegulatoryInformation, getDefaultW8Ben } from '@/utils/form'
+import { application_schema } from '@/lib/entities/schemas/application'
+import { getApplicationDefaults } from '@/utils/form'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface AccountTypeStepProps {
@@ -20,16 +21,16 @@ interface AccountTypeStepProps {
 }
 
 const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
+  
   const { t } = useTranslationProvider();
 
   const handleAccountTypeChange = (value: string) => {
-
-    const defaultRegulatoryInformation = getDefaultRegulatoryInformation()
-    const defaultW8Ben = getDefaultW8Ben()
-
     const accountType = value as 'INDIVIDUAL' | 'JOINT' | 'ORG'
     const currentCustomer = form.getValues('customer')
-    const cleanCustomer: any = {
+    const defaultCustomer = getApplicationDefaults(application_schema).customer
+
+    const nextCustomer: any = {
+      ...defaultCustomer,
       type: accountType,
       externalId: currentCustomer?.externalId,
       prefix: currentCustomer?.prefix,
@@ -39,40 +40,25 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
       directTradingAccess: currentCustomer?.directTradingAccess ?? true,
       legalResidenceCountry: currentCustomer?.legalResidenceCountry,
     }
-    
+
     if (accountType === 'INDIVIDUAL') {
-      cleanCustomer.accountHolder = {
-        accountHolderDetails: [{
-          w8Ben: { ...defaultW8Ben }
-        }],
-        regulatoryInformation: defaultRegulatoryInformation
-      }
+      nextCustomer.jointHolders = undefined
+      nextCustomer.organization = undefined
     } else if (accountType === 'JOINT') {
-      cleanCustomer.jointHolders = {
-        firstHolderDetails: [{
-          w8Ben: { ...defaultW8Ben }
-        }],
-        secondHolderDetails: [{
-          w8Ben: { ...defaultW8Ben }
-        }],
-        regulatoryInformation: defaultRegulatoryInformation
+      nextCustomer.accountHolder = undefined
+      nextCustomer.organization = undefined
+      if (nextCustomer.jointHolders) {
+        nextCustomer.jointHolders.type = 'joint_tenants'
       }
-    } else if (accountType === 'ORG') {
-      cleanCustomer.organization = {
-        associatedEntities: {
-          associatedIndividuals: [{
-            w8Ben: { ...defaultW8Ben }
-          }]
-        },
-        regulatoryInformation: defaultRegulatoryInformation
-      }
+    } else {
+      nextCustomer.accountHolder = undefined
+      nextCustomer.jointHolders = undefined
     }
 
-    form.setValue('customer', cleanCustomer)
-    
+    form.setValue('customer', nextCustomer)
     form.setValue('documents', [])
   }
-
+  
   return (
     <div className="space-y-6">
 
@@ -118,8 +104,6 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
                       </div>
                   </FormItem>
                 </Card>
-
-
 
                 <Card className="p-6">
                   <FormItem className="flex flex-row items-center justify-start gap-10">

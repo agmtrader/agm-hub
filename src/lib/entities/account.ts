@@ -19,15 +19,6 @@ export type InternalAccount = AccountPayload & {
 }
 export type Account = Base & InternalAccount
 
-export interface InternalDocumentPayload {
-  mime_type: string;
-  file_name: string;
-  file_length: number;
-  sha1_checksum: string;
-  data: string;
-}
-export type InternalDocument = InternalDocumentPayload & Base
-
 // Account Management API
 export interface AllForms {
   formDetails: FormDetails[]
@@ -183,6 +174,7 @@ export interface EmploymentDetails {
   Occupation: string;
   EmployerBusiness: string;
   EmployerAddress: Address;
+  description?: string;
 }
 
 export interface Phones {
@@ -232,16 +224,26 @@ export interface Restriction {
 
 export interface FinancialRange {
   id: string;
-  type: string; // e.g., "NET_WORTH", "NET_WORTH_LIQUID", "ANNUAL_NET_INCOME"
-  lowerBound: string; // numeric strings
-  upperBound: string; // numeric string or empty (open-ended)
+  type: string;
+  lowerBound: string;
+  upperBound: string;
   ibEntity: string;
-  startDate: string; // ISO datetime
+  startDate: string;
 }
 
 export interface FinancialRangesResponse {
   enumerationsType: string;
   jsonData: FinancialRange[];
+}
+
+export interface BusinessAndOccupation {
+  employerBusiness: string;
+  occupation: string;
+}
+
+export interface BusinessAndOccupationResponse {
+  enumerationsType: string;
+  jsonData: BusinessAndOccupation[];
 }
 
 export interface ProductCountryBundle {
