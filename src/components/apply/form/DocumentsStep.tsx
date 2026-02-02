@@ -248,9 +248,9 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
 
   const missingPerHolder = useMemo(() => {
     return signerOptions.map(signer => {
-      const holderDocs = documents.filter(doc => doc.signedBy?.includes(signer));
-      const hasPOI = holderDocs.some(doc => doc.formNumber === 8001);
-      const hasPOA = holderDocs.some(doc => doc.formNumber === 8002);
+      const holderDocs = documents.filter(doc => doc?.signedBy?.includes(signer));
+      const hasPOI = holderDocs.some(doc => doc?.formNumber === 8001);
+      const hasPOA = holderDocs.some(doc => doc?.formNumber === 8002);
       
       const missing = [];
       if (!hasPOI) missing.push('Proof of Identity');
