@@ -1,4 +1,4 @@
-import RequirementsPage from '@/components/public/Requirements'
+import RequirementsPage from '@/components/hub/Requirements'
 
 type Props = {}
 

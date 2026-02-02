@@ -1,6 +1,6 @@
 'use client'
-import Footer from '@/components/Footer';
-import { StaticHeader } from '@/components/Header';
+import Footer from '@/components/hub/Footer';
+import { StaticHeader } from '@/components/hub/Header';
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'

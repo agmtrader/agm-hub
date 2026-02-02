@@ -2,7 +2,6 @@ import { accessAPI } from "../api"
 import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, InternalAccount, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction, AccountScreening, FinancialRangesResponse, BusinessAndOccupationResponse } from "@/lib/entities/account"
 import { InvestmentExperience } from "@/lib/entities/application"
 import { IDResponse } from "@/lib/entities/base"
-import { SecurityQuestionsResponse } from "@/lib/entities/security_question"
 import { InternalDocument, InternalDocumentPayload } from "@/lib/entities/documents"
 export type { Account } from '@/lib/entities/account';
 
@@ -230,11 +229,6 @@ export async function GetStatusOfInstruction(clientInstructionID: string): Promi
 // Enums
 export async function GetForms(forms: string[], masterAccount: 'ad' | 'br'): Promise<AllForms> {
     const response: AllForms = await accessAPI('/accounts/ibkr/forms', 'POST', { 'forms': forms, 'master_account': masterAccount })
-    return response
-}
-
-export async function GetSecurityQuestions(): Promise<SecurityQuestionsResponse> {
-    const response: SecurityQuestionsResponse = await accessAPI(`/accounts/ibkr/security_questions`, 'GET')
     return response
 }
 

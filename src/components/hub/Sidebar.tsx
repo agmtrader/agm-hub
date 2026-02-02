@@ -10,11 +10,11 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { motion } from "framer-motion"
-import { Button } from "./ui/button"
+import { Button } from "../ui/button"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { formatURL } from "@/utils/language/lang"
 import { X } from "lucide-react"
-import LanguageSwitcher from "./misc/LanguageSwitcher"
+import LanguageSwitcher from "../misc/LanguageSwitcher"
 
 interface Props {
   setExpandSidebar: React.Dispatch<React.SetStateAction<boolean>>
@@ -34,8 +34,7 @@ const Sidebar = ({ setExpandSidebar }: Props) => {
     { name: t('sidebar.risk'), url: '/apply/risk' },
     { name: t('sidebar.learning'), url: '/learning' },
     { name: t('sidebar.requirements'), url: '/requirements' },
-    { name: t('sidebar.downloads'), url: '/downloads' },
-    { name: t('ada.title'), url: '/ada' }
+    { name: t('sidebar.downloads'), url: '/downloads' }
   ]
 
   return (

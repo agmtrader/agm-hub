@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { Header } from '@/components/Header'
+import { Header } from '@/components/hub/Header'
 import { motion } from 'framer-motion'
 import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'

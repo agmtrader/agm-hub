@@ -36,9 +36,8 @@ import { Account } from "@/lib/entities/account"
 import { ReadAccounts } from "@/utils/entities/account"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 import { CreateInvestmentProposal } from "@/utils/tools/investment_proposals" 
-import InvestmentProposalView from "@/components/apply/risk/InvestmentProposal"
+import InvestmentProposalView from "@/components/hub/risk/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/tools/investment-proposals"
-import { CreateApplication } from "@/utils/entities/application"
 
 const RiskForm = () => {
 
@@ -150,7 +149,7 @@ const RiskForm = () => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('apply.risk.form.name')}</FormLabel>
+                <FormLabel>{t('risk.form.name')}</FormLabel>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>

@@ -281,7 +281,7 @@ export const employment_details_schema = z.object({
   yearsWithEmployer: z.number().int().optional().nullable(),
   emplCountryResCountryDetails: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
-  businessDescription: z.string().optional().nullable(),
+  businessDescription: z.string().max(256, { message: 'Max 256 characters' }).optional().nullable(),
   occupationDescription: z.string().optional().nullable(),
 });
 
@@ -324,6 +324,16 @@ export const account_holder_details_schema = z.object({
             path: ['employmentDetails', ...issue.path]
           });
         });
+      }
+
+      if (data.employmentType === 'SELFEMPLOYED') {
+         if (!data.employmentDetails.businessDescription || data.employmentDetails.businessDescription.trim() === '') {
+            ctx.addIssue({
+               code: z.ZodIssueCode.custom,
+               message: 'Required',
+               path: ['employmentDetails', 'businessDescription']
+            });
+         }
       }
     }
   }

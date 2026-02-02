@@ -1,6 +1,6 @@
 'use client'
-import RiskForm from '@/components/apply/risk/RiskForm'
-import { StaticHeader } from '@/components/Header'
+import RiskForm from '@/components/hub/risk/RiskForm'
+import { StaticHeader } from '@/components/hub/Header'
 import { containerVariants } from '@/lib/anims'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { motion } from 'framer-motion'
@@ -20,10 +20,10 @@ const page = () => {
       <StaticHeader />
       <div className="w-full flex flex-col gap-10 py-10 justify-center items-center">
         <h2 className="text-5xl font-semibold text-center mb-4">
-          {t('apply.risk.title')}
+          {t('risk.title')}
         </h2>
         <p className="text-center text-muted-foreground">
-          {t('apply.risk.description')}
+          {t('risk.description')}
         </p>
         <div className="w-full max-w-4xl">
           <RiskForm/>

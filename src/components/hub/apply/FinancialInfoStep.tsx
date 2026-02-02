@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { sources_of_wealth, asset_classes, knowledge_levels, investment_objectives, currencies, products } from '@/lib/public/form';
+import { sources_of_wealth, asset_classes, knowledge_levels, investment_objectives, currencies, trading_products, trading_countries } from '@/lib/entities/application';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FinancialRange } from '@/lib/entities/account';
 import { Label } from '@/components/ui/label';
@@ -34,15 +34,6 @@ const FinancialInfoStep = ({
   const accountType = form.watch('customer.type');
   const tradingPermissions = useWatch({ control: form.control, name: 'accounts.0.tradingPermissions' }) || [];
 
-  const TRADING_COUNTRIES = [
-    "UNITED STATES",
-    "CANADA",
-    "UNITED KINGDOM",
-    "GERMANY",
-    "JAPAN",
-    "AUSTRALIA"
-  ];
-
   const toggleProduct = (productId: string, checked: boolean) => {
     let currentPermissions = [...(tradingPermissions || [])];
     
@@ -51,7 +42,7 @@ const FinancialInfoStep = ({
 
     if (checked) {
       // Add entries for all countries
-      TRADING_COUNTRIES.forEach(country => {
+      trading_countries.forEach((country: string) => {
         currentPermissions.push({
           country,
           product: productId
@@ -339,7 +330,7 @@ const FinancialInfoStep = ({
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-6">
-          <h4 className="text-lg font-semibold">{t('apply.account.account_setup.account_setup')}</h4>
+          <h4 className="text-lg font-semibold">{t('apply.account.financial.financial_information')}</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -347,7 +338,7 @@ const FinancialInfoStep = ({
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-row gap-2 items-center">
-                    <FormLabel>{t('apply.account.account_setup.base_currency')}</FormLabel>
+                    <FormLabel>{t('apply.account.financial.base_currency')}</FormLabel>
                     <FormMessage />
                   </div>
                   <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
@@ -373,19 +364,19 @@ const FinancialInfoStep = ({
         <div className="space-y-4">
           <div className="flex flex-row gap-2 items-center">
             <h4 className="text-lg font-semibold">
-              {t('apply.account.account_setup.trading_permissions')}
+              {t('apply.account.financial.trading_permissions')}
             </h4>
             {tradingPermissions.length === 0 && (
               <p className="text-md text-primary font-medium">Required</p>
             )}
           </div>
           <p className="text-subtitle text-sm mb-4">
-            {t('apply.account.account_setup.trading_permissions_description')}
+            {t('apply.account.financial.trading_permissions_description')}
           </p>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {products(t).map((product) => {
+              {trading_products(t).map((product) => {
                 const isSelected = tradingPermissions.some(p => p.product === product.id);
                 return (
                   <div key={product.id} className="flex items-center space-x-2 border p-4 rounded-md">

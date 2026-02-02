@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Card } from '@/components/ui/card'
 import { Application } from '@/lib/entities/application'
 import { application_schema } from '@/lib/entities/schemas/application'
-import { getApplicationDefaults } from '@/utils/form'
+import { getApplicationDefaults } from '@/utils/entities/application'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface AccountTypeStepProps {

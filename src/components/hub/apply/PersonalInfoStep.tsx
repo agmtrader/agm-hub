@@ -9,10 +9,10 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-import CountriesFormField from "@/components/ui/CountriesFormField";
+import CountriesFormField from "@/components/misc/CountriesFormField";
 import { Application } from "@/lib/entities/application";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { phone_types, id_type, marital_status, employment_status, account_types } from '@/lib/public/form';
+import { phone_types, id_type, marital_status, employment_status, account_types } from '@/lib/entities/application';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -935,6 +935,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
     const idNumberField = `${basePath}.identification.${idFieldMapping[idTypeValue] || 'passport'}` as any
 
     const selectedEmployerBusiness = form.watch(`${basePath}.employmentDetails.employerBusiness` as any);
+    const employmentType = form.watch(`${basePath}.employmentType` as any);
     const selectedOccupation = form.watch(`${basePath}.employmentDetails.occupation` as any);
     
     // Get unique businesses
@@ -1389,15 +1390,20 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
               )}
             />
 
-            {selectedEmployerBusiness === 'Other' && (
+            {(employmentType === 'SELFEMPLOYED') && (
                 <FormField
                     control={form.control}
                     name={`${basePath}.employmentDetails.businessDescription` as any}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t('apply.account.account_holder_info.business_description_comment') || 'Business Description Comment'}</FormLabel>
+                            <FormLabel>{t('apply.account.account_holder_info.business_description')}</FormLabel>
+                            <p className="text-sm text-subtitle">{t('apply.account.account_holder_info.business_description_comment')}</p>
+                            <FormMessage />
                             <FormControl>
-                                <Input placeholder="Please specify business" {...field} />
+                                <Textarea 
+                                    placeholder={''} 
+                                    {...field} 
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -1411,9 +1417,10 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
                     name={`${basePath}.employmentDetails.occupationDescription` as any}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{t('apply.account.account_holder_info.occupation_description_comment') || 'Occupation Description Comment'}</FormLabel>
+                            <FormLabel>{t('apply.account.account_holder_info.occupation_description')}</FormLabel>
+                            <p className="text-sm text-subtitle">{t('apply.account.account_holder_info.occupation_description_comment')}</p>
                             <FormControl>
-                                <Input placeholder="Please specify occupation" {...field} />
+                                <Textarea placeholder={''} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -1435,7 +1442,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
 
       <Card className="p-6">
         <CardHeader>
-          <CardTitle>{t('apply.account.account_setup.account_setup')}</CardTitle>
+          <CardTitle>{t('apply.account.account_holder_info.account_setup')}</CardTitle>
         </CardHeader>
         <CardContent>
           <FormField
@@ -1444,13 +1451,11 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
             render={({ field }) => (
               <FormItem>
                 <div className="flex flex-row gap-2 items-center">
-                  <FormLabel>{t('apply.account.account_setup.account_type')}</FormLabel>
+                  <FormLabel>{t('apply.account.account_holder_info.account_type')}</FormLabel>
                   <FormMessage />
                 </div>
                 <FormDescription className="text-subtitle">
-                  Margin accounts allow trading with borrowed funds and can support short
-                  selling, while cash accounts require paying fully for purchases and do
-                  not permit borrowing.
+                  {t('apply.account.account_holder_info.margin_account_description')}
                 </FormDescription>
                 <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                   <FormControl>

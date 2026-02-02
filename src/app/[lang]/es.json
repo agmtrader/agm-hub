@@ -8,11 +8,6 @@
         "fees": "Costos",
         "requirements": "Requisitos"
     },
-    "protected": {
-        "noPermissions": "Sin permisos",
-        "noPermissionsMessage": "No tienes autorización para acceder a esta página",
-        "goBack": "Volver al inicio"
-    },
     "agm-technology": {
         "title": {
             "title": "Invierta en cualquier lugar / momento",
@@ -57,12 +52,6 @@
                     ]
                 }
             ]
-        }
-    },
-    "products": {
-        "download": {
-            "title": "Descargar Productos AGM",
-            "description": "Descarga nuestras aplicaciones de trading profesionales para tu plataforma preferida"
         }
     },
     "agm-trader": {
@@ -123,6 +112,12 @@
             "mobile_platforms": "Plataformas móviles",
             "by_downloading": "Al descargar, aceptas nuestros",
             "terms_of_service": "Términos de servicio"
+        }
+    },
+    "products": {
+        "download": {
+            "title": "Descargar Productos AGM",
+            "description": "Descarga nuestras aplicaciones de trading profesionales para tu plataforma preferida"
         }
     },
     "agm-advisor": {
@@ -220,7 +215,7 @@
             ]
         }
     },
-    "shared":{
+    "shared": {
         "account": {
             "sign_out": "Cerrar sesión",
             "settings": "Configuración"
@@ -301,593 +296,214 @@
         "account": {
             "title": {
                 "ready": "¿Listo para invertir?",
-                "description": "Desbloquea un mundo de oportunidades financieras con tu cuenta AGM.",
-                "get_started": "¿No sabes cómo empezar? Consulta los requisitos",
+                "description": "Desbloquee un mundo de oportunidades financieras con su cuenta AGM.",
+                "get_started": "¿No sabe cómo empezar? Verifique los requisitos",
                 "get_started_link": "aquí",
-                "startApplication": "Iniciar Solicitud",
-                "previous_applications": {
-                    "title": "Solicitudes Anteriores",
-                    "button": "Ver solicitudes anteriores",
-                    "date": "Fecha de Inicio",
-                    "status": "Estado",
-                    "resume": "Reanudar"
-                }
+                "startApplication": "Iniciar Solicitud"
             },
             "header": {
-                "title": "Formulario de Solicitud IBKR",
-                "description": "Completa el siguiente formulario para solicitar una cuenta con AGM.",
+                "title": "Formulario de Solicitud",
+                "description": "Complete el siguiente formulario para solicitar una cuenta con nosotros.",
                 "account_type": "Tipo de Cuenta",
-                "agreements": "Acuerdos",
                 "steps": {
-                    "agreements": "Acuerdos",
                     "account_type": "Tipo de Cuenta",
                     "personal_info": "Información Personal",
                     "financial_info": "Información Financiera",
                     "regulatory_info": "Información Regulatoria",
-                    "account_information": "Configuración de la Cuenta",
-                    "account_holder_info": "Información del Titular de la Cuenta",
+                    "account_information": "Configuración de Cuenta",
+                    "agreements": "Acuerdos",
                     "documents": "Documentos",
-                    "complete": "Completo"
+                    "complete": "Completado"
                 }
             },
             "account_type": {
                 "individual": "Cuenta Individual",
-                "individual_description": "Una cuenta propiedad y controlada por una sola persona",
-                "joint": "Cuenta Mancomunada",
-                "joint_description": "Una cuenta propiedad y controlada por dos personas",
+                "individual_description": "Una cuenta propiedad de y controlada por una sola persona",
+                "joint": "Cuenta Conjunta",
+                "joint_description": "Una cuenta propiedad de y controlada por dos personas",
                 "institutional": "Cuenta Institucional",
-                "institutional_description": "Una cuenta propiedad y controlada por una empresa u organización"
+                "institutional_description": "Una cuenta propiedad de y controlada por una empresa u organización"
             },
             "account_holder_info": {
-                "account_holder_information": "Información del Titular de la Cuenta",
+                "account_setup": "Configuración de Cuenta",
+                "margin_account_description": "Las cuentas de margen permiten operar con fondos prestados y admiten ventas en corto, mientras que las cuentas de efectivo requieren el pago total de las compras y no permiten préstamos.",
+                "account_type": "Tipo de Cuenta",
+                "cash_account": "Cuenta de Efectivo",
+                "margin_account": "Cuenta de Margen",
+
                 "primary_contact_credentials": "Credenciales del Contacto Principal",
                 "username": "Nombre de Usuario",
-                "username_description": "Tu nombre de usuario deseado (3–6 caracteres).",
                 "legal_residence_country": "País de Residencia Legal",
-                "regulatory_information": "Información Regulatoria",
-                "affiliation": "¿Es el solicitante o cualquier miembro de la familia que reside en la misma casa, registrado como broker-dealer o empleado, director o propietario de una firma de valores o derivados?",
-                "employee_pub_trade": "¿Son los propietarios de, o otros no propietarios listados en, la cuenta empleados de una empresa cotizada en bolsa?",
-                "control_pub_traded": "¿Los propietarios de, o otros no propietarios listados en, la cuenta controlan una empresa cotizada en bolsa?",
-                "account_holder_info": "Información del Titular de la Cuenta",
-                "mailing_address": "Dirección de Envío",
-                "same_mailing_address": "¿Es la dirección de envío la misma que la de residencia?",
+
+                "account_holder_information": "Información del Titular de la Cuenta",
                 "first_name": "Nombre",
                 "last_name": "Apellido",
                 "email": "Correo Electrónico",
                 "date_of_birth": "Fecha de Nacimiento",
                 "country_of_birth": "País de Nacimiento",
                 "marital_status": "Estado Civil",
-                "single": "Soltero",
-                "married": "Casado",
-                "divorced": "Divorciado",
-                "widowed": "Viudo",
-                "mobile": "Celular",
-                "home": "Casa",
+                "single": "Soltero(a)",
+                "married": "Casado(a)",
+                "divorced": "Divorciado(a)",
+                "widowed": "Viudo(a)",
                 "num_dependents": "Número de Dependientes",
+                "residence_address": "Dirección de Residencia",
                 "street_address_1": "Dirección (Línea 1)",
                 "street_address_2": "Dirección (Línea 2)",
                 "city": "Ciudad",
-                "state": "Estado",
+                "state": "Estado/Provincia",
                 "zip": "Código Postal",
                 "country": "País",
+                "same_mailing_address": "¿Es la dirección de correspondencia la misma que la de residencia?",
+                "mailing_address": "Dirección de Correspondencia",
+                "contact_information": "Información de Contacto",
                 "phone_type": "Tipo de Teléfono",
                 "phone_country": "País del Teléfono",
                 "phone_number": "Número de Teléfono",
-                "id_type": "Tipo de Identificación",
-                "id_number": "Número de Identificación",
-                "expiration_date": "Fecha de Expiración",
-                "issuing_country": "País Emisor",
+                "mobile": "Móvil",
+                "home": "Casa",
+                "identification": "Identificación",
+                "id_type": "Tipo de ID",
+                "passport": "Pasaporte",
+                "national_id": "Documento Nacional de Identidad",
+                "license": "Licencia de Conducir",
+                "id_number": "Número de ID",
+                "expiration_date": "Fecha de Vencimiento",
+                "issuing_country": "País de Emisión",
                 "citizenship": "Ciudadanía",
+                "tax_residencies": "Residencias Fiscales",
                 "tax_residence_country": "País de Residencia Fiscal",
-                "tax_identification_number": "Número de Identificación Fiscal (NIF)",
-                "tin_type": "Tipo de NIF",
-                "employment_type": "Tipo de Empleo",
+                "tax_identification_number": "Número de Identificación Fiscal (NIF/TIN)",
+                "tin_type": "Tipo de TIN",
+                "tin_types": {
+                    "ssn": "SSN",
+                    "ein": "EIN",
+                    "non_us_national_id": "ID Nacional no estadounidense"
+                },
+                "tin_help": "Número de Identificación Fiscal emitido por su autoridad tributaria.",
+                "employment_details": "Detalles de Empleo",
+                "employment_type": "Situación Laboral",
+                "employment_types": {
+                    "employed": "Empleado",
+                    "self_employed": "Autónomo/Independiente",
+                    "unemployed": "Desempleado",
+                    "student": "Estudiante",
+                    "retired": "Jubilado",
+                    "other": "Otro"
+                },
                 "employer": "Empleador",
                 "occupation": "Ocupación",
-                "employer_business": "Actividad del Empleador",
+                "employer_business": "Negocio del Empleador",
                 "employer_address": "Dirección del Empleador",
-                "financial_information": "Información Financiera",
-                "net_worth": "Patrimonio Neto",
-                "liquid_net_worth": "Patrimonio Neto Líquido",
-                "annual_net_income": "Ingresos Netos Anuales",
-                "net_worth_help": "Incluye activos totales menos pasivos totales.",
-                "liquid_net_worth_help": "Incluye efectivo y activos fácilmente convertibles en efectivo.",
-                "annual_net_income_help": "Tus ingresos totales después de impuestos del último año.",
-                "tin_help": "Número de Identificación Fiscal emitido por tu autoridad fiscal.",
-                "investment_objectives": "Objetivos de Inversión",
-                "investment_objectives_description": "Selecciona todos los que apliquen a esta cuenta",
-                "investment_experience": "Experiencia en Inversiones",
-                "source_of_wealth": "Fuente de Riqueza",
-                "source_of_wealth_description": "Si seleccionas 'Empleado', debes incluir 'Ingresos' como una de tus fuentes de riqueza en la sección de Información Financiera.",
-                "source_type": "Tipo de Fuente",
-                "percentage": "Porcentaje",
-                "add_source": "Agregar Fuente",
-                "asset_class": "Clase de Activo",
-                "years_trading": "Años Operando",
-                "trades_per_year": "Operaciones / Año",
-                "knowledge_level": "Nivel de Conocimiento",
-                "add_experience": "Agregar Experiencia",
-                "account_setup": "Configuración de la Cuenta",
-                "base_currency": "Moneda Base",
-                "account_type": "Tipo de Cuenta",
-                "trading_permissions": "Permisos de Operación",
-                "trading_permissions_description": "Especifica en qué mercados y productos deseas permiso para operar",
-                "primary_trading_market": "Mercado Principal de Operación",
-                "product_types": "Tipos de Productos",
+                "important": "Importante",
+
+                "business_description": "Descripción del Negocio",
+                "business_description_comment": "Por favor, proporcione una descripción detallada de su negocio.",
+                "occupation_description": "Descripción de la Ocupación",
+                "occupation_description_comment": "Por favor, proporcione una descripción detallada de su ocupación.",
+                
                 "organization_information": "Información de la Organización",
                 "organization_name": "Nombre de la Organización",
-                "business_description": "Descripción del Negocio",
+
                 "organization_type": "Tipo de Organización",
                 "organization_identification_number": "Número de Identificación de la Organización",
                 "owners_reside_in_us": "¿Los propietarios residen en EE. UU.?",
-                "place_of_business_address": "Dirección del Lugar de Negocio",
-                "contact_information": "Información de Contacto (Teléfono Principal)",
-                "residence_address": "Dirección de Residencia",
-                "employment_details": "Detalles de Empleo",
-                "tax_residencies": "Residencias Fiscales",
-                "identification": "Identificación",
-                "important": "Importante",
-                "contact_information_primary_phone": "Información de Contacto (Teléfono Principal)",
-                "employment_type_description": "Si seleccionas 'Empleado', debes incluir 'Ingresos' como una de tus fuentes de riqueza en la sección de Información Financiera.",
+                "place_of_business_address": "Dirección del Lugar de Negocios",
+
                 "second_account_holder": "Segundo Titular de la Cuenta",
                 "first_account_holder": "Primer Titular de la Cuenta",
-                "joint_account_type": "Tipo de Cuenta Mancomunada",
-                "community_property": "Propiedad Comunal",
-                "joint_tenants_with_rights_of_survivorship": "Mancomunados con Derechos de Sobrevivencia",
-                "tenants_in_common": "Mancomunados en Común",
-                "tenants_by_the_entirety": "Mancomunados en Totalidad",
-                "au_joint_account": "Cuenta Mancomunada en Australia",
-                "yes": "Sí",
-                "no": "No",
-                "united_states": "Estados Unidos",
-                "germany": "Alemania",
-                "japan": "Japón",
-                "united_kingdom": "Reino Unido",
-                "australia": "Australia",
-                "canada": "Canadá",
-                "cash_account": "Cuenta de Efectivo",
-                "margin_account": "Cuenta de Margen",
-                "usd": "USD",
-                "eur": "EUR",
-                "gbp": "GBP",
-                "cad": "CAD",
-                "aud": "AUD",
-                "ssn": "SSN",
-                "ein": "EIN",
-                "non_us_national_id": "ID Nacional No Estadounidense",
-                "passport": "Pasaporte",
-                "national_id": "Cédula de Identidad",
-                "license": "Licencia de Conducir",
                 "secondary_contact_credentials": "Credenciales del Contacto Secundario",
-                "add_trading_permission": "Agregar Permisos de Operación",
-                "security_questions": "Preguntas de Seguridad",
-                "security_questions_description": "Selecciona tres preguntas de seguridad y proporciona tus respuestas",
-                "select_question": "Seleccionar pregunta",
-                "answer_placeholder": "Escribe tu respuesta",
-                "estimated_deposit": "Depósito Estimado",
-                "estimated_deposit_help": "Cantidad aproximada que planeas depositar inicialmente."
+                "yes": "Sí",
+                "no": "No"
             },
             "regulatory": {
-                "title": "Información Regulatoria",
-                "annual_net_income": "Ingresos Netos Anuales",
-                "liquid_net_worth": "Patrimonio Neto Líquido",
+                "regulatory_information": "Información Regulatoria",
+                "affiliation": "¿Está el solicitante o algún familiar inmediato que resida en el mismo hogar registrado como corredor de bolsa (broker-dealer) o es empleado, director o propietario de una firma de corretaje de valores o materias primas?",
+                "employee_pub_trade": "¿Son los propietarios, u otros no propietarios listados en la cuenta, empleados de una empresa que cotiza en bolsa?",
+                "control_pub_traded": "¿Controlan los propietarios, u otros no propietarios listados en la cuenta, una empresa que cotiza en bolsa?",
+                "affiliation_no": "El solicitante no está afiliado a un corredor de bolsa, director o propietario de una firma de corretaje de valores o materias primas",
+                "control_pub_traded_no": "El solicitante no controla una empresa que cotiza en bolsa",
+                "employee_pub_trade_no": "El solicitante no es empleado de una empresa que cotiza en bolsa",
+                "affiliation_yes": "El solicitante está afiliado a un corredor de bolsa, director o propietario de una firma de corretaje de valores o materias primas",
+                "control_pub_traded_yes": "El solicitante controla una empresa que cotiza en bolsa",
+                "employee_pub_trade_yes": "El solicitante es empleado de una empresa que cotiza en bolsa"
+            },
+            "financial": {
+                "financial_information": "Información Financiera",
+
                 "net_worth": "Patrimonio Neto",
+                "liquid_net_worth": "Patrimonio Neto Líquido",
+                "annual_net_income": "Ingresos Netos Anuales",
+                "net_worth_help": "Incluya los activos totales menos los pasivos totales.",
+                "liquid_net_worth_help": "Incluya efectivo y activos fácilmente convertibles en efectivo.",
+                "annual_net_income_help": "Sus ingresos totales después de impuestos durante el último año.",
+
                 "investment_objectives": "Objetivos de Inversión",
+                "investment_objectives_description": "Seleccione todos los que apliquen a esta cuenta",
                 "investment_objectives_list": {
                     "growth": "Crecimiento",
-                    "trading": "Operar",
+                    "trading": "Trading",
                     "income": "Ingresos",
                     "hedging": "Cobertura",
                     "speculation": "Especulación"
                 },
-                "products_to_trade": "Productos a Operar",
-                "amount_to_invest": "Monto a Invertir",
-                "source_of_wealth": {
-                    "income": "Ingresos",
-                    "inheritance": "Herencia",
-                    "investments": "Inversiones",
-                    "business": "Negocio",
-                    "property": "Propiedad",
-                    "pension": "Pensión",
-                    "other": "Otro",
-                    "allowance": "Permiso",
-                    "interest": "Interés",
-                    "market_profit": "Ganancias de Mercado",
-                    "disability": "Discapacidad"
+
+                "base_currency": "Moneda Base",
+                "trading_permissions": "Permisos de Negociación",
+                "trading_permissions_description": "Especifique qué mercados y productos desea tener permiso para negociar",
+                "primary_trading_market": "Mercado Principal de Negociación",
+                "primary_trading_markets": {
+                    "united_states": "Estados Unidos",
+                    "canada": "Canadá",
+                    "united_kingdom": "Reino Unido",
+                    "germany": "Alemania",
+                    "japan": "Japón",
+                    "australia": "Australia"
                 },
+                "product_types": "Tipos de Productos",
                 "products": {
                     "bonds": "Bonos",
-                    "mutual_funds": "ETFs",
+                    "mutual_funds": "Fondos Mutuos",
                     "stocks": "Acciones",
                     "options": "Opciones",
                     "futures": "Futuros"
-                }
-            },
-            "organization": {
-                "title": "Información de la Organización",
-                "basic_info": "Información Básica",
-                "purpose_info": "Propósito de la Entidad",
-                "residential_info": "Información Residencial",
-                "contact_info": "Información de Contacto",
-                "tax_info": "Información Fiscal",
-
-                "name": "Nombre de la Organización",
-                "type": "Tipo de Organización",
-                "description": "Descripción",
-                "website": "Sitio Web",
-                "legal_entity_id": "ID de Entidad Legal",
-
-                "purpose_list": {
-                    "title": "Propósito",
-                    "operating_business": "Un negocio operativo formado para ofrecer bienes o servicios a clientes que no fue creado con el propósito de operar o mantener activos financieros. Selecciona esta opción solo para negocios reales, como fabricantes, restaurantes, compañías petroleras, etc.",
-                    "family_investment": "Un vehículo de inversión personal o familiar propiedad de una sola persona o de un grupo de familiares cercanos que crearon la organización con el propósito de realizar inversiones financieras para el propietario y/o su familia cercana.",
-                    "proprietary_trading": "Una empresa de trading propietario de capital cerrado (o corporación o vehículo similar) creada con el propósito de operar el capital propio de la empresa. Esto incluye cualquier corporación o LLC donde los miembros aportan su propio capital y las ganancias pertenecen a la empresa.",
-                    "financial_institution": "Una institución financiera (banco, broker-dealer, etc.) que operará por cuenta propia."
-                },
-                "proprietary_assets": {
-                    "title": "Activos Propietarios",
-                    "error": "Se requiere la verificación de activos propietarios."
                 },
 
-                "third_party": "¿El vehículo de inversión personal o familiar tiene un administrador profesional externo o proveedor de servicios corporativos?",
+                "add_trading_permission": "Añadir Permiso de Negociación",
 
-                "phone_type": "Tipo de Teléfono",
-                "phone_country": "País del Teléfono",
-                "phone_number": "Número de Teléfono",
-
-                "address": "Dirección",
-                "city": "Ciudad",
-                "state": "Estado/Provincia",
-                "zip": "Código Postal",
-
-                "tax_country": "País Fiscal",
-                "tax_id": "ID Fiscal",
-
+                "investment_experience": "Experiencia de Inversión",
+                "asset_class": "Clase de Activo",
+                "years_trading": "Años Negociando",
+                "trades_per_year": "Operaciones / Año",
+                "knowledge_level": "Nivel de Conocimiento",
+                "add_experience": "Añadir Experiencia",
+                
                 "source_of_wealth": "Fuente de Riqueza",
-                "currency": "Moneda"
-            },
-            "authorized_person": {
-                "title": "Persona Autorizada",
-                "basic_info": "Información Básica",
-                "contact_info": "Información de Contacto",
-                "personal_info": "Información Personal",
-                "id_info": "Información de Identificación",
-                "employer_info": "Información del Empleador",
-                "security_questions": "Preguntas de Seguridad",
-                
-                "salutation": "Saludo",
-                "first_name": "Nombre",
-                "middle_name": "Segundo Nombre",
-                "last_name": "Apellido",
-                "suffix": "Sufijo",
-                "date_of_birth": "Fecha de Nacimiento",
-                "position": "Cargo",
-                
-                "third_party": "¿El vehículo de inversión personal o familiar tiene un administrador profesional externo o proveedor de servicios corporativos?",
-                
-                "email": "Correo Electrónico",
-                "phone_type": "Tipo de Teléfono",
-                "phone_country": "País del Teléfono",
-                "phone_number": "Número de Teléfono",
+                "source_type": "Tipo de Fuente",
+                "percentage": "Porcentaje",
+                "add_source": "Añadir Fuente",
+                "sources_of_wealth": {
+                    "income": "Ingresos",
+                    "inheritance": "Herencia",
+                    "interest": "Intereses",
+                    "market_profit": "Ganancias del Mercado",
+                    "property": "Propiedad",
+                    "pension": "Pensión",
+                    "allowance": "Asignación",
+                    "disability": "Discapacidad",
+                    "other": "Otro"
+                },
 
-                "residential_info": "Información Residencial",
-                "address": "Dirección",
-                "city": "Ciudad",
-                "state": "Estado/Provincia",
-                "zip": "Código Postal",
-                
-                "tax_info": "Información Fiscal",
-                "tax_country": "País Fiscal",
-                "tax_id": "ID Fiscal",
-                
-                "id_country": "País de la Identificación",
-                "id_type": "Tipo de Identificación",
-                "id_number": "Número de Identificación",
-                "id_expiration": "Expiración de la Identificación",
-                
-                "employment_status": "Estado Laboral",
-                "employer_name": "Nombre del Empleador",
-                "employer_address": "Dirección del Empleador",
-                "employer_city": "Ciudad del Empleador",
-                "employer_state": "Estado/Provincia del Empleador",
-                "employer_country": "País del Empleador",
-                "employer_zip": "Código Postal del Empleador",
-                
-                "security_question": "Pregunta de Seguridad",
-                "security_answer": "Respuesta de Seguridad"
-            }
-        },
-        "risk": {
-            "title": "Cuestionario de Evaluación de Riesgo",
-            "description": "Por favor, completa este formulario para ayudarnos a entender tu tolerancia al riesgo y preferencias de inversión.",
-            "form": {
-                "account_id": "Número de cuenta",
-                "email": "Correo electrónico",
-                "name": "Nombre",
-                "type": {
-                    "title": "¿Qué tipo de inversor te consideras?",
-                    "conservative": "Conservador",
-                    "moderate": "Moderado",
-                    "aggressive": "Agresivo"
-                },
-                "loss": {
-                    "title": "Si tu cartera pierde 20% de su valor, ¿qué acción tomarías?",
-                    "sell_everything": "Vender todo",
-                    "sell_some": "Vender algunas inversiones",
-                    "do_nothing": "No hacer nada",
-                    "invest_more": "Invertir más"
-                },
-                "gain": {
-                    "title": "Si tu cartera aprecia un 20% de su valor, ¿qué acción tomarías?",
-                    "sell_everything": "Vender todo",
-                    "sell_some": "Vender algunas inversiones",
-                    "do_nothing": "No hacer nada",
-                    "invest_more": "Invertir más"
-                },
-                "period": {
-                    "title": "¿Cuál crees que debería ser el plazo promedio de tu cartera de inversión?",
-                    "more_than_21_years": "Más de 21 años",
-                    "11_to_20_years": "11 a 20 años",
-                    "5_to_10_years": "5 a 10 años",
-                    "0_to_5_years": "0 a 5 años"
-                },
-                "diversification": {
-                    "title": "Considerando la diversificación de clases de activos, ¿cuál de estos portafolios seleccionarías?",
-                    "portfolio_a": "Portafolio A: 100% bonos, 0% acciones",
-                    "portfolio_b": "Portafolio B: 80% bonos, 20% acciones",
-                    "portfolio_c": "Portafolio C: 60% bonos, 40% acciones"
-                },
-                "goals": {
-                    "title": "¿Cuál de estos portafolios representa mejor tus objetivos con los resultados más aceptables?",
-                    "portfolio_a": "Portafolio A: 4% rendimiento promedio",
-                    "portfolio_b": "Portafolio B: 5% rendimiento promedio",
-                    "portfolio_c": "Portafolio C: 7% rendimiento promedio"
-                }
-            },
-            "result": {
-                "title": "Tu Perfil de Riesgo",
-                "warning": "¡Por favor toma una foto de esto, ya que será muy difícil verlo de nuevo!"
-            }
-        },
-        "requirements": {
-            "title": "Requisitos para una cuenta AGM",
-            "description": "Por favor asegurarse de cumplir con los siguientes requisitos para aplicar para una cuenta",
-            "optional_preparation": {
-                "title": "Preparación Opcional",
-                "risk_profile": {
-                    "title": "Completar Perfil de Riesgo",
-                    "description": "Completa tu perfil de riesgo de inversión para ayudarnos a entender mejor tus preferencias y objetivos de inversión.",
-                    "button": "Iniciar Perfil de Riesgo"
-                },
-                "fees": {
-                    "title": "Revisar Nuestras Tarifas",
-                    "description": "Explora nuestra estructura de precios transparente para entender los costos asociados con tu cuenta.",
-                    "button": "Ver Tarifas"
-                },
-                "downloads": {
-                    "title": "Descargar Nuestras Apps",
-                    "description": "Obtén acceso a nuestras aplicaciones móviles y de escritorio para operar sin problemas donde sea que estés.",
-                    "button": "Ver Descargas"
-                }
-            },
-            "personal": {
-                "title": "Requisitos para cuentas Individuales",
-                "identity": {
-                    "title": "Documentos oficiales de Identidad",
-                    "description": "Uno de los siguientes documentos",
-                    "documents": {
-                        "passport": {
-                            "title": "Pasaporte",
-                            "description": "Debe estar al día, debidamente firmado. Debe incluir fotografía, nombre completo, fecha de nacimiento y fecha de expiración."
-                        },
-                        "id_card": {
-                            "title": "Documento de identificación",
-                            "description": "Documento de identificación del país de residencia al día y firmado y debe incluir fotografía, nombre completo, fecha de nacimiento, fecha de expiración y país de emisión."
-                        },
-                        "driver_license": {
-                            "title": "Licencia de conducir",
-                            "description": "Debe estar al día, debidamente firmada. Debe incluir fotografía, nombre completo, fecha de nacimiento, fecha de expiración y lugar de emisión del documento."
-                        }
-                    }
-                },
-                "proof_of_address": {
-                    "title": "Documentos de dirección",
-                    "description": "Uno de los siguientes documentos",
-                    "documents": {
-                        "utility_bill": {
-                            "title": "Recibo de servicios públicos",
-                            "description": "Por ejemplo, recibos por servicios de electricidad, agua, teléfono ó gas. Recibos por servicios de telefonía móvil no son aceptados. Los recibos deben de ser claros, indicar el nombre completo de la persona, dirección completa y que tengan menos de un año de antigüedad."
-                        }
-                    }
-                },
-                "source_of_wealth": {
-                    "title": "Fuente de Ingresos",
-                    "description": "Uno de los siguientes documentos de acuerdo con el Tipo de Ingreso",
-                    "documents": {
-                        "salary": "Salarios (Copia de la Orden Patronal mas reciente o Certificación por parte de un CPA)",
-                        "investments": "Ingresos producto de ganancias sobre Inversiones (Estado de Cuenta Bursátil donde aparezcan dichas ganancias)",
-                        "property": "Venta de Propiedad (Contrato de compra/Venta de la Propiedad)",
-                        "inheritance": "Herencia (Copia del Documento Legal: Fideicomiso, Testamento, etc.)",
-                        "shares": "Venta de Participaciones (Acciones) en una o varias compañías (Estado de Cuenta Bursátil donde aparezcan dichas ventas)",
-                        "dividends": "Dividendos recibidos (Copia del Acta de Accionistas autorizando la distribución de Dividendos)",
-                        "other": "Otro"
-                    }
-                }
-            },
-            "institutional": {
-                "title": "Requisitos para cuentas Institucionales",
-                "company_documents": {
-                    "title": "Documentos que prueben la existencia de la compañía",
-                    "description": "Dos de los siguientes documentos",
-                    "documents": {
-                        "incorporation": {
-                            "title": "Acta Constitutiva o de incorporación",
-                            "description": "El documento deberá de especificar claramente el nombre de la empresa tal y como aparece en los documentos de apertura, además deberá de ser certificado y notariado."
-                        },
-                        "legal_id": {
-                            "title": "Cédula jurídica",
-                            "description": "El documento deberá ser emitido por una autoridad de Gobierno, donde especifique el número de inscripción y además debe especificar claramente el nombre de la empresa tal y como aparece en los documentos de apertura"
-                        },
-                        "legal_status": {
-                            "title": "Personería jurídica",
-                            "description": "El documento deberá de especificar claramente el nombre de la empresa tal y como aparece en los documentos de apertura, además deberá de ser certificado y notariado. Vigencia: menos de 6 meses."
-                        }
-                    }
-                },
-                "address_verification": {
-                    "title": "Verificación de Dirección",
-                    "description": "Uno de los siguientes documentos",
-                    "documents": {
-                        "utility_bill": {
-                            "title": "Recibo de servicios públicos",
-                            "description": "Por ejemplo, recibos de servicios de internet, TV por cable, electricidad, agua, gas, teléfono fijo (recibos de teléfonos móviles no se aceptan). El recibo debe describir de forma clara el nombre completo de la empresa y la dirección física. No debe ser mayor a seis meses."
-                        }
-                    }
-                },
-                "director_identification": {
-                    "title": "Documentos de identificación de los directores",
-                    "description": "Presidente - Secretario y las personas firmantes (Uno de los siguientes documentos)",
-                    "documents": {
-                        "passport": {
-                            "title": "Pasaporte",
-                            "description": "Debe de estar vigente, firmado e incluir fotografía de la persona, nombre completo, fecha de nacimiento y expiración."
-                        },
-                        "id_card": {
-                            "title": "Documento de identificación",
-                            "description": "Documento de identidad del país de residencia, que incluya la firma, fecha de nacimiento, fotografía de la persona, nombre completo, fecha de nacimiento, fecha de expiración y país de emisión del documento."
-                        },
-                        "driver_license": {
-                            "title": "Licencia de conducir",
-                            "description": "Debe de estar vigente, firmado e incluir fotografía de la persona, nombre completo, fecha de nacimiento, de expiración, fecha y lugar de emisión."
-                        }
-                    }
-                },
-                "director_address": {
-                    "title": "Documentos que indiquen la dirección física de los directores",
-                    "description": "Presidente - Secretario y las personas firmantes (Uno de los siguientes documentos)",
-                    "documents": {
-                        "utility_bill": {
-                            "title": "Recibo de servicios públicos",
-                            "description": "Por ejemplo, recibo de servicios de internet, TV por Cable, electricidad, agua, Teléfono fijo o gas (no se aceptan recibos de teléfono móvil) Los recibos deben especificar claramente el nombre y la dirección de residencia de la persona y tener menos de un año de emitidos"
-                        }
-                    }
-                },
-                "capital_ownership": {
-                    "title": "Documento que demuestre la propiedad del Capital de la Sociedad",
-                    "documents": {
-                        "share_certificate": "Copia certificada del Certificado(s) de Acciones de la Sociedad",
-                        "notarial_certification": "Certificación notarial de la Distribución Accionaria de la Sociedad"
-                    },
-                    "note": "De existir varios accionistas, los que tengan más del 10% deben aportar Documentos de identificación y Documentos que indiquen su dirección física."
-                },
-                "source_of_wealth": {
-                    "title": "Fuente de Ingresos",
-                    "description": "Uno de los siguientes documentos de acuerdo con el Tipo de Ingreso",
-                    "documents": {
-                        "investments": "Ingresos producto de ganancias sobre Inversiones: (Estado de Cuenta Bursátil donde aparezcan dichas ganancias)",
-                        "property": "Venta de Propiedad: (Contrato de compra/Venta de la Propiedad)",
-                        "inheritance": "Herencia: (Copia del Documento Legal: Fideicomiso, Testamento, etc.)",
-                        "shares": "Venta de Participaciones (Acciones) en una o varias compañías: (Estado de Cuenta Bursátil donde aparezcan dichas ventas)",
-                        "profits": "Ingresos por Utilidades recibidas: (Copia de los Estados Financieros de la Compañía que muestren dichas Utilidades)",
-                        "business": "Ingresos producto de Negocios: (Copia de los Estados Financieros de la Compañía que muestren dichos Ingresos)",
-                        "dividends": "Dividendos recibidos: (Copia del Acta de Accionistas autorizando la distribución de Dividendos)"
-                    }
-                }
-            },
-            "submit": "Aplicar para una cuenta"
-        }
-    },
-    "dashboard": {
-        "risk": {
-            "profile": {
-                "title": {
-                    "conservative_a": "Perfil de riesgo conservador A",
-                    "conservative_b": "Perfil de riesgo conservador B",
-                    "moderate_a": "Perfil de riesgo conservador moderado A",
-                    "moderate_b": "Perfil de riesgo conservador moderado B",
-                    "moderate_c": "Perfil de riesgo conservador moderado C",
-                    "aggressive_a": "Perfil de riesgo agresivo A",
-                    "aggressive_b": "Perfil de riesgo agresivo B",
-                    "aggressive_c": "Perfil de riesgo agresivo C"
-                },
-                "asset_allocation": {
-                    "title": "Distribución de activos",
-                    "table": {
-                        "header": {
-                            "asset_class": "Clase de activo",
-                            "allocation": "Distribución",
-                            "risk_level": "Nivel de riesgo"
-                        },
-                        "rows": {
-                            "bonds_aaa_a": "Bonos AAA - A",
-                            "bonds_bbb": "Bonos BBB",
-                            "bonds_bb": "Bonos BB",
-                            "etfs": "Acciones (ETFs)",
-                            "most_conservative": "Más conservador",
-                            "moderately_conservative": "Moderadamente conservador",
-                            "moderate": "Moderado",
-                            "most_aggressive": "Más agresivo"
-                        }
-                    }
-                },
-                "average_yield": "Rendimiento estimado promedio anual"
+                "estimated_deposit": "Depósito Estimado",
+                "estimated_deposit_help": "Monto aproximado que planea depositar inicialmente."
             }
         }
     },
     "forms": {
         "search": "Buscar...",
         "no_results": "No se encontraron resultados.",
-        "required": "Campo requerido",
-        "not_required": "No requerido",
         "submit": "Enviar",
-        "submitting": "Enviando...",
-        "previous_step": "Paso anterior",
-        "finish": "Finalizar",
-        "true_required": "Requiere una respuesta verdadera",
-        "none": "Ninguno",
-        "errors": {
-            "email": "Por favor, ingrese un correo electrónico válido.",
-            "username_length": "El nombre de usuario debe tener al menos 4 caracteres.",
-            "password_format": "La contraseña debe tener al menos una letra mayúscula, una letra minúscula, un número y un símbolo.",
-            "select_required": "Por favor, seleccione una opción.",
-            "input_required": "Por favor, ingrese un valor.",
-            "security_answer": "Por favor, ingrese una respuesta para la pregunta de seguridad.",
-            "true_required": "La casilla debe estar marcada."
-        }
-    },
-    "signin": {
-        "title": "Iniciar Sesión",
-        "signin": "Iniciar Sesión",
-        "signingIn": "Iniciando sesión...",
-        "email": "Correo electrónico",
-        "password": "Contraseña",
-        "register": {
-            "message": "¿No tiene una cuenta?",
-            "link": "Registrarse"
-        },
-        "no_account_warning": "Para usar nuestros servicios web necesita crear una cuenta."
-    },
-    "createAccount": {
-        "title": "Crear una cuenta AGM",
-        "message": "Por favor, complete el formulario a continuación para crear una cuenta AGM.",
-        "name": "Nombre",
-        "email": "Correo electrónico",
-        "username": "Nombre de usuario",
-        "password": "Contraseña",
-        "country": "País",
-        "confirmPassword": "Confirmar contraseña",
-        "createAccount": "Crear cuenta",
-        "creating": "Creando cuenta...",
-        "goBack": "Volver",
-        "goBackHome": "Volver a la página principal"
-    },
-    "ada": {
-        "title": "Chat con ADA",
-        "description": "La asistente de IA de AGM disponible 24/7 para responder tus preguntas sobre los servicios de AGM, capacidades de trading y mercados financieros.",
-        "start_conversation": "Inicia una conversación con Ada",
-        "typing": "Ada está escribiendo...",
-        "placeholder": "Escribe tu mensaje aquí...",
-        "system_prompt": "Eres Ada, la asistente de IA de AGM. Operas en nuestro sitio web (https://agmtechnology.com) como un chatbot y serás utilizado principalmente por nuestros clientes. Cuando hables de cualquier enlace dentro del sitio web, necesitas usar el siguiente formato: [Texto del Enlace](https://agmtechnology.com/endpoint). Aquí tienes información importante sobre AGM: AGM es un corredor/agente de bolsa internacional líder desde 1995, que proporciona acceso directo a más de 150 mercados financieros en EE. UU., Europa, Asia y América Latina. Nos especializamos en hacer accesibles mercados que antes eran inaccesibles para traders e inversionistas. Servicios clave: AGM Trader: Para traders individuales. AGM Advisor: Para soluciones de inversión gestionadas. AGM Institutional: Para clientes institucionales. Ofrecemos: Plataforma global de trading para acciones, ETFs, opciones, futuros, bonos y criptomonedas. Acceso a los mercados 24/7. Herramientas profesionales de trading y panel de control. Atención al cliente dedicada. El sitio web (https://agmtechnology.com) ofrece una amplia gama de servicios, incluyendo: Inicio de sesión en la plataforma de trading con endpoint /signin y creación de cuenta con /create-account. Páginas de servicios en /trader, /advisor, /institutional. Centro de aprendizaje en /learning. Centro de ayuda en /help. Estos endpoints están disponibles para usuarios registrados y con sesión iniciada: Solicitud de una cuenta AGM con endpoint /apply. Acceso directo al portal de cuentas en /portal. Brinda respuestas precisas, profesionales y útiles relacionadas con los servicios de AGM, capacidades de trading y mercados financieros. Mantén siempre un tono profesional y prioriza la precisión en la información financiera. NO OFRECES CONSEJOS DE INVERSIÓN, NO ERES UN ASESOR FINANCIERO."
+        "submitting": "Enviando..."
     },
     "fees": {
         "title": "Costos",
@@ -919,6 +535,205 @@
             "other_fees_international": "Internacional: $25 + cualquier cargo aplicado por el banco receptor."
         },
         "footnote": "Todos los costos y tarifas están expresados en USD y pueden cambiar en cualquier momento sin previo aviso. Pueden aplicarse otros costos. Estos cargos y tarifas son los más comunes que aplican a los productos y servicios más utilizados. Las acciones, ETFs y bonos (Non Euroclear) pueden tener cargos adicionales."
+    },
+    "risk": {
+        "title": "Cuestionario de Evaluación de Riesgo",
+        "description": "Por favor, completa este formulario para ayudarnos a entender tu tolerancia al riesgo y preferencias de inversión.",
+        "form": {
+            "account_id": "Número de cuenta",
+            "email": "Correo electrónico",
+            "name": "Nombre",
+            "type": {
+                "title": "¿Qué tipo de inversor te consideras?",
+                "conservative": "Conservador",
+                "moderate": "Moderado",
+                "aggressive": "Agresivo"
+            },
+            "loss": {
+                "title": "Si tu cartera pierde 20% de su valor, ¿qué acción tomarías?",
+                "sell_everything": "Vender todo",
+                "sell_some": "Vender algunas inversiones",
+                "do_nothing": "No hacer nada",
+                "invest_more": "Invertir más"
+            },
+            "gain": {
+                "title": "Si tu cartera aprecia un 20% de su valor, ¿qué acción tomarías?",
+                "sell_everything": "Vender todo",
+                "sell_some": "Vender algunas inversiones",
+                "do_nothing": "No hacer nada",
+                "invest_more": "Invertir más"
+            },
+            "period": {
+                "title": "¿Cuál crees que debería ser el plazo promedio de tu cartera de inversión?",
+                "more_than_21_years": "Más de 21 años",
+                "11_to_20_years": "11 a 20 años",
+                "5_to_10_years": "5 a 10 años",
+                "0_to_5_years": "0 a 5 años"
+            },
+            "diversification": {
+                "title": "Considerando la diversificación de clases de activos, ¿cuál de estos portafolios seleccionarías?",
+                "portfolio_a": "Portafolio A: 100% bonos, 0% acciones",
+                "portfolio_b": "Portafolio B: 80% bonos, 20% acciones",
+                "portfolio_c": "Portafolio C: 60% bonos, 40% acciones"
+            },
+            "goals": {
+                "title": "¿Cuál de estos portafolios representa mejor tus objetivos con los resultados más aceptables?",
+                "portfolio_a": "Portafolio A: 4% rendimiento promedio",
+                "portfolio_b": "Portafolio B: 5% rendimiento promedio",
+                "portfolio_c": "Portafolio C: 7% rendimiento promedio"
+            }
+        },
+        "result": {
+            "title": "Tu Perfil de Riesgo",
+            "warning": "¡Por favor toma una foto de esto, ya que será muy difícil verlo de nuevo!"
+        }
+    },
+    "requirements": {
+        "title": "Requisitos para una cuenta AGM",
+        "description": "Por favor asegurarse de cumplir con los siguientes requisitos para aplicar para una cuenta",
+        "optional_preparation": {
+            "title": "Preparación Opcional",
+            "risk_profile": {
+                "title": "Completar Perfil de Riesgo",
+                "description": "Completa tu perfil de riesgo de inversión para ayudarnos a entender mejor tus preferencias y objetivos de inversión.",
+                "button": "Iniciar Perfil de Riesgo"
+            },
+            "fees": {
+                "title": "Revisar Nuestras Tarifas",
+                "description": "Explora nuestra estructura de precios transparente para entender los costos asociados con tu cuenta.",
+                "button": "Ver Tarifas"
+            },
+            "downloads": {
+                "title": "Descargar Nuestras Apps",
+                "description": "Obtén acceso a nuestras aplicaciones móviles y de escritorio para operar sin problemas donde sea que estés.",
+                "button": "Ver Descargas"
+            }
+        },
+        "personal": {
+            "title": "Requisitos para cuentas Individuales",
+            "identity": {
+                "title": "Documentos oficiales de Identidad",
+                "description": "Uno de los siguientes documentos",
+                "documents": {
+                    "passport": {
+                        "title": "Pasaporte",
+                        "description": "Debe estar al día, debidamente firmado. Debe incluir fotografía, nombre completo, fecha de nacimiento y fecha de expiración."
+                    },
+                    "id_card": {
+                        "title": "Documento de identificación",
+                        "description": "Documento de identificación del país de residencia al día y firmado y debe incluir fotografía, nombre completo, fecha de nacimiento, fecha de expiración y país de emisión."
+                    },
+                    "driver_license": {
+                        "title": "Licencia de conducir",
+                        "description": "Debe estar al día, debidamente firmada. Debe incluir fotografía, nombre completo, fecha de nacimiento, fecha de expiración y lugar de emisión del documento."
+                    }
+                }
+            },
+            "proof_of_address": {
+                "title": "Documentos de dirección",
+                "description": "Uno de los siguientes documentos",
+                "documents": {
+                    "utility_bill": {
+                        "title": "Recibo de servicios públicos",
+                        "description": "Por ejemplo, recibos por servicios de electricidad, agua, teléfono ó gas. Recibos por servicios de telefonía móvil no son aceptados. Los recibos deben de ser claros, indicar el nombre completo de la persona, dirección completa y que tengan menos de un año de antigüedad."
+                    }
+                }
+            },
+            "source_of_wealth": {
+                "title": "Fuente de Ingresos",
+                "description": "Uno de los siguientes documentos de acuerdo con el Tipo de Ingreso",
+                "documents": {
+                    "salary": "Salarios (Copia de la Orden Patronal mas reciente o Certificación por parte de un CPA)",
+                    "investments": "Ingresos producto de ganancias sobre Inversiones (Estado de Cuenta Bursátil donde aparezcan dichas ganancias)",
+                    "property": "Venta de Propiedad (Contrato de compra/Venta de la Propiedad)",
+                    "inheritance": "Herencia (Copia del Documento Legal: Fideicomiso, Testamento, etc.)",
+                    "shares": "Venta de Participaciones (Acciones) en una o varias compañías (Estado de Cuenta Bursátil donde aparezcan dichas ventas)",
+                    "dividends": "Dividendos recibidos (Copia del Acta de Accionistas autorizando la distribución de Dividendos)",
+                    "other": "Otro"
+                }
+            }
+        },
+        "institutional": {
+            "title": "Requisitos para cuentas Institucionales",
+            "company_documents": {
+                "title": "Documentos que prueben la existencia de la compañía",
+                "description": "Dos de los siguientes documentos",
+                "documents": {
+                    "incorporation": {
+                        "title": "Acta Constitutiva o de incorporación",
+                        "description": "El documento deberá de especificar claramente el nombre de la empresa tal y como aparece en los documentos de apertura, además deberá de ser certificado y notariado."
+                    },
+                    "legal_id": {
+                        "title": "Cédula jurídica",
+                        "description": "El documento deberá ser emitido por una autoridad de Gobierno, donde especifique el número de inscripción y además debe especificar claramente el nombre de la empresa tal y como aparece en los documentos de apertura"
+                    },
+                    "legal_status": {
+                        "title": "Personería jurídica",
+                        "description": "El documento deberá de especificar claramente el nombre de la empresa tal y como aparece en los documentos de apertura, además deberá de ser certificado y notariado. Vigencia: menos de 6 meses."
+                    }
+                }
+            },
+            "address_verification": {
+                "title": "Verificación de Dirección",
+                "description": "Uno de los siguientes documentos",
+                "documents": {
+                    "utility_bill": {
+                        "title": "Recibo de servicios públicos",
+                        "description": "Por ejemplo, recibos de servicios de internet, TV por cable, electricidad, agua, gas, teléfono fijo (recibos de teléfonos móviles no se aceptan). El recibo debe describir de forma clara el nombre completo de la empresa y la dirección física. No debe ser mayor a seis meses."
+                    }
+                }
+            },
+            "director_identification": {
+                "title": "Documentos de identificación de los directores",
+                "description": "Presidente - Secretario y las personas firmantes (Uno de los siguientes documentos)",
+                "documents": {
+                    "passport": {
+                        "title": "Pasaporte",
+                        "description": "Debe de estar vigente, firmado e incluir fotografía de la persona, nombre completo, fecha de nacimiento y expiración."
+                    },
+                    "id_card": {
+                        "title": "Documento de identificación",
+                        "description": "Documento de identidad del país de residencia, que incluya la firma, fecha de nacimiento, fotografía de la persona, nombre completo, fecha de nacimiento, fecha de expiración y país de emisión del documento."
+                    },
+                    "driver_license": {
+                        "title": "Licencia de conducir",
+                        "description": "Debe de estar vigente, firmado e incluir fotografía de la persona, nombre completo, fecha de nacimiento, de expiración, fecha y lugar de emisión."
+                    }
+                }
+            },
+            "director_address": {
+                "title": "Documentos que indiquen la dirección física de los directores",
+                "description": "Presidente - Secretario y las personas firmantes (Uno de los siguientes documentos)",
+                "documents": {
+                    "utility_bill": {
+                        "title": "Recibo de servicios públicos",
+                        "description": "Por ejemplo, recibo de servicios de internet, TV por Cable, electricidad, agua, Teléfono fijo o gas (no se aceptan recibos de teléfono móvil) Los recibos deben especificar claramente el nombre y la dirección de residencia de la persona y tener menos de un año de emitidos"
+                    }
+                }
+            },
+            "capital_ownership": {
+                "title": "Documento que demuestre la propiedad del Capital de la Sociedad",
+                "documents": {
+                    "share_certificate": "Copia certificada del Certificado(s) de Acciones de la Sociedad",
+                    "notarial_certification": "Certificación notarial de la Distribución Accionaria de la Sociedad"
+                },
+                "note": "De existir varios accionistas, los que tengan más del 10% deben aportar Documentos de identificación y Documentos que indiquen su dirección física."
+            },
+            "source_of_wealth": {
+                "title": "Fuente de Ingresos",
+                "description": "Uno de los siguientes documentos de acuerdo con el Tipo de Ingreso",
+                "documents": {
+                    "investments": "Ingresos producto de ganancias sobre Inversiones: (Estado de Cuenta Bursátil donde aparezcan dichas ganancias)",
+                    "property": "Venta de Propiedad: (Contrato de compra/Venta de la Propiedad)",
+                    "inheritance": "Herencia: (Copia del Documento Legal: Fideicomiso, Testamento, etc.)",
+                    "shares": "Venta de Participaciones (Acciones) en una o varias compañías: (Estado de Cuenta Bursátil donde aparezcan dichas ventas)",
+                    "profits": "Ingresos por Utilidades recibidas: (Copia de los Estados Financieros de la Compañía que muestren dichas Utilidades)",
+                    "business": "Ingresos producto de Negocios: (Copia de los Estados Financieros de la Compañía que muestren dichos Ingresos)",
+                    "dividends": "Dividendos recibidos: (Copia del Acta de Accionistas autorizando la distribución de Dividendos)"
+                }
+            }
+        },
+        "submit": "Aplicar para una cuenta"
     },
     "learning": {
         "chapter_label": "Capítulo",

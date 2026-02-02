@@ -1,11 +1,11 @@
 'use client'
 
-import Title from "@/components/public/title/Title";
-import { Introduction } from "@/components/public/introduction/Introduction"
-import Services from "@/components/public/services/Services";
-import FAQ from "@/components/public/faq/FAQ";
+import Title from "@/components/hub/main/title/Title";
+import { Introduction } from "@/components/hub/main/introduction/Introduction"
+import Services from "@/components/hub/main/services/Services";
+import FAQ from "@/components/hub/main/faq/FAQ";
 
-import Team from "@/components/public/team/Team";
+import Team from "@/components/hub/main/team/Team";
 import { Handshake, BarChart2, PieChart, TrendingUp, Clock, Database, LayoutDashboard, FileText, MessageCircle } from "lucide-react";
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider";
 

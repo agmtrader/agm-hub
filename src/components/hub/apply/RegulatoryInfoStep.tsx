@@ -4,10 +4,10 @@ import { Application } from '@/lib/entities/application';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import CountriesFormField from '@/components/ui/CountriesFormField';
+import CountriesFormField from '@/components/misc/CountriesFormField';
 import { Input } from '@/components/ui/input';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { regulatory_codes } from '@/lib/public/form';
+import { regulatory_codes } from '@/lib/entities/application';
 
 interface RegulatoryInfoStepProps {
   form: UseFormReturn<Application>;

@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
-import { LearningCarousel } from '@/components/learning/LearningCarousel'
+import { LearningCarousel } from '@/components/hub/learning/LearningCarousel'
 
 const LearningCenterPage = () => {
   return (

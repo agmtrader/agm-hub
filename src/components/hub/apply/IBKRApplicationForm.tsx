@@ -19,7 +19,7 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import FinancialInfoStep from './FinancialInfoStep'
 import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AgreementsStep from './AgreementsStep'
-import { getApplicationDefaults } from '@/utils/form'
+import { getApplicationDefaults } from '@/utils/entities/application'
 import ProgressMeter from './ProgressMeter'
 import { BusinessAndOccupation, FinancialRange, FormDetails } from '@/lib/entities/account'
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/entities/account'
@@ -59,7 +59,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });

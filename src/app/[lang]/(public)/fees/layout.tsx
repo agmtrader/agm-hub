@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../../../globals.css";
-import { StaticHeader } from "@/components/Header";
-import Footer from "@/components/Footer";
+import { StaticHeader } from "@/components/hub/Header";
+import Footer from "@/components/hub/Footer";
 
 export const metadata: Metadata = {
   title: "AGM Fees",
