@@ -14,4 +14,5 @@ export interface InvestmentProposalPayload {
     etfs: Bond[]
 }
 
+
 export type InvestmentProposal = InvestmentProposalPayload & Base

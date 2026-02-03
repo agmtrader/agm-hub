@@ -18,7 +18,7 @@ import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { format as formatDateFns } from "date-fns";
-import StatesFormField from "@/components/ui/StatesFormField";
+import StatesFormField from "@/components/misc/StatesFormField";
 import { BusinessAndOccupation } from '@/lib/entities/account';
 
 const generateUUID = () => {

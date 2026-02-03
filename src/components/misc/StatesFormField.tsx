@@ -1,9 +1,9 @@
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { getSubdivisions } from '@/utils/iso3166'
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from './form'
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from './select'
-import { Input } from './input'
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
 
 interface StatesFormFieldProps {
   form: UseFormReturn<any>
