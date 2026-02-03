@@ -63,6 +63,7 @@ const IBKRApplicationForm = () => {
     mode: 'onChange',
     shouldUnregister: false,
   });
+  
 
   useEffect(() => {
     const fetchData = async () => {
