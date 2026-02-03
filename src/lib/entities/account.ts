@@ -16,6 +16,7 @@ export type InternalAccount = AccountPayload & {
   management_type: string | null,
   advisor_code: string | null,
   contact_id: string | null,
+  emailed_credentials: boolean,
 }
 export type Account = Base & InternalAccount
 
