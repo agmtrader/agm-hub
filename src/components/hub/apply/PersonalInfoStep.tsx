@@ -940,12 +940,14 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
     
     // Get unique businesses
     const uniqueBusinesses = Array.from(new Set(businessAndOccupations.map(b => b.employerBusiness))).sort();
+    const businessOptions = businessAndOccupations.length ? uniqueBusinesses : ["Other"];
     
     // Get occupations for selected business
     const availableOccupations = businessAndOccupations
       .filter(b => b.employerBusiness === selectedEmployerBusiness)
       .map(b => b.occupation)
       .sort();
+    const occupationOptions = availableOccupations.length ? availableOccupations : ["Other"];
 
     // Sync descriptions to description field
     useEffect(() => {
@@ -1347,7 +1349,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="max-h-[300px]">
-                        {uniqueBusinesses.map((business) => (
+                        {businessOptions.map((business) => (
                           <SelectItem key={business} value={business}>
                             {business}
                           </SelectItem>
@@ -1378,7 +1380,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="max-h-[300px]">
-                      {availableOccupations.map((occupation) => (
+                      {occupationOptions.map((occupation) => (
                         <SelectItem key={occupation} value={occupation}>
                           {occupation}
                         </SelectItem>
