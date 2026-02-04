@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSearchParams } from 'next/navigation'
 import {
   Form,
 } from '@/components/ui/form'
@@ -39,6 +40,8 @@ export enum FormStep {
 const IBKRApplicationForm = () => {
 
   const { t } = useTranslationProvider();
+  const searchParams = useSearchParams();
+  const advisorCode = searchParams.get('ad');
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -401,7 +404,7 @@ const IBKRApplicationForm = () => {
     if (!applicationId) {
       const internalApplication: InternalApplicationPayload = {
         application: sanitizedValues,
-        advisor_code: null,
+        advisor_code: advisorCode,
         master_account: null,
         date_sent_to_ibkr: null,
         status,
