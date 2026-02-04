@@ -210,7 +210,7 @@ const RiskForm = () => {
                 <DialogTitle>Investment Proposal</DialogTitle>
               </DialogHeader>
               {investmentProposal && riskProfile && (
-                <InvestmentProposalView riskProfile={riskProfile as RiskProfile} investmentProposal={investmentProposal} />
+                <InvestmentProposalView investmentProposal={investmentProposal} />
               )}
             </DialogContent>
           </Dialog>

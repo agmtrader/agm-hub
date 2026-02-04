@@ -8,6 +8,7 @@ declare module "next-auth" {
     updated: string
     last_login: string
     scopes: string;
+    contact_id: string;
   }
 }
 
@@ -20,9 +21,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
     id: User["id"]
-    name: User["name"]
     email: User["email"]
-    image: User["image"]
     scopes: User["scopes"]
   }
 }
