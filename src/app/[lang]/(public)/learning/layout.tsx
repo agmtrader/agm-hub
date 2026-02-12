@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "../../../globals.css";
-import { StaticHeader } from "@/components/hub/Header";
-import Footer from "@/components/hub/Footer";
 
 export const metadata: Metadata = {
   title: "AGM Learning Center",
@@ -19,10 +17,8 @@ export default function Layout(
   } = props;
 
   return (
-    <div className="flex flex-col min-h-screen w-full">
-      <StaticHeader />
+    <div className="flex flex-col w-full">
       {children}
-      <Footer />
     </div>
   );
 }

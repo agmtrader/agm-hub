@@ -1,5 +1,5 @@
 import React from 'react'
-import AGMTraderMobileDownloads from '@/components/hub/main/download/AGMTraderMobileDownloads'
+import AGMTraderMobileDownloads from '@/components/hub/downloads/AGMTraderMobileDownloads'
 
 const page = () => {
   return (

@@ -1,73 +1,51 @@
 'use client'
-import React, { useState, useEffect } from 'react'
-import { Header } from '@/components/hub/Header'
+import React from 'react'
 import { motion } from 'framer-motion'
-import ShimmerButton from '@/components/ui/shimmer-button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import Link from 'next/link'
 import { formatURL } from '@/utils/language/lang'
-import { useSearchParams } from 'next/navigation'
-import { toast } from '@/hooks/use-toast'
-import { formatTimestamp } from '@/utils/dates'
+import { Button } from '@/components/ui/button'
+import { ArrowRight } from 'lucide-react'
+import { CandlesBackground } from '@/components/ui/candles-background'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Title = ({ setStarted }:Props) => {
-
+const Title = ({ setStarted }: Props) => {
   const { t, lang } = useTranslationProvider()
-  const searchParams = useSearchParams()
-
-  async function handleStartApplication() {
-    setStarted(true)
-  }
 
   return (
-    <div className='w-full h-screen flex flex-col'>
-      <Header/>
-      <div className='flex-1 flex flex-col gap-y-10 bg-[url(/assets/backgrounds/bull.jpg)] w-full bg-cover bg-center z-0 justify-center items-center relative overflow-hidden'>
-        <div className='w-full h-full opacity-60 bg-secondary-dark absolute z-1'></div>
+    <div className='relative w-full h-[calc(100vh-80px)] flex flex-col justify-center items-center overflow-hidden bg-background'>
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className='z-10 flex flex-col gap-y-8 justify-center items-center text-center px-4'
+          className='z-10 flex flex-col gap-y-8 justify-center items-center text-center px-4 max-w-4xl'
         >
-          <motion.h1 variants={itemVariants} className='text-6xl md:text-7xl font-bold text-background'>
+          <motion.h1 variants={itemVariants} className='text-5xl md:text-7xl font-bold tracking-tighter text-foreground'>
             {t('apply.account.title.ready')}
           </motion.h1>
-          <motion.p variants={itemVariants} className='text-2xl md:text-3xl text-background max-w-2xl'>
+          
+          <motion.p variants={itemVariants} className='text-xl md:text-2xl text-muted-foreground max-w-2xl'>
             {t('apply.account.title.description')}
           </motion.p>
-          <motion.div variants={itemVariants}>
-            <p className='text-md text-background'>
-              {t('apply.account.title.get_started')} <Link href={formatURL('/requirements', lang)} className='text-primary'>{t('apply.account.title.get_started_link')}</Link>.
+
+          <motion.div variants={itemVariants} className="flex flex-col items-center gap-6">
+            <Button
+              size="lg"
+              onClick={() => setStarted(true)}
+              className="px-8 py-6 text-lg font-semibold gap-2"
+            >
+                {t('apply.account.title.startApplication')} <ArrowRight className="w-5 h-5" />
+            </Button>
+
+            <p className='text-sm text-muted-foreground'>
+              {t('apply.account.title.get_started')} <Link href={formatURL('/requirements', lang)} className='text-primary hover:underline underline-offset-4 font-medium'>{t('apply.account.title.get_started_link')}</Link>.
             </p>
           </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-            className='flex w-full gap-x-5 justify-center items-center'
-          >
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <ShimmerButton
-              onClick={handleStartApplication}
-              className={`px-8 py-3 text-lg font-semibold mt-4`}
-              background='#22c55e'
-            >
-                <p className="text-sm">
-                  {t('apply.account.title.startApplication')}
-                </p>
-            </ShimmerButton>
-          </motion.div>
         </motion.div>
-      </div>
     </div>
   )
 }

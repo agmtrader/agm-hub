@@ -4,9 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
-import {
-  Form,
-} from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
 import { Application, InternalApplicationPayload } from '@/lib/entities/application';
 import { toast } from '@/hooks/use-toast'
@@ -25,7 +23,6 @@ import ProgressMeter from './ProgressMeter'
 import { BusinessAndOccupation, FinancialRange, FormDetails } from '@/lib/entities/account'
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/entities/account'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
-import { individual_form } from './samples'
 
 export enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -42,6 +39,7 @@ const IBKRApplicationForm = () => {
   const { t } = useTranslationProvider();
   const searchParams = useSearchParams();
   const advisorCode = searchParams.get('ad');
+  console.log(advisorCode);
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -427,7 +425,12 @@ const IBKRApplicationForm = () => {
     }
   }
 
-  if (currentStep === FormStep.SUCCESS) return <ApplicationSuccess />;
+  if (currentStep === FormStep.SUCCESS) {
+    const documents = form.getValues('documents') || [];
+    const uploadedDocs = documents.filter(d => d && d.formNumber !== 5001);
+    const documentsUploaded = uploadedDocs.length > 0;
+    return <ApplicationSuccess documentsUploaded={documentsUploaded} />;
+  }
 
   return (
     <div className="flex flex-col justify-center items-center my-20 gap-5 p-5">

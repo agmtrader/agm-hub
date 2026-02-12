@@ -1,13 +1,15 @@
 'use client'
 import { formatURL } from '@/utils/language/lang';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { AGMTraderProDownloads as downloads } from '@/lib/public/downloads';
-import Link from 'next/link';;
+import { products } from '@/lib/public/products';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 
-const AGMTraderProDownloads = () => {
+const AGMTraderMobileDownloads = () => {
   
   const {lang, t} = useTranslationProvider();
+
+  const apps = products(t)
 
   return (
     <div className="w-full relative bg-background">
@@ -17,29 +19,30 @@ const AGMTraderProDownloads = () => {
         <div className="max-w-7xl mx-auto flex flex-col my-10">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-foreground mb-6">
-              {t('agm-trader.download.trader.title')}
+              {t('main.products.mobile.title')}
             </h1>
             <p className="text-lg max-w-xl mx-auto text-subtitle mb-10">
-              {t('agm-trader.download.trader.description')}
+              {t('main.products.mobile.description')}
             </p>
           </div>
 
           <div className="flex flex-col gap-y-6">
+            {/* Mobile Section */}
             <div>
-              <h2 className="text-xl font-semibold text-foreground mb-4">{t('agm-trader.download.desktop_platforms')}</h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                {downloads.map((option) => (
+              <h2 className="text-xl font-semibold text-foreground mb-4">{t('main.products.download.platforms')}</h2>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {apps.find((app) => app.name === t('main.products.mobile.title'))?.platforms.map((platform) => (
                   <Card
-                    key={option.os}
+                    key={platform.type}
                     className="hover:shadow-xl transition-shadow duration-300 cursor-pointer"
                   >
-                    <Link href={option.download_url} target="_blank" rel="noopener noreferrer">
+                    <Link href={apps.find((app) => app.name === t('main.products.mobile.title'))?.download_url || '#'} target="_blank" rel="noopener noreferrer">
                       <CardContent className="p-6">
                         <div className="flex items-center justify-center mb-4">
-                          <option.icon className="h-12 w-12 text-primary" />
+                          <platform.icon className="h-12 w-12 text-primary" />
                         </div>
                         <h2 className="text-xl font-semibold text-center text-foreground mb-4">
-                          {option.os}
+                          {platform.type}
                         </h2>
                       </CardContent>
                     </Link>
@@ -51,13 +54,13 @@ const AGMTraderProDownloads = () => {
 
           <div className="mt-10 text-center text-subtitle">
             <p>
-              {t('agm-trader.download.by_downloading')} {' '}
+              {t('main.products.download.by_downloading')} {' '}
               <a
                 href={formatURL('/disclosures', lang)}
                 className="text-primary hover:text-primary/90 underline"
                 tabIndex={0}
               >
-                {t('agm-trader.download.terms_of_service')}
+                {t('main.products.download.terms_of_service')}
               </a>
             </p>
           </div>
@@ -67,4 +70,4 @@ const AGMTraderProDownloads = () => {
   );
 };
 
-export default AGMTraderProDownloads;
+export default AGMTraderMobileDownloads;

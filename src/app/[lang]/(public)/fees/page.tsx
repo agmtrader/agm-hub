@@ -1,5 +1,5 @@
 'use client'
-import Fees from '@/components/hub/Fees'
+import Fees from '@/components/hub/fees/Fees'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import React from 'react'
 

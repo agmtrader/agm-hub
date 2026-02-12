@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import "../../../globals.css";
-import { Header } from "@/components/hub/Header";
-import Footer from "@/components/hub/Footer";
 
 export const metadata: Metadata = {
-  title: "AGM Trader",
-  description: "Discover the new trading world.",
+  title: "AGM Sitemap",
+  description: "Sitemap of all pages on AGM Trader Broker & Advisor.",
 };
 
 export default function Layout(
@@ -19,9 +17,7 @@ export default function Layout(
 
   return (
     <div className="flex flex-col min-h-screen w-full">
-      <Header />
       {children}
-      <Footer />
     </div>
   );
 }

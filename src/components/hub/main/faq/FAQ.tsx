@@ -31,17 +31,17 @@ function FAQ({}: Props) {
       variants={containerVariants}
       className='w-full h-fit flex flex-col justify-center text-agm-dark-blue p-5 gap-5 items-center'
     >
-      <motion.p variants={itemVariants} className='text-5xl text-center font-bold'>{t('shared.faq.title')}</motion.p>
+      <motion.p variants={itemVariants} className='text-5xl text-center font-bold'>{t('main.faq.title')}</motion.p>
       <Accordion type="single" collapsible className="w-[80%] text-start">
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-1" >
             <AccordionTrigger>
-              <p className='text-sm font-bold'>{t('shared.faq.question_1')}</p>
+              <p className='text-sm font-bold'>{t('main.faq.question_1')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-              {t('shared.faq.answer_1')}
-              <a className='font-bold' href='https://agmtechnology.com/apply' rel="noopener noreferrer" target="_blank"> {t('shared.faq.answer_1_link')}</a>
+              {t('main.faq.answer_1')}
+              <a className='font-bold' href='https://agmtechnology.com/apply' rel="noopener noreferrer" target="_blank"> {t('main.faq.answer_1_link')}</a>
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -49,11 +49,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-2">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>{t('shared.faq.question_2')}</p>
+              <p className='text-sm font-bold'>{t('main.faq.question_2')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-              {t('shared.faq.answer_2')}
+              {t('main.faq.answer_2')}
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -61,11 +61,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-3">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>{t('shared.faq.question_3')}</p>
+              <p className='text-sm font-bold'>{t('main.faq.question_3')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-                {t('shared.faq.answer_3')}
+                {t('main.faq.answer_3')}
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -73,11 +73,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-4">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>{t('shared.faq.question_4')}</p>
+              <p className='text-sm font-bold'>{t('main.faq.question_4')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-              {t('shared.faq.answer_4')}
+              {t('main.faq.answer_4')}
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -85,11 +85,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-5">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>{t('shared.faq.question_5')}</p>
+              <p className='text-sm font-bold'>{t('main.faq.question_5')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-              {t('shared.faq.answer_5')}
+              {t('main.faq.answer_5')}
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -97,11 +97,11 @@ function FAQ({}: Props) {
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-6">
             <AccordionTrigger>
-              <p className='text-sm font-bold'>{t('shared.faq.question_6')}</p>
+              <p className='text-sm font-bold'>{t('main.faq.question_6')}</p>
             </AccordionTrigger>
             <AccordionContent>
               <p className='text-sm font-light'>
-              {t('shared.faq.answer_6')}
+              {t('main.faq.answer_6')}
               </p>
             </AccordionContent>
           </AccordionItem>

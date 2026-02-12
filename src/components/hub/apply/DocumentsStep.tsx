@@ -65,14 +65,18 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     }
 
     const isJointAccount = actualFormData?.customer?.type === 'JOINT'
+    const isOrgAccount = actualFormData?.customer?.type === 'ORG'
     const accountHolderDetails = actualFormData?.customer?.accountHolder?.accountHolderDetails?.[0] ?? null
     const firstHolderDetails = actualFormData?.customer?.jointHolders?.firstHolderDetails?.[0] ?? null
     const secondHolderDetails = actualFormData?.customer?.jointHolders?.secondHolderDetails?.[0] ?? null
+    const associatedIndividuals = isOrgAccount ? actualFormData?.customer?.organization?.associatedEntities?.associatedIndividuals : []
+    const orgSigners = associatedIndividuals?.map(extractName) ?? []
 
     const namesToAdd = [
       extractName(accountHolderDetails),
       isJointAccount ? extractName(firstHolderDetails) : null,
       isJointAccount ? extractName(secondHolderDetails) : null,
+      ...orgSigners
     ].filter((n): n is string => !!n)
 
     const users = actualFormData?.users ?? []

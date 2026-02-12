@@ -1,8 +1,6 @@
-import RequirementsPage from '@/components/hub/Requirements'
+import RequirementsPage from '@/components/hub/requirements/Requirements'
 
-type Props = {}
-
-const page = (props: Props) => {
+const page = () => {
   return (
     <RequirementsPage />
   )

@@ -1,296 +1,158 @@
 {
-    "sidebar": {
-        "apply": "Solicitar una cuenta",
-        "risk": "Completar perfil de riesgo",
-        "learning": "Centro de Aprendizaje",
-        "help": "Centro de Ayuda",
-        "downloads": "Descargas",
-        "fees": "Costos",
-        "requirements": "Requisitos"
+    "header": {
+        "trading_portal": "Portal de Trading",
+        "fill_risk_profile": "Completar Perfil de Riesgo",
+        "learning_center": "Centro de Aprendizaje",
+        "requirements": "Requisitos",
+        "apply_now": "Aplicar Ahora"
     },
-    "agm-technology": {
-        "title": {
-            "title": "Invierta en cualquier lugar / momento",
-            "subtitle": "Explore un mundo de oportunidades con nuestra plataforma de inversión global.",
-            "action_text": "Solicitar una cuenta"
-        },
-        "introduction": {
-            "title": "Apoyando a los inversionistas de hoy para los mercados del mañana",
-            "description": "Desde 1995, AGM como Puesto de Bolsa Internacional ha facilitado el acceso directo a más de 150 mercados financieros (Bolsas de Valores) en EE.UU., Europa, Asia y América Latina que normalmente son inaccesibles para ciertos inversionistas.",
-            "description_2": "AGM Technology ofrece servicios profesionales para maximizar sus rendimientos:",
-            "action_text": "Ver requisitos para comenzar a invertir",
-            "cards": [
-                {
-                    "title": "Invierta en cualquier momento y lugar",
-                    "description": "Invierta en acciones, ETFs, opciones, futuros, bonos, criptomonedas y más desde cualquier ubicación y en cualquier momento con nuestra plataforma y servicios de trading avanzados.",
-                    "item_labels": [
-                        "Acciones",
-                        "ETFs",
-                        "Opciones",
-                        "Futuros",
-                        "Bonos",
-                        "Criptomonedas"
-                    ]
-                },
-                {
-                    "title": "Herramientas profesionales",
-                    "description": "Nuestra plataforma de trading, panel de control y herramientas están diseñados para proporcionarte las herramientas necesarias para tener éxito en los mercados financieros.",
-                    "item_labels": [
-                        "24/7 soporte al cliente",
-                        "Datos de mercado en tiempo real",
-                        "Herramientas de trading avanzadas",
-                        "Informes de estados"
-                    ]
-                },
-                {
-                    "title": "Soporte al cliente activo",
-                    "description": "Nuestro equipo de soporte al cliente está siempre listo y feliz de ayudarte con cualquier pregunta o inquietud que puedas tener.",
-                    "item_labels": [
-                        "Correo electrónico",
-                        "Teléfono",
-                        "Chat en vivo"
-                    ]
-                }
-            ]
-        }
+    "footer": {
+        "title": "AGM Trader Broker & Advisor",
+        "copyright": "Copyright © 2024 AGM Trader Broker & Advisor. Todos los derechos reservados.",
+        "terms_of_use": "Términos de Uso y Divulgaciones",
+        "products": "Productos",
+        "download": "Descargar",
+        "help_center": "Centro de Ayuda",
+        "more_faqs": "Más Preguntas Frecuentes",
+        "email_support": "Soporte por Correo"
     },
-    "agm-trader": {
+    "main": {
         "title": {
-            "title": "Trader",
-            "subtitle": "Invierta en: acciones, bonos, ETFs, opciones, futuros, criptomonedas y más en cualquier momento y lugar.",
-            "action_text": "Descargar nuestras aplicaciones ya"
+            "empowering_traders": "Empoderando traders",
+            "worldwide": "a nivel mundial",
+            "description": "Desbloquea un mundo de oportunidades con nuestra plataforma global de inversión y trading.",
+            "trade_stocks": "Opera Acciones, ETFs, Opciones, Futuros, Bonos y Más",
+            "currencies_and_markets": "20+ Monedas y 150+ Mercados",
+            "customer_support_and_reporting": "Soporte al Cliente y Reportes"
         },
-        "introduction": {
-            "title": "Innovando a Escala Global",
-            "description": "AGM Trader te permite operar e invertir 24/7 en una amplia gama de instrumentos financieros en más de 150 mercados y 20 diferentes monedas desde una sola cuenta.",
-            "action_text": "Ver catálogo de productos",
-            "cards": [
-                {
-                    "title": "Opera en Cualquier Momento y Lugar",
-                    "description": "Accede a mercados globales e instrumentos financieros diversos a través de nuestras plataformas de trading avanzadas.",
-                    "item_labels": [
-                        "Acciones, bonos, ETFs, opciones y más",
-                        "24/7 trading",
-                        "150+ mercados",
-                        "20+ monedas"
-                    ]
-                },
-                {
-                    "title": "Elige tu Experiencia de Trading",
-                    "description": "Selecciona la plataforma que mejor se adapte a tu estilo de trading y necesidades.",
-                    "item_labels": [
-                        "AGM Trader (aplicación móvil)",
-                        "AGM Trader Pro (escritorio)",
-                        "AGM Webtrader (web)"
-                    ]
-                },
-                {
-                    "title": "Opera con Confianza",
-                    "description": "Nuestras plataformas de trading están diseñadas para proporcionarte las herramientas necesarias para tener éxito en los mercados financieros.",
-                    "item_labels": [
-                        "Seguro",
-                        "Análisis en tiempo real",
-                        "Recursos educativos",
-                        "Soporte 24/7"
-                    ]
-                }
-            ]
-        },
-        "download": {
-            "trader": {
-                "title": "Descargar AGM Trader",
-                "description": "Descarga nuestras aplicaciones de trading profesionales para tu plataforma preferida"
+        "about": {
+            "title": "Sobre Nosotros",
+            "description": "Desde 1995, AGM como Corredor/Distribuidor Internacional de Valores ha facilitado acceso directo a más de 150 mercados financieros (Bolsas de Valores) en EE. UU., Europa, Asia y América Latina, de otro modo inaccesibles para ciertos inversionistas.",
+            "description_2": "Con nuestras plataformas de trading y servicios de primera línea, AGM te permite operar e invertir 24/7 en una amplia gama de instrumentos financieros en más de 20 monedas diferentes desde una sola cuenta.",
+            "trade_anytime_anywhere": {
+                "title": "Opera en cualquier momento y lugar",
+                "description": "Opera acciones, ETFs, opciones, futuros, bonos, criptomonedas y más desde cualquier ubicación y en cualquier momento con nuestra plataforma de trading avanzada y servicios."
             },
-            "mobile": {
-                "title": "Descargar AGM Trader Mobile",
-                "description": "Descarga nuestras aplicaciones de trading profesionales para tu plataforma preferida"
+            "professional_tools": {
+                "title": "Herramientas profesionales",
+                "description": "Nuestra plataforma de trading, panel de control y herramientas están diseñados para brindarte las herramientas necesarias para triunfar en los mercados financieros."
             },
-            "device": "Elige tu dispositivo",
-            "operating_system": "Elige tu sistema operativo",
-            "download_now": "Descargar ahora",
-            "desktop_platforms": "Plataformas de escritorio",
-            "mobile_platforms": "Plataformas móviles",
-            "by_downloading": "Al descargar, aceptas nuestros",
-            "terms_of_service": "Términos de servicio"
-        }
-    },
-    "products": {
-        "download": {
-            "title": "Descargar Productos AGM",
-            "description": "Descarga nuestras aplicaciones de trading profesionales para tu plataforma preferida"
-        }
-    },
-    "agm-advisor": {
-        "title": {
-            "title": "Asesor",
-            "subtitle": "Desbloquea un mundo de oportunidades con nuestra plataforma de inversión global.",
-            "action_text": "Solicitar una cuenta"
-        },
-        "introduction": {
-            "title": "Su legado importa",
-            "description": [
-                "AGM Advisor, nuestra firma de servicios de asesoría, proporciona estrategias de inversión de cartera individuales que están hechas a medida para cada cliente (Cuentas de Cartera Segregadas).",
-                "Cualquier cliente que desee delegar una parte de sus activos financieros o patrimonio a través de nuestra división de asesoría, recibe un servicio personalizado de uno de nuestros Asesores asignados. ¡Nos esforzamos por proporcionar un servicio de primera clase a cada uno de nuestros clientes de asesoría!",
-                "Conoce tu perfil de riesgo como inversor y la cartera de inversión propuesta que coincide con tu perfil."
-            ],
-            "action_text": "Ver requisitos para comenzar a invertir",
-            "cards": [
-                {
-                    "title": "Estrategias de Inversión Personalizadas",
-                    "description": "Creamos carteras de inversión a medida diseñadas para cumplir con tus objetivos financieros únicos y tolerancia al riesgo.",
-                    "item_labels": [
-                        "Carteras personalizadas",
-                        "Evaluación de riesgos",
-                        "Planificación orientada a objetivos"
-                    ]
-                },
-                {
-                    "title": "Servicio de Asesoría Personalizado",
-                    "description": "Experimenta un apoyo dedicado con un asesor personal asignado para gestionar tus activos financieros y patrimonio.",
-                    "item_labels": [
-                        "Asesor dedicado",
-                        "Comunicación personalizada",
-                        "Revisiones regulares de la cartera"
-                    ]
-                },
-                {
-                    "title": "Servicio de Primera Clase",
-                    "description": "Benefíciate de nuestro compromiso de proporcionar un servicio y apoyo excepcionales a cada uno de nuestros clientes de asesoría.",
-                    "item_labels": [
-                        "Asesoramiento experto",
-                        "Gestión de riesgos",
-                        "Seguimiento del rendimiento"
-                    ]
-                }
-            ],
-            "cta_text": "Descubre Tu Perfil de Inversión",
-            "cta_subtext": "Realiza nuestra evaluación de riesgos para comenzar con una estrategia de inversión personalizada."
-        }
-    },
-    "agm-institutional": {
-        "title": {
-            "title": "Institucional",
-            "subtitle": "Desbloquea un mundo de oportunidades con nuestra plataforma de inversión global.",
-            "action_text": "Solicitar una cuenta"
-        },
-        "introduction": {
-            "title": "Tu Negocio Importa",
-            "description": [
-                "Nuestra división Institucional proporciona servicios de ejecución de clase mundial a las instituciones más sofisticadas.",
-                "Nuestro equipo dedicado de profesionales asegura que cualquier necesidad o requisito sea atendido, proporcionando la mejor ejecución y precios en más de 150 mercados en todo el mundo a través de todas las clases de activos."
-            ],
-            "action_text": "Ver requisitos para comenzar a invertir",
-            "cards": [
-                {
-                    "title": "A Quién Servimos",
-                    "description": "Atendemos a una amplia gama de clientes institucionales, incluyendo:",
-                    "item_labels": [
-                        "Firmas de Asesoría",
-                        "Fondos de Cobertura",
-                        "Brokers/Dealers",
-                        "Firmas de Gestión de Patrimonio",
-                        "Compañías de Seguros",
-                        "Oficinas Familiares"
-                    ]
-                },
-                {
-                    "title": "Nuestros Servicios",
-                    "description": "Ofrecemos servicios de ejecución integrales a través de varios mercados y clases de activos.",
-                    "item_labels": [
-                        "150+ Mercados Globales",
-                        "Múltiples Clases de Activos",
-                        "Mejor Ejecución",
-                        "Precios Competitivos"
-                    ]
-                },
-                {
-                    "title": "Ponte en Contacto",
-                    "description": "Contáctanos para aprender más sobre nuestros servicios institucionales y cómo podemos ayudar a tu negocio.",
-                    "item_labels": [
-                        "Correo Electrónico",
-                        "Teléfono",
-                        "Chat en vivo"
-                    ]
-                }
-            ]
-        }
-    },
-    "shared": {
-        "account": {
-            "sign_out": "Cerrar sesión",
-            "settings": "Configuración"
-        },
-        "title": {
-            "scroll_text": "Siga bajando para saber más"
-        },
-        "services": {
-            "title": "Nuestros Servicios",
-            "description": "Explore nuestros servicios y encuentra el que mejor se adapte a tus necesidades.",
-            "learn_more": "Saber Más",
-            "agm_trader": {
-                "title": "AGM Trader",
-                "description": "Proporcionamos acceso fácil para invertir a través de nuestras aplicaciones móviles, de escritorio y web conectadas a más de 150 mercados financieros en todo el mundo.",
-                "action_text": "Saber Más"
-            },
-            "agm_advisor": {
-                "title": "AGM Advisor",
-                "description": "También proporcionamos servicios de Asesoría para aquellos clientes que deseen delegar una parte de sus activos financieros o patrimonio a través de nuestra división de asesoría.",
-                "action_text": "Saber Más"
-            },
-            "agm_institutional": {
-                "title": "AGM Institutional",
-                "description": "Nuestra división Institucional proporciona servicios de ejecución de clase mundial a las instituciones más sofisticadas como Firmas de Asesoría, Fondos de Cobertura, Brokers/Dealers, firmas de Gestión de Patrimonio, compañías de Seguros y más.",
-                "action_text": "Saber Más"
+            "active_customer_support": {
+                "title": "Soporte al cliente activo",
+                "description": "Nuestro equipo de soporte al cliente siempre está listo y dispuesto a ayudarte con cualquier pregunta o inquietud que puedas tener."
             }
         },
-        "team": {
-            "title": "Nuestro Equipo",
-            "description": "Conoce a nuestro equipo de profesionales dedicados a brindar un servicio excepcional.",
-            "contact_us": "Contactanos",
-            "team_carousel": {
-                "linkedin": "LinkedIn",
-                "hernan_title": "Director General",
-                "hernan_description": "El Sr. Castro también tiene más de 30 años de experiencia en los mercados de valores y es un socio fundador de AGM, y como tal ha ayudado a la firma a convertirse en un Broker/Dealer y Asesor Internacional. El Sr. Castro no solo es nuestro Director de Operaciones, sino que supervisa nuestra División de Asesoría de Inversiones. El Sr. Castro ha estado registrado en FINRA en EE. UU. como Series 7 y Serie 66 bajo el CRD # 4575350.",
-                "ramon_title": "Director de Operaciones",
-                "ramon_description": "El Sr. Castro también tiene más de 30 años de experiencia en los mercados de valores y es un socio fundador de AGM, y como tal ha ayudado a la firma a convertirse en un Broker/Dealer y Asesor Internacional. El Sr. Castro no solo es nuestro Director de Operaciones, sino que supervisa nuestra División de Asesoría de Inversiones. El Sr. Castro ha estado registrado en FINRA en EE. UU. como Series 7 y Serie 66 bajo el CRD # 4575350.",
-                "cristian_title": "Director Financiero",
-                "cristian_description": "Cristian ha estado con AGM durante más de 8 años, tiene experiencia en negocios y análisis de datos, además de ser nuestro CFO, es un trader experimentado en Opciones y ha sido parte de un par de Broker/Dealers y una empresa de Gestión de Fondos en el pasado. El Sr. Ramirez tiene una sólida experiencia en análisis Estadístico y Financiero, así como en contabilidad.",
-                "javier_title": "Especialista en Soporte de Comercio",
-                "javier_description": "Javier comenzó en AGM como pasante de la Universidad Texas Tech, donde está en su último año para obtener su licenciatura en Negocios. Ha estado con nosotros durante 2 años y ha destacado en las diferentes áreas en las que ha estado. Está a cargo del Departamento de Servicio al Cliente y se asegura de que cada cliente tenga una introducción personalizada a su relación con AGM.",
-                "maria_jose_title": "Especialista en Soporte de Comercio",
-                "maria_jose_description": "Maria Jose es nuestra incorporación más reciente al equipo de AGM, también está en su último año para obtener su licenciatura en Negocios de la Universidad Texas Tech. Ella es parte de nuestro Departamento de Servicio al Cliente y se asegura de que cada cliente tenga una gran experiencia de servicio y apoyo con AGM. También está a cargo de nuestro departamento de marketing y redes sociales.",
-                "andres_title": "Ingeniero de Software Principal",
-                "andres_description": "Andres ha estado con AGM desde principios de 2024, está trabajando para obtener su licenciatura en Ciencias de la Computación de la Universidad Texas Tech. Andres está a cargo de nuestro departamento de TI y ha demostrado grandes habilidades para desarrollar nuestros sistemas de front end para poder proporcionar una mejor experiencia a nuestros clientes. También es responsable de la mayoría de nuestros procesos de back end para que todo funcione como se espera.",
-                "ramon_jr_title": "Especialista en Software",
-                "ramon_jr_description": "Ramon es nuestro nuevo miembro del equipo de TI y se especializa en la implementación de software y mantenimiento de nuestros sistemas tecnológicos actualizados. Tiene un background en Ciberseguridad, Gestión de IT y Ciencia de Datos."
+        "steps": {
+            "title": "Pasos para Empezar a Operar",
+            "description": "Lee sobre los diferentes tipos de administración de cuentas y elige el que mejor se adapte a tus necesidades",
+            "after_selecting_management_type": "Después de seleccionar el tipo de administración, elige el tipo de cuenta que mejor se adapte a tus necesidades",
+            "read_more": "Leer más",
+            "key_highlights": "Principales Características",
+            "management_types": {
+                "broker": {
+                    "title": "Broker",
+                    "short_description": "Cualquier persona puede operar utilizando nuestros servicios de broker, donde tú administras tu propia cuenta y operas bajo tu propia responsabilidad.",
+                    "long_description": "Con una cuenta de Broker, tienes control total sobre tus decisiones de inversión. Administras tu portafolio de forma independiente, ejecutas operaciones y tomas todas las decisiones estratégicas. AGM te proporciona la plataforma, las herramientas y el acceso al mercado que necesitas, mientras mantienes total autonomía sobre tu cuenta.",
+                    "highlights": {
+                        "1": "Control total sobre tu portafolio y decisiones de trading",
+                        "2": "Acceso a más de 150 mercados financieros globales desde una sola cuenta",
+                        "3": "Datos de mercado en tiempo real y herramientas profesionales de trading",
+                        "4": "Opera acciones, ETFs, opciones, futuros, bonos y más",
+                        "5": "No se requiere frecuencia mínima de operaciones",
+                        "6": "Ideal para inversionistas experimentados que prefieren el trading autodirigido"
+                    }
+                },
+                "advisor": {    
+                    "title": "Asesor",
+                    "short_description": "Cualquier persona puede operar utilizando nuestros servicios de asesor, donde tú administras tu propia cuenta y operas bajo tu propia responsabilidad.",
+                    "long_description": "Con una cuenta de Asesor, tienes control total sobre tus decisiones de inversión. Administras tu portafolio de forma independiente, ejecutas operaciones y tomas todas las decisiones estratégicas. AGM te proporciona la plataforma, las herramientas y el acceso al mercado que necesitas, mientras mantienes total autonomía sobre tu cuenta.",
+                    "highlights": {
+                        "1": "Control total sobre tu portafolio y decisiones de trading",
+                        "2": "Acceso a más de 150 mercados financieros globales desde una sola cuenta",
+                        "3": "Datos de mercado en tiempo real y herramientas profesionales de trading",
+                        "4": "Opera acciones, ETFs, opciones, futuros, bonos y más",
+                        "5": "No se requiere frecuencia mínima de operaciones",
+                        "6": "Ideal para inversionistas experimentados que prefieren el trading autodirigido"
+                    }
+                }
+            },
+            "account_types": {
+                "individual": {
+                    "title": "Cuentas Personales Individuales y Conjuntas",
+                    "short_description": "Abre una cuenta de trading para ti mismo o con un familiar.",
+                    "long_description": "Las cuentas personales están diseñadas para inversionistas individuales o parejas de inversionistas (como cónyuges o familiares) que desean acceder a los mercados financieros globales. Una cuenta Individual es propiedad de una sola persona, mientras que una cuenta Conjunta permite que dos personas sean copropietarias y administren la cuenta juntas, lo que es conveniente para metas financieras compartidas.",
+                    "highlights": {
+                        "1": "Cuenta Individual: Propiedad única con control total sobre todas las operaciones y retiros",
+                        "2": "Cuenta Conjunta: Propiedad compartida entre dos personas con igualdad de derechos",
+                        "3": "Acceso a todos los instrumentos financieros y mercados disponibles",
+                        "4": "Proceso de solicitud simple y ágil",
+                        "5": "Opciones flexibles de depósito y retiro a tu cuenta bancaria personal",
+                        "6": "Adecuada para ahorro personal, inversión y generación de patrimonio"
+                    }
+                },
+                "institutional": {
+                    "title": "Cuentas Institucionales",
+                    "short_description": "Abre una cuenta de trading para tu fideicomiso o institución.",
+                    "long_description": "Las cuentas institucionales están diseñadas para entidades legales como fideicomisos, corporaciones, LLCs, sociedades y otras organizaciones. Estas cuentas brindan el mismo acceso poderoso a los mercados que las cuentas personales, pero están estructuradas para cumplir con los requisitos legales y operativos de los inversionistas institucionales, incluyendo la documentación adecuada y marcos de cumplimiento.",
+                    "highlights": {
+                        "1": "Disponible para fideicomisos, corporaciones, LLCs y sociedades",
+                        "2": "Estructurada para cumplir con los requisitos legales e institucionales de cumplimiento",
+                        "3": "Soporta múltiples operadores y firmantes autorizados",
+                        "4": "Reportes completos para el registro institucional",
+                        "5": "Acceso a todos los mercados globales e instrumentos financieros",
+                        "6": "Soporte dedicado para la configuración e incorporación institucional"
+                    }
+                }
+            }
+        },
+        "products": {
+            "title": "Nuestros Productos",
+            "description": "Descarga los productos de software de AGM para tu dispositivo y empieza a operar ahora.",
+            "download_now": "Descargar Ahora",
+            "open_web_portal": "Abrir Portal Web",
+            "trader": {
+                "title": "AGM Trader Pro",
+                "short_description": "Plataforma de Trading Profesional",
+                "description": "AGM Trader Pro es una plataforma de trading profesional para escritorio y dispositivos móviles. Te permite operar acciones, ETFs, opciones, futuros, bonos y más.",
+                "download_url": "/downloads/trader"
+            },
+            "mobile": {
+                "title": "AGM Trader Mobile",
+                "short_description": "Plataforma de Trading Móvil",
+                "description": "AGM Trader Mobile es una plataforma de trading profesional para dispositivos móviles. Te permite operar acciones, ETFs, opciones, futuros, bonos y más.",
+                "download_url": "/downloads/mobile"
+            },
+            "web_portal": {
+                "title": "AGM Web Portal",
+                "short_description": "Portal de Trading Web",
+                "description": "AGM Web Portal es un portal de trading basado en la web que te permite administrar tu cuenta, monitorear tu portafolio y operar desde cualquier navegador."
+            },
+            "download": {
+                "platforms": "Plataformas",
+                "by_downloading": "Al descargar, aceptas nuestros",
+                "terms_of_service": "Términos de Servicio"
             }
         },
         "faq": {
             "title": "Preguntas Frecuentes",
-            "question_1": "¿Cómo crear una cuenta de ahorros/inversión?",
+            "question_1": "¿Cómo crear una cuenta de ahorro/inversión?",
             "answer_1": "Para aplicar en línea, por favor",
             "answer_1_link": "haga clic aquí",
             "question_2": "¿Qué medidas de seguridad ofrecen?",
-            "answer_2": "Las cuentas están aseguradas bajo la SIPC (Corporación de Protección al Inversor en Valores) y por Lloyd's en Londres. Las cuentas están bajo la regulación de la SEC (Comisión de Valores y Bolsa) y FINRA (Autoridad Reguladora de la Industria Financiera) en los Estados Unidos.",
+            "answer_2": "Las cuentas están aseguradas bajo la SIPC (Securities Investor Protection Corporation) y por Lloyd's en Londres. Las cuentas están bajo la regulación de la SEC (Securities and Exchange Commission) y FINRA (Financial Industry Regulatory Authority) en los Estados Unidos.",
             "question_3": "¿Qué tipos de cuentas están disponibles en AGM?",
-            "answer_3": "Cuentas individuales, conjuntas y corporativas. Atendemos tanto a clientes institucionales como individuales a nivel internacional.",
+            "answer_3": "Cuentas individuales, conjuntas e institucionales. Atendemos tanto a clientes institucionales como individuales a nivel internacional.",
             "question_4": "¿A dónde va mi dinero?",
-            "answer_4": "Después de abrir su cuenta y hacer un depósito inicial de ahorros/inversión, el dinero va directamente al custodio en los EE. UU. que mantiene su cuenta AGM a su nombre, tendrá acceso para ver y monitorear su cuenta 24/7.",
+            "answer_4": "Después de abrir su cuenta y realizar un depósito inicial de ahorro/inversión, el dinero va directamente al custodio en EE. UU. que mantiene su cuenta AGM a su nombre, tendrá acceso para ver y monitorear su cuenta 24/7.",
             "question_5": "¿Hay impuestos a considerar?",
-            "answer_5": "No hay impuestos sobre intereses o ganancias de capital en la cuenta. Los impuestos solo se cobran sobre los dividendos recibidos.",
+            "answer_5": "No hay impuestos sobre intereses ni ganancias de capital en la cuenta. Los impuestos solo se cobran sobre los dividendos recibidos.",
             "question_6": "¿Quién puede mover el dinero en cada cuenta?",
-            "answer_6": "Solo el propietario de la cuenta, la primera persona designada, puede mover el dinero dentro y fuera de la cuenta a una cuenta bancaria a nombre del propietario de la cuenta. El custodio no permite transferencias de terceros para la protección del cliente."
-        },
-        "footer": {
-            "title": "AGM Trader Broker & Advisor",
-            "copyright": "Copyright © 2024 AGM Trader Broker & Advisor. Todos los derechos reservados.",
-            "terms_of_use": "Términos de Uso y Descargo de Responsabilidad",
-            "products": "Productos",
-            "download": "Descargar",
-            "help_center": "Centro de Ayuda",
-            "more_faqs": "Más Preguntas Frecuentes",
-            "email_support": "Soporte por Correo Electrónico"
+            "answer_6": "Solo el propietario de la cuenta, la primera persona designada, puede mover el dinero dentro y fuera de la cuenta hacia una cuenta bancaria a nombre del mismo propietario de la cuenta. El custodio no permite transferencias a terceros para la protección del cliente."
         }
+    },
+    "shared": {
+        "apply_for_an_account": "Aplicar para una cuenta",
+        "view_requirements": "Ver requisitos"
     },
     "apply": {
         "account": {
@@ -573,6 +435,7 @@
                 "title": "Aplicación Enviada Exitosamente!",
                 "description": "Su aplicación IBKR ha sido enviada y está siendo revisada.",
                 "description_2": "Recibirá un correo electrónico de confirmación en los próximos días con los siguientes pasos.",
+                "missing_documents_reminder": "Por favor, recuerde subir los documentos requeridos para completar su solicitud.",
                 "go_back_home": "Volver a la Página Principal"
             },
             "agreements": {
@@ -591,46 +454,7 @@
                 }
             }
         }
-    },
-    "forms": {
-        "search": "Buscar...",
-        "no_results": "No se encontraron resultados.",
-        "submit": "Enviar",
-        "submitting": "Enviando...",
-        "form_errors_title": "Errores del Formulario",
-        "form_errors_description": "Por favor, corrija los errores resaltados antes de continuar."
-    },
-    "fees": {
-        "title": "Costos",
-        "description": "Todos los costos están expresados en dólares estadounidenses (USD) y pueden cambiar en cualquier momento sin previo aviso.",
-        "managed_accounts": {
-            "title": "Cuentas administradas",
-            "management_fees_label": "Costos de administración",
-            "management_fees_value": "Hasta un 2.5% al año, los costos se acumulan diariamente sobre el Valor del activo Neto de la cuenta y se cobran mensualmente.",
-            "execution_costs_label": "Costos de ejecución",
-            "execution_costs_value": "Acciones/ETFs: $0.075 por acción, mínimo de $25 por transacción. Bonos: $25 por transacción + 0.005% del valor nominal",
-            "custody_fees_label": "Costos de custodia",
-            "custody_fees_value": "No se cobran costos de custodia.",
-            "other_fees_label": "Otros costos",
-            "other_fees_wires": "Transferencias bancarias",
-            "other_fees_domestic": "Domésticas (dentro de EE. UU.): primera transferencia mensual sin costo, luego $10 por transferencia.",
-            "other_fees_international": "Internacional: $25 + cualquier cargo aplicado por el banco receptor."
-        },
-        "self_directed_accounts": {
-            "title": "Cuentas Autodirigidas",
-            "management_fees_label": "Costos de administración",
-            "management_fees_value": "No se cobran costos de administración.",
-            "execution_costs_label": "Costos de ejecución",
-            "execution_costs_value": "Acciones/ETFs: $0.075 por acción, mínimo de $25 por transacción. Bonos: $25 por transacción + 0.005% del valor nominal",
-            "custody_fees_label": "Costos de custodia",
-            "custody_fees_value": "No se cobran costos de custodia.",
-            "other_fees_label": "Otros costos",
-            "other_fees_wires": "Transferencias bancarias",
-            "other_fees_domestic": "Domésticas (dentro de EE. UU.): primera transferencia mensual sin costo, luego $10 por transferencia.",
-            "other_fees_international": "Internacional: $25 + cualquier cargo aplicado por el banco receptor."
-        },
-        "footnote": "Todos los costos y tarifas están expresados en USD y pueden cambiar en cualquier momento sin previo aviso. Pueden aplicarse otros costos. Estos cargos y tarifas son los más comunes que aplican a los productos y servicios más utilizados. Las acciones, ETFs y bonos (Non Euroclear) pueden tener cargos adicionales."
-    },
+    },    
     "risk": {
         "title": "Cuestionario de Evaluación de Riesgo",
         "description": "Por favor, completa este formulario para ayudarnos a entender tu tolerancia al riesgo y preferencias de inversión.",
@@ -829,11 +653,68 @@
             }
         },
         "submit": "Aplicar para una cuenta"
+    },    
+    "fees": {
+        "title": "Costos",
+        "description": "Todos los costos están expresados en dólares estadounidenses (USD) y pueden cambiar en cualquier momento sin previo aviso.",
+        "managed_accounts": {
+            "title": "Cuentas administradas",
+            "management_fees_label": "Costos de administración",
+            "management_fees_value": "Hasta un 2.5% al año, los costos se acumulan diariamente sobre el Valor del activo Neto de la cuenta y se cobran mensualmente.",
+            "execution_costs_label": "Costos de ejecución",
+            "execution_costs_value": "Acciones/ETFs: $0.075 por acción, mínimo de $25 por transacción. Bonos: $25 por transacción + 0.005% del valor nominal",
+            "custody_fees_label": "Costos de custodia",
+            "custody_fees_value": "No se cobran costos de custodia.",
+            "other_fees_label": "Otros costos",
+            "other_fees_wires": "Transferencias bancarias",
+            "other_fees_domestic": "Domésticas (dentro de EE. UU.): primera transferencia mensual sin costo, luego $10 por transferencia.",
+            "other_fees_international": "Internacional: $25 + cualquier cargo aplicado por el banco receptor."
+        },
+        "self_directed_accounts": {
+            "title": "Cuentas Autodirigidas",
+            "management_fees_label": "Costos de administración",
+            "management_fees_value": "No se cobran costos de administración.",
+            "execution_costs_label": "Costos de ejecución",
+            "execution_costs_value": "Acciones/ETFs: $0.075 por acción, mínimo de $25 por transacción. Bonos: $25 por transacción + 0.005% del valor nominal",
+            "custody_fees_label": "Costos de custodia",
+            "custody_fees_value": "No se cobran costos de custodia.",
+            "other_fees_label": "Otros costos",
+            "other_fees_wires": "Transferencias bancarias",
+            "other_fees_domestic": "Domésticas (dentro de EE. UU.): primera transferencia mensual sin costo, luego $10 por transferencia.",
+            "other_fees_international": "Internacional: $25 + cualquier cargo aplicado por el banco receptor."
+        },
+        "footnote": "Todos los costos y tarifas están expresados en USD y pueden cambiar en cualquier momento sin previo aviso. Pueden aplicarse otros costos. Estos cargos y tarifas son los más comunes que aplican a los productos y servicios más utilizados. Las acciones, ETFs y bonos (Non Euroclear) pueden tener cargos adicionales."
     },
     "learning": {
         "chapter_label": "Capítulo",
         "go_back": "Regresar",
         "available_videos": "Videos disponibles",
         "no_videos": "No hay videos disponibles para este capítulo. Por favor vuelva más tarde."
+    },
+    "forms": {
+        "search": "Buscar...",
+        "no_results": "No se encontraron resultados.",
+        "submit": "Enviar",
+        "submitting": "Enviando...",
+        "form_errors_title": "Errores del Formulario",
+        "form_errors_description": "Por favor, corrija los errores resaltados antes de continuar."
+    },
+    "sitemap": {
+        "title": "Mapa del Sitio",
+        "description": "Una vista completa de todas las páginas disponibles en AGM Trader Broker & Advisor.",
+        "general": "General",
+        "home": "Inicio",
+        "apply": "Aplicar Ahora",
+        "risk": "Perfil de Riesgo",
+        "information": "Información",
+        "fees": "Tarifas",
+        "requirements": "Requisitos",
+        "disclosures": "Divulgaciones",
+        "downloads": "Descargas",
+        "downloads_mobile": "AGM Trader Móvil",
+        "downloads_trader": "AGM Trader Pro",
+        "learning_center": "Centro de Aprendizaje",
+        "learning_overview": "Todos los Capítulos",
+        "chapter": "Capítulo"
     }
 }

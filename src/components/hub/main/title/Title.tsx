@@ -1,100 +1,71 @@
 'use client'
-import React from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { CandlesBackground } from '@/components/ui/candles-background'
+import React from 'react' 
+import { Check } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ArrowRight } from 'lucide-react'
+import { Globe } from '@/components/ui/globe'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import ShimmerButton from '@/components/ui/shimmer-button'
-import { formatURL } from '@/utils/language/lang'
 
-interface TitleProps {
-  backgroundImage: string;
-  logoSrc: string;
-  title: string;
-  subtitle: string;
-  ctaText: string;
-  ctaLink: string;
-}
+const Title = () => {
 
-const Title: React.FC<TitleProps> = ({
-  backgroundImage,
-  logoSrc,
-  title,
-  subtitle,
-  ctaText,
-  ctaLink
-}) => {
+  const { t } = useTranslationProvider();
 
-  const { t, lang
-    
-   } = useTranslationProvider()
   return (
-    <div className='w-full h-screen bg-blue-900 relative overflow-hidden'>
-      <motion.div
-        initial={{ scale: 1.1 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 10, ease: 'easeOut' }}
-        className='absolute inset-0'
-      >
-        <Image
-          src={backgroundImage}
-          alt='Background'
-          fill
-          priority
-          className='object-cover'
-        />
-      </motion.div>
-      <div className='absolute inset-0 bg-black bg-opacity-50' />
-      <div className='flex flex-col gap-y-8 z-10 justify-center items-center h-screen text-center w-full text-background font-medium relative px-4'>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <Image src={logoSrc} alt='AGM Logo' style={{width: 'auto', height: 'auto'}} height={150} width={450} />
-        </motion.div>
-        <motion.h1 
-          className='text-4xl md:text-5xl lg:text-6xl font-bold mb-2 leading-tight'
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          {title}
-        </motion.h1>
-        <motion.p 
-          className='text-lg md:text-xl lg:text-2xl mb-6 max-w-2xl'
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          {subtitle}
-        </motion.p>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <Link href={formatURL(ctaLink, lang)} rel="noopener noreferrer" target="_blank">
-            <ShimmerButton
-              className="px-8 py-3 text-lg font-semibold mt-4"
-              background='#f26c0d'
-            >
-                <p className="text-sm">{ctaText}</p>
-            </ShimmerButton>
-          </Link>
-        </motion.div>
-      </div>
-      <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 1 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-background text-center"
-        >
-          <p className="text-lg mb-2 whitespace-nowrap">{t('shared.title.scroll_text')}</p>
-          <svg className="w-6 h-6 mx-auto animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </motion.div>
+    <div className="relative">
+        <div className="absolute inset-0 z-10 pointer-events-none">
+            <CandlesBackground />
+        </div>
+        <div className="container relative z-20">
+            <div className="h-full w-full flex p-20">
+            <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-6xl font-bold tracking-tighter text-foreground">
+                        {t('main.title.empowering_traders')} {" "}
+                        <span className="bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
+                        {t('main.title.worldwide')}
+                        </span>
+                    </h1>
+                    <p className="text-foreground text-xl">
+                        {t('main.title.description')}
+                    </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-start gap-3">
+                        <Check className="text-secondary h-5 w-5" />
+                        <span className="text-md">
+                            {t('main.title.trade_stocks')}
+                        </span>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                        <Check className="text-secondary h-5 w-5" />
+                        <span className="text-md">
+                            {t('main.title.currencies_and_markets')}
+                        </span>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                        <Check className="text-secondary h-5 w-5" />
+                        <span className="text-md">
+                            {t('main.title.customer_support_and_reporting')}
+                        </span>
+                    </div>
+                </div>
+                <div className="flex flex-wrap gap-4">
+                    <Button size="lg" className="gap-2">
+                        {t('shared.apply_for_an_account')} <ArrowRight className="h-4 w-4" />
+                    </Button>
+                    <Button size="lg" variant="outline">
+                        {t('shared.view_requirements')}
+                    </Button>
+                </div>
+            </div>
+                <div className="relative hidden lg:flex items-center justify-center min-h-[520px]">
+                    <Globe size={520} />
+                </div>
+            </div>
+        </div>
     </div>
   )
 }

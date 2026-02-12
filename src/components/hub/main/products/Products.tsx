@@ -2,24 +2,20 @@
 import * as React from "react"
 import useEmblaCarousel from 'embla-carousel-react'
 import { motion } from "framer-motion"
-import { ChevronLeft, ChevronRight, Download as DownloadIcon } from 'lucide-react'
-import { FaApple, FaLinux, FaWindows, FaAndroid } from 'react-icons/fa'
+import { ChevronLeft, ChevronRight, Download as DownloadIcon, ExternalLink } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import Link from "next/link"
 import { formatURL } from "@/utils/language/lang"
+import { products } from "@/lib/public/products"
+import IPad from "@/components/ui/ipad"
+import Iphone15Pro from "@/components/ui/iphone-15-pro"
+import Macbook from "@/components/ui/macbook"
+import DualMonitor from "@/components/ui/dual-monitor"
 
-export enum osTypes {
-  WINDOWS = 0,
-  LINUX = 1,
-  MACOS = 2,
-  ANDROID = 3,
-  IOS = 4
-}
+const Products = () => {
 
-
-function DownloadsCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: 'center',
@@ -28,31 +24,7 @@ function DownloadsCarousel() {
 
   const { t, lang } = useTranslationProvider()
 
-  const apps = [
-    {
-      name: 'AGM Trader Pro',
-      title: 'Professional Trading Platform',
-      description: t('agm-trader.download.title'),
-      icon: '/assets/brand/agm-logo-circle.png',
-      download_url: '/downloads/trader',
-      platforms: [
-        { type: 'Windows', icon: FaWindows, osType: osTypes.WINDOWS },
-        { type: 'Mac', icon: FaApple, osType: osTypes.MACOS },
-        { type: 'Linux', icon: FaLinux, osType: osTypes.LINUX },
-      ]
-    },
-    {
-      name: 'AGM Trader Mobile',
-      title: 'Mobile Trading Platform',
-      description: t('agm-trader.download.title'),
-      icon: '/assets/brand/agm-logo-circle.png',
-      download_url: '/downloads/mobile',
-      platforms: [
-        { type: 'Android', icon: FaAndroid, osType: osTypes.ANDROID },
-        { type: 'iOS', icon: FaApple, osType: osTypes.IOS },
-      ]
-    }
-  ]
+  const apps = products(t)
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -83,11 +55,11 @@ function DownloadsCarousel() {
       id='download'
     >
       <motion.h2 className='text-5xl font-bold' variants={itemVariants}>
-        {t('products.download.title')}
+        {t('main.products.title')}
       </motion.h2>
       
       <motion.p className='text-xl font-light max-w-2xl' variants={itemVariants}>
-        {t('products.download.description')}
+        {t('main.products.description')}
       </motion.p>
 
       <motion.div 
@@ -111,14 +83,25 @@ function DownloadsCarousel() {
                   <Card className="h-full">
                     <CardContent className="flex flex-col items-center justify-center p-8 h-full space-y-6">
                       <div className="w-full text-foreground text-center flex flex-col items-center justify-center space-y-6">
-                        {/* App Icon and Info */}
-                        <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center">
-                          <img 
-                            src={app.icon} 
-                            alt={app.name}
-                            className="w-20 h-20 object-contain"
-                          />
-                        </div>
+                        {/* Device Preview */}
+                        {index === 0 ? (
+                          <div className="flex items-end justify-center">
+                            <DualMonitor width={500} height={234} />
+                          </div>
+                        ) : index === 1 ? (
+                          <div className="flex items-end justify-center gap-6">
+                            <div className="relative" style={{ width: 329, height: 237 }}>
+                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90">
+                                <IPad width={237} height={329} />
+                              </div>
+                            </div>
+                            <Iphone15Pro width={120} height={237} />
+                          </div>
+                        ) : (
+                          <div className="flex items-end justify-center">
+                            <Macbook width={390} height={252} />
+                          </div>
+                        )}
 
                         <div className="flex flex-col items-center justify-center space-y-2">
                           <h3 className="text-2xl font-bold">{app.name}</h3>
@@ -132,12 +115,21 @@ function DownloadsCarousel() {
                           <p className="text-sm text-subtitle mt-1">{app.title}</p>
                         </div>
 
-                        <Link href={formatURL(app.download_url, lang)} className="w-fit">
-                          <Button className="w-fit flex gap-2">
-                            <DownloadIcon className="h-4 w-4" />
-                            {t('agm-trader.download.download_now')}
-                          </Button>
-                        </Link>
+                        {app.isExternal ? (
+                          <Link href={app.download_url} target="_blank" rel="noopener noreferrer" className="w-fit">
+                            <Button className="w-fit flex gap-2">
+                              {t('main.products.open_web_portal')}
+                              <ExternalLink className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Link href={formatURL(app.download_url, lang)} className="w-fit">
+                            <Button className="w-fit flex gap-2">
+                              {t('main.products.download_now')}
+                              <DownloadIcon className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        )}
                         
                       </div>
                     </CardContent>
@@ -161,4 +153,4 @@ function DownloadsCarousel() {
   )
 }
 
-export default DownloadsCarousel
+export default Products
