@@ -20,6 +20,7 @@ import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { format as formatDateFns } from "date-fns";
 import StatesFormField from "@/components/misc/StatesFormField";
 import { BusinessAndOccupation } from '@/lib/entities/account';
+import { Label } from '@/components/ui/label';
 
 const generateUUID = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -33,9 +34,11 @@ interface PersonalInfoStepProps {
   form: UseFormReturn<Application>;
   onSecurityQuestionsChange?: (qa: Record<string, string>) => void;
   businessAndOccupations: BusinessAndOccupation[];
+  referrer: string | null;
+  setReferrer: (value: string | null) => void;
 }
 
-const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProps) => {
+const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer }: PersonalInfoStepProps) => {
 
   const { t } = useTranslationProvider();
 
@@ -1476,6 +1479,14 @@ const PersonalInfoStep = ({ form, businessAndOccupations }: PersonalInfoStepProp
               </FormItem>
             )}
           />
+          <div className="space-y-2 pt-4">
+            <Label>{t('apply.account.account_holder_info.referrer')}</Label>
+            <Input
+              value={referrer ?? ''}
+              onChange={(e) => setReferrer(e.target.value === '' ? null : e.target.value)}
+              placeholder=""
+            />
+          </div>
         </CardContent>
       </Card>
 

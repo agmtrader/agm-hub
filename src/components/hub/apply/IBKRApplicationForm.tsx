@@ -49,6 +49,7 @@ const IBKRApplicationForm = () => {
   const [businessAndOccupations, setBusinessAndOccupations] = useState<BusinessAndOccupation[]>([]);
   const [estimatedDeposit, setEstimatedDeposit] = useState<number | null>(null);
   const [estimatedDepositError, setEstimatedDepositError] = useState<string | null>(null);
+  const [referrer, setReferrer] = useState<string | null>(null);
 
   const [agreementForms, setAgreementForms] = useState<FormDetails[] | null>(null);
   const [userSignature, setUserSignature] = useState<string | null>(null);
@@ -246,6 +247,7 @@ const IBKRApplicationForm = () => {
       form.reset(getApplicationDefaults(application_schema));
       setEstimatedDeposit(null);
       setEstimatedDepositError(null);
+      setReferrer(null);
       setUserSignature(null);
     }
     setCurrentStep(prev as FormStep);
@@ -410,6 +412,7 @@ const IBKRApplicationForm = () => {
         security_questions: null,
         estimated_deposit: estimatedDeposit ?? null,
         risk_profile_id: null,
+        referrer: referrer ?? null,
       };
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
@@ -417,6 +420,9 @@ const IBKRApplicationForm = () => {
       const updatePayload:any = { application: sanitizedValues, status: status };
       if (estimatedDeposit !== null) {
         updatePayload.estimated_deposit = estimatedDeposit;
+      }
+      if (referrer !== null) {
+        updatePayload.referrer = referrer;
       }
       if (contact_id) {
         updatePayload.contact_id = contact_id;
@@ -459,7 +465,7 @@ const IBKRApplicationForm = () => {
             )}
             {currentStep === FormStep.PERSONAL_INFO && (
               <>
-                <PersonalInfoStep form={form} businessAndOccupations={businessAndOccupations} />
+                <PersonalInfoStep form={form} businessAndOccupations={businessAndOccupations} referrer={referrer} setReferrer={setReferrer} />
                 <div className="flex justify-between">
                   <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
                   <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>
