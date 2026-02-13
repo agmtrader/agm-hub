@@ -23,6 +23,7 @@ import ProgressMeter from './ProgressMeter'
 import { BusinessAndOccupation, FinancialRange, FormDetails } from '@/lib/entities/account'
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/entities/account'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
+import { individual_form } from './samples'
 
 export enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -61,7 +62,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });

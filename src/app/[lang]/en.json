@@ -187,6 +187,8 @@
                 "institutional_description": "An account owned and controlled by a company or organization"
             },
             "account_holder_info": {
+                "referrer": "Referred By",
+
                 "account_setup": "Account Setup",
                 "margin_account_description": "Margin accounts allow trading with borrowed funds and can support short selling, while cash accounts require paying fully for purchases and do not permit borrowing.",
                 "account_type": "Account Type",

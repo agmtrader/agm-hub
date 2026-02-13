@@ -187,6 +187,8 @@
                 "institutional_description": "Una cuenta propiedad de y controlada por una empresa u organización"
             },
             "account_holder_info": {
+                "referrer": "Referido Por",
+                
                 "account_setup": "Configuración de Cuenta",
                 "margin_account_description": "Las cuentas de margen permiten operar con fondos prestados y admiten ventas en corto, mientras que las cuentas de efectivo requieren el pago total de las compras y no permiten préstamos.",
                 "account_type": "Tipo de Cuenta",
