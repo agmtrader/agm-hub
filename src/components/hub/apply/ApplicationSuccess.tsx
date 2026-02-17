@@ -4,6 +4,7 @@ import { Check } from "lucide-react"
 import Link from "next/link"
 import { Button } from '@/components/ui/button'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import { formatURL } from "@/utils/language/lang"
 
 interface ApplicationSuccessProps {
     documentsUploaded: boolean
@@ -11,7 +12,7 @@ interface ApplicationSuccessProps {
 
 const ApplicationSuccess = ({ documentsUploaded }: ApplicationSuccessProps) => {
 
-    const { t } = useTranslationProvider();
+    const { t, lang } = useTranslationProvider();
 
     return (
         <div className='relative h-full w-full flex flex-col justify-center items-center gap-y-8 py-16'>
@@ -31,7 +32,7 @@ const ApplicationSuccess = ({ documentsUploaded }: ApplicationSuccessProps) => {
         </div>
         <div className='flex gap-4'>
             <Button>
-            <Link href='/'>{t('apply.account.application_success.go_back_home')}</Link>
+            <Link href={formatURL('/', lang)}>{t('apply.account.application_success.go_back_home')}</Link>
             </Button>
         </div>
         </div>

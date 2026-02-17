@@ -4,10 +4,11 @@ import { motion } from 'framer-motion'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { containerVariants, itemVariants } from '@/lib/anims'
 import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa'
+import { formatURL } from '@/utils/language/lang'
 
 const Footer = () => {
 
-  const { t } = useTranslationProvider()
+  const { t, lang } = useTranslationProvider()
 
   const socialIcons = [
     {
@@ -61,7 +62,7 @@ const Footer = () => {
           >
             <div className='flex flex-wrap justify-between w-full items-center'>
               <div className='space-x-4'>
-                <a href='/disclosures' className='text-sm text-foreground'>{t('footer.terms_of_use')}</a>
+                <a href={formatURL('/disclosures', lang)} className='text-sm text-foreground'>{t('footer.terms_of_use')}</a>
               </div>
             </div>
           </motion.div>

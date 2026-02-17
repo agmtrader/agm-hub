@@ -6,6 +6,7 @@ import Image from 'next/image'
 import LanguageSwitcher from '../misc/LanguageSwitcher'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { cn } from '@/lib/utils'
+import { formatURL } from '@/utils/language/lang'
 
 const Header = () => {
 
@@ -16,7 +17,7 @@ const Header = () => {
   ]
 
 
-  const { t } = useTranslationProvider();
+  const { t, lang } = useTranslationProvider();
 
   const sidebarItems = [
     { name: t('header.trading_portal'), url: 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022' },
@@ -28,19 +29,19 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between py-10">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href={formatURL('/', lang)} className="flex items-center space-x-2">
               <Image src="/assets/brand/agm-logo.png" alt="AGM Logo" width={150} height={50} />
           </Link>
           <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
               {sidebarItems.map((item) => (
-                  <Link href={item.url} target='_blank' rel='noopener noreferrer' className="transition-colors hover:text-primary">
+                  <Link href={formatURL(item.url, lang)} target='_blank' rel='noopener noreferrer' className="transition-colors hover:text-primary">
                       {item.name}
                   </Link>
               ))}
           </nav>
           <div className='flex items-center gap-5'>
             <Button>
-                <Link href="/apply">{t('header.apply_now')}</Link>
+                <Link href={formatURL('/apply', lang)}>{t('header.apply_now')}</Link>
             </Button>
             <LanguageSwitcher />
           </div>

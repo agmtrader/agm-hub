@@ -11,6 +11,7 @@ import {
   } from "@/components/ui/accordion"
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { containerVariants, itemVariants } from '@/lib/anims'
+import { formatURL } from '@/utils/language/lang'
 
 type Props = {}
 
@@ -21,7 +22,7 @@ function FAQ({}: Props) {
     triggerOnce: true,
   })
 
-  const { t } = useTranslationProvider()
+  const { t, lang } = useTranslationProvider()
 
   return (
     <motion.div
@@ -41,7 +42,7 @@ function FAQ({}: Props) {
             <AccordionContent>
               <p className='text-sm font-light'>
               {t('main.faq.answer_1')}
-              <a className='font-bold' href='https://agmtechnology.com/apply' rel="noopener noreferrer" target="_blank"> {t('main.faq.answer_1_link')}</a>
+              <a className='font-bold' href={formatURL('/apply', lang)} rel="noopener noreferrer" target="_blank"> {t('main.faq.answer_1_link')}</a>
               </p>
             </AccordionContent>
           </AccordionItem>
