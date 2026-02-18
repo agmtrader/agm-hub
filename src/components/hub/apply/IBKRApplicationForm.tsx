@@ -62,7 +62,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: individual_form,
+    defaultValues: getApplicationDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -238,8 +238,31 @@ const IBKRApplicationForm = () => {
     return transform(data);
   };
   
+  const sanitizeOccupationAndBusinessDescriptions = (application: Application): Application => {
+    const clone = structuredClone(application);
+    const strip = (holder: any) => {
+      if (!holder?.employmentDetails) return;
+      delete holder.employmentDetails.occupationDescription;
+      delete holder.employmentDetails.businessDescription;
+    };
+
+    switch (clone.customer.type) {
+      case 'INDIVIDUAL':
+        strip(clone.customer.accountHolder?.accountHolderDetails?.[0]);
+        break;
+      case 'JOINT':
+        strip(clone.customer.jointHolders?.firstHolderDetails?.[0]);
+        strip(clone.customer.jointHolders?.secondHolderDetails?.[0]);
+        break;
+      case 'ORG':
+        (clone.customer.organization?.associatedEntities?.associatedIndividuals || []).forEach(strip);
+        break;
+    }
+    return clone;
+  };
+
   function sanitizeApplication(application: Application): Application {
-    return sanitizeAccents(sanitizeEmploymentDetails(sanitizeMailingAddress(sanitizeIdentificationType(application))));
+    return sanitizeAccents(sanitizeOccupationAndBusinessDescriptions(sanitizeEmploymentDetails(sanitizeMailingAddress(sanitizeIdentificationType(application)))));
   }
 
   const handlePreviousStep = () => {
