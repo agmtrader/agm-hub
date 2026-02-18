@@ -4,7 +4,8 @@
         "fill_risk_profile": "Fill Risk Profile",
         "learning_center": "Learning Center",
         "requirements": "Requirements",
-        "apply_now": "Apply Now"
+        "apply": "Apply",
+        "sign_in": "Sign In"
     },
     "footer": {
         "title": "AGM Trader Broker & Advisor",
@@ -18,34 +19,20 @@
     },
     "main": {
         "title": {
-            "empowering_traders": "Empowering traders",
-            "worldwide": "worldwide",
-            "description": "Unlock a world of opportunities with our global investment trading platform.",
-            "trade_stocks": "Trade Stocks, ETFs, Options, Futures, Bonds, and More",
-            "currencies_and_markets": "20+ Currencies and 150+ Markets",
-            "customer_support_and_reporting": "Customer Support and Reporting"
+            "empowering_traders": "Trade anytime,",
+            "worldwide": "anywhere",
+            "description": "Unlock the world of investments with our global trading platforms."
         },
         "about": {
-            "title": "About Us",
+            "title": "Trade in 170+ Markets with a Single Account",
             "description": "Since 1995, AGM as an International Securities Broker/Dealer has facilitated direct access to more than 150 financial markets (Stock Exchanges) in the USA, Europe, Asia, and Latin America, otherwise inaccessible to certain investors.",
             "description_2": "With our top of the line trading platforms and services, AGM lets you trade and invest 24/7 in a wide range of financial instruments accross 20+ different currencies from a single account.",
-            "trade_anytime_anywhere": {
-                "title": "Trade anytime, anywhere",
-                "description": "Trade stocks, ETFs, options, futures, bonds, cryptocurrencies, and more from any location and at any time with our advanced trading platform and services."
-            },
-            "professional_tools": {
-                "title": "Professional tools",
-                "description": "Our trading platform, dashboard, and tools are designed to provide you with the necessary tools to succeed in the financial markets."
-            },
-            "active_customer_support": {
-                "title": "Active customer support",
-                "description": "Our customer support team is always ready and happy to help you with any questions or concerns you may have."
-            }
+            "assets": ["Stocks", "ETFs", "Options", "Futures", "Bonds", "Currencies", "Funds", "Warrants", "CFDs", "Forex", "Commodities", "Crypto"]
         },
         "steps": {
-            "title": "Steps to Start Trading",
-            "description": "Read about the different account management types and choose the one that best suits your needs",
-            "after_selecting_management_type": "After selecting the management type, choose the account type that best suits your needs",
+            "title": "Accounts for All Types of Investors",
+            "description": "First, read about the different account management types and choose the one that best suits your needs",
+            "after_selecting_management_type": "Then, after choosing your management type, choose the account type that best suits your needs",
             "read_more": "Read more",
             "key_highlights": "Key Highlights",
             "management_types": {
@@ -106,8 +93,8 @@
             }
         },
         "products": {
-            "title": "Our Products",
-            "description": "Download AGM Software Products for your device to start trading now.",
+            "title": "Professional Trading Platforms",
+            "description": "We offer award winning platforms that allow you to trade, view your portfolio and manage your account - on any device.",
             "download_now": "Download Now",
             "open_web_portal": "Open Web Portal",
             "trader": {
@@ -131,6 +118,15 @@
                 "platforms": "Platforms",
                 "by_downloading": "By downloading, you agree to our",
                 "terms_of_service": "Terms of Service"
+            }
+        },
+        "modern_tools": {
+            "title": "Modern Tools for Modern Traders",
+            "description": "We use real time market data to help us make informed decisions and maximize your growth. Try out some of our tools below to get started.",
+            "risk_profile": {
+                "title": "Risk Profile",
+                "description": "Complete your personalized risk profile and receive a tailored investment proposal. We use your goals and risk tolerance to recommend the best strategy for you uisng real time market data.",
+                "button": "Fill Form"
             }
         },
         "faq": {

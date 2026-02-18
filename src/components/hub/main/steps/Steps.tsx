@@ -116,7 +116,7 @@ const accountTypes: StepDetail[] = [
         {managementTypes.map((step) => (
           <Card
             key={step.title}
-            className="cursor-pointer transition-all hover:border-primary/50 hover:shadow-md"
+            className="cursor-pointer transition-all duration-300 hover:border-primary/50 hover:shadow-md hover:scale-[1.03]"
             onClick={() => setSelectedStep(step)}
           >
             <CardContent className="p-6 space-y-2">
@@ -139,7 +139,7 @@ const accountTypes: StepDetail[] = [
         {accountTypes.map((step) => (
           <Card
             key={step.title}
-            className="cursor-pointer transition-all hover:border-primary/50 hover:shadow-md"
+            className="cursor-pointer transition-all duration-300 hover:border-primary/50 hover:shadow-md hover:scale-[1.03]"
             onClick={() => setSelectedStep(step)}
           >
             <CardContent className="p-6 space-y-2">

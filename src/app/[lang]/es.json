@@ -4,7 +4,8 @@
         "fill_risk_profile": "Completar Perfil de Riesgo",
         "learning_center": "Centro de Aprendizaje",
         "requirements": "Requisitos",
-        "apply_now": "Aplicar Ahora"
+        "apply": "Aplicar",
+        "sign_in": "Iniciar Sesión"
     },
     "footer": {
         "title": "AGM Trader Broker & Advisor",
@@ -29,6 +30,7 @@
             "title": "Sobre Nosotros",
             "description": "Desde 1995, AGM como Corredor/Distribuidor Internacional de Valores ha facilitado acceso directo a más de 150 mercados financieros (Bolsas de Valores) en EE. UU., Europa, Asia y América Latina, de otro modo inaccesibles para ciertos inversionistas.",
             "description_2": "Con nuestras plataformas de trading y servicios de primera línea, AGM te permite operar e invertir 24/7 en una amplia gama de instrumentos financieros en más de 20 monedas diferentes desde una sola cuenta.",
+            "assets": ["Acciones", "ETFs", "Opciones", "Futuros", "Bonos", "Divisas", "Fondos", "Warrants", "CFDs", "Forex", "Materias Primas", "Cripto"],
             "trade_anytime_anywhere": {
                 "title": "Opera en cualquier momento y lugar",
                 "description": "Opera acciones, ETFs, opciones, futuros, bonos, criptomonedas y más desde cualquier ubicación y en cualquier momento con nuestra plataforma de trading avanzada y servicios."
@@ -131,6 +133,20 @@
                 "platforms": "Plataformas",
                 "by_downloading": "Al descargar, aceptas nuestros",
                 "terms_of_service": "Términos de Servicio"
+            }
+        },
+        "get_started": {
+            "title": "Comienza Ahora",
+            "description": "Inicia tu camino de inversión con AGM en solo dos sencillos pasos.",
+            "risk_profile": {
+                "title": "Perfil de Riesgo",
+                "description": "Completa tu perfil de riesgo personalizado y recibe una propuesta de inversión a tu medida. Usamos tus objetivos y tolerancia al riesgo para recomendarte la mejor estrategia.",
+                "button": "Completar Perfil de Riesgo"
+            },
+            "application": {
+                "title": "Formulario de Solicitud",
+                "description": "¿Listo para abrir tu cuenta? Envía tu formulario de solicitud para comenzar con AGM y obtener acceso a más de 150 mercados globales.",
+                "button": "Solicitar una Cuenta"
             }
         },
         "faq": {

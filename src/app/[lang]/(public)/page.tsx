@@ -4,7 +4,7 @@ import FAQ from "@/components/hub/main/faq/FAQ"
 import Products from "@/components/hub/main/products/Products"
 import Title from "@/components/hub/main/title/Title"
 import Steps from '@/components/hub/main/steps/Steps'
-import { cn } from "@/lib/utils"
+import GetStarted from '@/components/hub/main/modern-tools/ModernTools'
 
 export default function Home() {
     
@@ -19,15 +19,23 @@ export default function Home() {
             <About />
         </section>
 
-        <section id="steps" className="py-24">
+        <section id="get-started" className="py-32">
+            <GetStarted />
+        </section>
+
+        <section id="steps" className="bg-muted/50 py-24">
             <Steps />
+        </section>
+
+        <section id="test" className="py-32">
+            <h1>Test</h1>
         </section>
 
         <section id="products" className="bg-muted/50 py-24">
             <Products />
         </section>
 
-        <section id="faq" className='relative py-24'>
+        <section id="faq" className='py-24'>
             <FAQ />
         </section>
 
