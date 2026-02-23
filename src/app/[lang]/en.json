@@ -21,11 +21,11 @@
         "title": {
             "empowering_traders": "Trade anytime,",
             "worldwide": "anywhere",
-            "description": "Unlock the world of investments with our global trading platforms."
+            "description": "Unlock the world of investments with our online trading technology."
         },
         "about": {
-            "title": "Trade in 170+ Markets with a Single Account",
-            "description": "Since 1995, AGM as an International Securities Broker/Dealer has facilitated direct access to more than 150 financial markets (Stock Exchanges) in the USA, Europe, Asia, and Latin America, otherwise inaccessible to certain investors.",
+            "title": "Trade in 170+ Markets from a Single Account",
+            "description": "Since 1995, AGM as an International Securities Broker/Dealer has facilitated direct access to more than 170 financial exchanges in the USA, Europe, Asia, and Latin America, otherwise inaccessible to certain investors.",
             "description_2": "With our top of the line trading platforms and services, AGM lets you trade and invest 24/7 in a wide range of financial instruments accross 20+ different currencies from a single account.",
             "assets": ["Stocks", "ETFs", "Options", "Futures", "Bonds", "Currencies", "Funds", "Warrants", "CFDs", "Forex", "Commodities", "Crypto"]
         },
@@ -122,11 +122,16 @@
         },
         "modern_tools": {
             "title": "Modern Tools for Modern Traders",
-            "description": "We use real time market data to help us make informed decisions and maximize your growth. Try out some of our tools below to get started.",
+            "description": "We use industry grade technologies for fetching and processing real time market data to help us make informed decisions and maximize your growth. Try out some of our tools below to get started.",
             "risk_profile": {
                 "title": "Risk Profile",
-                "description": "Complete your personalized risk profile and receive a tailored investment proposal. We use your goals and risk tolerance to recommend the best strategy for you uisng real time market data.",
+                "description": "Complete your personalized risk profile and receive a tailored investment proposal. We use your goals and risk tolerance to recommend the best strategy for you using real time market data.",
                 "button": "Fill Form"
+            },
+            "portfolio_calculator": {
+                "title": "Portfolio Calculator",
+                "description": "Select your preferred assets and generate a customized investment proposal. Analyze potential returns and risks based on your asset allocation choices.",
+                "badge": "Work in Progress"
             }
         },
         "faq": {

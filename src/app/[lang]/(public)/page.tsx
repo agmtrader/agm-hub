@@ -19,24 +19,16 @@ export default function Home() {
             <About />
         </section>
 
-        <section id="get-started" className="py-32">
-            <GetStarted />
-        </section>
-
-        <section id="steps" className="bg-muted/50 py-24">
+        <section id="steps" className="py-24">
             <Steps />
         </section>
 
-        <section id="test" className="py-32">
-            <h1>Test</h1>
+        <section id="get-started" className="bg-muted/50 py-32">
+            <GetStarted />
         </section>
 
-        <section id="products" className="bg-muted/50 py-24">
+        <section id="products" className="py-24">
             <Products />
-        </section>
-
-        <section id="faq" className='py-24'>
-            <FAQ />
         </section>
 
     </div>

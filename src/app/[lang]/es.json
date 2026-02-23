@@ -19,60 +19,45 @@
     },
     "main": {
         "title": {
-            "empowering_traders": "Empoderando traders",
-            "worldwide": "a nivel mundial",
-            "description": "Desbloquea un mundo de oportunidades con nuestra plataforma global de inversión y trading.",
-            "trade_stocks": "Opera Acciones, ETFs, Opciones, Futuros, Bonos y Más",
-            "currencies_and_markets": "20+ Monedas y 150+ Mercados",
-            "customer_support_and_reporting": "Soporte al Cliente y Reportes"
+            "empowering_traders": "Invierta en cualquier momento,",
+            "worldwide": "en cualquier lugar",
+            "description": "Desbloquea el mundo de las inversiones con nuestra tecnología en linea de trading."
         },
         "about": {
-            "title": "Sobre Nosotros",
+            "title": "Invierte en 170+ Mercados con una Sola Cuenta",
             "description": "Desde 1995, AGM como Corredor/Distribuidor Internacional de Valores ha facilitado acceso directo a más de 150 mercados financieros (Bolsas de Valores) en EE. UU., Europa, Asia y América Latina, de otro modo inaccesibles para ciertos inversionistas.",
-            "description_2": "Con nuestras plataformas de trading y servicios de primera línea, AGM te permite operar e invertir 24/7 en una amplia gama de instrumentos financieros en más de 20 monedas diferentes desde una sola cuenta.",
-            "assets": ["Acciones", "ETFs", "Opciones", "Futuros", "Bonos", "Divisas", "Fondos", "Warrants", "CFDs", "Forex", "Materias Primas", "Cripto"],
-            "trade_anytime_anywhere": {
-                "title": "Opera en cualquier momento y lugar",
-                "description": "Opera acciones, ETFs, opciones, futuros, bonos, criptomonedas y más desde cualquier ubicación y en cualquier momento con nuestra plataforma de trading avanzada y servicios."
-            },
-            "professional_tools": {
-                "title": "Herramientas profesionales",
-                "description": "Nuestra plataforma de trading, panel de control y herramientas están diseñados para brindarte las herramientas necesarias para triunfar en los mercados financieros."
-            },
-            "active_customer_support": {
-                "title": "Soporte al cliente activo",
-                "description": "Nuestro equipo de soporte al cliente siempre está listo y dispuesto a ayudarte con cualquier pregunta o inquietud que puedas tener."
-            }
+            "description_2": "Con nuestras plataformas de trading y servicios de primera línea, AGM te permite invertir 24/7 en una amplia gama de instrumentos financieros en más de 20 monedas diferentes desde una sola cuenta.",
+            "assets": ["Acciones", "ETFs", "Opciones", "Futuros", "Bonos", "Divisas", "Fondos", "Warrants", "CFDs", "Forex", "Materias Primas", "Cripto"]
         },
         "steps": {
-            "title": "Pasos para Empezar a Operar",
-            "description": "Lee sobre los diferentes tipos de administración de cuentas y elige el que mejor se adapte a tus necesidades",
-            "after_selecting_management_type": "Después de seleccionar el tipo de administración, elige el tipo de cuenta que mejor se adapte a tus necesidades",
+            "title": "Cuentas para Todo Tipo de Inversores",
+            "description": "Primero, lee sobre los diferentes tipos de administración de cuentas y elige el que mejor se adapte a tus necesidades",
+            "after_selecting_management_type": "Luego, después de elegir tu tipo de administración, elige el tipo de cuenta que mejor se adapte a tus necesidades",
             "read_more": "Leer más",
             "key_highlights": "Principales Características",
             "management_types": {
                 "broker": {
                     "title": "Broker",
-                    "short_description": "Cualquier persona puede operar utilizando nuestros servicios de broker, donde tú administras tu propia cuenta y operas bajo tu propia responsabilidad.",
+                    "short_description": "Cualquier persona puede invertir utilizando nuestros servicios de broker, donde tú administras tu propia cuenta e inviertes bajo tu propia responsabilidad.",
                     "long_description": "Con una cuenta de Broker, tienes control total sobre tus decisiones de inversión. Administras tu portafolio de forma independiente, ejecutas operaciones y tomas todas las decisiones estratégicas. AGM te proporciona la plataforma, las herramientas y el acceso al mercado que necesitas, mientras mantienes total autonomía sobre tu cuenta.",
                     "highlights": {
                         "1": "Control total sobre tu portafolio y decisiones de trading",
                         "2": "Acceso a más de 150 mercados financieros globales desde una sola cuenta",
                         "3": "Datos de mercado en tiempo real y herramientas profesionales de trading",
-                        "4": "Opera acciones, ETFs, opciones, futuros, bonos y más",
+                        "4": "Invierte en acciones, ETFs, opciones, futuros, bonos y más",
                         "5": "No se requiere frecuencia mínima de operaciones",
                         "6": "Ideal para inversionistas experimentados que prefieren el trading autodirigido"
                     }
                 },
                 "advisor": {    
                     "title": "Asesor",
-                    "short_description": "Cualquier persona puede operar utilizando nuestros servicios de asesor, donde tú administras tu propia cuenta y operas bajo tu propia responsabilidad.",
+                    "short_description": "Cualquier persona puede invertir utilizando nuestros servicios de asesor, donde tú administras tu propia cuenta e inviertes bajo tu propia responsabilidad.",
                     "long_description": "Con una cuenta de Asesor, tienes control total sobre tus decisiones de inversión. Administras tu portafolio de forma independiente, ejecutas operaciones y tomas todas las decisiones estratégicas. AGM te proporciona la plataforma, las herramientas y el acceso al mercado que necesitas, mientras mantienes total autonomía sobre tu cuenta.",
                     "highlights": {
                         "1": "Control total sobre tu portafolio y decisiones de trading",
                         "2": "Acceso a más de 150 mercados financieros globales desde una sola cuenta",
                         "3": "Datos de mercado en tiempo real y herramientas profesionales de trading",
-                        "4": "Opera acciones, ETFs, opciones, futuros, bonos y más",
+                        "4": "Invierte en acciones, ETFs, opciones, futuros, bonos y más",
                         "5": "No se requiere frecuencia mínima de operaciones",
                         "6": "Ideal para inversionistas experimentados que prefieren el trading autodirigido"
                     }
@@ -108,26 +93,26 @@
             }
         },
         "products": {
-            "title": "Nuestros Productos",
-            "description": "Descarga los productos de software de AGM para tu dispositivo y empieza a operar ahora.",
+            "title": "Plataformas de Trading Profesionales",
+            "description": "Ofrecemos plataformas galardonadas que te permiten invertir, ver tu portafolio y gestionar tu cuenta en cualquier dispositivo.",
             "download_now": "Descargar Ahora",
             "open_web_portal": "Abrir Portal Web",
             "trader": {
                 "title": "AGM Trader Pro",
                 "short_description": "Plataforma de Trading Profesional",
-                "description": "AGM Trader Pro es una plataforma de trading profesional para escritorio y dispositivos móviles. Te permite operar acciones, ETFs, opciones, futuros, bonos y más.",
+                "description": "AGM Trader Pro es una plataforma de trading profesional para escritorio y dispositivos móviles. Te permite invertir en acciones, ETFs, opciones, futuros, bonos y más.",
                 "download_url": "/downloads/trader"
             },
             "mobile": {
                 "title": "AGM Trader Mobile",
                 "short_description": "Plataforma de Trading Móvil",
-                "description": "AGM Trader Mobile es una plataforma de trading profesional para dispositivos móviles. Te permite operar acciones, ETFs, opciones, futuros, bonos y más.",
+                "description": "AGM Trader Mobile es una plataforma de trading profesional para dispositivos móviles. Te permite invertir en acciones, ETFs, opciones, futuros, bonos y más.",
                 "download_url": "/downloads/mobile"
             },
             "web_portal": {
                 "title": "AGM Web Portal",
                 "short_description": "Portal de Trading Web",
-                "description": "AGM Web Portal es un portal de trading basado en la web que te permite administrar tu cuenta, monitorear tu portafolio y operar desde cualquier navegador."
+                "description": "AGM Web Portal es un portal de trading basado en la web que te permite administrar tu cuenta, monitorear tu portafolio e invertir desde cualquier navegador."
             },
             "download": {
                 "platforms": "Plataformas",
@@ -135,18 +120,18 @@
                 "terms_of_service": "Términos de Servicio"
             }
         },
-        "get_started": {
-            "title": "Comienza Ahora",
-            "description": "Inicia tu camino de inversión con AGM en solo dos sencillos pasos.",
+        "modern_tools": {
+            "title": "Herramientas Modernas para Inversores Modernos",
+            "description": "Utilizamos tecnologías de grado industrial para obtener y procesar datos de mercado en tiempo real para ayudarnos a tomar decisiones informadas y maximizar tu crecimiento. Prueba algunas de nuestras herramientas a continuación para comenzar.",
             "risk_profile": {
                 "title": "Perfil de Riesgo",
-                "description": "Completa tu perfil de riesgo personalizado y recibe una propuesta de inversión a tu medida. Usamos tus objetivos y tolerancia al riesgo para recomendarte la mejor estrategia.",
-                "button": "Completar Perfil de Riesgo"
+                "description": "Completa tu perfil de riesgo personalizado y recibe una propuesta de inversión a tu medida. Usamos tus objetivos y tolerancia al riesgo para recomendarte la mejor estrategia utilizando datos de mercado en tiempo real.",
+                "button": "Completar Formulario"
             },
-            "application": {
-                "title": "Formulario de Solicitud",
-                "description": "¿Listo para abrir tu cuenta? Envía tu formulario de solicitud para comenzar con AGM y obtener acceso a más de 150 mercados globales.",
-                "button": "Solicitar una Cuenta"
+            "portfolio_calculator": {
+                "title": "Calculadora de Portafolio",
+                "description": "Selecciona tus activos preferidos y genera una propuesta de inversión personalizada. Analiza los rendimientos potenciales y riesgos basados en tus elecciones de asignación de activos.",
+                "badge": "En Progreso"
             }
         },
         "faq": {
@@ -206,7 +191,7 @@
                 "referrer": "Referido Por",
                 
                 "account_setup": "Configuración de Cuenta",
-                "margin_account_description": "Las cuentas de margen permiten operar con fondos prestados y admiten ventas en corto, mientras que las cuentas de efectivo requieren el pago total de las compras y no permiten préstamos.",
+                "margin_account_description": "Las cuentas de margen permiten invertir con fondos prestados y admiten ventas en corto, mientras que las cuentas de efectivo requieren el pago total de las compras y no permiten préstamos.",
                 "account_type": "Tipo de Cuenta",
                 "cash_account": "Cuenta de Efectivo",
                 "margin_account": "Cuenta de Margen",
@@ -542,7 +527,7 @@
             },
             "downloads": {
                 "title": "Descargar Nuestras Apps",
-                "description": "Obtén acceso a nuestras aplicaciones móviles y de escritorio para operar sin problemas donde sea que estés.",
+                "description": "Obtén acceso a nuestras aplicaciones móviles y de escritorio para invertir sin problemas donde sea que estés.",
                 "button": "Ver Descargas"
             }
         },

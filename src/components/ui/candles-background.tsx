@@ -13,12 +13,10 @@ interface Candle {
 export const CandlesBackground = () => {
   const [allCandles, setAllCandles] = useState<Candle[]>([])
   const visibleCount = 60
-  const bufferCount = 50 // Buffer for SMA calculation
-  const smaPeriod = 10
 
   useEffect(() => {
     const generateCandles = () => {
-      const totalCount = visibleCount + bufferCount
+      const totalCount = visibleCount
       const data: Candle[] = []
       let currentPrice = 50
       
@@ -53,7 +51,7 @@ export const CandlesBackground = () => {
   }, [])
 
   // Get only the candles we want to display
-  const visibleCandles = allCandles.slice(bufferCount).map((c, i) => ({
+  const visibleCandles = allCandles.map((c, i) => ({
     ...c,
     x: i * (100 / visibleCount)
   }))
@@ -67,23 +65,6 @@ export const CandlesBackground = () => {
   const getY = (price: number) => {
     return 100 - ((price - minPrice) / range) * 80 - 10 // Keep within 10-90% vertical range
   }
-
-  const smaPoints = visibleCandles.map((_, i) => {
-    const fullIndex = i + bufferCount
-    // Calculate SMA using the full dataset (including buffer)
-    const slice = allCandles.slice(fullIndex - smaPeriod + 1, fullIndex + 1)
-    if (slice.length < smaPeriod) return null
-    
-    const sum = slice.reduce((acc, curr) => acc + curr.close, 0)
-    return {
-      x: i * (100 / visibleCount) + 0.5,
-      y: getY(sum / smaPeriod)
-    }
-  }).filter((p): p is {x: number, y: number} => p !== null)
-
-  const smaPath = smaPoints.map((p, i) => 
-    `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`
-  ).join(' ')
 
   return (
     <div className="absolute inset-0 w-full h-full overflow-hidden opacity-20">
@@ -119,14 +100,6 @@ export const CandlesBackground = () => {
             </g>
           )
         })}
-        {/* SMA Line */}
-        <path
-          d={smaPath}
-          fill="none"
-          className="stroke-secondary"
-          strokeWidth="5"
-          vectorEffect="non-scaling-stroke"
-        />
       </svg>
     </div>
   )
