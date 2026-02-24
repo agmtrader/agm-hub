@@ -90,12 +90,12 @@ const Products = () => {
                           </div>
                         ) : index === 1 ? (
                           <div className="flex items-end justify-center gap-6">
-                            <div className="relative" style={{ width: 468, height: 337 }}>
+                            <div className="relative" style={{ width: 568, height: 408 }}>
                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90">
-                                <IPad width={337} height={468} src={'/assets/products/mobile-app.png'} />
+                                <IPad width={408} height={568} src={'/assets/products/mobile-app.png'} />
                               </div>
                             </div>
-                            <Iphone15Pro width={171} height={337} src={'/assets/products/iphone-app.png'} />
+                            <Iphone15Pro width={207} height={408} src={'/assets/products/iphone-app.png'} />
                           </div>
                         ) : (
                           <div className="flex items-end justify-center">
