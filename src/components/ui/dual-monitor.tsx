@@ -9,7 +9,7 @@ export interface DualMonitorProps extends SVGProps<SVGSVGElement> {
 
 export default function DualMonitor({
   width = 940,
-  height = 379,
+  height = 400,
   srcLeft,
   srcRight,
   ...props
@@ -18,7 +18,7 @@ export default function DualMonitor({
     <svg
       width={width}
       height={height}
-      viewBox="0 0 940 379"
+      viewBox="0 0 940 400"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
@@ -100,6 +100,23 @@ export default function DualMonitor({
       {/* Stand neck inner */}
       <path
         d="M440 289H500V379H440V289Z"
+        className="fill-[#E5E5E5] dark:fill-[#404040]"
+      />
+      {/* Stand Base */}
+      <rect
+        x="320"
+        y="379"
+        width="300"
+        height="20"
+        rx="4"
+        className="fill-[#D4D4D4] dark:fill-[#525252]"
+      />
+      <rect
+        x="325"
+        y="382"
+        width="290"
+        height="14"
+        rx="2"
         className="fill-[#E5E5E5] dark:fill-[#404040]"
       />
 
