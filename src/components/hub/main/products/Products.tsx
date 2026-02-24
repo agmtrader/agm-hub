@@ -86,16 +86,16 @@ const Products = () => {
                         {/* Device Preview */}
                         {index === 0 ? (
                           <div className="flex items-end justify-center">
-                            <DualMonitor width={1015} height={475} srcLeft={'/assets/products/trader-pro-left.png'} srcRight={'/assets/products/trader-pro-right.png'} />
+                            <DualMonitor width={1015} height={475} srcLeft={'/assets/products/trader-pro-left.jpg'} srcRight={'/assets/products/trader-pro-right.jpg'} />
                           </div>
                         ) : index === 1 ? (
                           <div className="flex items-end justify-center gap-6">
-                            <div className="relative" style={{ width: 668, height: 481 }}>
+                            <div className="relative" style={{ width: 468, height: 337 }}>
                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90">
-                                <IPad width={481} height={668} src={'/assets/products/mobile-app.png'} />
+                                <IPad width={337} height={468} src={'/assets/products/mobile-app.png'} />
                               </div>
                             </div>
-                            <Iphone15Pro width={244} height={481} src={'/assets/products/iphone-app.png'} />
+                            <Iphone15Pro width={171} height={337} src={'/assets/products/iphone-app.png'} />
                           </div>
                         ) : (
                           <div className="flex items-end justify-center">
