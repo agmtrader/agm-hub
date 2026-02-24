@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -17,7 +18,7 @@ const ModernTools = () => {
   
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
-    align: 'start',
+    align: 'center',
     containScroll: 'trimSnaps',
     slidesToScroll: 1,
   })
@@ -60,18 +61,18 @@ const ModernTools = () => {
         </motion.p>
       </motion.div>
 
-      <div className="flex items-center justify-center gap-4 max-w-3xl">
+      <div className="flex items-center justify-center gap-4 max-w-3xl w-full">
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full shadow-md"
+          className="rounded-full shadow-md shrink-0"
           onClick={() => emblaApi?.scrollPrev()}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
 
         <motion.div 
-          className="w-full flex items-center justify-center gap-4 px-4"
+          className="w-full overflow-hidden px-4"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -81,17 +82,29 @@ const ModernTools = () => {
             <div className="flex gap-6 py-4">
               {tools.map((tool, index) => (
                 <div key={index} className="flex-[0_0_100%] min-w-0 pl-4 first:pl-0">
-                  <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader className="flex flex-col items-center justify-center space-y-4 pb-2">
-                      <div className="p-4 bg-primary/10 rounded-full">
-                          <tool.icon className="h-8 w-8 text-primary" />
-                      </div>
-                      <CardTitle className="text-2xl font-bold text-foreground text-center">{tool.title}</CardTitle>
+                  <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+                    <div className="p-6 pb-0">
+                        <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                             {tool.image ? (
+                                <Image 
+                                    src={tool.image} 
+                                    alt={tool.title} 
+                                    fill
+                                    className="object-cover"
+                                />
+                             ) : (
+                                <tool.icon className="h-12 w-12 text-muted-foreground/50" />
+                             )}
+                        </div>
+                    </div>
+                    
+                    <CardHeader className="flex flex-col items-center justify-center space-y-2 pb-2">
+                      <CardTitle className="text-xl font-bold text-foreground text-center">{tool.title}</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex flex-col items-center justify-between text-center gap-6 flex-grow pt-0">
-                      <p className="text-muted-foreground leading-relaxed">{tool.description}</p>
+                    <CardContent className="flex flex-col items-center justify-between text-center gap-6 flex-grow pt-0 pb-6">
+                      <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
                       
-                      <div className="mt-auto pt-4">
+                      <div className="mt-auto pt-2">
                           {tool.isWip ? (
                               <Badge variant="secondary" className="px-4 py-1 text-sm font-medium">
                                   {tool.badgeText || "Coming Soon"}
@@ -117,7 +130,7 @@ const ModernTools = () => {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full shadow-md"
+          className="rounded-full shadow-md shrink-0"
           onClick={() => emblaApi?.scrollNext()}
         >
           <ChevronRight className="h-4 w-4" />

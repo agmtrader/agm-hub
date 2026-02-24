@@ -33,7 +33,7 @@ const RequirementsPage = () => {
                         </p>
                     </CardHeader>
                     <CardContent>
-                        <Link href={formatURL('/apply/risk', lang)} target="_blank" rel="noopener noreferrer">
+                        <Link href={formatURL('/risk', lang)} target="_blank" rel="noopener noreferrer">
                             <Button variant="outline" className="w-full">
                                 {t('requirements.optional_preparation.risk_profile.button')}
                             </Button>

@@ -5,7 +5,11 @@
         "learning_center": "Learning Center",
         "requirements": "Requirements",
         "apply": "Apply",
-        "sign_in": "Sign In"
+        "sign_in": "Sign In",
+        "about": "About",
+        "accounts": "Accounts",
+        "tools": "Tools",
+        "products": "Products"
     },
     "footer": {
         "title": "AGM Trader Broker & Advisor",
@@ -27,7 +31,7 @@
             "title": "Trade in 170+ Markets from a Single Account",
             "description": "Since 1995, AGM as an International Securities Broker/Dealer has facilitated direct access to more than 170 financial exchanges in the USA, Europe, Asia, and Latin America, otherwise inaccessible to certain investors.",
             "description_2": "With our top of the line trading platforms and services, AGM lets you trade and invest 24/7 in a wide range of financial instruments accross 20+ different currencies from a single account.",
-            "assets": ["Stocks", "ETFs", "Options", "Futures", "Bonds", "Currencies", "Funds", "Warrants", "CFDs", "Forex", "Commodities", "Crypto"]
+            "assets": ["Stocks", "ETFs", "Options", "Futures", "Bonds", "Currencies", "Mutual Funds", "Other"]
         },
         "steps": {
             "title": "Accounts for All Types of Investors",

@@ -7,6 +7,7 @@ export const modernTools = (t: (key: string) => string) => [
     buttonText: t('main.modern_tools.risk_profile.button'),
     link: '/risk',
     icon: FileText,
+    image: '/assets/modern-tools/risk-profile.png',
     isWip: false
   },
   {
@@ -14,6 +15,7 @@ export const modernTools = (t: (key: string) => string) => [
     description: t('main.modern_tools.portfolio_calculator.description'),
     badgeText: t('main.modern_tools.portfolio_calculator.badge'),
     icon: Calculator,
+    image: '/assets/modern-tools/portfolio.jpg',
     isWip: true
   }
 ]

@@ -5,7 +5,11 @@
         "learning_center": "Centro de Aprendizaje",
         "requirements": "Requisitos",
         "apply": "Aplicar",
-        "sign_in": "Iniciar Sesión"
+        "sign_in": "Iniciar Sesión",
+        "about": "Nosotros",
+        "accounts": "Cuentas",
+        "tools": "Herramientas",
+        "products": "Productos"
     },
     "footer": {
         "title": "AGM Trader Broker & Advisor",

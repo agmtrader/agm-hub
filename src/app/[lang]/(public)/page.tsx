@@ -1,6 +1,5 @@
 'use client'
 import About from "@/components/hub/main/about/About"
-import FAQ from "@/components/hub/main/faq/FAQ"
 import Products from "@/components/hub/main/products/Products"
 import Title from "@/components/hub/main/title/Title"
 import Steps from '@/components/hub/main/steps/Steps'

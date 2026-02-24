@@ -4,11 +4,8 @@ import Link from 'next/link'
 import React from 'react'
 import { motion } from 'framer-motion'
 import { formatURL } from '@/utils/language/lang'
-import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 const NotFound = () => {
-
-  const { lang } = useTranslationProvider()
 
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center gap-y-3">
@@ -42,7 +39,7 @@ const NotFound = () => {
         transition={{ delay: 0.6 }}
       >
         <Button asChild>
-          <Link href={formatURL('/', lang)}>Go back home</Link>
+          <Link href={formatURL('/', 'en')}>Go back home</Link>
         </Button>
       </motion.div>
     </div>

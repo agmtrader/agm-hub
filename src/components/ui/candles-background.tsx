@@ -77,7 +77,8 @@ export const CandlesBackground = () => {
           
           const bodyTop = Math.min(yOpen, yClose)
           const bodyHeight = Math.abs(yClose - yOpen)
-          const color = "fill-gray-400 stroke-gray-400"
+          const isPositive = candle.close >= candle.open
+          const color = isPositive ? "fill-primary stroke-primary" : "fill-secondary stroke-secondary"
 
           return (
             <g key={i} className={color}>

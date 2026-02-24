@@ -22,6 +22,10 @@ const Header = () => {
   const ibkrURL = 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022'
 
   const sidebarItems = [
+    { name: t('header.about'), url: '/#about' },
+    { name: t('header.accounts'), url: '/#steps' },
+    { name: t('header.tools'), url: '/#get-started' },
+    { name: t('header.products'), url: '/#products' },
     { name: t('header.learning_center'), url: '/learning' },
   ]
 
@@ -46,7 +50,7 @@ const Header = () => {
           </Link>
           <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
               {sidebarItems.map((item) => (
-                  <Link href={formatURL(item.url, lang)} target='_blank' rel='noopener noreferrer' className="transition-colors hover:text-primary">
+                  <Link key={item.name} href={formatURL(item.url, lang)} className="transition-colors hover:text-primary">
                       {item.name}
                   </Link>
               ))}
