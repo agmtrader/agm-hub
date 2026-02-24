@@ -86,7 +86,7 @@ const Products = () => {
                         {/* Device Preview */}
                         {index === 0 ? (
                           <div className="flex items-end justify-center">
-                            <DualMonitor width={1015} height={475} srcLeft={'/assets/products/trader-pro-left.jpg'} srcRight={'/assets/products/trader-pro-right.jpg'} />
+                            <DualMonitor width={872} height={408} srcLeft={'/assets/products/trader-pro-left.jpg'} srcRight={'/assets/products/trader-pro-right.jpg'} />
                           </div>
                         ) : index === 1 ? (
                           <div className="flex items-end justify-center gap-6">
