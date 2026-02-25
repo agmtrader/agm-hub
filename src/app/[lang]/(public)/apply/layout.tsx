@@ -13,7 +13,7 @@ export default function Layout({
 }>) {
 
   return (
-    <div className="flex flex-col h-full w-full scroll-smooth">
+    <div className="flex flex-col min-h-screen w-full scroll-smooth">
       {children}
     </div>
   );

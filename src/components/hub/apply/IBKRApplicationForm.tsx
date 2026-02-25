@@ -4,9 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
-import {
-  Form,
-} from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
 import { Application, InternalApplicationPayload } from '@/lib/entities/application';
 import { toast } from '@/hooks/use-toast'
@@ -42,6 +40,7 @@ const IBKRApplicationForm = () => {
   const { t } = useTranslationProvider();
   const searchParams = useSearchParams();
   const advisorCode = searchParams.get('ad');
+  console.log(advisorCode);
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,6 +50,7 @@ const IBKRApplicationForm = () => {
   const [businessAndOccupations, setBusinessAndOccupations] = useState<BusinessAndOccupation[]>([]);
   const [estimatedDeposit, setEstimatedDeposit] = useState<number | null>(null);
   const [estimatedDepositError, setEstimatedDepositError] = useState<string | null>(null);
+  const [referrer, setReferrer] = useState<string | null>(null);
 
   const [agreementForms, setAgreementForms] = useState<FormDetails[] | null>(null);
   const [userSignature, setUserSignature] = useState<string | null>(null);
@@ -238,8 +238,31 @@ const IBKRApplicationForm = () => {
     return transform(data);
   };
   
+  const sanitizeOccupationAndBusinessDescriptions = (application: Application): Application => {
+    const clone = structuredClone(application);
+    const strip = (holder: any) => {
+      if (!holder?.employmentDetails) return;
+      delete holder.employmentDetails.occupationDescription;
+      delete holder.employmentDetails.businessDescription;
+    };
+
+    switch (clone.customer.type) {
+      case 'INDIVIDUAL':
+        strip(clone.customer.accountHolder?.accountHolderDetails?.[0]);
+        break;
+      case 'JOINT':
+        strip(clone.customer.jointHolders?.firstHolderDetails?.[0]);
+        strip(clone.customer.jointHolders?.secondHolderDetails?.[0]);
+        break;
+      case 'ORG':
+        (clone.customer.organization?.associatedEntities?.associatedIndividuals || []).forEach(strip);
+        break;
+    }
+    return clone;
+  };
+
   function sanitizeApplication(application: Application): Application {
-    return sanitizeAccents(sanitizeEmploymentDetails(sanitizeMailingAddress(sanitizeIdentificationType(application))));
+    return sanitizeAccents(sanitizeOccupationAndBusinessDescriptions(sanitizeEmploymentDetails(sanitizeMailingAddress(sanitizeIdentificationType(application)))));
   }
 
   const handlePreviousStep = () => {
@@ -248,6 +271,7 @@ const IBKRApplicationForm = () => {
       form.reset(getApplicationDefaults(application_schema));
       setEstimatedDeposit(null);
       setEstimatedDepositError(null);
+      setReferrer(null);
       setUserSignature(null);
     }
     setCurrentStep(prev as FormStep);
@@ -412,6 +436,7 @@ const IBKRApplicationForm = () => {
         security_questions: null,
         estimated_deposit: estimatedDeposit ?? null,
         risk_profile_id: null,
+        referrer: referrer ?? null,
       };
       const createResp = await CreateApplication(internalApplication);
       setApplicationId(createResp.id);
@@ -420,6 +445,9 @@ const IBKRApplicationForm = () => {
       if (estimatedDeposit !== null) {
         updatePayload.estimated_deposit = estimatedDeposit;
       }
+      if (referrer !== null) {
+        updatePayload.referrer = referrer;
+      }
       if (contact_id) {
         updatePayload.contact_id = contact_id;
       }
@@ -427,7 +455,12 @@ const IBKRApplicationForm = () => {
     }
   }
 
-  if (currentStep === FormStep.SUCCESS) return <ApplicationSuccess />;
+  if (currentStep === FormStep.SUCCESS) {
+    const documents = form.getValues('documents') || [];
+    const uploadedDocs = documents.filter(d => d && d.formNumber !== 5001);
+    const documentsUploaded = uploadedDocs.length > 0;
+    return <ApplicationSuccess documentsUploaded={documentsUploaded} />;
+  }
 
   return (
     <div className="flex flex-col justify-center items-center my-20 gap-5 p-5">
@@ -456,7 +489,7 @@ const IBKRApplicationForm = () => {
             )}
             {currentStep === FormStep.PERSONAL_INFO && (
               <>
-                <PersonalInfoStep form={form} businessAndOccupations={businessAndOccupations} />
+                <PersonalInfoStep form={form} businessAndOccupations={businessAndOccupations} referrer={referrer} setReferrer={setReferrer} />
                 <div className="flex justify-between">
                   <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
                   <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>

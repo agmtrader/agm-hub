@@ -4,6 +4,8 @@
 
 html {
   font-family: var(--font-rubik);
+  scroll-behavior: smooth;
+  scroll-padding-top: 10rem;
 }
 
 .markdown > * {

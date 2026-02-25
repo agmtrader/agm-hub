@@ -3,10 +3,10 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import React from 'react'
 import { motion } from 'framer-motion'
+import { formatURL } from '@/utils/language/lang'
 
-type Props = {}
+const NotFound = () => {
 
-const NotFound = (props: Props) => {
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center gap-y-3">
       <motion.h1 
@@ -39,7 +39,7 @@ const NotFound = (props: Props) => {
         transition={{ delay: 0.6 }}
       >
         <Button asChild>
-          <Link href="/">Go back home</Link>
+          <Link href={formatURL('/', 'en')}>Go back home</Link>
         </Button>
       </motion.div>
     </div>

@@ -1,6 +1,7 @@
 import "../globals.css"
-import { NextAuthProvider } from "../../utils/providers/NextAuthProvider"
 import { TranslationProvider } from "../../utils/providers/TranslationProvider"
+import Header from "@/components/hub/Header"
+import Footer from "@/components/hub/Footer"
 
 export default async function Layout(
   props: Readonly<{
@@ -19,10 +20,12 @@ export default async function Layout(
   } = props;
 
   return (
-    <NextAuthProvider>
+    <div className="flex flex-col min-h-screen w-full">
       <TranslationProvider lang={lang}>
+        <Header />
         {children}
+        <Footer />
       </TranslationProvider>
-    </NextAuthProvider>
+    </div>
   )
 }

@@ -8,7 +8,7 @@ import { formatURL } from '@/utils/language/lang'
 
 const Footer = () => {
 
-  const { t } = useTranslationProvider()
+  const { t, lang } = useTranslationProvider()
 
   const socialIcons = [
     {
@@ -34,8 +34,8 @@ const Footer = () => {
           <div className='flex flex-row justify-between items-center'>
             {/* Company info */}
             <motion.div variants={itemVariants}>
-              <h3 className='font-bold mb-4'>{t('shared.footer.title')}</h3>
-              <p className='text-sm text-foreground'>{t('shared.footer.copyright')}</p>
+              <h3 className='font-bold mb-4'>{t('footer.title')}</h3>
+              <p className='text-sm text-foreground'>{t('footer.copyright')}</p>
             </motion.div>
             
             {/* Social links */}
@@ -62,7 +62,7 @@ const Footer = () => {
           >
             <div className='flex flex-wrap justify-between w-full items-center'>
               <div className='space-x-4'>
-                <a href='/disclosures' className='text-sm text-foreground'>{t('shared.footer.terms_of_use')}</a>
+                <a href={formatURL('/disclosures', lang)} className='text-sm text-foreground'>{t('footer.terms_of_use')}</a>
               </div>
             </div>
           </motion.div>

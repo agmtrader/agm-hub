@@ -424,6 +424,7 @@ export const account_schema = z.object({
   multiCurrency: z.boolean().default(true),
   alias: z.string().optional().nullable(),
   feesTemplateName: z.string().optional().nullable(),
+  capabilities: z.array(z.string()).optional().nullable()
 });
 
 export const user_schema = z.object({

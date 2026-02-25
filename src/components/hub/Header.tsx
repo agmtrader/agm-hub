@@ -1,79 +1,72 @@
-"use client"
-import React, { useState } from 'react'
+'use client'
 import Link from 'next/link'
+import React from 'react'
+import { Button } from '../ui/button'
 import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import useScrollPositions from '@/hooks/useScrollPositions'
-import { AnimatePresence } from 'framer-motion'
-import Sidebar from './Sidebar'
-import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
-import { AlignJustify } from 'lucide-react'
-import { formatURL } from '@/utils/language/lang'
+import LanguageSwitcher from '../misc/LanguageSwitcher'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { cn } from '@/lib/utils'
+import { formatURL } from '@/utils/language/lang'
 
-const maxScroll = 100
+const Header = () => {
 
-export const Header = () => {
+  const tickers = [
+      { label: 'SPX', value: '2,800.00', change: '+0.25%' },
+      { label: 'NDX', value: '11,000.00', change: '+0.30%' },
+      { label: 'RUT', value: '170.00', change: '+0.15%' },
+  ]
 
-  const scroll = useScrollPositions()
-  const [expandSidebar, setExpandSidebar] = useState(false)
-  const { lang } = useTranslationProvider()
+
+  const { t, lang } = useTranslationProvider();
+
+  const ibkrURL = 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022'
+
+  const sidebarItems = [
+    { name: t('header.about'), url: '/#about' },
+    { name: t('header.accounts'), url: '/#steps' },
+    { name: t('header.tools'), url: '/#get-started' },
+    { name: t('header.products'), url: '/#products' },
+    { name: t('header.learning_center'), url: '/learning' },
+  ]
 
   return (
-    <div>
-      <header className={cn("fixed w-full z-50", scroll > maxScroll ? "bg-background" : "bg-transparent")}>
-        <div className="flex items-center justify-between p-5 relative z-10 h-32">
-          <Button asChild className='bg-transparent hover:bg-transparent'>
-            <Link href={formatURL('/', lang)}>
-                {scroll > maxScroll ? 
-                  <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[50px] object-contain" width={150} height={50} /> 
-                  : 
-                  <Image src="/assets/brand/agm-logo-white.png" priority={true} alt="AGM Logo" className="w-[150px] h-[50px] object-contain" width={150} height={50} />
-                }
-            </Link>
-          </Button>
-          <Button
-            onClick={() => setExpandSidebar(true)}
-            className="z-20 text-background"
-          >
-            <AlignJustify className="text-2xl" />
-          </Button>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="w-full border-b bg-foreground text-white">
+            <div className="mx-auto flex h-8 items-center gap-6 overflow-hidden px-5 text-xs uppercase tracking-wide">
+            {tickers.map((ticker) => (
+                <div key={ticker.label} className="flex items-center gap-2 whitespace-nowrap">
+                <span className="font-semibold">{ticker.label}</span>
+                <span>{ticker.value}</span>
+                <span className={cn("font-medium", ticker.change.startsWith("-") ? "text-red-400" : "text-green-400")}>
+                    {ticker.change}
+                </span>
+                </div>
+            ))}
+            </div>
         </div>
-      </header>
-
-      <AnimatePresence>
-        {expandSidebar && <Sidebar setExpandSidebar={setExpandSidebar} />}
-      </AnimatePresence>
-    </div>
+        <div className="container flex h-16 items-center justify-between py-10">
+          <Link href={formatURL('/', lang)} className="flex items-center space-x-2">
+              <Image src="/assets/brand/agm-logo.png" alt="AGM Logo" width={150} height={50} />
+          </Link>
+          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+              {sidebarItems.map((item) => (
+                  <Link key={item.name} href={formatURL(item.url, lang)} className="transition-colors hover:text-primary">
+                      {item.name}
+                  </Link>
+              ))}
+          </nav>
+          <div className='flex items-center gap-5'>
+            <Button variant='ghost' asChild>
+                <Link href={ibkrURL} target='_blank' rel='noopener noreferrer'>{t('header.sign_in')}</Link>
+            </Button>
+            <Button asChild>
+                <Link href={formatURL('/apply', lang)} target='_blank' rel='noopener noreferrer'>{t('header.apply')}</Link>
+            </Button>
+            <LanguageSwitcher />
+          </div>
+        </div>
+    </header>
   )
 }
 
-
-export const StaticHeader = () => {
-  const { lang } = useTranslationProvider()
-  const [expandSidebar, setExpandSidebar] = useState(false)
-
-  return (
-    <div className=''>
-      <header className="w-full z-50 bg-background h-32">
-        <div className="flex items-center justify-between p-5 relative z-10 h-32">
-          <Button asChild className='bg-transparent hover:bg-transparent'>
-            <Link href={formatURL('/', lang)}>
-                <Image src="/assets/brand/agm-logo.png" priority={true} alt="AGM Logo" className="w-[150px] h-[50px] object-contain" width={150} height={50} /> 
-            </Link>
-          </Button>
-          <Button
-            onClick={() => setExpandSidebar(true)}
-            className="z-20 text-background"
-          >
-            <AlignJustify className="text-2xl" />
-          </Button>
-        </div>
-      </header>
-
-      <AnimatePresence>
-        {expandSidebar && <Sidebar setExpandSidebar={setExpandSidebar} />}
-      </AnimatePresence>
-    </div>
-  )
-}
+export default Header

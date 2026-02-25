@@ -1,260 +1,141 @@
 {
-    "sidebar": {
-        "apply": "Apply for an Account",
-        "risk": "Fill Risk Profile",
-        "learning":"Learning Center",
-        "help": "Help Center",
-        "downloads": "Downloads",
-        "fees": "Fees",
-        "requirements": "Requirements"
+    "header": {
+        "trading_portal": "Trading Portal",
+        "fill_risk_profile": "Fill Risk Profile",
+        "learning_center": "Learning Center",
+        "requirements": "Requirements",
+        "apply": "Apply",
+        "sign_in": "Sign In",
+        "about": "About",
+        "accounts": "Accounts",
+        "tools": "Tools",
+        "products": "Products"
     },
-    "agm-technology": {
-        "title": {
-            "title": "Invest anytime / anywhere",
-            "subtitle": "Unlock a world of opportunities with our global investment trading platform.",
-            "action_text": "Apply for an account"
-        },
-        "introduction": {
-            "title": "Empowering Today's Traders for Tomorrow's Markets",
-            "description": "Since 1995, AGM as an International Securities Broker/Dealer has facilitated direct access to more than 150 financial markets (Stock Exchanges) in the USA, Europe, Asia, and Latin America, otherwise inaccessible to certain investors.",
-            "description_2": "AGM Technology offers professional services to maximize your returns:",
-            "action_text": "View requirements to start investing",
-            "cards": [
-                {
-                    "title": "Trade anytime, anywhere",
-                    "description": "Trade stocks, ETFs, options, futures, bonds, cryptocurrencies, and more from any location and at any time with our advanced trading platform and services.",
-                    "item_labels": [
-                        "Stocks",
-                        "ETFs",
-                        "Options",
-                        "Futures",
-                        "Bonds",
-                        "Cryptocurrencies"
-                    ]
-                },
-                {
-                    "title": "Professional tools",
-                    "description": "Our trading platform, dashboard, and tools are designed to provide you with the necessary tools to succeed in the financial markets.",
-                    "item_labels": [
-                        "24/7 customer support",
-                        "Real-time market data",
-                        "Advanced trading tools",
-                        "Statements reporting"
-                    ]
-                },
-                {
-                    "title": "Active customer support",
-                    "description": "Our customer support team is always ready and happy to help you with any questions or concerns you may have.",
-                    "item_labels": [
-                        "Email",
-                        "Phone",
-                        "Live chat"
-                    ]
-                }
-            ]
-        }
+    "footer": {
+        "title": "AGM Trader Broker & Advisor",
+        "copyright": "Copyright © 2024 AGM Trader Broker & Advisor. All rights reserved.",
+        "terms_of_use": "Terms of Use and Disclosures",
+        "products": "Products",
+        "download": "Download",
+        "help_center": "Help Center",
+        "more_faqs": "More FAQs",
+        "email_support": "Email Support"
     },
-    "agm-trader": {
+    "main": {
         "title": {
-            "title": "Trader",
-            "subtitle": "Trade: stocks, ETFs, options, futures, bonds, cryptocurrencies, and more any time, anywhere.",
-            "action_text": "Download now"
+            "empowering_traders": "Trade anytime,",
+            "worldwide": "anywhere",
+            "description": "Unlock the world of investments with our online trading technology."
         },
-        "introduction": {
-            "title": "Execute your trading strategy at the speed of your fingertips",
-            "description": "AGM Trader lets you trade and invest 24/7 in a wide range of financial instruments across 150+ markets and 20+ different currencies from a single account.",
-            "action_text": "View our products",
-            "cards": [
-                {
-                    "title": "Trade Any Time, Anywhere",
-                    "description": "Access global markets and diverse financial instruments through our advanced trading platforms.",
-                    "item_labels": [
-                        "Stocks, bonds, ETFs, options & more",
-                        "24/7 trading",
-                        "150+ markets",
-                        "20+ currencies"
-                    ]
+        "about": {
+            "title": "Trade in 170+ Markets from a Single Account",
+            "description": "Since 1995, AGM as an International Securities Broker/Dealer has facilitated direct access to more than 170 financial exchanges in the USA, Europe, Asia, and Latin America, otherwise inaccessible to certain investors.",
+            "description_2": "With our top of the line trading platforms and services, AGM lets you trade and invest 24/7 in a wide range of financial instruments accross 20+ different currencies from a single account.",
+            "assets": ["Stocks", "ETFs", "Options", "Futures", "Bonds", "Currencies", "Mutual Funds", "Other"]
+        },
+        "steps": {
+            "title": "Accounts for All Types of Investors",
+            "description": "First, read about the different account management types and choose the one that best suits your needs",
+            "after_selecting_management_type": "Then, after choosing your management type, choose the account type that best suits your needs",
+            "read_more": "Read more",
+            "key_highlights": "Key Highlights",
+            "management_types": {
+                "broker": {
+                    "title": "Broker",
+                    "short_description": "Anyone can trade using our broker services where you manage your own account and trade at your own disclosure.",
+                    "long_description": "With a Broker account, you have full control over your investment decisions. You independently manage your portfolio, execute trades, and make all strategic decisions. AGM provides the platform, tools, and market access you need, while you retain complete autonomy over your account.",
+                    "highlights": {
+                        "1": "Full control over your portfolio and trading decisions",
+                        "2": "Access to 150+ global financial markets from a single account",
+                        "3": "Real-time market data and professional trading tools",
+                        "4": "Trade stocks, ETFs, options, futures, bonds, and more",
+                        "5": "No minimum trading frequency required",
+                        "6": "Ideal for experienced investors who prefer self-directed trading"
+                    }
                 },
-                {
-                    "title": "Choose Your Trading Experience",
-                    "description": "Select the platform that best suits your trading style and needs.",
-                    "item_labels": [
-                        "AGM Trader (mobile app)",
-                        "AGM Trader Pro (desktop)",
-                        "AGM Webtrader (web-based)"
-                    ]
-                },
-                {
-                    "title": "Trade with Confidence",
-                    "description": "Our trading platforms are designed to provide you with the tools you need to succeed in the financial markets.",
-                    "item_labels": [
-                        "Secure trading",
-                        "Real-time analytics",
-                        "Educational resources",
-                        "24/7 support"
-                    ]
+                "advisor": {    
+                    "title": "Advisor",
+                    "short_description": "Anyone can trade using our advisor services where you manage your own account and trade at your own disclosure.",
+                    "long_description": "With an Advisor account, you have full control over your investment decisions. You independently manage your portfolio, execute trades, and make all strategic decisions. AGM provides the platform, tools, and market access you need, while you retain complete autonomy over your account.",
+                    "highlights": {
+                        "1": "Full control over your portfolio and trading decisions",
+                        "2": "Access to 150+ global financial markets from a single account",
+                        "3": "Real-time market data and professional trading tools",
+                        "4": "Trade stocks, ETFs, options, futures, bonds, and more",
+                        "5": "No minimum trading frequency required",
+                        "6": "Ideal for experienced investors who prefer self-directed trading"
+                    }
                 }
-            ]
-        },
-        "download": {
-            "trader": {
-                "title": "Download AGM Trader Pro",
-                "description": "AGM Trader Pro is our flagship product, a trading platform that allows you to trade stocks, options, futures, and more."
             },
-            "mobile": {
-                "title": "Download AGM Trader Mobile",
-                "description": "AGM Trader Mobile is our mobile trading platform that allows you to trade stocks, options, futures, and more."
-            },  
-            "download_now": "Download now",
-            "desktop_platforms": "Desktop Platforms",
-            "mobile_platforms": "Mobile Platforms",
-            "by_downloading": "By downloading, you agree to our",
-            "terms_of_service": "Terms of Service"
-        }
-    },
-    "products": {
-        "download": {
-            "title": "Download AGM Products",
-            "description": "Download our professional trading applications for your preferred platform"
-        }
-    },
-    "agm-advisor": {
-        "title": {
-            "title": "Advisor",
-            "subtitle": "Unlock a world of opportunities with our global investment platform.",
-            "action_text": "Apply for an account"
-        },
-        "introduction": {
-            "title": "Your Legacy Matters",
-            "description": [
-                "AGM Advisor, our Advisory services firm, provides individual portfolio investment strategies that are tailored made for each client (Segregated Portfolio Accounts).",
-                "Any client that would like to delegate a portion of their financial assets or wealth through our advisory division, gets one on one service from one of our Advisors that is assigned. We strive to provide best in class service to each of our advisory clients!",
-                "Get to know your risk profile as an investor and the proposed investment portfolio that matches your profile."
-            ],
-            "cards": [
-                {
-                    "title": "Personalized Investment Strategies",
-                    "description": "We create tailored investment portfolios designed to meet your unique financial goals and risk tolerance.",
-                    "item_labels": [
-                        "Custom portfolios",
-                        "Risk assessment",
-                        "Goal-oriented planning"
-                    ]
+            "account_types": {
+                "individual": {
+                    "title": "Individual & Joint Personal Accounts",
+                    "short_description": "Open a trading account for yourself or with a relative.",
+                    "long_description": "Personal accounts are designed for individual investors or pairs of investors (such as spouses or family members) who want to access global financial markets. An Individual account is owned by a single person, while a Joint account allows two people to co-own and manage the account together, making it convenient for shared financial goals.",
+                    "highlights": {
+                        "1": "Individual Account: Sole ownership with full control over all trades and withdrawals",
+                        "2": "Joint Account: Shared ownership between two individuals with equal rights",
+                        "3": "Access to all available financial instruments and markets",
+                        "4": "Simple and streamlined application process",
+                        "5": "Flexible deposit and withdrawal options to your personal bank account",
+                        "6": "Suitable for personal savings, investment, and wealth building"
+                    }
                 },
-                {
-                    "title": "One-on-One Advisory Service",
-                    "description": "Experience dedicated support with a personal advisor assigned to manage your financial assets and wealth.",
-                    "item_labels": [
-                        "Dedicated advisor",
-                        "Personalized communication",
-                        "Regular portfolio reviews"
-                    ]
-                },
-                {
-                    "title": "Best-in-Class Service",
-                    "description": "Benefit from our commitment to providing exceptional service and support to each of our advisory clients.",
-                    "item_labels": [
-                        "Expert advice",
-                        "Risk management",
-                        "Performance tracking"
-                    ]
+                "institutional": {
+                    "title": "Institutional Accounts",
+                    "short_description": "Open a trading account for your trust or institution.",
+                    "long_description": "Institutional accounts are designed for legal entities such as trusts, corporations, LLCs, partnerships, and other organizations. These accounts provide the same powerful market access as personal accounts but are structured to meet the legal and operational requirements of institutional investors, including proper documentation and compliance frameworks.",
+                    "highlights": {
+                        "1": "Available for trusts, corporations, LLCs, and partnerships",
+                        "2": "Structured to meet institutional compliance and legal requirements",
+                        "3": "Supports multiple authorized traders and signatories",
+                        "4": "Comprehensive reporting for institutional record-keeping",
+                        "5": "Access to all global markets and financial instruments",
+                        "6": "Dedicated support for institutional setup and onboarding"
+                    }
                 }
-            ],
-            "action_text": "Take our risk assessment now"
-        }
-    },
-    "agm-institutional": {
-        "title": {
-            "title": "Institutional",
-            "subtitle": "Unlock a world of opportunities with our global investment platform.",
-            "action_text": "Apply for an account"
-        },
-        "introduction": {
-            "title": "Your Business Matters",
-            "description": [
-                "Our Institutional division provides world-class execution services to the most sophisticated institutions.",
-                "Our dedicated team of professionals ensures that any need or requirement is met, providing the best execution and pricing in over 150 markets worldwide across all asset classes."
-            ],
-            "action_text": "View requirements to start investing",
-            "cards": [
-                {
-                    "title": "Who We Serve",
-                    "description": "We cater to a wide range of institutional clients, including:",
-                    "item_labels": [
-                        "Advisory Firms",
-                        "Hedge Funds",
-                        "Broker/Dealers",
-                        "Wealth Management firms",
-                        "Insurance companies",
-                        "Family Offices"
-                    ]
-                },
-                {
-                    "title": "Our Services",
-                    "description": "We offer comprehensive execution services across various markets and asset classes.",
-                    "item_labels": [
-                        "150+ Global Markets",
-                        "Multiple Asset Classes",
-                        "Best Execution",
-                        "Competitive Pricing"
-                    ]
-                },
-                {
-                    "title": "Get in Touch",
-                    "description": "Contact us to learn more about our institutional services and how we can help your business.",
-                    "item_labels": [
-                        "Email",
-                        "Phone",
-                        "Live chat"
-                    ]
-                }
-            ]
-        }
-    },
-    "shared": {
-        "title": {
-            "scroll_text": "Scroll to explore"
-        },
-        "services": {
-            "title": "Our Services",
-            "description": "Explore our services and find the one that best suits your needs.",
-            "learn_more": "Learn More",
-            "agm_trader": {
-                "title": "AGM Trader",
-                "description": "We provide easy access for trading and investing through our mobile, desktop, and web applications connected to more than 150 financial markets worldwide.",
-                "action_text": "Learn More"
-            },
-            "agm_advisor": {
-                "title": "AGM Advisor",
-                "description": "We also provide Advisory services for those clients who wish to delegate a portion of their financial assets or wealth through our advisory division.",
-                "action_text": "Learn More"
-            },
-            "agm_institutional": {
-                "title": "AGM Institutional",
-                "description": "Our Institutional division provides world-class execution services to the most sophisticated institutions such as Advisory Firms, Hedge Funds, Brokers/Dealers, Wealth Management firms, Insurance companies, and more.",
-                "action_text": "Learn More"
             }
         },
-        "team": {
-            "title": "Our Team",
-            "description": "Meet our team of professionals dedicated to providing exceptional service.",
-            "contact_us": "Contact Us",
-            "team_carousel": {
-                "linkedin": "LinkedIn",
-                "hernan_title": "Chief Executive Officer",
-                "hernan_description": "Mr. Castro has also more than 30 years of experience in the securities markets and is also a founding partner of AGM and as such has helped the firm become an International Broker/Dealer and Advisor. Mr. Castro is not only our Chief Operating Officer, but he oversees our Investment Advisory Division. Mr. Castro has been registered with FINRA in the USA as a Series 7 and Serie 66 under CRD # 4575350.",
-                "ramon_title": "Chief Operating Officer",
-                "ramon_description": "Mr. Castro has also more than 30 years of experience in the securities markets and is also a founding partner of AGM and as such has helped the firm become an International Broker/Dealer and Advisor. Mr. Castro is not only our Chief Operating Officer, but he oversees our Investment Advisory Division. Mr. Castro has been registered with FINRA in the USA as a Series 7 and Serie 66 under CRD # 4575350.",
-                "cristian_title": "Chief Financial Officer",
-                "cristian_description": "Cristian has been with AGM for over 8 years, he has a background in business and data analytics, besides being our CFO, he is an experienced Options trader and has been part of a couple of Broker/Dealers and a Fund Management company in the past. Mr. Ramirez has a very strong background in Statistical and Financial analysis, as well as in accounting.",
-                "javier_title": "Trade Support Specialist",
-                "javier_description": "Javier started with AGM as an Intern from Texas Tech University, where he is in his final year to obtain his BA in Business. He has been with us for 2 years and has excelled in the different areas that he has been part of. He is in charge of the Customer Service Department and makes sure that every client has a tailored introduction to their relationship with AGM.",
-                "maria_jose_title": "Marketing Specialist",
-                "maria_jose_description": "Maria Jose is our newest addition to the AGM team, she is also in her final year to obtain her BA in Business from Texas Tech University. She is part of our Customer Service Department and makes sure that every client has great service and support experience with AGM. She is also in charge of our marketing department and social media.",
-                "andres_title": "Lead Software Engineer",
-                "andres_description": "Andres has been with AGM since the beginning of 2024, he is working on obtaining his BS in Computer Science from Texas Tech University. Andres is in charge of our IT department and has shown great skills to develop our front end systems to be able to provide a better experience to our customers. He is also responsible for most of our back end processes so everything works as expected.",
-                "ramon_jr_title": "Software Specialist",
-                "ramon_jr_description": "Ramon is our newest addition to our IT Department and specializes in the implementation of Software and maintaining our technological systems up to date. He has a background in Cybersecurity, IT Management and Data Science."
+        "products": {
+            "title": "Professional Trading Platforms",
+            "description": "We offer award winning platforms that allow you to trade, view your portfolio and manage your account - on any device.",
+            "download_now": "Download Now",
+            "open_web_portal": "Open Web Portal",
+            "trader": {
+                "title": "AGM Trader Pro",
+                "short_description": "Professional Trading Platform",
+                "description": "AGM Trader Pro is a professional trading platform for desktop and mobile devices. It allows you to trade stocks, ETFs, options, futures, bonds, and more.",
+                "download_url": "/downloads/trader"
+            },
+            "mobile": {
+                "title": "AGM Trader Mobile",
+                "short_description": "Mobile Trading Platform",
+                "description": "AGM Trader Mobile is a professional trading platform for mobile devices. It allows you to trade stocks, ETFs, options, futures, bonds, and more.",
+                "download_url": "/downloads/mobile"
+            },
+            "web_portal": {
+                "title": "AGM Web Portal",
+                "short_description": "Web Trading Portal",
+                "description": "AGM Web Portal is a web-based trading portal that allows you to manage your account, monitor your portfolio, and trade from any browser."
+            },
+            "download": {
+                "platforms": "Platforms",
+                "by_downloading": "By downloading, you agree to our",
+                "terms_of_service": "Terms of Service"
+            }
+        },
+        "modern_tools": {
+            "title": "Modern Tools for Modern Traders",
+            "description": "We use industry grade technologies for fetching and processing real time market data to help us make informed decisions and maximize your growth. Try out some of our tools below to get started.",
+            "risk_profile": {
+                "title": "Risk Profile",
+                "description": "Complete your personalized risk profile and receive a tailored investment proposal. We use your goals and risk tolerance to recommend the best strategy for you using real time market data.",
+                "button": "Fill Form"
+            },
+            "portfolio_calculator": {
+                "title": "Portfolio Calculator",
+                "description": "Select your preferred assets and generate a customized investment proposal. Analyze potential returns and risks based on your asset allocation choices.",
+                "badge": "Work in Progress"
             }
         },
         "faq": {
@@ -272,17 +153,11 @@
             "answer_5": "There are no interest or capital gains taxes on the account. Taxes are only charged on dividends received.",
             "question_6": "Who can move the money in each account?",
             "answer_6": "Only the account owner, the first designated person, can move the money in and out of the account to a bank account in the same name of the account owner. The custodian does not allow third party wires for the protection of the client."
-        },
-        "footer": {
-            "title": "AGM Trader Broker & Advisor",
-            "copyright": "Copyright © 2024 AGM Trader Broker & Advisor. All rights reserved.",
-            "terms_of_use": "Terms of Use and Disclosures",
-            "products": "Products",
-            "download": "Download",
-            "help_center": "Help Center",
-            "more_faqs": "More FAQs",
-            "email_support": "Email Support"
         }
+    },
+    "shared": {
+        "apply_for_an_account": "Apply for an account",
+        "view_requirements": "View requirements"
     },
     "apply": {
         "account": {
@@ -317,6 +192,8 @@
                 "institutional_description": "An account owned and controlled by a company or organization"
             },
             "account_holder_info": {
+                "referrer": "Referred By",
+
                 "account_setup": "Account Setup",
                 "margin_account_description": "Margin accounts allow trading with borrowed funds and can support short selling, while cash accounts require paying fully for purchases and do not permit borrowing.",
                 "account_type": "Account Type",
@@ -565,6 +442,7 @@
                 "title": "Application Submitted Successfully!",
                 "description": "Your IBKR application has been submitted and is being reviewed.",
                 "description_2": "You will receive a confirmation email in the next day or two with next steps.",
+                "missing_documents_reminder": "Please remember to upload the required documents to complete your application.",
                 "go_back_home": "Go Back Home"
             },
             "agreements": {
@@ -583,45 +461,6 @@
                 }
             }
         }
-    },
-    "forms": {
-        "search": "Search...",
-        "no_results": "No results found.",
-        "submit": "Submit",
-        "submitting": "Submitting...",
-        "form_errors_title": "Form Errors",
-        "form_errors_description": "Please correct the highlighted errors before continuing."
-    },
-    "fees": {
-        "title": "Fees",
-        "description": "All costs are expressed in US dollars (USD) and may change at any time without prior notice.",
-        "managed_accounts": {
-            "title": "Managed accounts",
-            "management_fees_label": "Management Fees",
-            "management_fees_value": "Up to 2.5% per annum, fees are accrued daily over the Net Asset Value of the account and charged monthly.",
-            "execution_costs_label": "Execution Costs",
-            "execution_costs_value": "Stocks/ETFs: $0.075 per share, minimum of $25 per transaction. Bonds: $25 per transaction + 0.005% of the Face value",
-            "custody_fees_label": "Custody Fees",
-            "custody_fees_value": "There are no custody fees.",
-            "other_fees_label": "Other Fees",
-            "other_fees_wires": "Wires",
-            "other_fees_domestic": "Domestic (Inside the USA): First Monthly Wire free, then $10 / wire",
-            "other_fees_international": "International: $25 + any fees charged by the receiving bank."
-        },
-        "self_directed_accounts": {
-            "title": "Self Directed accounts",
-            "management_fees_label": "Management Fees",
-            "management_fees_value": "There are no fees.",
-            "execution_costs_label": "Execution Costs",
-            "execution_costs_value": "Stocks/ETFs: $0.075 per share, minimum of $25 per transaction. Bonds: $25 per transaction + 0.005% of the Face value",
-            "custody_fees_label": "Custody Fees",
-            "custody_fees_value": "There are no custody fees.",
-            "other_fees_label": "Other Fees",
-            "other_fees_wires": "Wires",
-            "other_fees_domestic": "Domestic (Inside the USA): First Monthly Wire free, then $10 / wire",
-            "other_fees_international": "International: $25 + any fees charged by the receiving bank."
-        },
-        "footnote": "All of the costs and fees are in USD and can change at any moment without notice. Other costs or fees may apply. These charges and fees are the most common that apply to the most commonly used products and services. Stocks, ETFs and Bonds (Non Euroclear) might have additional charges."
     },
     "risk": {
         "title": "Risk Assessment Questionnaire",
@@ -822,10 +661,67 @@
         },
         "submit": "Apply for an account"
     },
+    "fees": {
+        "title": "Fees",
+        "description": "All costs are expressed in US dollars (USD) and may change at any time without prior notice.",
+        "managed_accounts": {
+            "title": "Managed accounts",
+            "management_fees_label": "Management Fees",
+            "management_fees_value": "Up to 2.5% per annum, fees are accrued daily over the Net Asset Value of the account and charged monthly.",
+            "execution_costs_label": "Execution Costs",
+            "execution_costs_value": "Stocks/ETFs: $0.075 per share, minimum of $25 per transaction. Bonds: $25 per transaction + 0.005% of the Face value",
+            "custody_fees_label": "Custody Fees",
+            "custody_fees_value": "There are no custody fees.",
+            "other_fees_label": "Other Fees",
+            "other_fees_wires": "Wires",
+            "other_fees_domestic": "Domestic (Inside the USA): First Monthly Wire free, then $10 / wire",
+            "other_fees_international": "International: $25 + any fees charged by the receiving bank."
+        },
+        "self_directed_accounts": {
+            "title": "Self Directed accounts",
+            "management_fees_label": "Management Fees",
+            "management_fees_value": "There are no fees.",
+            "execution_costs_label": "Execution Costs",
+            "execution_costs_value": "Stocks/ETFs: $0.075 per share, minimum of $25 per transaction. Bonds: $25 per transaction + 0.005% of the Face value",
+            "custody_fees_label": "Custody Fees",
+            "custody_fees_value": "There are no custody fees.",
+            "other_fees_label": "Other Fees",
+            "other_fees_wires": "Wires",
+            "other_fees_domestic": "Domestic (Inside the USA): First Monthly Wire free, then $10 / wire",
+            "other_fees_international": "International: $25 + any fees charged by the receiving bank."
+        },
+        "footnote": "All of the costs and fees are in USD and can change at any moment without notice. Other costs or fees may apply. These charges and fees are the most common that apply to the most commonly used products and services. Stocks, ETFs and Bonds (Non Euroclear) might have additional charges."
+    },
     "learning": {
         "chapter_label": "Chapter",
         "go_back": "Go back",
         "available_videos": "Available Videos",
         "no_videos": "No videos available for this chapter. Please check back later."
+    },
+    "forms": {
+        "search": "Search...",
+        "no_results": "No results found.",
+        "submit": "Submit",
+        "submitting": "Submitting...",
+        "form_errors_title": "Form Errors",
+        "form_errors_description": "Please correct the highlighted errors before continuing."
+    },
+    "sitemap": {
+        "title": "Sitemap",
+        "description": "A complete overview of all pages available on AGM Trader Broker & Advisor.",
+        "general": "General",
+        "home": "Home",
+        "apply": "Apply Now",
+        "risk": "Risk Profile",
+        "information": "Information",
+        "fees": "Fees",
+        "requirements": "Requirements",
+        "disclosures": "Disclosures",
+        "downloads": "Downloads",
+        "downloads_mobile": "AGM Trader Mobile",
+        "downloads_trader": "AGM Trader Pro",
+        "learning_center": "Learning Center",
+        "learning_overview": "All Chapters",
+        "chapter": "Chapter"
     }
 }

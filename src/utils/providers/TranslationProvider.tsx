@@ -36,7 +36,7 @@ export const TranslationProvider = ({ children, lang }: { children: React.ReactN
     }
 
     if (!translator) {
-        return <LoadingComponent className='h-full w-full flex items-center justify-center' />
+        return <LoadingComponent className='h-full w-full min-h-screen flex items-center justify-center' />
     }
 
     return (

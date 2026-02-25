@@ -41,8 +41,12 @@ const FinancialInfoStep = ({
     currentPermissions = currentPermissions.filter(p => p.product !== productId);
 
     if (checked) {
-      // Add entries for all countries
-      trading_countries.forEach((country: string) => {
+      // For bonds, only add USA; for other products, add all countries
+      const countries = productId === "BONDS"
+        ? ["UNITED STATES"]
+        : trading_countries;
+
+      countries.forEach((country: string) => {
         currentPermissions.push({
           country,
           product: productId

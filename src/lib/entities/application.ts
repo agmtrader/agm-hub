@@ -77,6 +77,7 @@ export type InternalApplicationPayload = {
     security_questions: Map | null;
     estimated_deposit?: number | null;
     risk_profile_id: string | null;
+    referrer?: string | null;
 }
 
 export type InternalApplication = InternalApplicationPayload & Base
