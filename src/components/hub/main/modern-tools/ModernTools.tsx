@@ -48,18 +48,14 @@ const ModernTools = () => {
   return (
     <div className="container flex flex-col gap-10 justify-center items-center py-10 overflow-hidden">
       
-      <motion.div 
+      <div 
         className="text-center space-y-4"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={containerVariants}
       >
-        <motion.h2 className="text-5xl font-bold tracking-tighter" variants={itemVariants}>{t('main.modern_tools.title')}</motion.h2>
-        <motion.p className="text-xl text-muted-foreground max-w-2xl mx-auto" variants={itemVariants}>
+        <h2 className="text-5xl font-bold tracking-tighter">{t('main.modern_tools.title')}</h2>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           {t('main.modern_tools.description')}
-        </motion.p>
-      </motion.div>
+        </p>
+      </div>
 
       <div className="flex items-center justify-center gap-4 max-w-3xl w-full">
         <Button
@@ -71,13 +67,7 @@ const ModernTools = () => {
           <ChevronLeft className="h-4 w-4" />
         </Button>
 
-        <motion.div 
-          className="w-full overflow-hidden px-4"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={itemVariants}
-        >
+        <div className="w-full overflow-hidden px-4">
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-6 py-4">
               {tools.map((tool, index) => (
@@ -125,7 +115,7 @@ const ModernTools = () => {
             </div>
           </div>
 
-        </motion.div>
+        </div>
 
         <Button
           variant="outline"
