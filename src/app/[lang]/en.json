@@ -693,10 +693,29 @@
         "footnote": "All of the costs and fees are in USD and can change at any moment without notice. Other costs or fees may apply. These charges and fees are the most common that apply to the most commonly used products and services. Stocks, ETFs and Bonds (Non Euroclear) might have additional charges."
     },
     "learning": {
+        "title": "Learning Center",
+        "description": "Check out our videos to learn about international markets and trading.",
         "chapter_label": "Chapter",
         "go_back": "Go back",
         "available_videos": "Available Videos",
-        "no_videos": "No videos available for this chapter. Please check back later."
+        "no_videos": "No videos available for this chapter. Please check back later.",
+        "chapters": {
+            "1": {
+                "title": "Introduction to International Markets"
+            },
+            "2": {
+                "title": "Introduction to Fundamental Analysis"
+            },
+            "3": {
+                "title": "Introduction to Bonds"
+            },
+            "4": {
+                "title": "Introduction to Technical Analysis"
+            },
+            "5": {
+                "title": "Introduction to Economic Events"
+            }
+        }
     },
     "forms": {
         "search": "Search...",

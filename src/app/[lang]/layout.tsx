@@ -2,6 +2,12 @@ import "../globals.css"
 import { TranslationProvider } from "../../utils/providers/TranslationProvider"
 import Header from "@/components/hub/Header"
 import Footer from "@/components/hub/Footer"
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AGM Technology",
+  description: "Unlock the world of investments with our online trading technology.",
+};
 
 export default async function Layout(
   props: Readonly<{

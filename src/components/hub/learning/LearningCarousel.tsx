@@ -24,6 +24,11 @@ export function LearningCarousel() {
 
   const { lang , t } = useTranslationProvider()
 
+  const getChapterTitle = (chapterId: string, fallbackTitle: string) => {
+    const translated = t(`learning.chapters.${chapterId}.title`)
+    return translated === `learning.chapters.${chapterId}.title` ? fallbackTitle : translated
+  }
+
   return (
     <div className="w-full flex justify-center items-center h-full max-w-[90%] md:max-w-[80%] lg:max-w-[65%] relative">
       <Button
@@ -45,7 +50,7 @@ export function LearningCarousel() {
                       <div className="relative w-full aspect-video">
                         <Image 
                           src={chapter.image || ''} 
-                          alt={chapter.title} 
+                          alt={getChapterTitle(chapter.id, chapter.title)}
                           fill
                           className="object-cover rounded-lg"
                         />
@@ -53,10 +58,7 @@ export function LearningCarousel() {
                     </CardContent>
                     <CardHeader className="pt-2 pb-4">
                       <p className="text-md font-semibold text-center">
-                        {t('learning.chapter_label')} {chapter.id}: <span className="font-normal">{(() => {
-                          const translated = t(`learning.chapters.${chapter.id}.title`)
-                          return translated === `learning.chapters.${chapter.id}.title` ? chapter.title : translated
-                        })()}</span>
+                        {t('learning.chapter_label')} {chapter.id}: <span className="font-normal">{getChapterTitle(chapter.id, chapter.title)}</span>
                       </p>
                     </CardHeader>
                   </Card>

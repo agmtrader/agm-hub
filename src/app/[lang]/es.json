@@ -693,10 +693,29 @@
         "footnote": "Todos los costos y tarifas están expresados en USD y pueden cambiar en cualquier momento sin previo aviso. Pueden aplicarse otros costos. Estos cargos y tarifas son los más comunes que aplican a los productos y servicios más utilizados. Las acciones, ETFs y bonos (Non Euroclear) pueden tener cargos adicionales."
     },
     "learning": {
+        "title": "Centro de Aprendizaje",
+        "description": "Mira nuestros videos para aprender sobre mercados internacionales y trading.",
         "chapter_label": "Capítulo",
         "go_back": "Regresar",
         "available_videos": "Videos disponibles",
-        "no_videos": "No hay videos disponibles para este capítulo. Por favor vuelva más tarde."
+        "no_videos": "No hay videos disponibles para este capítulo. Por favor vuelva más tarde.",
+        "chapters": {
+            "1": {
+                "title": "Introducción a los mercados internacionales"
+            },
+            "2": {
+                "title": "Introducción al análisis fundamental"
+            },
+            "3": {
+                "title": "Introducción a los bonos"
+            },
+            "4": {
+                "title": "Introducción al análisis técnico"
+            },
+            "5": {
+                "title": "Introducción a los eventos económicos"
+            }
+        }
     },
     "forms": {
         "search": "Buscar...",
