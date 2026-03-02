@@ -99,7 +99,7 @@ const Products = () => {
                           </div>
                         ) : (
                           <div className="flex items-end justify-center">
-                            <Macbook width={632} height={408} src={'/assets/products/web-portal.png'} />
+                            <Macbook width={632} height={408} src={'/assets/products/web-portal.jpg'} />
                           </div>
                         )}
 
