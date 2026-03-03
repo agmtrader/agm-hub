@@ -22,11 +22,11 @@ export default function Home() {
             <Steps />
         </section>
 
-        <section id="products" className="py-24">
+        <section id="products" className="bg-muted/50 py-24">
             <Products />
         </section>
 
-        <section id="get-started" className="bg-muted/50 py-32">
+        <section id="get-started" className="py-24">
             <GetStarted />
         </section>
 
