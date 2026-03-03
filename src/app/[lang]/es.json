@@ -34,7 +34,7 @@
             "assets": ["Acciones", "ETFs", "Opciones", "Futuros", "Bonos", "Divisas", "Fondos", "Warrants", "CFDs", "Forex", "Materias Primas", "Cripto"]
         },
         "steps": {
-            "title": "Cuentas para Todo Tipo de Inversores",
+            "title": "Cuentas para Todo Tipo de Inversionistas",
             "description": "Primero, lee sobre los diferentes tipos de administración de cuentas y elige el que mejor se adapte a tus necesidades",
             "after_selecting_management_type": "Luego, después de elegir tu tipo de administración, elige el tipo de cuenta que mejor se adapte a tus necesidades",
             "read_more": "Leer más",
@@ -125,7 +125,7 @@
             }
         },
         "modern_tools": {
-            "title": "Herramientas Modernas para Inversores Modernos",
+            "title": "Herramientas Modernas para Inversionistas Modernos",
             "description": "Utilizamos tecnologías de grado industrial para obtener y procesar datos de mercado en tiempo real para ayudarnos a tomar decisiones informadas y maximizar tu crecimiento. Prueba algunas de nuestras herramientas a continuación para comenzar.",
             "risk_profile": {
                 "title": "Perfil de Riesgo",
