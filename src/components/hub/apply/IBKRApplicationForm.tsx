@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { FieldErrors, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
 import { Form } from '@/components/ui/form'
@@ -40,7 +40,6 @@ const IBKRApplicationForm = () => {
   const { t } = useTranslationProvider();
   const searchParams = useSearchParams();
   const advisorCode = searchParams.get('ad');
-  console.log(advisorCode);
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,6 +65,115 @@ const IBKRApplicationForm = () => {
     mode: 'onChange',
     shouldUnregister: false,
   });
+
+  const sendClientLog = async (
+    event: string,
+    payload: Record<string, unknown>,
+    severity: 'INFO' | 'WARNING' | 'ERROR' = 'WARNING',
+  ) => {
+    try {
+      await fetch('/api/client-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'IBKRApplicationForm',
+          event,
+          severity,
+          timestamp: new Date().toISOString(),
+          payload,
+        }),
+      });
+    } catch (error) {
+      // Local fallback in case the log endpoint fails.
+      console.error('Failed to send client log', error);
+    }
+  };
+
+  const flattenValidationErrors = (errors: FieldErrors<Application>) => {
+    const collected: { field: string; message: string; type?: string }[] = [];
+
+    const walk = (node: unknown, path: string) => {
+      if (!node || typeof node !== 'object') return;
+
+      const nodeAsRecord = node as Record<string, unknown>;
+      const message = typeof nodeAsRecord.message === 'string' ? nodeAsRecord.message : null;
+      const type = typeof nodeAsRecord.type === 'string' ? nodeAsRecord.type : undefined;
+
+      if (message || type) {
+        collected.push({
+          field: path || 'form',
+          message: message ?? 'Validation error',
+          type,
+        });
+      }
+
+      if (Array.isArray(node)) {
+        node.forEach((item, index) => {
+          walk(item, path ? `${path}.${index}` : String(index));
+        });
+        return;
+      }
+
+      Object.entries(nodeAsRecord).forEach(([key, value]) => {
+        if (key === 'ref' || key === 'message' || key === 'type') return;
+        walk(value, path ? `${path}.${key}` : key);
+      });
+    };
+
+    walk(errors as unknown, '');
+    return collected;
+  };
+
+  const redactFormValuesForLogs = (values: Application) => {
+    const sensitiveKeyPattern = /(tax|tin|ssn|signature|checksum|payload|password|secret)/i;
+
+    const transform = (value: unknown, key: string): unknown => {
+      if (value === null || value === undefined) return value;
+
+      if (key === 'documents' && Array.isArray(value)) {
+        return value.map((document) => {
+          const doc = (document ?? {}) as Record<string, unknown>;
+          return {
+            formNumber: doc.formNumber ?? null,
+            proofOfIdentityType: doc.proofOfIdentityType ?? null,
+            proofOfAddressType: doc.proofOfAddressType ?? null,
+            hasPayload: Boolean(doc.payload),
+            hasAttachedFile: Boolean(doc.attachedFile),
+          };
+        });
+      }
+
+      if (value instanceof File) {
+        return {
+          type: 'File',
+          name: value.name,
+          size: value.size,
+          mimeType: value.type,
+        };
+      }
+
+      if (Array.isArray(value)) {
+        return value.map((item) => transform(item, key));
+      }
+
+      if (typeof value === 'object') {
+        const asRecord = value as Record<string, unknown>;
+        const output: Record<string, unknown> = {};
+        Object.entries(asRecord).forEach(([childKey, childValue]) => {
+          if (sensitiveKeyPattern.test(childKey)) {
+            output[childKey] = '[REDACTED]';
+            return;
+          }
+          output[childKey] = transform(childValue, childKey);
+        });
+        return output;
+      }
+
+      return value;
+    };
+
+    return transform(values, 'root');
+  };
   
 
   useEffect(() => {
@@ -280,8 +388,10 @@ const IBKRApplicationForm = () => {
   const handleNextStep = async () => {
 
     let isValid = true;
+    let validatedFieldsLog: string[] = [];
 
     if (currentStep === FormStep.ACCOUNT_TYPE) {
+      validatedFieldsLog = ['customer.type'];
       isValid = await form.trigger('customer.type');
     }
 
@@ -341,8 +451,8 @@ const IBKRApplicationForm = () => {
       }
 
       if (fieldsToValidate.length > 0) {
+        validatedFieldsLog = fieldsToValidate;
         isValid = await form.trigger(fieldsToValidate);
-        console.log('isValid', isValid);
       } else if (currentStep === FormStep.AGREEMENTS) {
         isValid = true;
       }
@@ -358,6 +468,23 @@ const IBKRApplicationForm = () => {
     }
 
     if (!isValid) {
+      const validationErrors = flattenValidationErrors(form.formState.errors);
+      const currentValues = form.getValues();
+
+      void sendClientLog(
+        'form_validation_failed',
+        {
+          step: FormStep[currentStep],
+          currentStep,
+          validatedFields: validatedFieldsLog,
+          validationErrors,
+          estimatedDeposit,
+          estimatedDepositError,
+          applicationValues: redactFormValuesForLogs(currentValues),
+        },
+        'WARNING',
+      );
+
       toast({ 
         title: t('forms.form_errors_title'),
         description: t('forms.form_errors_description'),
@@ -471,7 +598,24 @@ const IBKRApplicationForm = () => {
       <ProgressMeter form={form} currentStep={currentStep} />
       <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(() => handleNextStep())} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(
+              () => handleNextStep(),
+              (errors) => {
+                void sendClientLog(
+                  'form_submit_blocked_by_validation',
+                  {
+                    step: FormStep[currentStep],
+                    currentStep,
+                    validationErrors: flattenValidationErrors(errors),
+                    applicationValues: redactFormValuesForLogs(form.getValues()),
+                  },
+                  'WARNING',
+                );
+              },
+            )}
+            className="space-y-8"
+          >
             {currentStep === FormStep.ACCOUNT_TYPE && (
               <>
                 <AccountTypeStep form={form} />
