@@ -4,18 +4,11 @@ import React from 'react'
 import { Button } from '../ui/button'
 import Image from 'next/image'
 import LanguageSwitcher from '../misc/LanguageSwitcher'
+import TickerHeader from '../misc/TickerHeader'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-import { cn } from '@/lib/utils'
 import { formatURL } from '@/utils/language/lang'
 
 const Header = () => {
-
-  const tickers = [
-      { label: 'SPX', value: '2,800.00', change: '+0.25%' },
-      { label: 'NDX', value: '11,000.00', change: '+0.30%' },
-      { label: 'RUT', value: '170.00', change: '+0.15%' },
-  ]
-
 
   const { t, lang } = useTranslationProvider();
 
@@ -31,19 +24,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="w-full border-b bg-foreground text-white">
-            <div className="mx-auto flex h-8 items-center gap-6 overflow-hidden px-5 text-xs uppercase tracking-wide">
-            {tickers.map((ticker) => (
-                <div key={ticker.label} className="flex items-center gap-2 whitespace-nowrap">
-                <span className="font-semibold">{ticker.label}</span>
-                <span>{ticker.value}</span>
-                <span className={cn("font-medium", ticker.change.startsWith("-") ? "text-red-400" : "text-green-400")}>
-                    {ticker.change}
-                </span>
-                </div>
-            ))}
-            </div>
-        </div>
+        <TickerHeader />
         <div className="container flex h-16 items-center justify-between py-10">
           <Link href={formatURL('/', lang)} className="flex items-center space-x-2">
               <Image src="/assets/brand/agm-logo.png" alt="AGM Logo" width={150} height={50} />
