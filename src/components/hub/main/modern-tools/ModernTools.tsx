@@ -9,7 +9,6 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { formatURL } from '@/utils/language/lang'
 import useEmblaCarousel from 'embla-carousel-react'
-import { motion } from "framer-motion"
 import { modernTools } from '@/lib/public/modern-tools'
 import { Badge } from '@/components/ui/badge'
 
@@ -46,34 +45,34 @@ const ModernTools = () => {
   }
 
   return (
-    <div className="container flex flex-col gap-10 justify-center items-center py-10 overflow-hidden">
+    <div className="container flex flex-col items-center justify-center gap-8 overflow-hidden px-4 py-6 md:gap-10 md:py-10">
       
       <div 
         className="text-center space-y-4"
       >
-        <h2 className="text-5xl font-bold tracking-tighter">{t('main.modern_tools.title')}</h2>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <h2 className="text-4xl font-bold tracking-tighter md:text-5xl">{t('main.modern_tools.title')}</h2>
+        <p className="mx-auto max-w-2xl text-base text-muted-foreground md:text-xl">
           {t('main.modern_tools.description')}
         </p>
       </div>
 
-      <div className="flex items-center justify-center gap-4 max-w-3xl w-full">
+      <div className="flex w-full max-w-3xl items-center justify-center gap-2 md:gap-4">
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full shadow-md shrink-0"
+          className="hidden shrink-0 rounded-full shadow-md sm:inline-flex"
           onClick={() => emblaApi?.scrollPrev()}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
 
-        <div className="w-full overflow-hidden px-4">
+        <div className="w-full overflow-hidden px-0 sm:px-4">
           <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex gap-6 py-4">
+            <div className="flex gap-4 py-4 md:gap-6">
               {tools.map((tool, index) => (
-                <div key={index} className="flex-[0_0_100%] min-w-0 pl-4 first:pl-0">
+                <div key={index} className="min-w-0 flex-[0_0_100%] pl-2 first:pl-0 sm:pl-4">
                   <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-                    <div className="p-6 pb-0">
+                    <div className="p-4 pb-0 md:p-6 md:pb-0">
                         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted flex items-center justify-center">
                              {tool.image ? (
                                 <Image 
@@ -91,7 +90,7 @@ const ModernTools = () => {
                     <CardHeader className="flex flex-col items-center justify-center space-y-2 pb-2">
                       <CardTitle className="text-xl font-bold text-foreground text-center">{tool.title}</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex flex-col items-center justify-between text-center gap-6 flex-grow pt-0 pb-6">
+                    <CardContent className="flex flex-grow flex-col items-center justify-between gap-6 pt-0 pb-6 text-center">
                       <p className="text-muted-foreground text-sm leading-relaxed">{tool.description}</p>
                       
                       <div className="mt-auto pt-2">
@@ -120,7 +119,7 @@ const ModernTools = () => {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full shadow-md shrink-0"
+          className="hidden shrink-0 rounded-full shadow-md sm:inline-flex"
           onClick={() => emblaApi?.scrollNext()}
         >
           <ChevronRight className="h-4 w-4" />

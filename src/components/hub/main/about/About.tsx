@@ -26,14 +26,14 @@ const About = () => {
   }
 
   return (
-    <div className='container w-full flex justify-center items-center gap-20'>
-        <div className="flex flex-col gap-10 justify-center items-center">
-            <h2 className="text-5xl font-bold tracking-tighter text-center text-foreground">
+    <div className='container w-full flex flex-col-reverse items-center justify-center gap-12 px-4 lg:flex-row lg:gap-16'>
+        <div className="flex flex-col items-center justify-center gap-8">
+            <h2 className="text-center text-4xl font-bold tracking-tighter text-foreground md:text-5xl">
                 {t('main.about.title')}
             </h2>
             <div 
                 ref={ref}
-                className='relative group flex flex-wrap justify-center gap-x-8 gap-y-3 max-w-2xl rounded-xl p-4'
+                className='relative group flex max-w-2xl flex-wrap justify-center gap-x-6 gap-y-3 rounded-xl p-4'
                 onMouseMove={handleMouseMove}
             >
                 <motion.div
@@ -48,41 +48,45 @@ const About = () => {
                         `,
                     }}
                 />
-                <span className='relative z-10 text-2xl font-semibold text-foreground'>
+                <span className='relative z-10 text-lg font-semibold text-foreground md:text-2xl'>
                     {t('main.about.assets.0')}
                 </span>
-                <span className='relative z-10 text-2xl font-semibold text-foreground'>
+                <span className='relative z-10 text-lg font-semibold text-foreground md:text-2xl'>
                     {t('main.about.assets.1')}
                 </span>
-                <span className='relative z-10 text-2xl font-semibold text-foreground'>
+                <span className='relative z-10 text-lg font-semibold text-foreground md:text-2xl'>
                     {t('main.about.assets.2')}
                 </span>
-                <span className='relative z-10 text-2xl font-semibold text-foreground'>
+                <span className='relative z-10 text-lg font-semibold text-foreground md:text-2xl'>
                     {t('main.about.assets.3')}
                 </span>
-                <span className='relative z-10 text-2xl font-semibold text-foreground'>
+                <span className='relative z-10 text-lg font-semibold text-foreground md:text-2xl'>
                     {t('main.about.assets.4')}
                 </span>
-                <span className='relative z-10 text-2xl font-semibold text-foreground'>
+                <span className='relative z-10 text-lg font-semibold text-foreground md:text-2xl'>
                     {t('main.about.assets.5')}
                 </span>
-                <span className='relative z-10 text-2xl font-semibold text-foreground'>
+                <span className='relative z-10 text-lg font-semibold text-foreground md:text-2xl'>
                     {t('main.about.assets.6')}
                 </span>
-                <span className='relative z-10 text-2xl font-semibold text-foreground'>
+                <span className='relative z-10 text-lg font-semibold text-foreground md:text-2xl'>
                     {t('main.about.assets.7')}
                 </span>
             </div>
-            <div className='max-w-3xl flex flex-col gap-4'>
-                <p className='text-lg text-center text-foreground'>
+            <div className='flex max-w-3xl flex-col gap-4'>
+                <p className='text-center text-base text-foreground md:text-lg'>
                     {t('main.about.description')}
                 </p>
-                <p className='text-lg text-center text-foreground'>
+                <p className='text-center text-base text-foreground md:text-lg'>
                     {t('main.about.description_2')}
                 </p>
             </div>
         </div>
-        <Iphone15Pro className='h-[40rem]' src='/assets/products/iphone-app.png' style={{ transform: 'perspective(1000px) rotateY(-15deg) rotateZ(0deg)' }} />
+        <Iphone15Pro
+            className='h-[26rem] sm:h-[32rem] lg:h-[40rem]'
+            src='/assets/products/iphone-app.png'
+            style={{ transform: 'perspective(1000px) rotateY(-15deg) rotateZ(0deg)' }}
+        />
     </div>
   )
 }

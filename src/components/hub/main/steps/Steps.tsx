@@ -101,9 +101,9 @@ const accountTypes: StepDetail[] = [
 
 
   return (
-    <div className="container space-y-12">
+    <div className="container space-y-10 px-4 md:space-y-12">
       <div className="text-center space-y-4">
-        <h2 className="text-5xl font-bold tracking-tighter">{t('main.steps.title')}</h2>
+        <h2 className="text-4xl font-bold tracking-tighter md:text-5xl">{t('main.steps.title')}</h2>
       </div>
 
       <div className="text-center space-y-4">
@@ -152,12 +152,12 @@ const accountTypes: StepDetail[] = [
         ))}
       </div>
 
-      <div className="flex justify-center gap-5">
-        <Button className="w-fit">
+      <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-5">
+        <Button className="w-full sm:w-fit">
           <Link href={formatURL("/apply", lang)}>{t('shared.apply_for_an_account')}</Link>
           <ArrowRight className="h-4 w-4" />
         </Button>
-        <Button variant="outline" className="w-fit">
+        <Button variant="outline" className="w-full sm:w-fit">
           <Link href={formatURL("/requirements", lang)}>{t('shared.view_requirements')}</Link>
         </Button>
       </div>

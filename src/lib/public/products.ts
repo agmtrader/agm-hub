@@ -3,6 +3,7 @@ import { FaApple } from "react-icons/fa"
 import { FaLinux } from "react-icons/fa"
 import { FaAndroid } from "react-icons/fa"
 import { FaGlobe } from "react-icons/fa"
+import { IoLogoApple } from "react-icons/io5"
 
 enum osTypes {
   WINDOWS = 0,
@@ -12,6 +13,43 @@ enum osTypes {
   IOS = 4,
   WEB = 5
 }
+
+export type DownloadOption = {
+  os: string;
+  icon: typeof FaWindows;
+  download_url: string;
+};
+
+export const AGMTraderProDownloads: DownloadOption[] = [
+  {
+    os: 'Windows',
+    icon: FaWindows,
+    download_url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-windows-x64.exe',
+  },
+  {
+    os: 'macOS',
+    icon: FaApple,
+    download_url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-macosx-x64.dmg',
+  },
+  {
+    os: 'Linux',
+    icon: FaLinux,
+    download_url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-linux-x64.sh',
+  }
+];
+
+export const AGMTraderMobileDownloads: DownloadOption[] = [
+  {
+    os: 'iOS',
+    icon: IoLogoApple,
+    download_url: 'https://apps.apple.com/cr/app/agm-trader/id1550920894',
+  },
+  {
+    os: 'Android',
+    icon: FaAndroid,
+    download_url: 'https://play.google.com/store/apps/details?id=com.clientam.agm.app&hl=en&pli=1',
+  },
+];
 
 export const products = (t: (key: string) => string) => [
   {
@@ -24,7 +62,8 @@ export const products = (t: (key: string) => string) => [
       { type: 'Windows', icon: FaWindows, osType: osTypes.WINDOWS },
       { type: 'Mac', icon: FaApple, osType: osTypes.MACOS },
       { type: 'Linux', icon: FaLinux, osType: osTypes.LINUX },
-    ]
+    ],
+    downloadOptions: AGMTraderProDownloads,
   },
   {
     name: t('main.products.mobile.title'),
@@ -35,7 +74,8 @@ export const products = (t: (key: string) => string) => [
     platforms: [
       { type: 'Android', icon: FaAndroid, osType: osTypes.ANDROID },
       { type: 'iOS', icon: FaApple, osType: osTypes.IOS },
-    ]
+    ],
+    downloadOptions: AGMTraderMobileDownloads,
   },
   {
     name: t('main.products.web_portal.title'),

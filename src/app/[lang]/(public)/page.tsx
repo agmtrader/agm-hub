@@ -10,23 +10,23 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
         
-        <section id="title" className="relative py-24">
+        <section id="title" className="relative py-16 md:py-24">
             <Title />
         </section>
 
-        <section id="about" className="bg-muted/50 py-24">
+        <section id="about" className="bg-muted/50 py-16 md:py-24">
             <About />
         </section>
 
-        <section id="steps" className="py-24">
+        <section id="steps" className="py-16 md:py-24">
             <Steps />
         </section>
 
-        <section id="products" className="bg-muted/50 py-24">
+        <section id="products" className="bg-muted/50 py-16 md:py-24">
             <Products />
         </section>
 
-        <section id="get-started" className="py-24">
+        <section id="get-started" className="py-16 md:py-24">
             <GetStarted />
         </section>
 

@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '', // home
     '/apply',
     '/disclosures',
+    '/downloads',
     '/downloads/mobile',
     '/downloads/trader',
     '/fees',

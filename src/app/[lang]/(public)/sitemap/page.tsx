@@ -38,6 +38,7 @@ const SitemapPage = () => {
     {
       title: t('sitemap.downloads'),
       links: [
+        { label: t('sitemap.downloads'), href: formatURL('/downloads', lang) },
         { label: t('sitemap.downloads_mobile'), href: formatURL('/downloads/mobile', lang) },
         { label: t('sitemap.downloads_trader'), href: formatURL('/downloads/trader', lang) },
       ],

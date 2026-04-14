@@ -10,6 +10,15 @@ const AGMTraderMobileDownloads = () => {
   const {lang, t} = useTranslationProvider();
 
   const apps = products(t)
+  const mobileApp = apps.find((app) => app.name === t('main.products.mobile.title'))
+
+  const getDownloadUrl = (platformType: string) => {
+    const normalizedType = platformType.toLowerCase()
+
+    return mobileApp?.downloadOptions?.find(
+      (option) => option.os.toLowerCase() === normalizedType
+    )?.download_url || mobileApp?.download_url || '#'
+  }
 
   return (
     <div className="w-full relative bg-background">
@@ -31,12 +40,12 @@ const AGMTraderMobileDownloads = () => {
             <div>
               <h2 className="text-xl font-semibold text-foreground mb-4">{t('main.products.download.platforms')}</h2>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {apps.find((app) => app.name === t('main.products.mobile.title'))?.platforms.map((platform) => (
+                {mobileApp?.platforms.map((platform) => (
                   <Card
                     key={platform.type}
                     className="hover:shadow-xl transition-shadow duration-300 cursor-pointer"
                   >
-                    <Link href={apps.find((app) => app.name === t('main.products.mobile.title'))?.download_url || '#'} target="_blank" rel="noopener noreferrer">
+                    <Link href={getDownloadUrl(platform.type)} target="_blank" rel="noopener noreferrer">
                       <CardContent className="p-6">
                         <div className="flex items-center justify-center mb-4">
                           <platform.icon className="h-12 w-12 text-primary" />

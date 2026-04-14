@@ -2,7 +2,7 @@
 import { formatURL } from '@/utils/language/lang';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { products } from '@/lib/public/products';
-import Link from 'next/link';;
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 
 const AGMTraderProDownloads = () => {
@@ -10,6 +10,21 @@ const AGMTraderProDownloads = () => {
   const {lang, t} = useTranslationProvider();
 
   const apps = products(t)
+  const traderApp = apps.find((app) => app.name === t('main.products.trader.title'))
+
+  const getDownloadUrl = (platformType: string) => {
+    const normalizedType = platformType.toLowerCase()
+
+    return traderApp?.downloadOptions?.find((option) => {
+      const normalizedOs = option.os.toLowerCase()
+
+      if (normalizedType === 'mac') {
+        return normalizedOs.includes('mac')
+      }
+
+      return normalizedOs === normalizedType
+    })?.download_url || traderApp?.download_url || '#'
+  }
 
   return (
     <div className="w-full relative bg-background">
@@ -30,12 +45,12 @@ const AGMTraderProDownloads = () => {
             <div>
               <h2 className="text-xl font-semibold text-foreground mb-4">{t('main.products.download.platforms')}</h2>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                {apps.find((app) => app.name === t('main.products.trader.title'))?.platforms.map((platform) => (
+                {traderApp?.platforms.map((platform) => (
                   <Card
                     key={platform.type}
                     className="hover:shadow-xl transition-shadow duration-300 cursor-pointer"
                   >
-                    <Link href={apps.find((app) => app.name === t('main.products.trader.title'))?.download_url || '#'} target="_blank" rel="noopener noreferrer">
+                    <Link href={getDownloadUrl(platform.type)} target="_blank" rel="noopener noreferrer">
                       <CardContent className="p-6">
                         <div className="flex items-center justify-center mb-4">
                           <platform.icon className="h-12 w-12 text-primary" />
