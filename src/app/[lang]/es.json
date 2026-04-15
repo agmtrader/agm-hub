@@ -69,12 +69,12 @@
             },
             "account_types": {
                 "individual": {
-                    "title": "Cuentas Personales Individuales y Conjuntas",
+                    "title": "Cuentas Personales Individuales y Mancomunadas",
                     "short_description": "Abre una cuenta de trading para ti mismo o con un familiar.",
-                    "long_description": "Las cuentas personales están diseñadas para inversionistas individuales o parejas de inversionistas (como cónyuges o familiares) que desean acceder a los mercados financieros globales. Una cuenta Individual es propiedad de una sola persona, mientras que una cuenta Conjunta permite que dos personas sean copropietarias y administren la cuenta juntas, lo que es conveniente para metas financieras compartidas.",
+                    "long_description": "Las cuentas personales están diseñadas para inversionistas individuales o parejas de inversionistas (como cónyuges o familiares) que desean acceder a los mercados financieros globales. Una cuenta Individual es propiedad de una sola persona, mientras que una cuenta Mancomunada permite que dos personas sean copropietarias y administren la cuenta juntas, lo que es conveniente para metas financieras compartidas.",
                     "highlights": {
                         "1": "Cuenta Individual: Propiedad única con control total sobre todas las operaciones y retiros",
-                        "2": "Cuenta Conjunta: Propiedad compartida entre dos personas con igualdad de derechos",
+                        "2": "Cuenta Mancomunada: Propiedad compartida entre dos personas con igualdad de derechos",
                         "3": "Acceso a todos los instrumentos financieros y mercados disponibles",
                         "4": "Proceso de solicitud simple y ágil",
                         "5": "Opciones flexibles de depósito y retiro a tu cuenta bancaria personal",
@@ -146,7 +146,7 @@
             "question_2": "¿Qué medidas de seguridad ofrecen?",
             "answer_2": "Las cuentas están aseguradas bajo la SIPC (Securities Investor Protection Corporation) y por Lloyd's en Londres. Las cuentas están bajo la regulación de la SEC (Securities and Exchange Commission) y FINRA (Financial Industry Regulatory Authority) en los Estados Unidos.",
             "question_3": "¿Qué tipos de cuentas están disponibles en AGM?",
-            "answer_3": "Cuentas individuales, conjuntas e institucionales. Atendemos tanto a clientes institucionales como individuales a nivel internacional.",
+            "answer_3": "Cuentas individuales, mancomunadas e institucionales. Atendemos tanto a clientes institucionales como individuales a nivel internacional.",
             "question_4": "¿A dónde va mi dinero?",
             "answer_4": "Después de abrir su cuenta y realizar un depósito inicial de ahorro/inversión, el dinero va directamente al custodio en EE. UU. que mantiene su cuenta AGM a su nombre, tendrá acceso para ver y monitorear su cuenta 24/7.",
             "question_5": "¿Hay impuestos a considerar?",
@@ -186,7 +186,7 @@
             "account_type": {
                 "individual": "Cuenta Individual",
                 "individual_description": "Una cuenta propiedad de y controlada por una sola persona",
-                "joint": "Cuenta Conjunta",
+                "joint": "Cuenta Mancomunada",
                 "joint_description": "Una cuenta propiedad de y controlada por dos personas",
                 "institutional": "Cuenta Institucional",
                 "institutional_description": "Una cuenta propiedad de y controlada por una empresa u organización"
