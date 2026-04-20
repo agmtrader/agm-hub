@@ -23,7 +23,7 @@ import ProgressMeter from './ProgressMeter'
 import { BusinessAndOccupation, FinancialRange, FormDetails } from '@/lib/entities/account'
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/entities/account'
 import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
-import { individual_form } from './samples'
+import { individual_form, joint_form } from './samples'
 
 export enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -61,7 +61,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: individual_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -323,6 +323,52 @@ const IBKRApplicationForm = () => {
     return clone;
   };
 
+  const sanitizeIdNumbers = (application: Application): Application => {
+    const clone = structuredClone(application);
+    const stripIdSeparators = (value: unknown) =>
+      typeof value === 'string' ? value.replace(/[\s-]+/g, '') : value;
+
+    const sanitizeHolder = (holder: any) => {
+      if (!holder) return;
+
+      if (holder.identification) {
+        holder.identification.passport = stripIdSeparators(holder.identification.passport);
+        holder.identification.nationalCard = stripIdSeparators(holder.identification.nationalCard);
+        holder.identification.driversLicense = stripIdSeparators(holder.identification.driversLicense);
+      }
+
+      if (Array.isArray(holder.taxResidencies)) {
+        holder.taxResidencies = holder.taxResidencies.map((taxResidency: any) => ({
+          ...taxResidency,
+          tin: stripIdSeparators(taxResidency?.tin),
+        }));
+      }
+
+      if (holder.w8Ben) {
+        holder.w8Ben.tin = stripIdSeparators(holder.w8Ben.tin);
+        holder.w8Ben.foreignTaxId = stripIdSeparators(holder.w8Ben.foreignTaxId);
+      }
+    };
+
+    switch (clone.customer.type) {
+      case 'INDIVIDUAL':
+        sanitizeHolder(clone.customer.accountHolder?.accountHolderDetails?.[0]);
+        break;
+      case 'JOINT':
+        sanitizeHolder(clone.customer.jointHolders?.firstHolderDetails?.[0]);
+        sanitizeHolder(clone.customer.jointHolders?.secondHolderDetails?.[0]);
+        break;
+      case 'ORG':
+        (clone.customer.organization?.associatedEntities?.associatedIndividuals || []).forEach(sanitizeHolder);
+        (clone.customer.organization?.identifications || []).forEach((identification: any) => {
+          identification.identification = stripIdSeparators(identification?.identification);
+        });
+        break;
+    }
+
+    return clone;
+  };
+
   const sanitizeAccents = <T,>(data: T): T => {
     const transform = (value: any): any => {
       if (typeof value === 'string') {
@@ -401,7 +447,17 @@ const IBKRApplicationForm = () => {
   };
 
   function sanitizeApplication(application: Application): Application {
-    return sanitizeAccents(sanitizeOccupationAndBusinessDescriptions(sanitizeEmploymentDetails(sanitizeMailingAddress(sanitizeIdentificationType(application)))));
+    return sanitizeAccents(
+      sanitizeOccupationAndBusinessDescriptions(
+        sanitizeEmploymentDetails(
+          sanitizeMailingAddress(
+            sanitizeIdentificationType(
+              sanitizeIdNumbers(application),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   const handlePreviousStep = () => {
