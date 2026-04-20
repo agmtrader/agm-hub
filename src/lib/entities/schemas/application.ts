@@ -1,5 +1,18 @@
 import { z } from 'zod';
 
+const isFutureDateString = (value: string) => {
+  const parsedDate = new Date(`${value}T00:00:00`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return false;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return parsedDate > today;
+};
+
 // Affiliation Details Schema
 export const affiliation_details_schema = z.object({
   isDuplicateStmtRequired: z.boolean().optional().default(true),
@@ -257,7 +270,9 @@ export const phone_schema = z.object({
 
 export const identification_schema = z.object({
   issuingCountry: z.string({errorMap: () => ({ message: 'Required' })}),
-  expirationDate: z.string({errorMap: () => ({ message: 'Required' })}),
+  expirationDate: z.string({errorMap: () => ({ message: 'Required' })}).refine(isFutureDateString, {
+    message: 'Expiration date must be in the future',
+  }),
   citizenship: z.string({errorMap: () => ({ message: 'Required' })}),
   passport: z.string().optional().nullable(),
   nationalCard: z.string().optional().nullable(),
