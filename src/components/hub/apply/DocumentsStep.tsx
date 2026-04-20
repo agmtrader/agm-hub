@@ -64,31 +64,40 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       return `${details.name.first} ${details.name.last ?? ''}`.trim()
     }
 
-    const isJointAccount = actualFormData?.customer?.type === 'JOINT'
+    const accountType = actualFormData?.customer?.type
     const isOrgAccount = actualFormData?.customer?.type === 'ORG'
     const accountHolderDetails = actualFormData?.customer?.accountHolder?.accountHolderDetails?.[0] ?? null
     const firstHolderDetails = actualFormData?.customer?.jointHolders?.firstHolderDetails?.[0] ?? null
     const secondHolderDetails = actualFormData?.customer?.jointHolders?.secondHolderDetails?.[0] ?? null
     const associatedIndividuals = isOrgAccount ? actualFormData?.customer?.organization?.associatedEntities?.associatedIndividuals : []
-    const orgSigners = associatedIndividuals?.map(extractName) ?? []
-
-    const namesToAdd = [
-      extractName(accountHolderDetails),
-      isJointAccount ? extractName(firstHolderDetails) : null,
-      isJointAccount ? extractName(secondHolderDetails) : null,
-      ...orgSigners
-    ].filter((n): n is string => !!n)
-
     const users = actualFormData?.users ?? []
-    const nameToExternalId = namesToAdd.reduce((acc, name, idx) => {
-      const extId = (users as any)[idx]?.externalIndividualId
-      if (extId) acc[name] = extId
-      return acc
-    }, {} as Record<string, string>)
+    const uniqueSignerNames = new Set<string>()
+    const resolvedNameToExternalId: Record<string, string> = {}
+
+    const addSigner = (details: any | undefined, fallbackExternalId?: string) => {
+      const name = extractName(details)
+      if (!name) return
+      uniqueSignerNames.add(name)
+      const externalId = details?.externalId || fallbackExternalId
+      if (externalId) {
+        resolvedNameToExternalId[name] = externalId
+      }
+    }
+
+    if (accountType === 'INDIVIDUAL') {
+      addSigner(accountHolderDetails, (users as any)[0]?.externalIndividualId)
+    } else if (accountType === 'JOINT') {
+      addSigner(firstHolderDetails, (users as any)[0]?.externalIndividualId)
+      addSigner(secondHolderDetails, (users as any)[1]?.externalIndividualId)
+    } else if (accountType === 'ORG') {
+      associatedIndividuals?.forEach((individual: any, index: number) => {
+        addSigner(individual, (users as any)[index]?.externalIndividualId)
+      })
+    }
 
     return {
-      signerOptions: Array.from(new Set(namesToAdd)),
-      nameToExternalId,
+      signerOptions: Array.from(uniqueSignerNames),
+      nameToExternalId: resolvedNameToExternalId,
     }
   }, [actualFormData])
 
@@ -109,7 +118,6 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
     if (!hasW8) {
       const timestamp = getIBKRTimestamp()
       const firstSigner = signerOptions[0]
-      const externalId = firstSigner ? nameToExternalId[firstSigner] : undefined
 
       const w8Doc: IBKRDocument = {
         signedBy: [firstSigner],
@@ -182,7 +190,8 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
       const sha1Checksum = await calculateSHA1(file)
       const timestamp = getIBKRTimestamp()
 
-      const externalIds = selectedSigners.map((n) => nameToExternalId[n]).filter(Boolean)
+      const primarySigner = selectedSigners[0]
+      const primarySignerExternalId = primarySigner ? nameToExternalId[primarySigner] : undefined
       const newDocument: IBKRDocument = {
         signedBy: selectedSigners,
         attachedFile: {
@@ -194,7 +203,7 @@ const DocumentsStep = ({ form, formData }: DocumentsStepProps) => {
         validAddress: false,
         execLoginTimestamp: timestamp,
         execTimestamp: timestamp,
-        ...(externalIds.length > 0 && { externalIndividualId: externalIds[0] }),
+        ...(primarySignerExternalId && { externalIndividualId: primarySignerExternalId }),
         payload: {
           mimeType: file.type,
           data: base64Data,

@@ -369,6 +369,37 @@ const IBKRApplicationForm = () => {
     return clone;
   };
 
+  const normalizeJointW8Signers = (application: Application): Application => {
+    if (application.customer.type !== 'JOINT') return application;
+
+    const clone = structuredClone(application);
+    const firstHolder = clone.customer.jointHolders?.firstHolderDetails?.[0];
+    const secondHolder = clone.customer.jointHolders?.secondHolderDetails?.[0];
+
+    const signedBy = [
+      firstHolder?.name?.first && firstHolder?.name?.last
+        ? `${firstHolder.name.first} ${firstHolder.name.last}`.trim()
+        : null,
+      secondHolder?.name?.first && secondHolder?.name?.last
+        ? `${secondHolder.name.first} ${secondHolder.name.last}`.trim()
+        : null,
+    ].filter((name): name is string => Boolean(name));
+
+    if (signedBy.length !== 2 || !Array.isArray(clone.documents)) {
+      return clone;
+    }
+
+    clone.documents = clone.documents.map((document) => {
+      if (!document || document.formNumber !== 5001) return document;
+      return {
+        ...document,
+        signedBy,
+      };
+    });
+
+    return clone;
+  };
+
   function sanitizeApplication(application: Application): Application {
     return sanitizeAccents(sanitizeOccupationAndBusinessDescriptions(sanitizeEmploymentDetails(sanitizeMailingAddress(sanitizeIdentificationType(application)))));
   }
@@ -539,7 +570,8 @@ const IBKRApplicationForm = () => {
     const currentValues = form.getValues();
     let contact_id: string | null = null;
 
-    const sanitizedValues = sanitizeApplication(currentValues);
+    const valuesWithNormalizedW8Signers = normalizeJointW8Signers(currentValues);
+    const sanitizedValues = sanitizeApplication(valuesWithNormalizedW8Signers);
 
     if (currentStep >= FormStep.PERSONAL_INFO) {
       contact_id = await handleApplicationContact(sanitizedValues);
