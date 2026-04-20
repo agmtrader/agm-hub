@@ -12,7 +12,7 @@ import {
 import CountriesFormField from "@/components/misc/CountriesFormField";
 import { Application } from "@/lib/entities/application";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { phone_types, id_type, marital_status, employment_status, account_types } from '@/lib/entities/application';
+import { id_type, marital_status, employment_status, account_types } from '@/lib/entities/application';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -510,6 +510,19 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
 
   };
 
+  const syncPhoneTypes = (holderPaths: string[] = []) => {
+    holderPaths.forEach((path) => {
+      const phoneTypePath = `${path}.phones.0.type` as any;
+      if (form.getValues(phoneTypePath) !== "Mobile") {
+        form.setValue(phoneTypePath, "Mobile", {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        });
+      }
+    });
+  };
+
   // When an account holder is employed, we auto fill the source of wealth here because Income is required as a source of wealth for employed account holders.
   const syncSourcesOfWealth = (value: Application, name?: string) => {
     if (!name?.includes("employmentType")) return;
@@ -685,6 +698,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
       syncCustomerEmail(value as Application, name);
       syncIdentificationNumber(name);
       syncTaxResidencies(value as Application, name, holderPaths);
+      syncPhoneTypes(holderPaths);
       syncW8BenForm(value as Application, name);
       syncSourcesOfWealth(value as Application, name);
       syncOrganizationBusinessDescription(value as Application, name);
@@ -695,6 +709,11 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
 
     return () => subscription.unsubscribe();
   }, [form]);
+
+  useEffect(() => {
+    const holderPaths = taxResidencyPathsByType[accountType ?? ""] ?? [];
+    syncPhoneTypes(holderPaths);
+  }, [accountType, form]);
 
   // Manual validation for Identification fields (Type and Number)
   useEffect(() => {
@@ -1147,33 +1166,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         )}
 
         <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.contact_information')}</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <FormField
-            control={form.control}
-            name={`${basePath}.phones.0.type` as any}
-            render={({ field }) => (
-              <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
-                  <FormLabel>{t('apply.account.account_holder_info.phone_type')}</FormLabel>
-                  <FormMessage />
-                </div>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {phone_types(t).map((option: { value: string; label: string }) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <CountriesFormField
             form={form}
             element={{
