@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -30,20 +30,68 @@ interface InteractiveGridPatternProps extends React.SVGProps<SVGSVGElement> {
 export function InteractiveGridPattern({
   width = 40,
   height = 40,
-  squares = [24, 24],
+  squares = [50, 50],
   className,
   squaresClassName,
   ...props
 }: InteractiveGridPatternProps) {
-  const [horizontal, vertical] = squares
   const [hoveredSquare, setHoveredSquare] = useState<number | null>(null)
+  const [hoveredColorIndex, setHoveredColorIndex] = useState(0)
+  const [viewportWidth, setViewportWidth] = useState<number | null>(null)
+
+  useEffect(() => {
+    const updateViewportWidth = () => setViewportWidth(window.innerWidth)
+
+    updateViewportWidth()
+    window.addEventListener("resize", updateViewportWidth)
+
+    return () => window.removeEventListener("resize", updateViewportWidth)
+  }, [])
+
+  const isMobile = viewportWidth !== null && viewportWidth < 640
+  const isTablet = viewportWidth !== null && viewportWidth >= 640 && viewportWidth < 1024
+
+  const responsiveWidth = isMobile ? width * 1.8 : isTablet ? width * 1.25 : width
+  const responsiveHeight = isMobile ? height * 1.8 : isTablet ? height * 1.25 : height
+  const [baseHorizontal, baseVertical] = squares
+  const horizontal = isMobile ? Math.max(18, Math.round(baseHorizontal * 0.38)) : isTablet ? Math.round(baseHorizontal * 0.6) : baseHorizontal
+  const vertical = isMobile ? Math.max(20, Math.round(baseVertical * 0.42)) : isTablet ? Math.round(baseVertical * 0.65) : baseVertical
+  const totalSquares = horizontal * vertical
+
+  useEffect(() => {
+    if (!isMobile) return
+
+    setHoveredSquare(0)
+
+    const interval = window.setInterval(() => {
+      setHoveredSquare((current) => {
+        if (current === null) return 0
+        return (current + 1) % totalSquares
+      })
+    }, 180)
+
+    return () => window.clearInterval(interval)
+  }, [isMobile, totalSquares])
+
+  useEffect(() => {
+    if (!isMobile && hoveredSquare === null) {
+      setHoveredColorIndex(0)
+      return
+    }
+
+    const interval = window.setInterval(() => {
+      setHoveredColorIndex((current) => (current + 1) % 2)
+    }, isMobile ? 180 : 450)
+
+    return () => window.clearInterval(interval)
+  }, [hoveredSquare, isMobile])
 
   return (
     <svg
-      width={width * horizontal}
-      height={height * vertical}
+      width={responsiveWidth * horizontal}
+      height={responsiveHeight * vertical}
       preserveAspectRatio="none"
-      viewBox={`0 0 ${width * horizontal} ${height * vertical}`}
+      viewBox={`0 0 ${responsiveWidth * horizontal} ${responsiveHeight * vertical}`}
       className={cn(
         "absolute inset-0 h-full w-full border border-gray-400/30",
         className
@@ -51,22 +99,39 @@ export function InteractiveGridPattern({
       {...props}
     >
       {Array.from({ length: horizontal * vertical }).map((_, index) => {
-        const x = (index % horizontal) * width
-        const y = Math.floor(index / horizontal) * height
+        const x = (index % horizontal) * responsiveWidth
+        const y = Math.floor(index / horizontal) * responsiveHeight
+        const hoveredFillClass =
+          hoveredColorIndex === 0 ? "fill-orange-400/50" : "fill-sky-300/45"
+        const mobileTrailLength = 4
+        const isMobileActiveSquare =
+          isMobile &&
+          hoveredSquare !== null &&
+          Array.from({ length: mobileTrailLength }).some((_, offset) => {
+            const trailIndex = (hoveredSquare - offset + totalSquares) % totalSquares
+            return trailIndex === index
+          })
+
         return (
           <rect
             key={index}
             x={x}
             y={y}
-            width={width}
-            height={height}
+            width={responsiveWidth}
+            height={responsiveHeight}
             className={cn(
               "stroke-gray-400/30 transition-all duration-100 ease-in-out [&:not(:hover)]:duration-1000",
-              hoveredSquare === index ? "fill-gray-300/30" : "fill-transparent",
+              isMobile ? (isMobileActiveSquare ? hoveredFillClass : "fill-transparent") : hoveredSquare === index ? hoveredFillClass : "fill-transparent",
               squaresClassName
             )}
-            onMouseEnter={() => setHoveredSquare(index)}
-            onMouseLeave={() => setHoveredSquare(null)}
+            onMouseEnter={() => {
+              if (isMobile) return
+              setHoveredSquare(index)
+            }}
+            onMouseLeave={() => {
+              if (isMobile) return
+              setHoveredSquare(null)
+            }}
           />
         )
       })}

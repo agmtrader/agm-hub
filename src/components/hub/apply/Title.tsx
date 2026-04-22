@@ -3,11 +3,12 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { containerVariants, itemVariants } from '@/lib/anims'
+import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { formatURL } from '@/utils/language/lang'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
-import { CandlesBackground } from '@/components/ui/candles-background'
+import { InteractiveGridPattern } from '@/components/ui/interactive-grid-pattern'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -18,6 +19,15 @@ const Title = ({ setStarted }: Props) => {
 
   return (
     <div className='relative w-full h-[calc(100vh-80px)] flex flex-col justify-center items-center overflow-hidden bg-background'>
+        <InteractiveGridPattern
+          className={cn(
+            '[mask-image:radial-gradient(1300px_circle_at_center,white,transparent)]',
+            'inset-x-0 inset-y-[-30%] h-[200%] skew-y-12'
+          )}
+        />
+
+        <div className='pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-background/60 to-background' />
+
         <motion.div 
           variants={containerVariants}
           initial="hidden"
