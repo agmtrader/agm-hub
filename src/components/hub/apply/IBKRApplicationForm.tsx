@@ -683,7 +683,7 @@ const IBKRApplicationForm = () => {
         <h1 className="text-3xl font-bold ">{t('apply.account.header.title')}</h1>
         <p className="text-lg">{t('apply.account.header.description')}</p>
       </div>
-      <ProgressMeter form={form} currentStep={currentStep} />
+      <ProgressMeter currentStep={currentStep} />
       <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl">
         <Form {...form}>
           <form
