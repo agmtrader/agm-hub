@@ -74,17 +74,12 @@ export function InteractiveGridPattern({
   }, [isMobile, totalSquares])
 
   useEffect(() => {
-    if (!isMobile && hoveredSquare === null) {
-      setHoveredColorIndex(0)
-      return
-    }
-
     const interval = window.setInterval(() => {
       setHoveredColorIndex((current) => (current + 1) % 2)
     }, isMobile ? 180 : 450)
 
     return () => window.clearInterval(interval)
-  }, [hoveredSquare, isMobile])
+  }, [isMobile])
 
   return (
     <svg
