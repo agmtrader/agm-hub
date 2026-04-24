@@ -694,11 +694,13 @@
     },
     "learning": {
         "title": "Centro de Aprendizaje",
-        "description": "Mira nuestros videos para aprender sobre mercados internacionales y trading.",
+        "description": "Explora lecciones guiadas y videos para ganar confianza en mercados internacionales, trading y opciones paso a paso.",
         "chapter_label": "Capítulo",
         "go_back": "Regresar",
         "available_videos": "Videos disponibles",
         "no_videos": "No hay videos disponibles para este capítulo. Por favor vuelva más tarde.",
+        "video_library_title": "Continua con la biblioteca de videos",
+        "video_library_description": "Despues de la leccion interactiva, explora nuestros capitulos para ampliar tus conocimientos sobre inversion y trading.",
         "chapters": {
             "1": {
                 "title": "Introducción a los mercados internacionales"

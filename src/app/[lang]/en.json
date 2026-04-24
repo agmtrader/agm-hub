@@ -694,11 +694,13 @@
     },
     "learning": {
         "title": "Learning Center",
-        "description": "Check out our videos to learn about international markets and trading.",
+        "description": "Explore guided lessons and videos to build confidence in international markets, trading, and options step by step.",
         "chapter_label": "Chapter",
         "go_back": "Go back",
         "available_videos": "Available Videos",
         "no_videos": "No videos available for this chapter. Please check back later.",
+        "video_library_title": "Continue with the video library",
+        "video_library_description": "After the interactive lesson, dive into our chapter collection for broader investing and trading topics.",
         "chapters": {
             "1": {
                 "title": "Introduction to International Markets"
