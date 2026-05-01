@@ -12,6 +12,7 @@ export const deposit_instruction_schema = z.object({
     amount: z.number(),
     currency: z.string().default('USD'),
     bankInstructionMethod: z.string().default('WIRE'),
+    sendingInstitution: z.string(),
 })
 
 export const withdrawal_instruction_schema = z.object({

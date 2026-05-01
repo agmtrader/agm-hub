@@ -275,16 +275,80 @@ export interface WireInstruction {
   referenceNumber: string;
 }
 
+export interface ActiveBankInstructionsRequest {
+  master_account: 'ad' | 'br';
+  account_id: string;
+  client_instruction_id: string;
+  bank_instruction_method: 'WIRE' | 'ACH';
+}
+
+export interface ActiveBankInstruction {
+  instructionName?: string;
+  bankInstructionName?: string;
+  bank_instruction_name?: string;
+  clientInstructionId?: string;
+  client_instruction_id?: string;
+  bankInstructionMethod?: string;
+  bank_instruction_method?: string;
+  [key: string]: any;
+}
+
+export interface ActiveBankInstructionsResponse {
+  enumerationType?: string;
+  jsonData?: ActiveBankInstruction[];
+  activeBankInstructions?: ActiveBankInstruction[];
+  instructionResult?: {
+    accountId?: string;
+    bankInstructionDetails?: ActiveBankInstruction[];
+    bankInstructionMethod?: string;
+    clientInstructionId?: number | string;
+    ibReferenceId?: number;
+    instructionId?: number;
+    instructionStatus?: string;
+    instructionType?: string;
+  };
+  instructionSetId?: number;
+  status?: number;
+  [key: string]: any;
+}
+
+export interface WithdrawableCashRequest {
+  master_account: 'ad' | 'br';
+  account_id: string;
+  client_instruction_id: string;
+}
+
+export interface WithdrawableCashBalance {
+  currency?: string;
+  amount?: number | string;
+  withdrawableCash?: number | string;
+  cashBalance?: number | string;
+  availableForWithdrawal?: number | string;
+  [key: string]: any;
+}
+
+export interface WithdrawableCashResponse {
+  instructionResult?: {
+    accountId?: string;
+    clientInstructionId?: number | string;
+    instructionStatus?: string;
+    instructionType?: string;
+    balances?: WithdrawableCashBalance[];
+    cashBalances?: WithdrawableCashBalance[];
+    withdrawableCash?: WithdrawableCashBalance[] | number | string;
+    [key: string]: any;
+  };
+  instructionSetId?: number;
+  status?: number;
+  [key: string]: any;
+}
+
 export type DepositInstructionPayload = z.infer<typeof deposit_instruction_schema>
 
 export type DepositInstruction = DepositInstructionPayload & {
   accountId: string
-  sendingInstitution: string
   identifier: string
   specialInstruction: string
-  bankInstructionName: string
-  senderInstitutionName: string
-  isIRA: boolean
 }
 
 export type WithdrawalInstructionPayload = z.infer<typeof withdrawal_instruction_schema>
@@ -307,6 +371,8 @@ export type AccountScreening = {
   ofac_results: string;
   fatf_status: string;
   risk_score: string;
+  uk_status?: string | null;
+  un_status?: string | null;
 } & Base
 
 export type CLPCapabilityResponse = {
@@ -326,3 +392,16 @@ export type CLPCapabilityResponse = {
     }
   }
 }
+
+export type FinancialInformationUpdate = Partial<{
+    investmentExperience: InvestmentExperience[]
+    investmentObjectives: string[]
+    additionalSourcesOfIncome: Array<{ sourceType: string; percentage: number; description?: string }>
+    sourcesOfWealth: Array<{ sourceType: string; percentage: number; usedForFunds?: boolean; description?: string }>
+    netWorth: number | string
+    liquidNetWorth: number | string
+    annualNetIncome: number | string
+    totalAssets: number | string
+    sourceOfFunds: string
+    translated: boolean
+}>

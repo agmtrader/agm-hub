@@ -1,9 +1,20 @@
 import { accessAPI } from "../api"
-import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, InternalAccount, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction, AccountScreening, FinancialRangesResponse, BusinessAndOccupationResponse } from "@/lib/entities/account"
-import { InvestmentExperience } from "@/lib/entities/application"
+import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, InternalAccount, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction, AccountScreening, FinancialRangesResponse, BusinessAndOccupationResponse, ActiveBankInstructionsResponse, WithdrawableCashResponse, FinancialInformationUpdate, InvestmentExperience } from "@/lib/entities/account"
 import { IDResponse } from "@/lib/entities/base"
 import { InternalDocument, InternalDocumentPayload } from "@/lib/entities/documents"
 export type { Account } from '@/lib/entities/account';
+
+let lastClientInstructionId = 0
+
+function generateClientInstructionId(): string {
+    const now = Date.now()
+    if (now <= lastClientInstructionId) {
+        lastClientInstructionId += 1
+    } else {
+        lastClientInstructionId = now
+    }
+    return String(lastClientInstructionId)
+}
 
 // Database
 export async function CreateAccount(account: InternalAccount): Promise<IDResponse> {
@@ -16,6 +27,11 @@ export async function ReadAccounts() {
     return accounts
 }
 
+export async function ReadAccountsWithMetadata() {
+    const accountsWithMetadata = await accessAPI('/accounts/with_metadata', 'GET')
+    return accountsWithMetadata
+}
+
 export async function ReadAccountByAccountID(accountID:string): Promise<Account | null> {
     let accounts:Account[] = await accessAPI(`/accounts/read?id=${accountID}`, 'GET')
     return accounts[0] || null
@@ -23,6 +39,11 @@ export async function ReadAccountByAccountID(accountID:string): Promise<Account 
 
 export async function ReadAccountByUserID(userID:string): Promise<Account[] | null> {
     let accounts:Account[] = await accessAPI(`/accounts/read?user_id=${userID}`, 'GET')
+    return accounts
+}
+
+export async function ReadAccountsByAdvisorCode(advisorCode: string): Promise<Account[]> {
+    let accounts:Account[] = await accessAPI(`/accounts/read?advisor_code=${advisorCode}`, 'GET')
     return accounts
 }
 
@@ -53,7 +74,6 @@ export async function UploadAccountDocument(accountID:string, file_name:string, 
         'name': name,
         'comment': comment,
     })
-    console.log(uploadResponse)
     return uploadResponse
 }
 
@@ -85,8 +105,8 @@ export async function ReadAccountInstruction(accountID: string): Promise<any> {
     return response
 }
 
-export async function ScreenPerson(accountID: string, holderName: string, residenceCountry: string): Promise<IDResponse> {
-    const response: IDResponse = await accessAPI('/accounts/screening', 'POST', { account_id: accountID, holder_name: holderName, residence_country: residenceCountry })
+export async function ScreenPerson(accountID: string, holderName: string, residenceCountry: string, riskScore: number): Promise<IDResponse> {
+    const response: IDResponse = await accessAPI('/accounts/screening', 'POST', { account_id: accountID, holder_name: holderName, residence_country: residenceCountry, risk_score: riskScore })
     return response
 }
 
@@ -144,9 +164,25 @@ export async function ApplyFeeTemplate(accountID: string, template_name: string,
     return response
 }
 
-export async function ChangeInvestmentExperience(accountID: string, investmentExperience: InvestmentExperience[], masterAccount: 'ad' | 'br'): Promise<any> {
-    const response: any = await accessAPI('/accounts/ibkr/change_investment_experience', 'POST', { account_id: accountID, investment_experience: investmentExperience, master_account: masterAccount })
+export async function ChangeFinancialInformation(
+    accountID: string,
+    newFinancialInformation: FinancialInformationUpdate,
+    masterAccount: 'ad' | 'br'
+): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/change_financial_information', 'POST', {
+        account_id: accountID,
+        master_account: masterAccount,
+        new_financial_information: newFinancialInformation,
+    })
     return response
+}
+
+export async function ChangeInvestmentExperience(accountID: string, investmentExperience: InvestmentExperience[], masterAccount: 'ad' | 'br'): Promise<any> {
+    return ChangeFinancialInformation(
+        accountID,
+        { investmentExperience: investmentExperience },
+        masterAccount
+    )
 }
 
 export async function AddTradingPermissions(accountID: string, tradingPermissions: Array<{ country: string; product: string }>, masterAccount: 'ad' | 'br', documents?: any): Promise<any> {
@@ -218,6 +254,36 @@ export async function GetWireInstructions(accountID: string, masterAccount: 'ad'
         master_account: masterAccount,
         currency: currency,
     })
+    console.log(response)
+    return response
+}
+
+export async function GetActiveBankInstructions(
+    masterAccount: 'ad' | 'br',
+    accountID: string,
+    bankInstructionMethod: 'WIRE' | 'ACH' = 'WIRE',
+    clientInstructionID: string = generateClientInstructionId()
+): Promise<ActiveBankInstructionsResponse> {
+    const response: ActiveBankInstructionsResponse = await accessAPI('/accounts/ibkr/active_bank_instructions', 'POST', {
+        master_account: masterAccount,
+        account_id: accountID,
+        client_instruction_id: clientInstructionID,
+        bank_instruction_method: bankInstructionMethod,
+    })
+    return response
+}
+
+export async function GetWithdrawableCash(
+    masterAccount: 'ad' | 'br',
+    accountID: string,
+    clientInstructionID: string = generateClientInstructionId()
+): Promise<WithdrawableCashResponse> {
+    const response: WithdrawableCashResponse = await accessAPI('/accounts/ibkr/withdrawable_cash', 'POST', {
+        master_account: masterAccount,
+        account_id: accountID,
+        client_instruction_id: clientInstructionID,
+    })
+    
     return response
 }
 
@@ -245,4 +311,14 @@ export async function GetFinancialRanges(): Promise<FinancialRangesResponse> {
 export async function GetBusinessAndOccupation(): Promise<BusinessAndOccupationResponse> {
   const response: BusinessAndOccupationResponse = await accessAPI(`/accounts/ibkr/business_and_occupation`, 'GET')
   return response
+}
+
+export async function GetAccountStatement(accountID: string, startDate: string, endDate: string, masterAccount: 'ad' | 'br'): Promise<any> {
+    const response: any = await accessAPI('/accounts/ibkr/statements', 'POST', {
+        account_id: accountID,
+        start_date: startDate,
+        end_date: endDate,
+        master_account: masterAccount,
+    })
+    return response
 }
