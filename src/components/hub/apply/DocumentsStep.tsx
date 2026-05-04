@@ -17,8 +17,10 @@ import {
 import { FileUploader, FileInput, FileUploaderContent, FileUploaderItem } from '@/components/ui/file-upload'
 import { Button } from '@/components/ui/button'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+
 import { IBKRDocument, Application } from '@/lib/entities/application'
 import { InternalDocument, documentCategories } from '@/lib/entities/documents'
+
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { FormField } from '@/components/ui/form'
 import { calculateSHA1, getBase64 } from '@/utils/entities/documents'

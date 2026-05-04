@@ -64,7 +64,7 @@ const CountriesFormField = ({ form, element }: CountriesFormFieldProps) => {
                         {country.label}
                       </CommandItem>
                     ))}
-                  </CommandGroup>
+	          </CommandGroup>
                 </CommandList>
               </Command>
             </PopoverContent>

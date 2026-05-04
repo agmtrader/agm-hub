@@ -49,6 +49,12 @@ export const documentCategories = (t: (key: string) => string) => [
   },
 ]
 
+export const requiredApplicationDocuments = [
+  { name: 'W8 Form', formNumber: 5001 },
+  { name: 'Proof of Identity', formNumber: 8001 },
+  { name: 'Proof of Address', formNumber: 8002 },
+] as const
+
 export interface InternalDocumentPayload {
   mime_type: string;
   file_name: string;

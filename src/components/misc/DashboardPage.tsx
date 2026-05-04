@@ -1,5 +1,6 @@
 'use client'
 import React from 'react'
+import Image from 'next/image'
 
 interface Props {
   title: string
@@ -11,6 +12,7 @@ const DashboardPage = ({title, description, children}: Props) => {
 
   return (
     <div className='flex flex-col gap-4 w-full h-full p-4 text-foreground'>
+      <Image src='/assets/brand/agm-logo.png' alt='AGM Logo' width={150} height={150} />
       <p className='text-3xl font-bold'>{title}</p>
       <p className='text-sm'>{description}</p>
       {children}

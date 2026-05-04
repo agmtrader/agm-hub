@@ -7,7 +7,6 @@ interface AuthenticationResponse {
     expires_in: number
 }
 
-// Add token caching
 const api_url = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:5000' : 'https://api.agmtechnology.com';
 
 export async function accessAPI(url: string, type: string, params?: Map) {

@@ -20,7 +20,6 @@ export type InternalAccount = AccountPayload & {
 }
 export type Account = Base & InternalAccount
 
-// Account Management API
 export interface AllForms {
   formDetails: FormDetails[]
   fileData: {
@@ -114,7 +113,7 @@ export interface IBKRAccount {
   margin: string;
   applicantType: string;
   subType: string;
-  stockYieldProgram?: Record<string, unknown>; // empty object or future fields
+  stockYieldProgram?: Record<string, unknown>;
   feeTemplate: FeeTemplate;
   capabilities: Capabilities;
   limitedOptionTrading: string;
