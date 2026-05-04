@@ -19,7 +19,7 @@ export const documentCategories = (t: (key: string) => string) => [
   },
   {
     name: t('apply.account.documents.document_categories.source_of_wealth'),
-    formNumber: null,
+    formNumber: 8543,
     types: sow_schema.shape.type.options,
   },
   {
@@ -53,6 +53,7 @@ export const requiredApplicationDocuments = [
   { name: 'W8 Form', formNumber: 5001 },
   { name: 'Proof of Identity', formNumber: 8001 },
   { name: 'Proof of Address', formNumber: 8002 },
+  { name: 'Source of Wealth', formNumber: 8543 },
 ] as const
 
 export interface InternalDocumentPayload {
