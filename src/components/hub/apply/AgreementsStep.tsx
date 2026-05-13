@@ -75,7 +75,7 @@ const AgreementsStep = ({
 
   const handleViewForm = async (formNumber: string, formName: string) => {
     try {
-      const forms = await GetForms([formNumber], 'br')
+      const forms = await GetForms([formNumber])
       if (forms && forms.fileData && forms.fileData.data) {
         setSelectedFormName(formName)
         setSelectedFormData(forms.fileData.data)

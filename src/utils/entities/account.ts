@@ -52,6 +52,14 @@ export async function UpdateAccountByAccountID(accountID:string, account:Partial
     return updateResponse
 }
 
+export async function SendAccountToIBKR(accountId: string, masterAccount?: 'ad' | 'br') {
+    const response: any = await accessAPI('/accounts/send_to_ibkr', 'POST', {
+        account_id: accountId,
+        master_account: masterAccount,
+    })
+    return response
+}
+
 export async function UploadAccountDocument(accountID:string, file_name:string, file_length:number, sha1_checksum:string, mime_type:string, data:string, category:string, type:string, issued_date:string, expiry_date:string, name:string, comment:string | null) {
     const document:InternalDocumentPayload = {
         file_name: file_name,
@@ -293,8 +301,8 @@ export async function GetStatusOfInstruction(clientInstructionID: string): Promi
 }
 
 // Enums
-export async function GetForms(forms: string[], masterAccount: 'ad' | 'br'): Promise<AllForms> {
-    const response: AllForms = await accessAPI('/accounts/ibkr/forms', 'POST', { 'forms': forms, 'master_account': masterAccount })
+export async function GetForms(forms: string[]): Promise<AllForms> {
+    const response: AllForms = await accessAPI('/accounts/ibkr/forms', 'POST', { 'forms': forms })
     return response
 }
 

@@ -5,17 +5,18 @@ import { account_schema, deposit_instruction_schema, withdrawal_instruction_sche
 
 export type AccountPayload = z.infer<typeof account_schema>
 export type InternalAccount = AccountPayload & {
-  ibkr_account_number: string,
+  ibkr_account_number: string | null,
   ibkr_username: string | null,
   ibkr_password: string | null,
   temporal_email: string | null,
   temporal_password: string | null,
-  application_id: string,
-  fee_template: string | null,
+  application_json: Record<string, unknown> | null,
   master_account: 'ad' | 'br' | null,
   management_type: string | null,
   advisor_code: string | null,
-  contact_id: string | null,
+  estimated_deposit?: number | null,
+  date_sent_to_ibkr?: string | null,
+  referrer?: string | null,
   emailed_credentials: boolean,
 }
 export type Account = Base & InternalAccount

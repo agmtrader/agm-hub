@@ -1,6 +1,7 @@
 import { accessAPI } from "../api"
 import { Contact, ContactPayload } from "@/lib/entities/contact"
 import { IDResponse } from "@/lib/entities/base"
+import { InternalDocument } from "@/lib/entities/documents"
 
 export async function CreateContact(contact: ContactPayload): Promise<IDResponse> {
     const contactResponse: Contact = await accessAPI('/contacts/create', 'POST', { 'contact': contact })
@@ -29,4 +30,85 @@ export async function ReadContactByEmail(email: string): Promise<Contact | null>
 export async function UpdateContactByID(id: string, contact: Partial<Contact>): Promise<'Updated'> {
     await accessAPI('/contacts/update', 'POST', { 'query': { 'id': id }, 'contact': contact })
     return 'Updated'
+}
+
+export async function UploadContactDocument(
+    accountID: string,
+    contactID: string,
+    file_name: string,
+    file_length: number,
+    sha1_checksum: string,
+    mime_type: string,
+    data: string,
+    category: string,
+    type: string,
+    issued_date: string,
+    expiry_date: string,
+    comment: string | null = null
+) {
+    return accessAPI('/contacts/documents', 'POST', {
+        account_id: accountID,
+        contact_id: contactID,
+        file_name,
+        file_length,
+        sha1_checksum,
+        mime_type,
+        data,
+        category,
+        type,
+        issued_date,
+        expiry_date,
+        comment,
+    })
+}
+
+export async function ReadContactDocuments(
+    contactID: string,
+    options?: { includeData?: boolean; includeDocuments?: boolean }
+): Promise<{documents: InternalDocument[], contact_documents: any[]}> {
+    const includeData = options?.includeData ? 'true' : 'false'
+    const includeDocuments = options?.includeDocuments === false ? 'false' : 'true'
+    return accessAPI(`/contacts/documents?contact_id=${contactID}&include_data=${includeData}&include_documents=${includeDocuments}`, 'GET')
+}
+
+export async function UpdateContactDocument(
+    documentID: string,
+    category?: string,
+    type?: string,
+    comment?: string,
+    issued_date?: string,
+    expiry_date?: string
+): Promise<any> {
+    return accessAPI('/contacts/documents', 'PATCH', {
+        document_id: documentID,
+        category,
+        type,
+        comment,
+        issued_date,
+        expiry_date,
+    })
+}
+
+export async function DeleteContactDocument(documentID: string): Promise<any> {
+    return accessAPI('/contacts/documents', 'DELETE', { document_id: documentID })
+}
+
+export async function CreateContactScreening(
+    contactID: string,
+    riskScore: number,
+    fatfStatus: string = 'Not listed',
+    ofacResults: any[] = [],
+    ukStatus: any[] = []
+): Promise<IDResponse> {
+    return accessAPI('/contacts/screening', 'POST', {
+        contact_id: contactID,
+        risk_score: riskScore,
+        fatf_status: fatfStatus,
+        ofac_results: ofacResults,
+        uk_status: ukStatus,
+    })
+}
+
+export async function ReadContactScreenings(contactID: string): Promise<any[]> {
+    return accessAPI(`/contacts/screening?contact_id=${contactID}`, 'GET')
 }

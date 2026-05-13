@@ -6,10 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
 import { Form } from '@/components/ui/form'
 import { application_schema } from '@/lib/entities/schemas/application'
-import { Application, InternalApplicationPayload } from '@/lib/entities/application';
+import { Application } from '@/lib/entities/application';
 import { toast } from '@/hooks/use-toast'
 import PersonalInfoStep from './PersonalInfoStep'
-import { CreateApplication, UpdateApplicationByID } from '@/utils/entities/application'
+import { CreateAccount, UpdateAccountByAccountID } from '@/utils/entities/account'
 import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
@@ -20,9 +20,10 @@ import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AgreementsStep from './AgreementsStep'
 import { getApplicationDefaults } from '@/utils/entities/application'
 import ProgressMeter from './ProgressMeter'
-import { BusinessAndOccupation, FinancialRange, FormDetails } from '@/lib/entities/account'
+import { BusinessAndOccupation, FinancialRange, FormDetails, InternalAccount } from '@/lib/entities/account'
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/entities/account'
-import { CreateContact, ReadContactByEmail } from '@/utils/entities/contact'
+import { CreateAccountContact, ReadAccountContacts } from '@/utils/entities/account_contact'
+import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactDocuments, ReadContactScreenings, UploadContactDocument } from '@/utils/entities/contact'
 import { individual_form, joint_form } from './samples'
 
 export enum FormStep {
@@ -43,7 +44,7 @@ const IBKRApplicationForm = () => {
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [applicationId, setApplicationId] = useState<string | null>(null);
+  const [accountId, setAccountId] = useState<string | null>(null);
 
   const [financialRanges, setFinancialRanges] = useState<FinancialRange[]>([]);
   const [businessAndOccupations, setBusinessAndOccupations] = useState<BusinessAndOccupation[]>([]);
@@ -61,7 +62,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: joint_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -182,7 +183,7 @@ const IBKRApplicationForm = () => {
         const [financialRangesResult, businessResult, agreementsResult] = await Promise.all([
           GetFinancialRanges(),
           GetBusinessAndOccupation(),
-          GetForms(agreementFormNumbers, 'br'),
+          GetForms(agreementFormNumbers),
         ]);
 
         setFinancialRanges(financialRangesResult?.jsonData ?? []);  
@@ -196,18 +197,19 @@ const IBKRApplicationForm = () => {
     fetchData();
   }, []);
 
-  async function handleApplicationContact(values: Application) {
-    let contact_id: string | null = null;
-    const contacts: { name: string; email: string }[] = [];
+  const extractApplicantContacts = (values: Application) => {
+    const contacts: { name: string; email?: string; externalId?: string | null; entityId?: string | null }[] = [];
     const { customer } = values;
 
     switch (customer.type) {
       case 'INDIVIDUAL': {
         const holder = customer.accountHolder?.accountHolderDetails?.[0];
-        if (holder?.email) {
+        if (holder?.name?.first || holder?.name?.last) {
           contacts.push({
             name: `${holder.name.first} ${holder.name.last}`.trim(),
             email: holder.email,
+            externalId: holder.externalId ?? null,
+            entityId: (holder as any)?.entityId ? String((holder as any).entityId) : null,
           });
         }
         break;
@@ -215,36 +217,143 @@ const IBKRApplicationForm = () => {
       case 'JOINT': {
         const first = customer.jointHolders?.firstHolderDetails?.[0];
         const second = customer.jointHolders?.secondHolderDetails?.[0];
-        if (first?.email) {
-          contacts.push({ name: `${first.name.first} ${first.name.last}`.trim(), email: first.email });
+        if (first?.name?.first || first?.name?.last) {
+          contacts.push({
+            name: `${first.name.first} ${first.name.last}`.trim(),
+            email: first.email,
+            externalId: first.externalId ?? null,
+            entityId: (first as any)?.entityId ? String((first as any).entityId) : null,
+          });
         }
-        if (second?.email) {
-          contacts.push({ name: `${second.name.first} ${second.name.last}`.trim(), email: second.email });
+        if (second?.name?.first || second?.name?.last) {
+          contacts.push({
+            name: `${second.name.first} ${second.name.last}`.trim(),
+            email: second.email,
+            externalId: second.externalId ?? null,
+            entityId: (second as any)?.entityId ? String((second as any).entityId) : null,
+          });
         }
         break;
       }
       case 'ORG': {
         const individuals = customer.organization?.associatedEntities?.associatedIndividuals || [];
         individuals.forEach((ind) => {
-          if (ind?.email) {
-            contacts.push({ name: `${ind.name.first} ${ind.name.last}`.trim(), email: ind.email });
+          if (ind?.name?.first || ind?.name?.last) {
+            contacts.push({
+              name: `${ind.name.first} ${ind.name.last}`.trim(),
+              email: ind.email,
+              externalId: ind.externalId ?? null,
+              entityId: (ind as any)?.entityId ? String((ind as any).entityId) : null,
+            });
           }
         });
         break;
       }
     }
-    for (const c of contacts) {
-      if (!c.email) continue;
-      let existingContact = await ReadContactByEmail(c.email);
+    return contacts.filter((c) => c.name);
+  }
+
+  async function ensureContacts(values: Application) {
+    const applicantContacts = extractApplicantContacts(values);
+    const linkedContacts: Array<{ name: string; contact_id: string; externalId?: string | null; entityId?: string | null }> = [];
+
+    for (const c of applicantContacts) {
+      let existingContact = c.email ? await ReadContactByEmail(c.email) : null;
       if (!existingContact) {
-        const createResp = await CreateContact({ name: c.name, email: c.email });
+        const createResp = await CreateContact({
+          name: c.name,
+          email: c.email ?? undefined,
+        } as any);
         existingContact = { id: createResp.id } as any;
       }
-      if (!contact_id && existingContact?.id) {
-        contact_id = existingContact.id;
+
+      if (!existingContact?.id) continue;
+      const screenings = await ReadContactScreenings(existingContact.id);
+      if (!screenings || screenings.length === 0) {
+        await CreateContactScreening(existingContact.id, 0);
+      }
+
+      linkedContacts.push({
+        name: c.name,
+        contact_id: existingContact.id,
+        externalId: c.externalId ?? null,
+        entityId: c.entityId ?? null,
+      });
+    }
+
+    return linkedContacts;
+  }
+
+  async function ensureAccountContactLinks(
+    persistedAccountId: string,
+    linkedContacts: Array<{ name: string; contact_id: string; externalId?: string | null; entityId?: string | null }>
+  ) {
+    const existingLinks = await ReadAccountContacts({ account_id: persistedAccountId });
+    const existingByContact = new Map(existingLinks.map((link) => [link.contact_id, link]));
+
+    for (const linkedContact of linkedContacts) {
+      const existing = existingByContact.get(linkedContact.contact_id);
+      if (!existing) {
+        await CreateAccountContact({
+          account_id: persistedAccountId,
+          contact_id: linkedContact.contact_id,
+          entity_id: linkedContact.entityId ?? null,
+        });
       }
     }
-    return contact_id;
+  }
+
+  async function ensureContactDocuments(
+    accountIdForDocuments: string,
+    values: Application,
+    linkedContacts: Array<{ name: string; contact_id: string }>
+  ) {
+    const nameToContactId = new Map(linkedContacts.map((contact) => [contact.name, contact.contact_id]));
+    const documents = values.documents || [];
+
+    for (const document of documents) {
+      if (!document?.attachedFile || !document?.payload) continue;
+      const signers = document.signedBy || [];
+      if (signers.length === 0) continue;
+
+      const category = document.formNumber === 5001
+        ? 'Tax'
+        : document.formNumber === 8001
+          ? 'Proof of Identity'
+          : 'Proof of Address';
+
+      const type = document.formNumber === 5001
+        ? 'W8 Form'
+        : document.formNumber === 8001
+          ? (document.proofOfIdentityType || 'Document')
+          : (document.proofOfAddressType || 'Document');
+
+      for (const signerName of signers) {
+        const contactId = nameToContactId.get(signerName);
+        if (!contactId) continue;
+
+        const existing = await ReadContactDocuments(contactId);
+        const alreadyUploaded = (existing?.documents || []).some(
+          (doc: any) => doc?.sha1_checksum && doc.sha1_checksum === document.attachedFile?.sha1Checksum
+        );
+        if (alreadyUploaded) continue;
+
+        await UploadContactDocument(
+          accountIdForDocuments,
+          contactId,
+          document.attachedFile.fileName ?? '',
+          document.attachedFile.fileLength ?? 0,
+          document.attachedFile.sha1Checksum ?? '',
+          document.payload?.mimeType || '',
+          document.payload?.data || '',
+          category,
+          type,
+          (document as any).issuedDate || '',
+          (document as any).expiryDate || '',
+          null,
+        );
+      }
+    }
   }
 
   const sanitizeEmploymentDetails = (application: Application): Application => {
@@ -460,6 +569,34 @@ const IBKRApplicationForm = () => {
     );
   }
 
+  const buildApplicationJsonForStorage = (application: Application): Application => {
+    const clone = structuredClone(application);
+    const docs = Array.isArray(clone.documents) ? clone.documents : [];
+
+    clone.documents = docs.map((doc: any) => {
+      if (!doc) return doc;
+      return {
+        formNumber: doc.formNumber ?? null,
+        signedBy: Array.isArray(doc.signedBy) ? doc.signedBy : [],
+        externalIndividualId: doc.externalIndividualId ?? null,
+        proofOfIdentityType: doc.proofOfIdentityType ?? null,
+        proofOfAddressType: doc.proofOfAddressType ?? null,
+        validAddress: doc.validAddress ?? false,
+        execLoginTimestamp: doc.execLoginTimestamp ?? null,
+        execTimestamp: doc.execTimestamp ?? null,
+        issuedDate: doc.issuedDate ?? null,
+        expiryDate: doc.expiryDate ?? null,
+        attachedFile: doc.attachedFile ? {
+          fileName: doc.attachedFile.fileName ?? '',
+          fileLength: doc.attachedFile.fileLength ?? 0,
+          sha1Checksum: doc.attachedFile.sha1Checksum ?? '',
+        } : null,
+      };
+    }) as any;
+
+    return clone;
+  };
+
   const handlePreviousStep = () => {
     const prev = currentStep - 1;
     if (prev === FormStep.ACCOUNT_TYPE) {
@@ -590,7 +727,7 @@ const IBKRApplicationForm = () => {
           variant: "success"
         });
         setCurrentStep(FormStep.SUCCESS);
-        setApplicationId(null);
+        setAccountId(null);
       } catch (error) {
         toast({
           title: "Submission Failed",
@@ -624,49 +761,56 @@ const IBKRApplicationForm = () => {
   async function saveProgress() {
     
     const currentValues = form.getValues();
-    let contact_id: string | null = null;
 
     const valuesWithNormalizedW8Signers = normalizeJointW8Signers(currentValues);
     const sanitizedValues = sanitizeApplication(valuesWithNormalizedW8Signers);
+    const storageValues = buildApplicationJsonForStorage(sanitizedValues);
+    const linkedContacts = currentStep >= FormStep.PERSONAL_INFO ? await ensureContacts(sanitizedValues) : [];
 
-    if (currentStep >= FormStep.PERSONAL_INFO) {
-      contact_id = await handleApplicationContact(sanitizedValues);
-    }
+    if (currentStep >= FormStep.PERSONAL_INFO && linkedContacts.length === 0) return;
 
-    let status = 'Started';
-    if (currentStep === FormStep.AGREEMENTS) {
-      status = 'Completed';
-    }
-
-    if (!contact_id) return;
-
-    if (!applicationId) {
-      const internalApplication: InternalApplicationPayload = {
-        application: sanitizedValues,
+    let persistedAccountId = accountId;
+    if (!accountId) {
+      const internalAccount: InternalAccount = {
+        ibkr_account_number: null,
+        ibkr_username: null,
+        ibkr_password: null,
+        temporal_email: null,
+        temporal_password: null,
+        application_json: storageValues as unknown as Record<string, unknown>,
         advisor_code: advisorCode,
         master_account: null,
         date_sent_to_ibkr: null,
-        status,
-        contact_id: contact_id,
-        security_questions: null,
         estimated_deposit: estimatedDeposit ?? null,
-        risk_profile_id: null,
+        management_type: null,
         referrer: referrer ?? null,
+        emailed_credentials: false,
       };
-      const createResp = await CreateApplication(internalApplication);
-      setApplicationId(createResp.id);
+      const createResp = await CreateAccount(internalAccount);
+      persistedAccountId = createResp.id;
+      setAccountId(createResp.id);
     } else {
-      const updatePayload:any = { application: sanitizedValues, status: status };
+      const updatePayload: Partial<InternalAccount> = {
+        application_json: storageValues as unknown as Record<string, unknown>,
+      };
       if (estimatedDeposit !== null) {
         updatePayload.estimated_deposit = estimatedDeposit;
       }
       if (referrer !== null) {
         updatePayload.referrer = referrer;
       }
-      if (contact_id) {
-        updatePayload.contact_id = contact_id;
-      }
-      await UpdateApplicationByID(applicationId, updatePayload);
+      await UpdateAccountByAccountID(accountId, updatePayload);
+      persistedAccountId = accountId;
+    }
+
+    if (!persistedAccountId) return;
+
+    if (linkedContacts.length > 0) {
+      await ensureAccountContactLinks(persistedAccountId, linkedContacts);
+    }
+
+    if (currentStep >= FormStep.DOCUMENTS && linkedContacts.length > 0) {
+      await ensureContactDocuments(persistedAccountId, sanitizedValues, linkedContacts);
     }
   }
 
@@ -760,7 +904,7 @@ const IBKRApplicationForm = () => {
 
             {currentStep === FormStep.DOCUMENTS && (
               <>
-                <DocumentsStep form={form} />
+                <DocumentsStep form={form} accountId={accountId} />
                 <div className="flex justify-between">
                   <Button 
                     type="button" 
