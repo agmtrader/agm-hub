@@ -4,10 +4,7 @@ import { Separator } from '@/components/ui/separator'
 import { PieChart, Pie, Cell } from 'recharts'
 import { useMemo, useState, useRef } from 'react'
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart'
-import {
-  Bond,
-  InvestmentProposal as InvestmentProposalType,
-} from '@/lib/tools/investment-proposals'
+import { Bond, InvestmentProposal as InvestmentProposalType } from '@/lib/clients/investment-proposals'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/misc/DataTable'
 import type { ColumnDefinition } from '@/components/misc/DataTable'

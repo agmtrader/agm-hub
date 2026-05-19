@@ -11,9 +11,9 @@ import {
 } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Card } from '@/components/ui/card'
-import { Application } from '@/lib/entities/application'
-import { application_schema } from '@/lib/entities/schemas/application'
-import { getApplicationDefaults } from '@/utils/entities/application'
+import { Application } from '@/lib/clients/application'
+import { application_schema } from '@/lib/clients/schemas/application'
+import { getApplicationDefaults } from '@/utils/clients/application'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface AccountTypeStepProps {

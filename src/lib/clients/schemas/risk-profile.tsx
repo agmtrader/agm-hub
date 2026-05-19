@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { riskQuestions, QuestionKey } from "../risk-questions";
+import { riskQuestions, QuestionKey } from "./risk-questions";
 
 /*
  * Dynamically build the Zod schema from the shared question definition.

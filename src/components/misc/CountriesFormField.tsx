@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { Command, CommandList, CommandInput, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command'
-import { countries } from '@/lib/entities/application'
+import { countries } from '@/lib/clients/application'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface CountriesFormFieldProps {

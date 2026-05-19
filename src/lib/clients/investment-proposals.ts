@@ -1,4 +1,4 @@
-import { Base } from "../entities/base"
+import { Base } from "./base"
 
 export interface Bond {
     symbol: string

@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { Application } from '@/lib/entities/application'
+import { Application } from '@/lib/clients/application'
 import ContactDocuments from './ContactDocuments'
-import { ReadContactByEmail } from '@/utils/entities/contact'
+import { ReadContactByEmail } from '@/utils/clients/contact'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface DocumentsStepProps {

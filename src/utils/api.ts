@@ -8,6 +8,10 @@ interface AuthenticationResponse {
 }
 
 const api_url = process.env.DEV_MODE === 'true' ? 'http://127.0.0.1:5000' : 'https://api.agmtechnology.com';
+const TOKEN_EXPIRY_BUFFER_SECONDS = 30;
+let cachedToken: string | null = null;
+let cachedTokenExpiryMs = 0;
+let inFlightTokenRequest: Promise<string> | null = null;
 
 export async function accessAPI(url: string, type: string, params?: Map) {
 
@@ -25,20 +29,35 @@ export async function accessAPI(url: string, type: string, params?: Map) {
 }
 
 export async function getToken(): Promise<string> {
+    const now = Date.now()
+    if (cachedToken && now < cachedTokenExpiryMs) return cachedToken
+    if (inFlightTokenRequest) return inFlightTokenRequest
 
-    const response = await fetch(`${api_url}/token`, {
-        method: 'POST',
-        headers: {
-            'Cache-Control': 'no-cache',
-        },
-        body: JSON.stringify({token: 'all'}),
-    })
+    inFlightTokenRequest = (async () => {
+        const response = await fetch(`${api_url}/token`, {
+            method: 'POST',
+            headers: {
+                'Cache-Control': 'no-cache',
+            },
+            body: JSON.stringify({token: 'all'}),
+        })
 
-    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`Failed to get authentication token.`);
+        if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`Failed to get authentication token.`);
 
-    const auth_response: AuthenticationResponse = await response.json();
-    if (!auth_response.access_token) throw new Error(`Failed to get authentication token.`);
-    return auth_response.access_token
+        const auth_response: AuthenticationResponse = await response.json();
+        if (!auth_response.access_token) throw new Error(`Failed to get authentication token.`);
+
+        const tokenLifetimeSeconds = Math.max(0, Number(auth_response.expires_in || 0) - TOKEN_EXPIRY_BUFFER_SECONDS)
+        cachedToken = auth_response.access_token
+        cachedTokenExpiryMs = Date.now() + tokenLifetimeSeconds * 1000
+        return auth_response.access_token
+    })()
+
+    try {
+        return await inFlightTokenRequest
+    } finally {
+        inFlightTokenRequest = null
+    }
 }
 
 async function GetData(url: string, token: string) {

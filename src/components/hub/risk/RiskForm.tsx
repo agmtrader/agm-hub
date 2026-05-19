@@ -16,7 +16,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useEffect, useState } from "react"
 import { getDefaults } from '@/utils/form'
-import { risk_assesment_schema } from "@/lib/tools/schemas/risk-profile"
+import { risk_assesment_schema } from "@/lib/clients/schemas/risk-profile"
 import { Input } from "@/components/ui/input"
 import { motion } from "framer-motion"
 import {
@@ -25,19 +25,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { CreateRiskProfile, ListRiskArchetypes } from "@/utils/tools/risk-profile"
+import { CreateRiskProfile, ListRiskArchetypes } from "@/utils/clients/risk-profile"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
-import { RiskArchetype, RiskProfile, RiskProfilePayload } from "@/lib/tools/risk-profile"
-import { useRiskTranslations, calcRiskScore, RiskFormValues } from "@/lib/tools/risk-questions"
-import { Account } from "@/lib/entities/account"
-import { ReadAccounts } from "@/utils/entities/account"
+import { RiskArchetype, RiskProfile, RiskProfilePayload } from "@/lib/clients/risk-profile"
+import { useRiskTranslations, calcRiskScore, RiskFormValues } from "@/lib/clients/schemas/risk-questions"
+import { Account } from "@/lib/clients/account"
+import { ReadAccounts } from "@/utils/clients/account"
 import LoadingComponent from "@/components/misc/LoadingComponent"
-import { CreateInvestmentProposal } from "@/utils/tools/investment_proposals" 
+import { CreateInvestmentProposal } from "@/utils/clients/investment_proposals" 
 import InvestmentProposalView from "@/components/hub/risk/InvestmentProposal"
-import { InvestmentProposal as InvestmentProposalType } from "@/lib/tools/investment-proposals"
+import { InvestmentProposal as InvestmentProposalType } from "@/lib/clients/investment-proposals"
 
 const RiskForm = () => {
 

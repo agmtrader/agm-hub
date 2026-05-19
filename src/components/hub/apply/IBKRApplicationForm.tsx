@@ -5,11 +5,11 @@ import { FieldErrors, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
 import { Form } from '@/components/ui/form'
-import { application_schema } from '@/lib/entities/schemas/application'
-import { Application } from '@/lib/entities/application';
+import { application_schema } from '@/lib/clients/schemas/application'
+import { Application } from '@/lib/clients/application';
 import { toast } from '@/hooks/use-toast'
 import PersonalInfoStep from './PersonalInfoStep'
-import { CreateAccount, UpdateAccountByAccountID } from '@/utils/entities/account'
+import { CreateAccount, UpdateAccountByAccountID } from '@/utils/clients/account'
 import DocumentsStep from './DocumentsStep'
 import AccountTypeStep from './AccountTypeStep'
 import { Button } from '@/components/ui/button'
@@ -18,13 +18,13 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import FinancialInfoStep from './FinancialInfoStep'
 import RegulatoryInfoStep from './RegulatoryInfoStep'
 import AgreementsStep from './AgreementsStep'
-import { getApplicationDefaults } from '@/utils/entities/application'
+import { getApplicationDefaults } from '@/utils/clients/application'
 import ProgressMeter from './ProgressMeter'
-import { BusinessAndOccupation, FinancialRange, FormDetails, InternalAccount } from '@/lib/entities/account'
-import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/entities/account'
-import { CreateAccountContact, ReadAccountContacts } from '@/utils/entities/account_contact'
-import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactDocuments, ReadContactScreenings, UploadContactDocument } from '@/utils/entities/contact'
-import { individual_form, joint_form } from './samples'
+import { BusinessAndOccupation, FinancialRange, FormDetails, InternalAccount } from '@/lib/clients/account'
+import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/clients/account'
+import { CreateAccountContact, ReadAccountContacts } from '@/utils/clients/account_contact'
+import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactDocuments, ReadContactScreenings, UploadContactDocument } from '@/utils/clients/contact'
+import { individual_form, individual_form_2, joint_form } from './samples'
 
 export enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -62,7 +62,7 @@ const IBKRApplicationForm = () => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: joint_form,
+    defaultValues: individual_form_2,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -176,7 +176,6 @@ const IBKRApplicationForm = () => {
     return transform(values, 'root');
   };
   
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -270,7 +269,7 @@ const IBKRApplicationForm = () => {
       if (!existingContact?.id) continue;
       const screenings = await ReadContactScreenings(existingContact.id);
       if (!screenings || screenings.length === 0) {
-        await CreateContactScreening(existingContact.id, 0);
+        await CreateContactScreening(existingContact.id);
       }
 
       linkedContacts.push({

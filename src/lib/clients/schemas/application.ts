@@ -86,6 +86,7 @@ export const ibkr_document_schema = z.object({
   }).optional(),
   issuedDate: z.string().optional().nullable(),
   expiryDate: z.string().optional().nullable(),
+  externalIndividualId: z.string().optional().nullable(),
 }).optional();
 
 // Add Additional Account Schema

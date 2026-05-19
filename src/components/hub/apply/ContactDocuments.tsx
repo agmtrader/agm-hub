@@ -11,10 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { toast } from '@/hooks/use-toast'
-import { ReadContactDocuments, UploadContactDocument, UpdateContactDocument, DeleteContactDocument } from '@/utils/entities/contact'
-import { calculateSHA1, getBase64 } from '@/utils/entities/documents'
+import { ReadContactDocuments, UploadContactDocument, UpdateContactDocument, DeleteContactDocument } from '@/utils/clients/contact'
+import { calculateSHA1, getBase64 } from '@/utils/clients/documents'
 import { formatTimestamp, getDateObjectFromTimestamp } from '@/utils/dates'
-import { documentCategories } from '@/lib/entities/documents'
+import { documentCategories } from '@/lib/clients/documents'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 type Props = {
@@ -38,6 +38,12 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
   const [expiryDate, setExpiryDate] = useState<Date | undefined>(undefined)
   const [comment, setComment] = useState<string>('')
 
+  const categories = documentCategories(t)
+  const selectedCategory = categories.find((c) => c.name === documentCategory)
+  const availableTypes: readonly string[] | null = Array.isArray(selectedCategory?.types)
+    ? (selectedCategory.types as readonly string[])
+    : null
+
   async function refreshLinks() {
     if (!contactId) return
     try {
@@ -56,6 +62,10 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
     if (!files || files.length === 0) return
     if (!documentCategory) {
       toast({ title: 'Missing category', description: 'Select a document category', variant: 'warning' })
+      return
+    }
+    if (availableTypes?.length && !documentType) {
+      toast({ title: 'Missing type', description: 'Select a document type', variant: 'warning' })
       return
     }
     const file = files[0]
@@ -104,6 +114,10 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
 
   async function handleSaveEdit() {
     if (!editingRow?.document_id) return
+    if (availableTypes?.length && !documentType) {
+      toast({ title: 'Missing type', description: 'Select a document type', variant: 'warning' })
+      return
+    }
     try {
       await UpdateContactDocument(
         editingRow.document_id,
@@ -167,10 +181,22 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
                 <Select value={documentCategory} onValueChange={setDocumentCategory}>
                   <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
                   <SelectContent>
-                    {documentCategories(t).map((c) => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
+                    {categories.map((c) => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
-                <Input value={documentType} onChange={(e) => setDocumentType(e.target.value)} placeholder="Type (optional)" />
+                {availableTypes?.length ? (
+                  <Select
+                    value={documentType}
+                    onValueChange={setDocumentType}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
+                    <SelectContent>
+                      {availableTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input value={documentType} onChange={(e) => setDocumentType(e.target.value)} placeholder="Type (optional)" />
+                )}
                 <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
                 <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
                 <Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment (optional)" />
@@ -197,10 +223,19 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
             <Select value={documentCategory} onValueChange={setDocumentCategory}>
               <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
               <SelectContent>
-                {documentCategories(t).map((c) => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
+                {categories.map((c) => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Input value={documentType} onChange={(e) => setDocumentType(e.target.value)} placeholder="Type (optional)" />
+            {availableTypes?.length ? (
+              <Select value={documentType} onValueChange={setDocumentType}>
+                <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
+                <SelectContent>
+                  {availableTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input value={documentType} onChange={(e) => setDocumentType(e.target.value)} placeholder="Type (optional)" />
+            )}
             <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
             <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
             <Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment (optional)" />

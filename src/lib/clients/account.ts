@@ -11,7 +11,7 @@ export type InternalAccount = AccountPayload & {
   temporal_email: string | null,
   temporal_password: string | null,
   application_json: Record<string, unknown> | null,
-  master_account: 'ad' | 'br' | null,
+  master_account: string | null,
   management_type: string | null,
   advisor_code: string | null,
   estimated_deposit?: number | null,
@@ -276,7 +276,7 @@ export interface WireInstruction {
 }
 
 export interface ActiveBankInstructionsRequest {
-  master_account: 'ad' | 'br';
+  master_account: string;
   account_id: string;
   client_instruction_id: string;
   bank_instruction_method: 'WIRE' | 'ACH';
@@ -313,7 +313,7 @@ export interface ActiveBankInstructionsResponse {
 }
 
 export interface WithdrawableCashRequest {
-  master_account: 'ad' | 'br';
+  master_account: string;
   account_id: string;
   client_instruction_id: string;
 }

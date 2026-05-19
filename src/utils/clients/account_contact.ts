@@ -1,10 +1,11 @@
 import { accessAPI } from "../api"
-import { IDResponse } from "@/lib/entities/base"
+import { IDResponse } from "@/lib/clients/base"
 
 export type AccountContactPayload = {
   account_id: string
   contact_id: string
-  entity_id?: string | null
+  entity_id?: string | number | null
+  external_id?: string | null
 }
 
 export async function CreateAccountContact(accountContact: AccountContactPayload): Promise<IDResponse> {
@@ -16,7 +17,7 @@ export async function ReadAccountContacts(query?: {
   account_id?: string
   contact_id?: string
   entity_id?: string
-}): Promise<Array<{ id: string; account_id: string; contact_id: string; entity_id?: string | null }>> {
+}): Promise<Array<{ id: string; account_id: string; contact_id: string; entity_id?: string | null; external_id?: string | null }>> {
   const params = new URLSearchParams()
   if (query?.id) params.set('id', query.id)
   if (query?.account_id) params.set('account_id', query.account_id)

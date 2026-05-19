@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
-import { Application } from '@/lib/entities/application';
+import { Application } from '@/lib/clients/application';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
@@ -8,9 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
-import { sources_of_wealth, asset_classes, knowledge_levels, investment_objectives, currencies, trading_products, trading_countries } from '@/lib/entities/application';
+import { sources_of_wealth, asset_classes, knowledge_levels, investment_objectives, currencies, trading_products, trading_countries } from '@/lib/clients/application';
 import { Checkbox } from '@/components/ui/checkbox';
-import { FinancialRange } from '@/lib/entities/account';
+import { FinancialRange } from '@/lib/clients/account';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 

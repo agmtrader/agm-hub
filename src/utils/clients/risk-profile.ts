@@ -1,5 +1,5 @@
 import { accessAPI } from "@/utils/api"
-import { RiskProfilePayload, RiskArchetype, RiskProfile } from "@/lib/tools/risk-profile"
+import { RiskProfilePayload, RiskArchetype, RiskProfile  } from "@/lib/clients/risk-profile"
 
 export async function CreateRiskProfile(risk_profile:RiskProfilePayload) {
     let risk_profile_id = await accessAPI('/risk_profiles/create','POST', {'data': risk_profile})

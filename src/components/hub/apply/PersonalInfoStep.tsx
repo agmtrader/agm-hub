@@ -10,16 +10,16 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import CountriesFormField from "@/components/misc/CountriesFormField";
-import { Application } from "@/lib/entities/application";
+import { Application } from "@/lib/clients/application";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { id_type, marital_status, employment_status, account_types } from '@/lib/entities/application';
+import { id_type, marital_status, employment_status, account_types } from '@/lib/clients/application';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { format as formatDateFns } from "date-fns";
 import StatesFormField from "@/components/misc/StatesFormField";
-import { BusinessAndOccupation } from '@/lib/entities/account';
+import { BusinessAndOccupation } from '@/lib/clients/account';
 import { Label } from '@/components/ui/label';
 
 const generateUUID = () => {

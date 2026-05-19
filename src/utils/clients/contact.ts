@@ -1,7 +1,7 @@
 import { accessAPI } from "../api"
-import { Contact, ContactPayload } from "@/lib/entities/contact"
-import { IDResponse } from "@/lib/entities/base"
-import { InternalDocument } from "@/lib/entities/documents"
+import { Contact, ContactPayload } from "@/lib/clients/contact"
+import { IDResponse } from "@/lib/clients/base"
+import { InternalDocument } from "@/lib/clients/documents"
 
 export async function CreateContact(contact: ContactPayload): Promise<IDResponse> {
     const contactResponse: Contact = await accessAPI('/contacts/create', 'POST', { 'contact': contact })
@@ -63,12 +63,13 @@ export async function UploadContactDocument(
 }
 
 export async function ReadContactDocuments(
-    contactID: string,
+    contactID?: string,
     options?: { includeData?: boolean; includeDocuments?: boolean }
 ): Promise<{documents: InternalDocument[], contact_documents: any[]}> {
     const includeData = options?.includeData ? 'true' : 'false'
     const includeDocuments = options?.includeDocuments === false ? 'false' : 'true'
-    return accessAPI(`/contacts/documents?contact_id=${contactID}&include_data=${includeData}&include_documents=${includeDocuments}`, 'GET')
+    const contactQuery = contactID ? `contact_id=${encodeURIComponent(contactID)}&` : ''
+    return accessAPI(`/contacts/documents?${contactQuery}include_data=${includeData}&include_documents=${includeDocuments}`, 'GET')
 }
 
 export async function UpdateContactDocument(
@@ -94,18 +95,10 @@ export async function DeleteContactDocument(documentID: string): Promise<any> {
 }
 
 export async function CreateContactScreening(
-    contactID: string,
-    riskScore: number,
-    fatfStatus: string = 'Not listed',
-    ofacResults: any[] = [],
-    ukStatus: any[] = []
+    contactID: string
 ): Promise<IDResponse> {
     return accessAPI('/contacts/screening', 'POST', {
-        contact_id: contactID,
-        risk_score: riskScore,
-        fatf_status: fatfStatus,
-        ofac_results: ofacResults,
-        uk_status: ukStatus,
+        contact_id: contactID
     })
 }
 
