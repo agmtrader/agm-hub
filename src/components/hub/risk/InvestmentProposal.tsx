@@ -2,10 +2,9 @@
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { PieChart, Pie, Cell } from 'recharts'
-import { useMemo, useState, useRef } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart'
-import { Bond, InvestmentProposal as InvestmentProposalType } from '@/lib/clients/investment-proposals'
-import { Badge } from '@/components/ui/badge'
+import { Bond, InvestmentProposal as InvestmentProposalType, } from '@/lib/clients/investment-proposals'
 import { DataTable } from '@/components/misc/DataTable'
 import type { ColumnDefinition } from '@/components/misc/DataTable'
 import { Switch } from '@/components/ui/switch'
@@ -13,6 +12,7 @@ import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
+import { ListRiskArchetypes, ReadRiskProfiles } from '@/utils/clients/risk-profile'
 
 type Props = {
   investmentProposal: InvestmentProposalType
@@ -41,8 +41,49 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
   ] as const
 
   const [showPortfolioOverview, setShowPortfolioOverview] = useState(false)
+  const [riskArchetypeName, setRiskArchetypeName] = useState<string | null>(null)
 
   const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const fetchRiskArchetype = async () => {
+      const riskProfileId = investmentProposal?.risk_profile_id
+
+      if (!riskProfileId) {
+        setRiskArchetypeName(null)
+        return
+      }
+
+      try {
+        const [riskProfiles, riskArchetypes] = await Promise.all([
+          ReadRiskProfiles(),
+          ListRiskArchetypes(),
+        ])
+
+        const matchedRiskProfile = riskProfiles?.find(
+          (profile) => String(profile.risk_profile_id) === String(riskProfileId)
+        )
+        const score = matchedRiskProfile?.score
+
+        if (typeof score !== 'number') {
+          setRiskArchetypeName(null)
+          return
+        }
+
+        const matchedRiskArchetype = riskArchetypes?.find((archetype) => {
+          const isInRange = score >= archetype.min_score && score < archetype.max_score
+          const isUpperBoundMatch = score === archetype.max_score && archetype.max_score === 10
+          return isInRange || isUpperBoundMatch
+        })
+
+        setRiskArchetypeName(matchedRiskArchetype?.name ?? null)
+      } catch {
+        setRiskArchetypeName(null)
+      }
+    }
+
+    fetchRiskArchetype()
+  }, [investmentProposal?.risk_profile_id])
 
   async function handleExport(format: 'png' | 'pdf') {
 
@@ -174,11 +215,8 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       cell: ({ getValue }) => `${Number(getValue() ?? 0).toFixed(2)}%`,
     },
     {
-      header: 'Equivalent',
-      accessorKey: 'equivalent',
-      cell: ({ getValue }) => (
-        <Badge variant="secondary">{String(getValue() ?? '')}</Badge>
-      ),
+      header: 'Rating',
+      accessorKey: 'equivalent'
     },
   ]
 
@@ -233,8 +271,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
         <h3 className="text-5xl font-semibold text-primary">
           Investment Proposal
         </h3>
-
-
+        
         <div className="flex items-center gap-2">
 
           <Switch
@@ -257,6 +294,14 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
                   <p className="text-subtitle text-sm">Total Assets</p>
                   <p className="text-xl font-semibold text-foreground">{chartData.summaryStats?.totalBonds}</p>
                 </div>
+                {investmentProposal?.risk_profile_id && (
+                  <div>
+                    <p className="text-subtitle text-sm">Risk Profile</p>
+                    <p className="text-xl font-semibold text-foreground">
+                      {riskArchetypeName ?? 'N/A'}
+                    </p>
+                  </div>
+                )}
             </div>
             <DataTable 
               data={chartData.summaryStats?.perRating ?? []} 
