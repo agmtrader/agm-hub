@@ -1,5 +1,5 @@
 import { accessAPI } from "../api"
-import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, InternalAccount, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction, AccountScreening, FinancialRangesResponse, BusinessAndOccupationResponse, ActiveBankInstructionsResponse, WithdrawableCashResponse, FinancialInformationUpdate, InvestmentExperience } from "@/lib/clients/account"
+import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, InternalAccount, AccountWritePayload, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction, AccountScreening, FinancialRangesResponse, BusinessAndOccupationResponse, ActiveBankInstructionsResponse, WithdrawableCashResponse, FinancialInformationUpdate, InvestmentExperience } from "@/lib/clients/account"
 import { IDResponse } from "@/lib/clients/base"
 import { InternalDocument, InternalDocumentPayload } from "@/lib/clients/documents"
 import { Contact } from "@/lib/clients/contact"
@@ -22,7 +22,7 @@ function generateClientInstructionId(): string {
 }
 
 // Database
-export async function CreateAccount(account: InternalAccount): Promise<IDResponse> {
+export async function CreateAccount(account: AccountWritePayload): Promise<IDResponse> {
     const createResponse: IDResponse = await accessAPI('/accounts/create', 'POST', { 'account': account })
     return createResponse
 }
@@ -60,7 +60,7 @@ export async function ReadAccountsByAdvisorCode(advisorCode: string): Promise<Ac
     return accounts
 }
 
-export async function UpdateAccountByAccountID(accountID:string, account:Partial<InternalAccount>): Promise<Account[] | null> {
+export async function UpdateAccountByAccountID(accountID:string, account:Partial<AccountWritePayload>): Promise<Account[] | null> {
     const updateResponse: Account[] = await accessAPI(`/accounts/update`, 'POST', { 'query': { 'id': accountID }, 'account': account })
     return updateResponse
 }

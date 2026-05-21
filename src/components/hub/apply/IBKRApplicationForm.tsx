@@ -773,9 +773,7 @@ const IBKRApplicationForm = () => {
       const internalAccount: InternalAccount = {
         ibkr_account_number: null,
         ibkr_username: null,
-        ibkr_password: null,
         temporal_email: null,
-        temporal_password: null,
         application_json: storageValues as unknown as Record<string, unknown>,
         advisor_code: advisorCode,
         master_account: null,

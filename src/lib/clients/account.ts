@@ -3,15 +3,13 @@ import { Base } from "./base"
 import { z } from "zod"
 import { account_schema, deposit_instruction_schema, withdrawal_instruction_schema } from "./schemas/account"
 
-export type AccountPayload = z.infer<typeof account_schema>
+type RawAccountPayload = z.infer<typeof account_schema>
+export type AccountCredentialPayload = Pick<RawAccountPayload, 'ibkr_password' | 'temporal_password'>
+export type AccountPayload = Omit<RawAccountPayload, keyof AccountCredentialPayload>
 export type InternalAccount = AccountPayload & {
   ibkr_account_number: string | null,
   ibkr_username: string | null,
-  ibkr_password?: string | null,
-  ibkr_password_secret_id?: string | null,
   temporal_email: string | null,
-  temporal_password?: string | null,
-  temporal_password_secret_id?: string | null,
   application_json: Record<string, unknown> | null,
   master_account: string | null,
   management_type: string | null,
@@ -21,6 +19,7 @@ export type InternalAccount = AccountPayload & {
   referrer?: string | null,
   emailed_credentials: boolean,
 }
+export type AccountWritePayload = InternalAccount & Partial<AccountCredentialPayload>
 export type Account = Base & InternalAccount
 
 export interface AllForms {
