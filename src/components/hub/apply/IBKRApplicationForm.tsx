@@ -22,7 +22,7 @@ import { getApplicationDefaults } from '@/utils/clients/application'
 import ProgressMeter from './ProgressMeter'
 import { BusinessAndOccupation, FinancialRange, FormDetails, InternalAccount } from '@/lib/clients/account'
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/clients/account'
-import { CreateAccountContact, ReadAccountContacts } from '@/utils/clients/account_contact'
+import { CreateAccountContact, ReadAccountContacts, UpdateAccountContact } from '@/utils/clients/account_contact'
 import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactDocuments, ReadContactScreenings, UploadContactDocument } from '@/utils/clients/contact'
 import { individual_form, individual_form_2, joint_form } from './samples'
 
@@ -36,7 +36,24 @@ export enum FormStep {
   SUCCESS = 6,
 }
 
-const IBKRApplicationForm = () => {
+type PrefetchedData = {
+  financialRangesResult: any;
+  businessResult: any;
+  agreementsResult: any;
+};
+
+type Props = {
+  prefetchedData?: PrefetchedData | null;
+};
+
+type LinkedContact = {
+  name: string;
+  contact_id: string;
+  externalId?: string | null;
+  entityId?: string | null;
+};
+
+const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
   const { t } = useTranslationProvider();
   const searchParams = useSearchParams();
@@ -54,6 +71,8 @@ const IBKRApplicationForm = () => {
 
   const [agreementForms, setAgreementForms] = useState<FormDetails[] | null>(null);
   const [userSignature, setUserSignature] = useState<string | null>(null);
+  const [setupStatus, setSetupStatus] = useState<'idle' | 'checking' | 'ok' | 'failed'>('idle');
+  const [setupWarning, setSetupWarning] = useState<string | null>(null);
   
   const agreementFormNumbers = [
     '3230', '3024', '4070', '3044', '3089', '4304', '4404', '5013', '5001', '4024', '9130', '3074', '3203',
@@ -179,22 +198,28 @@ const IBKRApplicationForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [financialRangesResult, businessResult, agreementsResult] = await Promise.all([
-          GetFinancialRanges(),
-          GetBusinessAndOccupation(),
-          GetForms(agreementFormNumbers),
-        ]);
+        const bootstrap = prefetchedData
+          ? prefetchedData
+          : await Promise.all([
+              GetFinancialRanges(),
+              GetBusinessAndOccupation(),
+              GetForms(agreementFormNumbers),
+            ]).then(([financialRangesResult, businessResult, agreementsResult]) => ({
+              financialRangesResult,
+              businessResult,
+              agreementsResult,
+            }));
 
-        setFinancialRanges(financialRangesResult?.jsonData ?? []);  
-        setAgreementForms(agreementsResult?.formDetails ?? null);
-        setBusinessAndOccupations(businessResult?.jsonData ?? []);
+        setFinancialRanges(bootstrap.financialRangesResult?.jsonData ?? []);  
+        setAgreementForms(bootstrap.agreementsResult?.formDetails ?? null);
+        setBusinessAndOccupations(bootstrap.businessResult?.jsonData ?? []);
 
       } catch {
         toast({ title: 'Error', description: 'Failed to load financial ranges, business and occupations, and agreements.', variant: 'destructive' }); 
       }
     };
     fetchData();
-  }, []);
+  }, [prefetchedData]);
 
   const extractApplicantContacts = (values: Application) => {
     const contacts: { name: string; email?: string; externalId?: string | null; entityId?: string | null }[] = [];
@@ -254,7 +279,7 @@ const IBKRApplicationForm = () => {
 
   async function ensureContacts(values: Application) {
     const applicantContacts = extractApplicantContacts(values);
-    const linkedContacts: Array<{ name: string; contact_id: string; externalId?: string | null; entityId?: string | null }> = [];
+    const linkedContacts: LinkedContact[] = [];
 
     for (const c of applicantContacts) {
       let existingContact = c.email ? await ReadContactByEmail(c.email) : null;
@@ -285,7 +310,7 @@ const IBKRApplicationForm = () => {
 
   async function ensureAccountContactLinks(
     persistedAccountId: string,
-    linkedContacts: Array<{ name: string; contact_id: string; externalId?: string | null; entityId?: string | null }>
+    linkedContacts: LinkedContact[]
   ) {
     const existingLinks = await ReadAccountContacts({ account_id: persistedAccountId });
     const existingByContact = new Map(existingLinks.map((link) => [link.contact_id, link]));
@@ -297,7 +322,21 @@ const IBKRApplicationForm = () => {
           account_id: persistedAccountId,
           contact_id: linkedContact.contact_id,
           entity_id: linkedContact.entityId ?? null,
+          external_id: linkedContact.externalId ?? null,
         });
+      } else {
+        const updates: Record<string, string | null> = {};
+        const existingEntity = String(existing.entity_id ?? '').trim();
+        const existingExternal = String(existing.external_id ?? '').trim();
+        const nextEntity = String(linkedContact.entityId ?? '').trim();
+        const nextExternal = String(linkedContact.externalId ?? '').trim();
+
+        if (!existingEntity && nextEntity) updates.entity_id = nextEntity;
+        if (!existingExternal && nextExternal) updates.external_id = nextExternal;
+
+        if (Object.keys(updates).length > 0) {
+          await UpdateAccountContact({ id: existing.id }, updates);
+        }
       }
     }
   }
@@ -739,6 +778,15 @@ const IBKRApplicationForm = () => {
       return;
     }
 
+    if (currentStep === FormStep.PERSONAL_INFO) {
+      const next = currentStep + 1;
+      setCurrentStep(next as FormStep);
+      setSetupStatus('checking');
+      setSetupWarning(null);
+      void runPersonalInfoBackgroundSaveAndVerify();
+      return;
+    }
+
     try {
       await saveProgress();
       const next = currentStep + 1;
@@ -757,16 +805,60 @@ const IBKRApplicationForm = () => {
     }
   };
 
-  async function saveProgress() {
+  const verifyPersonalInfoSetup = async (persistedAccountId: string | null, linkedContacts: LinkedContact[]) => {
+    if (!persistedAccountId) {
+      throw new Error('Account record was not created.');
+    }
+    if (linkedContacts.length === 0) {
+      throw new Error('No contacts were linked.');
+    }
+
+    const links = await ReadAccountContacts({ account_id: persistedAccountId });
+    const missingLinks = linkedContacts.filter((linked) =>
+      !links.some((link) => String(link.contact_id || '') === String(linked.contact_id || ''))
+    );
+    if (missingLinks.length > 0) {
+      throw new Error('Some contacts are missing account links.');
+    }
+
+    for (const linked of linkedContacts) {
+      const screenings = await ReadContactScreenings(linked.contact_id);
+      if (!screenings || screenings.length === 0) {
+        throw new Error(`Missing screening for ${linked.name || linked.contact_id}.`);
+      }
+    }
+  };
+
+  const runPersonalInfoBackgroundSaveAndVerify = async () => {
+    try {
+      const { persistedAccountId, linkedContacts } = await saveProgress(FormStep.PERSONAL_INFO);
+      await verifyPersonalInfoSetup(persistedAccountId, linkedContacts);
+      setSetupStatus('ok');
+      setSetupWarning(null);
+    } catch (error) {
+      setSetupStatus('failed');
+      setSetupWarning('We could not complete contact setup and screening. Please retry setup before continuing.');
+      toast({
+        title: 'Setup verification failed',
+        description: error instanceof Error ? error.message : 'Please retry setup.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  async function saveProgress(stepOverride?: FormStep): Promise<{ persistedAccountId: string | null; linkedContacts: LinkedContact[] }> {
+    const stepAtSave = stepOverride ?? currentStep;
     
     const currentValues = form.getValues();
 
     const valuesWithNormalizedW8Signers = normalizeJointW8Signers(currentValues);
     const sanitizedValues = sanitizeApplication(valuesWithNormalizedW8Signers);
     const storageValues = buildApplicationJsonForStorage(sanitizedValues);
-    const linkedContacts = currentStep >= FormStep.PERSONAL_INFO ? await ensureContacts(sanitizedValues) : [];
+    const linkedContacts = stepAtSave >= FormStep.PERSONAL_INFO ? await ensureContacts(sanitizedValues) : [];
 
-    if (currentStep >= FormStep.PERSONAL_INFO && linkedContacts.length === 0) return;
+    if (stepAtSave >= FormStep.PERSONAL_INFO && linkedContacts.length === 0) {
+      return { persistedAccountId: accountId, linkedContacts };
+    }
 
     let persistedAccountId = accountId;
     if (!accountId) {
@@ -800,15 +892,18 @@ const IBKRApplicationForm = () => {
       persistedAccountId = accountId;
     }
 
-    if (!persistedAccountId) return;
+    if (!persistedAccountId) {
+      return { persistedAccountId: null, linkedContacts };
+    }
 
     if (linkedContacts.length > 0) {
       await ensureAccountContactLinks(persistedAccountId, linkedContacts);
     }
 
-    if (currentStep >= FormStep.DOCUMENTS && linkedContacts.length > 0) {
+    if (stepAtSave >= FormStep.DOCUMENTS && linkedContacts.length > 0) {
       await ensureContactDocuments(persistedAccountId, sanitizedValues, linkedContacts);
     }
+    return { persistedAccountId, linkedContacts };
   }
 
   if (currentStep === FormStep.SUCCESS) {
@@ -825,6 +920,28 @@ const IBKRApplicationForm = () => {
         <p className="text-lg">{t('apply.account.header.description')}</p>
       </div>
       <ProgressMeter currentStep={currentStep} />
+      {(setupStatus === 'checking' || setupStatus === 'failed') && (
+        <div className={`w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl border rounded-md p-3 ${
+          setupStatus === 'failed' ? 'border-destructive/50 bg-destructive/10' : 'border-amber-500/40 bg-amber-500/10'
+        }`}>
+          <p className="text-sm">
+            {setupStatus === 'checking'
+              ? 'Finalizing contact setup and screening in the background...'
+              : setupWarning}
+          </p>
+          {setupStatus === 'failed' && (
+            <div className="mt-3">
+              <Button type="button" variant="outline" onClick={() => {
+                setSetupStatus('checking');
+                setSetupWarning(null);
+                void runPersonalInfoBackgroundSaveAndVerify();
+              }}>
+                Retry setup
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
       <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl">
         <Form {...form}>
           <form
