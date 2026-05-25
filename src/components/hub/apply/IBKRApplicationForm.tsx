@@ -57,7 +57,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
   const { t } = useTranslationProvider();
   const searchParams = useSearchParams();
-  const advisorCode = searchParams.get('ad');
+  const advisorCode = searchParams.get('ad')
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
