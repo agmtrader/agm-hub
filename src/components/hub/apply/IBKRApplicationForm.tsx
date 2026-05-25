@@ -71,8 +71,6 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
   const [agreementForms, setAgreementForms] = useState<FormDetails[] | null>(null);
   const [userSignature, setUserSignature] = useState<string | null>(null);
-  const [setupStatus, setSetupStatus] = useState<'idle' | 'checking' | 'ok' | 'failed'>('idle');
-  const [setupWarning, setSetupWarning] = useState<string | null>(null);
   
   const agreementFormNumbers = [
     '3230', '3024', '4070', '3044', '3089', '4304', '4404', '5013', '5001', '4024', '9130', '3074', '3203',
@@ -292,11 +290,6 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
       }
 
       if (!existingContact?.id) continue;
-      const screenings = await ReadContactScreenings(existingContact.id);
-      if (!screenings || screenings.length === 0) {
-        await CreateContactScreening(existingContact.id);
-      }
-
       linkedContacts.push({
         name: c.name,
         contact_id: existingContact.id,
@@ -337,6 +330,15 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
         if (Object.keys(updates).length > 0) {
           await UpdateAccountContact({ id: existing.id }, updates);
         }
+      }
+    }
+  }
+
+  async function ensureContactScreenings(linkedContacts: LinkedContact[]) {
+    for (const linkedContact of linkedContacts) {
+      const screenings = await ReadContactScreenings(linkedContact.contact_id);
+      if (!screenings || screenings.length === 0) {
+        await CreateContactScreening(linkedContact.contact_id);
       }
     }
   }
@@ -651,6 +653,18 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
     let isValid = true;
     let validatedFieldsLog: string[] = [];
+    const currentValues = form.getValues();
+    void sendClientLog(
+      'form_step_attempt',
+      {
+        step: FormStep[currentStep],
+        currentStep,
+        estimatedDeposit,
+        estimatedDepositError,
+        applicationValues: redactFormValuesForLogs(currentValues),
+      },
+      'INFO',
+    );
 
     if (currentStep === FormStep.ACCOUNT_TYPE) {
       validatedFieldsLog = ['customer.type'];
@@ -755,10 +769,30 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
       return;
     }
 
+    void sendClientLog(
+      'form_step_validation_passed',
+      {
+        step: FormStep[currentStep],
+        currentStep,
+        validatedFields: validatedFieldsLog,
+        applicationValues: redactFormValuesForLogs(form.getValues()),
+      },
+      'INFO',
+    );
+
     if (currentStep === FormStep.AGREEMENTS) {
       try {
         setIsSubmitting(true);
         await saveProgress();
+        void sendClientLog(
+          'form_submission_success',
+          {
+            step: FormStep[currentStep],
+            currentStep,
+            applicationValues: redactFormValuesForLogs(form.getValues()),
+          },
+          'INFO',
+        );
         toast({
           title: "Application Submitted",
           description: "Your IBKR application has been successfully submitted.",
@@ -767,6 +801,16 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
         setCurrentStep(FormStep.SUCCESS);
         setAccountId(null);
       } catch (error) {
+        void sendClientLog(
+          'form_submission_failed',
+          {
+            step: FormStep[currentStep],
+            currentStep,
+            error: error instanceof Error ? error.message : String(error),
+            applicationValues: redactFormValuesForLogs(form.getValues()),
+          },
+          'ERROR',
+        );
         toast({
           title: "Submission Failed",
           description: "There was an error submitting your application. Please try again.",
@@ -778,17 +822,18 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
       return;
     }
 
-    if (currentStep === FormStep.PERSONAL_INFO) {
-      const next = currentStep + 1;
-      setCurrentStep(next as FormStep);
-      setSetupStatus('checking');
-      setSetupWarning(null);
-      void runPersonalInfoBackgroundSaveAndVerify();
-      return;
-    }
-
     try {
       await saveProgress();
+      void sendClientLog(
+        'form_step_save_success',
+        {
+          step: FormStep[currentStep],
+          currentStep,
+          nextStep: FormStep[currentStep + 1],
+          applicationValues: redactFormValuesForLogs(form.getValues()),
+        },
+        'INFO',
+      );
       const next = currentStep + 1;
       setCurrentStep(next as FormStep);
       toast({
@@ -797,50 +842,19 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
         variant: 'success'
       });
     } catch (error) {
+      void sendClientLog(
+        'form_step_save_failed',
+        {
+          step: FormStep[currentStep],
+          currentStep,
+          error: error instanceof Error ? error.message : String(error),
+          applicationValues: redactFormValuesForLogs(form.getValues()),
+        },
+        'ERROR',
+      );
       toast({
         title: 'Error',
         description: 'Failed to save progress.',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  const verifyPersonalInfoSetup = async (persistedAccountId: string | null, linkedContacts: LinkedContact[]) => {
-    if (!persistedAccountId) {
-      throw new Error('Account record was not created.');
-    }
-    if (linkedContacts.length === 0) {
-      throw new Error('No contacts were linked.');
-    }
-
-    const links = await ReadAccountContacts({ account_id: persistedAccountId });
-    const missingLinks = linkedContacts.filter((linked) =>
-      !links.some((link) => String(link.contact_id || '') === String(linked.contact_id || ''))
-    );
-    if (missingLinks.length > 0) {
-      throw new Error('Some contacts are missing account links.');
-    }
-
-    for (const linked of linkedContacts) {
-      const screenings = await ReadContactScreenings(linked.contact_id);
-      if (!screenings || screenings.length === 0) {
-        throw new Error(`Missing screening for ${linked.name || linked.contact_id}.`);
-      }
-    }
-  };
-
-  const runPersonalInfoBackgroundSaveAndVerify = async () => {
-    try {
-      const { persistedAccountId, linkedContacts } = await saveProgress(FormStep.PERSONAL_INFO);
-      await verifyPersonalInfoSetup(persistedAccountId, linkedContacts);
-      setSetupStatus('ok');
-      setSetupWarning(null);
-    } catch (error) {
-      setSetupStatus('failed');
-      setSetupWarning('We could not complete contact setup and screening. Please retry setup before continuing.');
-      toast({
-        title: 'Setup verification failed',
-        description: error instanceof Error ? error.message : 'Please retry setup.',
         variant: 'destructive'
       });
     }
@@ -854,9 +868,11 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     const valuesWithNormalizedW8Signers = normalizeJointW8Signers(currentValues);
     const sanitizedValues = sanitizeApplication(valuesWithNormalizedW8Signers);
     const storageValues = buildApplicationJsonForStorage(sanitizedValues);
-    const linkedContacts = stepAtSave >= FormStep.PERSONAL_INFO ? await ensureContacts(sanitizedValues) : [];
+    const shouldPersistContacts = stepAtSave >= FormStep.PERSONAL_INFO;
+    const shouldCreateScreenings = stepAtSave >= FormStep.AGREEMENTS;
+    const linkedContacts = shouldPersistContacts ? await ensureContacts(sanitizedValues) : [];
 
-    if (stepAtSave >= FormStep.PERSONAL_INFO && linkedContacts.length === 0) {
+    if (shouldPersistContacts && linkedContacts.length === 0) {
       return { persistedAccountId: accountId, linkedContacts };
     }
 
@@ -896,8 +912,12 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
       return { persistedAccountId: null, linkedContacts };
     }
 
-    if (linkedContacts.length > 0) {
+    if (shouldPersistContacts && linkedContacts.length > 0) {
       await ensureAccountContactLinks(persistedAccountId, linkedContacts);
+    }
+
+    if (shouldCreateScreenings && linkedContacts.length > 0) {
+      await ensureContactScreenings(linkedContacts);
     }
 
     if (stepAtSave >= FormStep.DOCUMENTS && linkedContacts.length > 0) {
@@ -920,28 +940,6 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
         <p className="text-lg">{t('apply.account.header.description')}</p>
       </div>
       <ProgressMeter currentStep={currentStep} />
-      {(setupStatus === 'checking' || setupStatus === 'failed') && (
-        <div className={`w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl border rounded-md p-3 ${
-          setupStatus === 'failed' ? 'border-destructive/50 bg-destructive/10' : 'border-amber-500/40 bg-amber-500/10'
-        }`}>
-          <p className="text-sm">
-            {setupStatus === 'checking'
-              ? 'Finalizing contact setup and screening in the background...'
-              : setupWarning}
-          </p>
-          {setupStatus === 'failed' && (
-            <div className="mt-3">
-              <Button type="button" variant="outline" onClick={() => {
-                setSetupStatus('checking');
-                setSetupWarning(null);
-                void runPersonalInfoBackgroundSaveAndVerify();
-              }}>
-                Retry setup
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
       <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl">
         <Form {...form}>
           <form
