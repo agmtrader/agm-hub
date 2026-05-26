@@ -12,7 +12,7 @@ import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
-import { ListRiskArchetypes, ReadRiskProfiles } from '@/utils/clients/risk-profile'
+import { ListRiskArchetypes, ReadRiskProfileById } from '@/utils/clients/risk-profile'
 
 type Props = {
   investmentProposal: InvestmentProposalType
@@ -55,27 +55,27 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       }
 
       try {
-        const [riskProfiles, riskArchetypes] = await Promise.all([
-          ReadRiskProfiles(),
+        const [matchedRiskProfile, riskArchetypes] = await Promise.all([
+          ReadRiskProfileById(String(riskProfileId)),
           ListRiskArchetypes(),
         ])
 
-        const matchedRiskProfile = riskProfiles?.find(
-          (profile) => String(profile.risk_profile_id) === String(riskProfileId)
-        )
-        const score = matchedRiskProfile?.score
-
-        if (typeof score !== 'number') {
+        if (!matchedRiskProfile) {
           setRiskArchetypeName(null)
           return
         }
 
+        const normalizedScore = Number(matchedRiskProfile.score)
+        const score = Number.isNaN(normalizedScore) ? null : normalizedScore
+
         const matchedRiskArchetype = riskArchetypes?.find((archetype) => {
-          const isInRange = score >= archetype.min_score && score < archetype.max_score
-          const isUpperBoundMatch = score === archetype.max_score && archetype.max_score === 10
+          if (score === null) return false
+          const minScore = Number(archetype.min_score)
+          const maxScore = Number(archetype.max_score)
+          const isInRange = score >= minScore && score < maxScore
+          const isUpperBoundMatch = score === maxScore && maxScore === 10
           return isInRange || isUpperBoundMatch
         })
-
         setRiskArchetypeName(matchedRiskArchetype?.name ?? null)
       } catch {
         setRiskArchetypeName(null)

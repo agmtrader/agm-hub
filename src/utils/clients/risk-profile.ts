@@ -11,6 +11,11 @@ export async function ReadRiskProfiles(): Promise<RiskProfile[] | null> {
     return risk_profiles
 }
 
+export async function ReadRiskProfileById(id: string): Promise<RiskProfile | null> {
+    const risk_profiles: RiskProfile[] = await accessAPI(`/risk_profiles/read?id=${id}`, 'GET')
+    return risk_profiles?.[0] ?? null
+}
+
 export async function ListRiskArchetypes(): Promise<RiskArchetype[] | null> {
     let risk_archetypes = await accessAPI('/risk_profiles/list','GET')
     return risk_archetypes

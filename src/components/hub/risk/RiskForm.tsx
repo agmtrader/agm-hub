@@ -97,7 +97,6 @@ const RiskForm = () => {
 
       const riskProfilePayload: RiskProfilePayload = {
         name: values.name,
-        risk_profile_id: assigned_risk_archetype.id,
         score: risk_score,
         answers,
       }
