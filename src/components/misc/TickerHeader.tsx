@@ -16,6 +16,27 @@ type Ticker = {
   'Company Name'?: string
 }
 
+const usdFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
+const formatTickerPrice = (value: Ticker['Last']) => {
+  if (value === null || value === undefined || value === '') return '-'
+
+  const normalizedValue = String(value).replace(/[$,]/g, '').trim()
+  const numericValue = Number(normalizedValue)
+
+  if (!Number.isFinite(numericValue)) return String(value)
+
+  const hasDecimalPlaces = normalizedValue.includes('.')
+  const price = hasDecimalPlaces ? numericValue : numericValue / 100
+
+  return usdFormatter.format(price)
+}
+
 const TickerHeader = () => {
   const [tickers, setTickers] = useState<Ticker[]>([])
 
@@ -40,7 +61,7 @@ const TickerHeader = () => {
       <span className="font-semibold">
         {ticker['Financial Instrument'] ?? ticker.Financial_Instrument ?? ticker.Symbol ?? ticker.ticker}
       </span>
-      <span>${ticker.Last ?? ticker.Last_price ?? ticker.price}</span>
+      <span>{formatTickerPrice(ticker.Last ?? ticker.Last_price ?? ticker.price)}</span>
       <span className={Number(ticker.Change_percent) < 0 ? 'text-error' : 'text-success'}>
         {ticker.Change_percent}%
       </span>
