@@ -22,6 +22,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
   
   const RATING_COLORS = {
         'AAA/AA/A': '#1D4ED8',
+        'Treasuries': '#1E3A8A',
         'BBB': '#3B82F6',
         'BB': '#60A5FA',
         'ETFs': '#93C5FD',
@@ -29,6 +30,12 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
   } as const
 
   const GROUPS = [
+    {
+      key: 'treasuries',
+      distributionKey: 'treasuries',
+      label: 'Treasuries',
+      color: RATING_COLORS['Treasuries'],
+    },
     {
       key: 'aaa_a',
       distributionKey: 'bonds_aaa_a',
@@ -39,6 +46,12 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     { key: 'bb', distributionKey: 'bonds_bb', label: 'BB', color: RATING_COLORS['BB'] },
     { key: 'etfs', distributionKey: 'etfs', label: 'ETFs', color: RATING_COLORS['ETFs'] },
   ] as const
+
+  const isTreasuryBond = (bond: Bond) => {
+    const equivalent = String(bond?.equivalent ?? '').toUpperCase()
+    const symbol = String(bond?.symbol ?? '').toUpperCase()
+    return equivalent === 'UST' || symbol.includes('US-T GOVT') || symbol.includes('TREASURY')
+  }
 
   const [showPortfolioOverview, setShowPortfolioOverview] = useState(false)
   const [riskArchetypeName, setRiskArchetypeName] = useState<string | null>(null)
@@ -148,21 +161,70 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     if (!investmentProposal) return { pieData: [], summaryStats: null as any }
 
     const proposal = investmentProposal
-    const distribution = proposal.distribution ?? null
-    if (!distribution) return { pieData: [], summaryStats: null as any }
-    const rawValues = GROUPS.map(group => distribution[group.distributionKey])
-    const maxValue = Math.max(0, ...rawValues)
-    const sumValues = rawValues.reduce((sum, value) => sum + value, 0)
-    const isPercentage = maxValue > 1 || sumValues > 1.01
-    const normalizeWeight = (value: number) => (isPercentage ? value / 100 : value)
-    const weights = GROUPS.reduce((acc, group, index) => {
-      acc[group.key] = normalizeWeight(rawValues[index] ?? 0)
+    const explicitTreasuries = proposal.treasury ?? []
+    const hasExplicitTreasuries = explicitTreasuries.length > 0
+
+    const groupedBonds = {
+      treasuries: hasExplicitTreasuries
+        ? explicitTreasuries
+        : (proposal.aaa_a ?? []).filter((bond) => isTreasuryBond(bond)),
+      aaa_a: hasExplicitTreasuries
+        ? (proposal.aaa_a ?? [])
+        : (proposal.aaa_a ?? []).filter((bond) => !isTreasuryBond(bond)),
+      bbb: proposal.bbb ?? [],
+      bb: proposal.bb ?? [],
+      etfs: proposal.etfs ?? [],
+    }
+
+    const allBonds = Object.values(groupedBonds).flat()
+    const hasPercentageWeights = allBonds.some((bond: any) => Number(bond?.percentage) > 0)
+
+    const weights = GROUPS.reduce((acc, group) => {
+      acc[group.key] = 0
       return acc
     }, {} as Record<string, number>)
 
+    if (hasPercentageWeights) {
+      const rawWeights = GROUPS.reduce((acc, group) => {
+        const bonds = groupedBonds[group.key as keyof typeof groupedBonds] ?? []
+        const bucketWeight = bonds.reduce((sum, bond: any) => sum + (Number(bond?.percentage) || 0), 0)
+        acc[group.key] = bucketWeight
+        return acc
+      }, {} as Record<string, number>)
+
+      const rawTotal = Object.values(rawWeights).reduce((sum, value) => sum + value, 0)
+      const scaledTotal = rawTotal > 1.5 ? rawTotal / 100 : rawTotal
+
+      GROUPS.forEach((group) => {
+        const rawValue = rawWeights[group.key] || 0
+        const scaledValue = rawTotal > 1.5 ? rawValue / 100 : rawValue
+        weights[group.key] = scaledTotal > 0 ? scaledValue / scaledTotal : 0
+      })
+    } else {
+      const distribution = proposal.distribution ?? null
+      if (distribution) {
+        const baseValues = {
+          treasuries: 0,
+          aaa_a: distribution.bonds_aaa_a ?? 0,
+          bbb: distribution.bonds_bbb ?? 0,
+          bb: distribution.bonds_bb ?? 0,
+          etfs: distribution.etfs ?? 0,
+        }
+        const rawValues = Object.values(baseValues)
+        const maxValue = Math.max(0, ...rawValues)
+        const sumValues = rawValues.reduce((sum, value) => sum + value, 0)
+        const isPercentage = maxValue > 1 || sumValues > 1.01
+
+        GROUPS.forEach((group) => {
+          const rawValue = baseValues[group.key as keyof typeof baseValues] ?? 0
+          weights[group.key] = isPercentage ? rawValue / 100 : rawValue
+        })
+      }
+    }
+
     // Build pie data where "count" actually represents the allocation percentage (×100 for nicer numbers)
     const pieData = GROUPS.map(group => {
-      const bonds = proposal[group.key as keyof typeof proposal] as Bond[]
+      const bonds = groupedBonds[group.key as keyof typeof groupedBonds] as Bond[]
       return {
         name: group.label,
         // use percentage * 100 so the PieChart adds up to ~100 (or 1 if required)
@@ -174,7 +236,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
 
     // Calculate stats per rating (table) – we still want the actual # of bonds
     const perRating = GROUPS.map(group => {
-      const bonds = proposal[group.key as keyof typeof proposal] as Bond[]
+      const bonds = groupedBonds[group.key as keyof typeof groupedBonds] as Bond[]
       const avgYield = bonds.length
         ? bonds.reduce((s, b) => s + (b['current_yield'] || 0), 0) / bonds.length
         : 0
@@ -201,7 +263,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       perRating,
     }
 
-    return { pieData, summaryStats }
+    return { pieData, summaryStats, groupedBonds }
   }, [investmentProposal])
   
   const bondColumns: ColumnDefinition<Bond>[] = [
@@ -382,12 +444,14 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
         <div className="space-y-6">
               <h2 className="text-3xl font-bold text-foreground">Detailed Bond Analysis</h2>
               {GROUPS.map((group) => {
-                const bonds = investmentProposal
-                  ? (investmentProposal[group.key as keyof typeof investmentProposal] as any[])
+                const bonds = chartData?.groupedBonds
+                  ? (chartData.groupedBonds[group.key as keyof typeof chartData.groupedBonds] as any[])
                   : []
                 const title =
                   group.key === 'etfs'
                     ? 'ETFs'
+                    : group.key === 'treasuries'
+                      ? 'Treasuries'
                     : `${group.label} Rated Bonds`
                 return (
                   <Card key={group.key} className="p-6 space-y-6 export-page">

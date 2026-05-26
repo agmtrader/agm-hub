@@ -7,6 +7,7 @@ export interface Bond {
 }
 
 export const investmentProposalDistributionKeys = [
+    'treasuries',
     'bonds_aaa_a',
     'bonds_bbb',
     'bonds_bb',
@@ -19,6 +20,7 @@ export type InvestmentProposalDistribution = Record<InvestmentProposalDistributi
 
 export interface InvestmentProposalPayload {
     risk_profile_id: string
+    treasury?: Bond[]
     aaa_a: Bond[]
     bbb: Bond[]
     bb: Bond[]
