@@ -176,51 +176,12 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       etfs: proposal.etfs ?? [],
     }
 
-    const allBonds = Object.values(groupedBonds).flat()
-    const hasPercentageWeights = allBonds.some((bond: any) => Number(bond?.percentage) > 0)
-
+    const totalAssetCount = Object.values(groupedBonds).reduce((sum, bonds) => sum + bonds.length, 0)
     const weights = GROUPS.reduce((acc, group) => {
-      acc[group.key] = 0
+      const bonds = groupedBonds[group.key as keyof typeof groupedBonds] ?? []
+      acc[group.key] = totalAssetCount > 0 ? bonds.length / totalAssetCount : 0
       return acc
     }, {} as Record<string, number>)
-
-    if (hasPercentageWeights) {
-      const rawWeights = GROUPS.reduce((acc, group) => {
-        const bonds = groupedBonds[group.key as keyof typeof groupedBonds] ?? []
-        const bucketWeight = bonds.reduce((sum, bond: any) => sum + (Number(bond?.percentage) || 0), 0)
-        acc[group.key] = bucketWeight
-        return acc
-      }, {} as Record<string, number>)
-
-      const rawTotal = Object.values(rawWeights).reduce((sum, value) => sum + value, 0)
-      const scaledTotal = rawTotal > 1.5 ? rawTotal / 100 : rawTotal
-
-      GROUPS.forEach((group) => {
-        const rawValue = rawWeights[group.key] || 0
-        const scaledValue = rawTotal > 1.5 ? rawValue / 100 : rawValue
-        weights[group.key] = scaledTotal > 0 ? scaledValue / scaledTotal : 0
-      })
-    } else {
-      const distribution = proposal.distribution ?? null
-      if (distribution) {
-        const baseValues = {
-          treasuries: 0,
-          aaa_a: distribution.bonds_aaa_a ?? 0,
-          bbb: distribution.bonds_bbb ?? 0,
-          bb: distribution.bonds_bb ?? 0,
-          etfs: distribution.etfs ?? 0,
-        }
-        const rawValues = Object.values(baseValues)
-        const maxValue = Math.max(0, ...rawValues)
-        const sumValues = rawValues.reduce((sum, value) => sum + value, 0)
-        const isPercentage = maxValue > 1 || sumValues > 1.01
-
-        GROUPS.forEach((group) => {
-          const rawValue = baseValues[group.key as keyof typeof baseValues] ?? 0
-          weights[group.key] = isPercentage ? rawValue / 100 : rawValue
-        })
-      }
-    }
 
     // Build pie data where "count" actually represents the allocation percentage (×100 for nicer numbers)
     const pieData = GROUPS.map(group => {
