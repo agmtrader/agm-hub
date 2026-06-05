@@ -56,7 +56,7 @@ export const products = (t: (key: string) => string) => [
     name: t('main.products.trader.title'),
     title: t('main.products.trader.short_description'),
     description: t('main.products.trader.description'),
-    icon: '/assets/brand/agm-logo-circle.png',
+    icon: '/assets/brand/agm-logo-triangles.png',
     download_url: '/downloads/trader',
     platforms: [
       { type: 'Windows', icon: FaWindows, osType: osTypes.WINDOWS },
@@ -69,7 +69,7 @@ export const products = (t: (key: string) => string) => [
     name: t('main.products.mobile.title'),
     title: t('main.products.mobile.short_description'),
     description: t('main.products.mobile.description'),
-    icon: '/assets/brand/agm-logo-circle.png',
+    icon: '/assets/brand/agm-logo-triangles.png',
     download_url: '/downloads/mobile',
     platforms: [
       { type: 'Android', icon: FaAndroid, osType: osTypes.ANDROID },
@@ -81,7 +81,7 @@ export const products = (t: (key: string) => string) => [
     name: t('main.products.web_portal.title'),
     title: t('main.products.web_portal.short_description'),
     description: t('main.products.web_portal.description'),
-    icon: '/assets/brand/agm-logo-circle.png',
+    icon: '/assets/brand/agm-logo-triangles.png',
     download_url: 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022',
     isExternal: true,
     platforms: [

@@ -1,10 +1,11 @@
-import { SVGProps } from "react";
+import { ReactNode, SVGProps } from "react";
 
 export interface Iphone15ProProps extends SVGProps<SVGSVGElement> {
   width?: number;
   height?: number;
   src?: string;
   videoSrc?: string;
+  screen?: ReactNode;
 }
 
 export default function Iphone15Pro({
@@ -12,6 +13,7 @@ export default function Iphone15Pro({
   height = 882,
   src,
   videoSrc,
+  screen,
   ...props
 }: Iphone15ProProps) {
   return (
@@ -57,7 +59,24 @@ export default function Iphone15Pro({
         className="fill-[#E5E5E5] stroke-[#E5E5E5] stroke-[0.5] dark:fill-[#404040] dark:stroke-[#404040]"
       />
 
-      {src && (
+      {screen && (
+        <g clipPath="url(#roundedCorners)">
+          <rect x="21.25" y="19.25" width="389.5" height="843.5" fill="#ffffff" />
+          <svg
+            x="21.25"
+            y="19.25"
+            width="389.5"
+            height="843.5"
+            viewBox="0 0 390 844"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <g transform="translate(18 22) scale(0.91 0.94)">
+              {screen}
+            </g>
+          </svg>
+        </g>
+      )}
+      {!screen && src && (
         <image
           href={src}
           x="21.25"

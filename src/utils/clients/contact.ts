@@ -64,12 +64,19 @@ export async function UploadContactDocument(
 
 export async function ReadContactDocuments(
     contactID?: string,
-    options?: { includeData?: boolean; includeDocuments?: boolean }
+    options?: { includeData?: boolean; includeDocuments?: boolean; documentIds?: string[] }
 ): Promise<{documents: InternalDocument[], contact_documents: any[]}> {
     const includeData = options?.includeData ? 'true' : 'false'
     const includeDocuments = options?.includeDocuments === false ? 'false' : 'true'
-    const contactQuery = contactID ? `contact_id=${encodeURIComponent(contactID)}&` : ''
-    return accessAPI(`/contacts/documents?${contactQuery}include_data=${includeData}&include_documents=${includeDocuments}`, 'GET')
+    const params = new URLSearchParams({
+        include_data: includeData,
+        include_documents: includeDocuments,
+    })
+    if (contactID) params.set('contact_id', contactID)
+    for (const documentId of options?.documentIds || []) {
+        if (documentId) params.append('document_id', documentId)
+    }
+    return accessAPI(`/contacts/documents?${params.toString()}`, 'GET')
 }
 
 export async function UpdateContactDocument(

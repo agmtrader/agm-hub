@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { FileText, Trash, Upload } from 'lucide-react'
+import { Eye, FileText, Trash, Upload } from 'lucide-react'
 import { ColumnDefinition, DataTable } from '@/components/misc/DataTable'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { FileUploader, FileInput, FileUploaderContent, FileUploaderItem } from '@/components/ui/file-upload'
@@ -16,6 +16,8 @@ import { calculateSHA1, getBase64 } from '@/utils/clients/documents'
 import { formatTimestamp, getDateObjectFromTimestamp } from '@/utils/dates'
 import { documentCategories } from '@/lib/clients/documents'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+import DocumentViewer from '@/components/misc/DocumentViewer'
+import type { InternalDocument } from '@/lib/clients/documents'
 
 type Props = {
   contactId: string
@@ -31,6 +33,9 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
   const [isUploading, setIsUploading] = useState(false)
   const [files, setFiles] = useState<File[] | null>(null)
   const [editingRow, setEditingRow] = useState<any | null>(null)
+  const [selectedDocument, setSelectedDocument] = useState<InternalDocument | null>(null)
+  const [selectedDocumentName, setSelectedDocumentName] = useState<string>('')
+  const [isViewerOpen, setIsViewerOpen] = useState(false)
 
   const [documentCategory, setDocumentCategory] = useState<string>('')
   const [documentType, setDocumentType] = useState<string>('')
@@ -112,6 +117,27 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
     }
   }
 
+  async function handleView(row: any) {
+    if (!row?.document_id) return
+    try {
+      const resp = await ReadContactDocuments(contactId, {
+        includeData: true,
+        includeDocuments: true,
+        documentIds: [row.document_id],
+      })
+      const document = (resp?.documents || []).find((doc) => doc.id === row.document_id) || resp?.documents?.[0] || null
+      if (!document?.data) {
+        toast({ title: 'Error', description: 'No raw document data returned from /contacts/documents', variant: 'destructive' })
+        return
+      }
+      setSelectedDocument(document)
+      setSelectedDocumentName(row?.file_name || document.file_name || `Document ${row.document_id}`)
+      setIsViewerOpen(true)
+    } catch {
+      toast({ title: 'Error', description: 'Failed to load document data from /contacts/documents', variant: 'destructive' })
+    }
+  }
+
   async function handleSaveEdit() {
     if (!editingRow?.document_id) return
     if (availableTypes?.length && !documentType) {
@@ -143,6 +169,11 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
   ]
 
   const rowActions = [
+    {
+      label: 'View',
+      icon: Eye,
+      onClick: handleView
+    },
     {
       label: 'Edit',
       icon: FileText,
@@ -243,6 +274,12 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
           </div>
         </DialogContent>
       </Dialog>
+      <DocumentViewer
+        isOpen={isViewerOpen}
+        onOpenChange={setIsViewerOpen}
+        document={selectedDocument}
+        documentName={selectedDocumentName}
+      />
     </>
   )
 }

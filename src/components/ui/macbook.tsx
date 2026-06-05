@@ -1,10 +1,11 @@
-import { SVGProps } from "react";
+import { ReactNode, SVGProps } from "react";
 
 export interface MacbookProps extends SVGProps<SVGSVGElement> {
   width?: number;
   height?: number;
   src?: string;
   videoSrc?: string;
+  screen?: ReactNode;
 }
 
 export default function Macbook({
@@ -12,6 +13,7 @@ export default function Macbook({
   height = 390,
   src,
   videoSrc,
+  screen,
   ...props
 }: MacbookProps) {
   return (
@@ -24,10 +26,6 @@ export default function Macbook({
       {...props}
     >
       {/* Screen lid outer */}
-      <path
-        d="M68 0C68 0 68 0 68 20C68 8.954 76.954 0 88 0H592C603.046 0 612 8.954 612 20V20L612 0H68Z"
-        className="fill-[#E5E5E5] dark:fill-[#404040]"
-      />
       <rect
         x="68"
         y="0"
@@ -55,13 +53,22 @@ export default function Macbook({
         y="16"
         width="512"
         height="328"
-        rx="8"
-        ry="8"
+        rx="18"
+        ry="18"
         className="fill-[#E5E5E5] dark:fill-[#404040]"
       />
 
+      {screen && (
+        <g clipPath="url(#macbookScreenClip)">
+          <rect x="84" y="16" width="512" height="328" fill="#ffffff" />
+          <g transform="translate(84 16) scale(0.32 0.3644444)">
+            {screen}
+          </g>
+        </g>
+      )}
+
       {/* Image content */}
-      {src && (
+      {!screen && src && (
         <image
           href={src}
           x="84"
@@ -127,8 +134,8 @@ export default function Macbook({
             y="16"
             width="512"
             height="328"
-            rx="8"
-            ry="8"
+            rx="18"
+            ry="18"
           />
         </clipPath>
       </defs>

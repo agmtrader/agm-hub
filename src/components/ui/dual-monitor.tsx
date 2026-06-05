@@ -1,10 +1,12 @@
-import { SVGProps } from "react";
+import { ReactNode, SVGProps } from "react";
 
 export interface DualMonitorProps extends SVGProps<SVGSVGElement> {
   width?: number;
   height?: number;
   srcLeft?: string;
   srcRight?: string;
+  screenLeft?: ReactNode;
+  screenRight?: ReactNode;
 }
 
 export default function DualMonitor({
@@ -12,6 +14,8 @@ export default function DualMonitor({
   height = 400,
   srcLeft,
   srcRight,
+  screenLeft,
+  screenRight,
   ...props
 }: DualMonitorProps) {
   return (
@@ -39,8 +43,16 @@ export default function DualMonitor({
         d="M22 14H456V263H22C17.582 263 14 259.418 14 255V22C14 17.582 17.582 14 22 14Z"
         className="fill-[#E5E5E5] dark:fill-[#404040]"
       />
+      {screenLeft && (
+        <g clipPath="url(#dualMonitorLeftClip)">
+          <rect x="14" y="14" width="442" height="249" fill="#ffffff" />
+          <g transform="translate(14 14) scale(0.27625 0.2766667)">
+            {screenLeft}
+          </g>
+        </g>
+      )}
       {/* Left image content */}
-      {srcLeft && (
+      {!screenLeft && srcLeft && (
         <image
           href={srcLeft}
           x="14"
@@ -73,8 +85,16 @@ export default function DualMonitor({
         d="M484 14H918C922.418 14 926 17.582 926 22V255C926 259.418 922.418 263 918 263H484V14Z"
         className="fill-[#E5E5E5] dark:fill-[#404040]"
       />
+      {screenRight && (
+        <g clipPath="url(#dualMonitorRightClip)">
+          <rect x="484" y="14" width="442" height="249" fill="#ffffff" />
+          <g transform="translate(484 14) scale(0.27625 0.2766667)">
+            {screenRight}
+          </g>
+        </g>
+      )}
       {/* Right image content */}
-      {srcRight && (
+      {!screenRight && srcRight && (
         <image
           href={srcRight}
           x="484"

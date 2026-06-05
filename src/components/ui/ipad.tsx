@@ -1,10 +1,11 @@
-import { SVGProps } from "react";
+import { ReactNode, SVGProps } from "react";
 
 export interface IPadProps extends SVGProps<SVGSVGElement> {
   width?: number;
   height?: number;
   src?: string;
   videoSrc?: string;
+  screen?: ReactNode;
 }
 
 export default function IPad({
@@ -12,6 +13,7 @@ export default function IPad({
   height = 778,
   src,
   videoSrc,
+  screen,
   ...props
 }: IPadProps) {
   return (
@@ -39,8 +41,17 @@ export default function IPad({
         className="fill-[#E5E5E5] stroke-[#E5E5E5] stroke-[0.5] dark:fill-[#404040] dark:stroke-[#404040]"
       />
 
+      {screen && (
+        <g clipPath="url(#ipadRoundedCorners)">
+          <rect x="18" y="15" width="524" height="748" fill="#ffffff" />
+          <g transform="translate(542 15) rotate(90) scale(0.585 0.682292)">
+            {screen}
+          </g>
+        </g>
+      )}
+
       {/* Image content */}
-      {src && (
+      {!screen && src && (
         <image
           href={src}
           x="18"

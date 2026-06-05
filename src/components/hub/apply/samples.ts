@@ -757,3 +757,266 @@ export const institutional_form: Application = {
     "masterAccountId": null,
     "id": null
 }
+
+export const joaquin:Application = {
+  "id": null,
+  "users": [
+    {
+      "prefix": "jarias",
+      "externalUserId": "f1bb55b7-6dca-4b9d-bbc5-dfbd62f09e93",
+      "externalIndividualId": "f1bb55b7-6dca-4b9d-bbc5-dfbd62f09e93"
+    }
+  ],
+  "accounts": [
+    {
+      "margin": "Cash",
+      "externalId": "f1bb55b7-6dca-4b9d-bbc5-dfbd62f09e93",
+      "baseCurrency": "USD",
+      "capabilities": [
+        "CLP"
+      ],
+      "multiCurrency": true,
+      "tradingPermissions": [
+        {
+          "country": "UNITED STATES",
+          "product": "BONDS"
+        },
+        {
+          "country": "UNITED STATES",
+          "product": "MUTUAL FUNDS"
+        },
+        {
+          "country": "CANADA",
+          "product": "MUTUAL FUNDS"
+        },
+        {
+          "country": "UNITED KINGDOM",
+          "product": "MUTUAL FUNDS"
+        },
+        {
+          "country": "GERMANY",
+          "product": "MUTUAL FUNDS"
+        },
+        {
+          "country": "JAPAN",
+          "product": "MUTUAL FUNDS"
+        },
+        {
+          "country": "AUSTRALIA",
+          "product": "MUTUAL FUNDS"
+        },
+        {
+          "country": "UNITED STATES",
+          "product": "OPTIONS"
+        },
+        {
+          "country": "CANADA",
+          "product": "OPTIONS"
+        },
+        {
+          "country": "UNITED KINGDOM",
+          "product": "OPTIONS"
+        },
+        {
+          "country": "GERMANY",
+          "product": "OPTIONS"
+        },
+        {
+          "country": "JAPAN",
+          "product": "OPTIONS"
+        },
+        {
+          "country": "AUSTRALIA",
+          "product": "OPTIONS"
+        },
+        {
+          "country": "UNITED STATES",
+          "product": "STOCKS"
+        },
+        {
+          "country": "CANADA",
+          "product": "STOCKS"
+        },
+        {
+          "country": "UNITED KINGDOM",
+          "product": "STOCKS"
+        },
+        {
+          "country": "GERMANY",
+          "product": "STOCKS"
+        },
+        {
+          "country": "JAPAN",
+          "product": "STOCKS"
+        },
+        {
+          "country": "AUSTRALIA",
+          "product": "STOCKS"
+        },
+        {
+          "country": "UNITED STATES",
+          "product": "FUTURES"
+        },
+        {
+          "country": "CANADA",
+          "product": "FUTURES"
+        },
+        {
+          "country": "UNITED KINGDOM",
+          "product": "FUTURES"
+        },
+        {
+          "country": "GERMANY",
+          "product": "FUTURES"
+        },
+        {
+          "country": "JAPAN",
+          "product": "FUTURES"
+        },
+        {
+          "country": "AUSTRALIA",
+          "product": "FUTURES"
+        }
+      ],
+      "investmentObjectives": [
+        "Income",
+        "Growth"
+      ]
+    }
+  ],
+  "customer": {
+    "type": "INDIVIDUAL",
+    "email": "yoakkin@gmail.com",
+    "prefix": "jarias",
+    "externalId": "f1bb55b7-6dca-4b9d-bbc5-dfbd62f09e93",
+    "accountHolder": {
+      "accountHolderDetails": [
+        {
+          "name": {
+            "last": "Arias Robles",
+            "first": "Joaquin Alberto"
+          },
+          "email": "yoakkin@gmail.com",
+          "w8Ben": {
+            "cert": true,
+            "name": "Joaquin Alberto Arias Robles",
+            "blankForm": true,
+            "taxFormFile": "Form5001.pdf",
+            "foreignTaxId": "109900839",
+            "localTaxForms": [],
+            "signatureType": "Electronic",
+            "part29ACountry": "N/A",
+            "electronicFormat": true,
+            "tinOrExplanationRequired": true
+          },
+          "phones": [
+            {
+              "type": "Mobile",
+              "number": "83684956",
+              "country": "CRI"
+            }
+          ],
+          "externalId": "f1bb55b7-6dca-4b9d-bbc5-dfbd62f09e93",
+          "dateOfBirth": "1978-01-12",
+          "maritalStatus": "D",
+          "numDependents": 1,
+          "countryOfBirth": "CRI",
+          "employmentType": "EMPLOYED",
+          "identification": {
+            "citizenship": "CRI",
+            "nationalCard": "109900839",
+            "expirationDate": "2034-02-06",
+            "issuingCountry": "CRI"
+          },
+          "mailingAddress": null,
+          "taxResidencies": [
+            {
+              "tin": "109900839",
+              "country": "CRI",
+              "tinType": "NonUS_NationalId"
+            }
+          ],
+          "sameMailAddress": true,
+          "residenceAddress": {
+            "city": "Escazu",
+            "state": "CR-SJ",
+            "country": "CRI",
+            "street1": "San Antonio de Escazu, Barrio el Carmen, del super Aguimar 50m",
+            "street2": "Casa a Mano Derecha",
+            "postalCode": "10202"
+          },
+          "employmentDetails": {
+            "employer": "Banco Nacional de Costa Rica",
+            "occupation": "IT Engineer",
+            "description": null,
+            "employerAddress": {
+              "city": "San Jose",
+              "state": "CR-SJ",
+              "country": "CRI",
+              "street1": "San Jose Centro, Avenidas 1 y 3, Calles 2 y 4",
+              "street2": null,
+              "postalCode": "10101"
+            },
+            "employerBusiness": "Finance/Broker Dealer/Bank"
+          }
+        }
+      ],
+      "financialInformation": [
+        {
+          "netWorth": "6",
+          "liquidNetWorth": "5",
+          "annualNetIncome": "5",
+          "sourcesOfWealth": [
+            {
+              "percentage": 100,
+              "sourceType": "SOW-IND-Income"
+            }
+          ],
+          "investmentExperience": [
+            {
+              "assetClass": "STK",
+              "yearsTrading": 1,
+              "tradesPerYear": 10,
+              "knowledgeLevel": "Limited"
+            }
+          ],
+          "investmentObjectives": [
+            "Income",
+            "Growth"
+          ]
+        }
+      ],
+      "regulatoryInformation": [
+        {
+          "regulatoryDetails": [
+            {
+              "code": "AFFILIATION",
+              "status": false,
+              "details": "Affiliated with Interactive Brokers"
+            },
+            {
+              "code": "EmployeePubTrade",
+              "status": false,
+              "details": "Employee is not trading publicly"
+            },
+            {
+              "code": "ControlPubTraded",
+              "status": false,
+              "details": "Controlled trading is not allowed"
+            }
+          ]
+        }
+      ]
+    },
+    "mdStatusNonPro": true,
+    "meetAmlStandard": "true",
+    "directTradingAccess": true,
+    "legalResidenceCountry": "CRI"
+  },
+  "documents": [],
+  "translation": null,
+  "paperAccount": null,
+  "inputLanguage": null,
+  "masterAccountId": null,
+  "additionalAccounts": null
+}
