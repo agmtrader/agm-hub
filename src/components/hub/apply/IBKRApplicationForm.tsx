@@ -780,10 +780,16 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
       'INFO',
     );
 
+    if (currentStep === FormStep.ACCOUNT_TYPE) {
+      const next = currentStep + 1;
+      setCurrentStep(next as FormStep);
+      return;
+    }
+
     if (currentStep === FormStep.AGREEMENTS) {
       try {
         setIsSubmitting(true);
-        await saveProgress();
+        await saveProgress({ finalizeApplication: true });
         void sendClientLog(
           'form_submission_success',
           {
@@ -823,7 +829,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     }
 
     try {
-      await saveProgress();
+      await saveProgress({ prepareContacts: currentStep + 1 === FormStep.DOCUMENTS });
       void sendClientLog(
         'form_step_save_success',
         {
@@ -860,19 +866,22 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     }
   };
 
-  async function saveProgress(stepOverride?: FormStep): Promise<{ persistedAccountId: string | null; linkedContacts: LinkedContact[] }> {
-    const stepAtSave = stepOverride ?? currentStep;
+  async function saveProgress(
+    options: { stepOverride?: FormStep; prepareContacts?: boolean; finalizeApplication?: boolean } = {},
+  ): Promise<{ persistedAccountId: string | null; linkedContacts: LinkedContact[] }> {
+    const stepAtSave = options.stepOverride ?? currentStep;
+    const prepareContacts = options.prepareContacts === true;
+    const finalizeApplication = options.finalizeApplication === true;
     
     const currentValues = form.getValues();
 
     const valuesWithNormalizedW8Signers = normalizeJointW8Signers(currentValues);
     const sanitizedValues = sanitizeApplication(valuesWithNormalizedW8Signers);
     const storageValues = buildApplicationJsonForStorage(sanitizedValues);
-    const shouldPersistContacts = stepAtSave >= FormStep.PERSONAL_INFO;
-    const shouldCreateScreenings = stepAtSave >= FormStep.AGREEMENTS;
-    const linkedContacts = shouldPersistContacts ? await ensureContacts(sanitizedValues) : [];
+    const shouldSyncContacts = prepareContacts || finalizeApplication;
+    const linkedContacts = shouldSyncContacts ? await ensureContacts(sanitizedValues) : [];
 
-    if (shouldPersistContacts && linkedContacts.length === 0) {
+    if (shouldSyncContacts && linkedContacts.length === 0) {
       return { persistedAccountId: accountId, linkedContacts };
     }
 
@@ -912,15 +921,15 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
       return { persistedAccountId: null, linkedContacts };
     }
 
-    if (shouldPersistContacts && linkedContacts.length > 0) {
+    if (shouldSyncContacts && linkedContacts.length > 0) {
       await ensureAccountContactLinks(persistedAccountId, linkedContacts);
     }
 
-    if (shouldCreateScreenings && linkedContacts.length > 0) {
+    if (finalizeApplication && linkedContacts.length > 0) {
       await ensureContactScreenings(linkedContacts);
     }
 
-    if (stepAtSave >= FormStep.DOCUMENTS && linkedContacts.length > 0) {
+    if (finalizeApplication && linkedContacts.length > 0) {
       await ensureContactDocuments(persistedAccountId, sanitizedValues, linkedContacts);
     }
     return { persistedAccountId, linkedContacts };

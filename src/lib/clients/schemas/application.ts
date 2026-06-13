@@ -307,7 +307,7 @@ export const account_holder_details_schema = z.object({
   email: z.string({errorMap: () => ({ message: 'Required' })}).email({message: 'Invalid'}),
   residenceAddress: address_schema,
   sameMailAddress: z.boolean({errorMap: () => ({ message: 'Required' })}),
-  mailingAddress: address_schema.optional().nullable(),
+  mailingAddress: z.any().optional().nullable(),
   countryOfBirth: z.string({errorMap: () => ({ message: 'Required' })}),
   dateOfBirth: z.string({errorMap: () => ({ message: 'Required' })}),
   maritalStatus: z.string({errorMap: () => ({ message: 'Required' })}),
@@ -330,6 +330,18 @@ export const account_holder_details_schema = z.object({
     code: z.string().optional().nullable()
   })).optional(),
 }).superRefine((data, ctx) => {
+  if (data.sameMailAddress === false) {
+    const result = address_schema.safeParse(data.mailingAddress);
+    if (!result.success) {
+      result.error.issues.forEach(issue => {
+        ctx.addIssue({
+          ...issue,
+          path: ['mailingAddress', ...issue.path]
+        });
+      });
+    }
+  }
+
   if (['EMPLOYED', 'SELFEMPLOYED'].includes(data.employmentType)) {
     if (data.employmentDetails) {
       const result = employment_details_schema.safeParse(data.employmentDetails);

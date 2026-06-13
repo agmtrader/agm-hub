@@ -52,6 +52,8 @@ export function getApplicationDefaults<Schema extends z.AnyZodObject>(schema: Sc
         customer: {
             accountHolder: {
                 accountHolderDetails: [{
+                    sameMailAddress: true,
+                    mailingAddress: null,
                     w8Ben: { ...defaultW8Ben }
                 }],
                 financialInformation: [{
@@ -63,9 +65,13 @@ export function getApplicationDefaults<Schema extends z.AnyZodObject>(schema: Sc
             },
             jointHolders: {
                 firstHolderDetails: [{
+                    sameMailAddress: true,
+                    mailingAddress: null,
                     w8Ben: { ...defaultW8Ben }
                 }],
                 secondHolderDetails: [{
+                    sameMailAddress: true,
+                    mailingAddress: null,
                     w8Ben: { ...defaultW8Ben }
                 }],
                 regulatoryInformation: defaultRegulatoryInfo,
@@ -73,6 +79,8 @@ export function getApplicationDefaults<Schema extends z.AnyZodObject>(schema: Sc
             organization: {
                 associatedEntities: {
                     associatedIndividuals: [{
+                        sameMailAddress: true,
+                        mailingAddress: null,
                         w8Ben: { ...defaultW8Ben }
                     }]
                 },

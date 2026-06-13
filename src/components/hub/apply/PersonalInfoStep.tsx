@@ -523,6 +523,31 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
     });
   };
 
+  const syncMailingAddresses = (holderPaths: string[] = []) => {
+    holderPaths.forEach((path) => {
+      const sameMailAddressPath = `${path}.sameMailAddress` as any;
+      const mailingAddressPath = `${path}.mailingAddress` as any;
+
+      if (form.getValues(sameMailAddressPath) !== true) {
+        form.setValue(sameMailAddressPath, true, {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        });
+      }
+
+      if (form.getValues(mailingAddressPath) !== null) {
+        form.setValue(mailingAddressPath, null, {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        });
+      }
+
+      form.clearErrors([sameMailAddressPath, mailingAddressPath]);
+    });
+  };
+
   // When an account holder is employed, we auto fill the source of wealth here because Income is required as a source of wealth for employed account holders.
   const syncSourcesOfWealth = (value: Application, name?: string) => {
     if (!name?.includes("employmentType")) return;
@@ -699,6 +724,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
       syncIdentificationNumber(name);
       syncTaxResidencies(value as Application, name, holderPaths);
       syncPhoneTypes(holderPaths);
+      syncMailingAddresses(holderPaths);
       syncW8BenForm(value as Application, name);
       syncSourcesOfWealth(value as Application, name);
       syncOrganizationBusinessDescription(value as Application, name);
@@ -713,6 +739,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
   useEffect(() => {
     const holderPaths = taxResidencyPathsByType[accountType ?? ""] ?? [];
     syncPhoneTypes(holderPaths);
+    syncMailingAddresses(holderPaths);
   }, [accountType, form]);
 
   // Manual validation for Identification fields (Type and Number)
@@ -1125,45 +1152,6 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
 
         <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.residence_address')}</h4>
         {renderAddressFields(`${basePath}.residenceAddress`)}
-        <FormField
-          control={form.control}
-          name={`${basePath}.sameMailAddress` as any}
-          render={({ field }) => (
-            <FormItem>
-              <div className='flex flex-row gap-2 items-center'>
-                <FormLabel>{t('apply.account.account_holder_info.same_mailing_address')}</FormLabel>
-                <FormMessage />
-              </div>
-              <Select
-                onValueChange={(val) => {
-                  const boolVal = val === 'true';
-                  field.onChange(boolVal);
-                  if (boolVal) {
-                    const residenceAddr = form.getValues(`${basePath}.residenceAddress` as any);
-                    form.setValue(`${basePath}.mailingAddress` as any, residenceAddr);
-                  }
-                }}
-                defaultValue={field.value?.toString() ?? null}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="true">{t('apply.account.account_holder_info.yes')}</SelectItem>
-                  <SelectItem value="false">{t('apply.account.account_holder_info.no')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-        {form.watch(`${basePath}.sameMailAddress` as any) === false && (
-          <>
-            <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.mailing_address')}</h4>
-            {renderAddressFields(`${basePath}.mailingAddress`)}
-          </>
-        )}
 
         <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.contact_information')}</h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
