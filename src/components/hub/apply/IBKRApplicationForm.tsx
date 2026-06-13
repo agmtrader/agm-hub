@@ -25,6 +25,7 @@ import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/
 import { CreateAccountContact, ReadAccountContacts, UpdateAccountContact } from '@/utils/clients/account_contact'
 import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactDocuments, ReadContactScreenings, UploadContactDocument } from '@/utils/clients/contact'
 import { individual_form, individual_form_2, joint_form } from './samples'
+import { Loader2 } from 'lucide-react'
 
 export enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -61,6 +62,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreparingDocuments, setIsPreparingDocuments] = useState(false);
   const [accountId, setAccountId] = useState<string | null>(null);
 
   const [financialRanges, setFinancialRanges] = useState<FinancialRange[]>([]);
@@ -829,7 +831,9 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     }
 
     try {
-      await saveProgress({ prepareContacts: currentStep + 1 === FormStep.DOCUMENTS });
+      const prepareContacts = currentStep + 1 === FormStep.DOCUMENTS;
+      if (prepareContacts) setIsPreparingDocuments(true);
+      await saveProgress({ prepareContacts });
       void sendClientLog(
         'form_step_save_success',
         {
@@ -863,6 +867,8 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
         description: 'Failed to save progress.',
         variant: 'destructive'
       });
+    } finally {
+      setIsPreparingDocuments(false);
     }
   };
 
@@ -1017,8 +1023,20 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
               <div className="space-y-8">
                 <RegulatoryInfoStep form={form} />
                 <div className="flex justify-between">
-                  <Button type="button" variant="outline" onClick={handlePreviousStep}>Previous</Button>
-                  <Button type="button" onClick={handleNextStep} className="bg-primary text-background hover:bg-primary/90">Next</Button>
+                  <Button type="button" variant="outline" onClick={handlePreviousStep} disabled={isPreparingDocuments}>Previous</Button>
+                  <Button
+                    type="button"
+                    onClick={handleNextStep}
+                    disabled={isPreparingDocuments}
+                    className="bg-primary text-background hover:bg-primary/90"
+                  >
+                    {isPreparingDocuments ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Preparing documents...
+                      </span>
+                    ) : 'Next'}
+                  </Button>
                 </div>
               </div>
             )}
