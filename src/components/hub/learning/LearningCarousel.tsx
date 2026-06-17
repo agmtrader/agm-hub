@@ -1,28 +1,27 @@
-import * as React from "react"
+import * as React from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { chapters } from '@/lib/public/resource-center'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 export function LearningCarousel() {
-
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: 'center',
     slidesToScroll: 1,
     breakpoints: {
       '(min-width: 768px)': { slidesToScroll: 2 },
-      '(min-width: 1024px)': { slidesToScroll: 3 }
-    }
+      '(min-width: 1024px)': { slidesToScroll: 3 },
+    },
   })
 
-  const { lang , t } = useTranslationProvider()
+  const { lang, t } = useTranslationProvider()
 
   const getChapterTitle = (chapterId: string, fallbackTitle: string) => {
     const translated = t(`learning.chapters.${chapterId}.title`)
@@ -44,12 +43,12 @@ export function LearningCarousel() {
           {chapters.map((chapter) => (
             <div key={chapter.id} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.33%] px-4">
               <div className="p-1 h-full">
-                <Link href={formatURL(`/learning/${chapter.id}`, lang)} className="h-full">
+                <Link href={formatURL(`/resource-center/learning/${chapter.id}`, lang)} className="h-full">
                   <Card className="h-full flex flex-col">
                     <CardContent className="flex-1 p-6 flex items-center justify-center">
                       <div className="relative w-full aspect-video">
-                        <Image 
-                          src={chapter.image || ''} 
+                        <Image
+                          src={chapter.image || ''}
                           alt={getChapterTitle(chapter.id, chapter.title)}
                           fill
                           className="object-cover rounded-lg"
@@ -58,7 +57,8 @@ export function LearningCarousel() {
                     </CardContent>
                     <CardHeader className="pt-2 pb-4">
                       <p className="text-md font-semibold text-center">
-                        {t('learning.chapter_label')} {chapter.id}: <span className="font-normal">{getChapterTitle(chapter.id, chapter.title)}</span>
+                        {t('learning.chapter_label')} {chapter.id}:{' '}
+                        <span className="font-normal">{getChapterTitle(chapter.id, chapter.title)}</span>
                       </p>
                     </CardHeader>
                   </Card>
@@ -78,4 +78,4 @@ export function LearningCarousel() {
       </Button>
     </div>
   )
-} 
+}

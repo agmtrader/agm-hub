@@ -1,0 +1,167 @@
+'use client'
+
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { ArrowLeft, ExternalLink } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatURL } from '@/utils/language/lang'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+
+const OFFICIAL_GUIDE_URL = 'https://www.ibkrguides.com/clientportal/optionstradingpermissions.htm'
+
+const guideContent = {
+  en: {
+    eyebrow: 'Trading',
+    title: 'Options Trading Permissions',
+    description:
+      'This guide follows the IBKR Client Portal options permissions flow and summarizes the four options approval levels.',
+    back: 'Back to Resource Center',
+    openGuide: 'Open official guide',
+    instructionsTitle: 'How to request an options level',
+    steps: [
+      {
+        title: 'Open Trading Permissions',
+        body: 'Click the User menu in the top-right corner, then Settings > Trading > Trading Permissions.',
+      },
+      {
+        title: 'Open the options level selector',
+        body: 'On the Trading Permissions panel, select the Options Level control.',
+      },
+      {
+        title: 'Choose the desired level',
+        body: 'Select the options trading level you want to request.',
+      },
+      {
+        title: 'Continue to save',
+        body: 'Press Continue to save the changes.',
+      },
+    ],
+    levelsTitle: 'Options levels overview',
+    levels: [
+      { title: 'Level 1', body: 'Covered Call/Covered Basket Call and Buy Write.' },
+      { title: 'Level 2', body: 'Everything in Level 1 plus long calls, long puts, protective strategies, long straddles/strangles, conversions, long spreads, long iron condors, long box spreads, collars, and short collars.' },
+      { title: 'Level 3', body: 'Everything in Levels 1 and 2 plus short puts, synthetics, reversals, short spreads, short iron condors, butterflies, and debit calendar/diagonal structures.' },
+      { title: 'Level 4', body: 'Everything in Levels 1, 2, and 3 plus short naked calls, short straddles, short strangles, short synthetics, credit calendars, and diagonal spreads where the long leg expires first.' },
+    ],
+    noteTitle: 'Availability note',
+    noteBody:
+      'IBKR states that options level trading permissions are available for all IB entities except IB-IN and IB-CA.',
+  },
+  es: {
+    eyebrow: 'Trading',
+    title: 'Permisos de Trading para Opciones',
+    description:
+      'Esta guía sigue el flujo de permisos de opciones en IBKR Client Portal y resume los cuatro niveles de aprobación para opciones.',
+    back: 'Volver al Centro de Recursos',
+    openGuide: 'Abrir guía oficial',
+    instructionsTitle: 'Cómo solicitar un nivel de opciones',
+    steps: [
+      {
+        title: 'Abra Trading Permissions',
+        body: 'Haga clic en el User menu en la parte superior derecha y luego vaya a Settings > Trading > Trading Permissions.',
+      },
+      {
+        title: 'Abra el selector de nivel de opciones',
+        body: 'En el panel Trading Permissions, seleccione el control de Options Level.',
+      },
+      {
+        title: 'Elija el nivel deseado',
+        body: 'Seleccione el nivel de trading con opciones que desea solicitar.',
+      },
+      {
+        title: 'Continúe para guardar',
+        body: 'Presione Continue para guardar los cambios.',
+      },
+    ],
+    levelsTitle: 'Resumen de niveles de opciones',
+    levels: [
+      { title: 'Nivel 1', body: 'Covered Call/Covered Basket Call y Buy Write.' },
+      { title: 'Nivel 2', body: 'Todo lo del Nivel 1 más long calls, long puts, estrategias protectoras, long straddles/strangles, conversions, long spreads, long iron condors, long box spreads, collars y short collars.' },
+      { title: 'Nivel 3', body: 'Todo lo de los Niveles 1 y 2 más short puts, synthetics, reversals, short spreads, short iron condors, butterflies y estructuras calendar/diagonal de débito.' },
+      { title: 'Nivel 4', body: 'Todo lo de los Niveles 1, 2 y 3 más short naked calls, short straddles, short strangles, short synthetics, calendars de crédito y diagonales donde la pierna larga vence primero.' },
+    ],
+    noteTitle: 'Nota de disponibilidad',
+    noteBody:
+      'IBKR indica que estos permisos de nivel para opciones están disponibles para todas las entidades de IB excepto IB-IN e IB-CA.',
+  },
+} as const
+
+const OptionsTradingPermissionsPage = () => {
+  const { lang } = useTranslationProvider()
+  const copy = guideContent[lang as keyof typeof guideContent] ?? guideContent.en
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-6xl mx-auto py-14 px-6 flex flex-col gap-8">
+      <div className="flex justify-start">
+        <Button asChild variant="ghost">
+          <Link href={formatURL('/resource-center#trading', lang)}>
+            <ArrowLeft className="w-4 h-4 text-foreground" />
+            {copy.back}
+          </Link>
+        </Button>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div className="flex flex-col gap-3 max-w-5xl">
+            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
+          </div>
+          <Button asChild className="w-fit">
+            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
+              {copy.openGuide}
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </Button>
+        </div>
+      </div>
+
+      <Card className="border border-border/60 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ol className="space-y-4">
+            {copy.steps.map((step, index) => (
+              <li key={step.title} className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">{index + 1}</div>
+                <div className="flex flex-col gap-1">
+                  <p className="font-semibold">{step.title}</p>
+                  <p className="text-subtitle leading-7">{step.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </CardContent>
+      </Card>
+
+      <Card className="border border-border/60 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">{copy.levelsTitle}</CardTitle>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-2 gap-6">
+          {copy.levels.map((level) => (
+            <div key={level.title} className="rounded-lg border border-border/60 p-5 bg-muted/20">
+              <p className="font-semibold mb-2">{level.title}</p>
+              <p className="text-subtitle leading-7">{level.body}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card className="border border-border/60 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">{copy.noteTitle}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-subtitle leading-7">{copy.noteBody}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+}
+
+export default OptionsTradingPermissionsPage

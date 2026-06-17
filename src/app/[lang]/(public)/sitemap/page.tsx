@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { formatURL } from '@/utils/language/lang'
-import { chapters } from '@/lib/public/resource-center'
+import { resourceCenterSections } from '@/lib/public/resource-center'
 import { ExternalLink } from 'lucide-react'
 
 interface SitemapSection {
@@ -46,10 +46,10 @@ const SitemapPage = () => {
     {
       title: t('sitemap.learning_center'),
       links: [
-        { label: t('sitemap.learning_overview'), href: formatURL('/learning', lang) },
-        ...chapters.map((chapter) => ({
-          label: `${t('sitemap.chapter')} ${chapter.id}: ${chapter.title}`,
-          href: formatURL(`/learning/${chapter.id}`, lang),
+        { label: t('sitemap.learning_overview'), href: formatURL('/resource-center', lang) },
+        ...resourceCenterSections.map((section) => ({
+          label: t(section.titleKey),
+          href: formatURL(`/resource-center#${section.id}`, lang),
         })),
       ],
     },

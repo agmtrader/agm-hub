@@ -19,7 +19,7 @@ const Header = () => {
     { name: t('header.accounts'), url: '/#steps' },
     { name: t('header.tools'), url: '/#get-started' },
     { name: t('header.products'), url: '/#products' },
-    { name: t('header.learning_center'), url: '/learning' },
+    { name: t('header.learning_center'), url: '/resource-center' },
   ]
 
   return (

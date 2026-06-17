@@ -17,7 +17,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/downloads/mobile',
     '/downloads/trader',
     '/fees',
-    '/learning',
+    '/resource-center',
+    '/resource-center/account-management/link-account-to-agm',
+    '/resource-center/account-management/link-existing-accounts',
+    '/resource-center/account-management/transfer-positions',
+    '/resource-center/banking/deposit-funds',
+    '/resource-center/banking/link-bank-account',
+    '/resource-center/banking/transfer-to-wise-balance',
+    '/resource-center/banking/withdraw-funds',
+    '/resource-center/banking/transfer-internal',
+    '/resource-center/banking/transfer-from-wise-balance',
+    '/resource-center/trading/manage-trading-permissions',
+    '/resource-center/trading/options-trading-permissions',
+    '/resource-center/trading/market-data-subscriptions',
     '/requirements',
     '/risk',
     '/sitemap',
@@ -33,15 +45,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
   )
 
-  // Generate entries for each learning chapter per language
-  const learningEntries = languages.flatMap((lang) =>
+  const resourceLearningEntries = languages.flatMap((lang) =>
     chapters.map((chapter) => ({
-      url: `${BASE_URL}/${lang}/learning/${chapter.id}`,
+      url: `${BASE_URL}/${lang}/resource-center/learning/${chapter.id}`,
       lastModified,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     }))
   )
 
-  return [...staticEntries, ...learningEntries]
+  return [...staticEntries, ...resourceLearningEntries]
 }
