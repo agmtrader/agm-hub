@@ -39,6 +39,7 @@ const formatTickerPrice = (value: Ticker['Last']) => {
 
 const TickerHeader = () => {
   const [tickers, setTickers] = useState<Ticker[]>([])
+  const visibleTickers = tickers.slice(0, 10)
 
   useEffect(() => {
     const fetchTickers = async () => {
@@ -75,8 +76,8 @@ const TickerHeader = () => {
           className="flex w-max min-w-full shrink-0 items-center"
           style={{ animation: 'ticker-scroll 28s linear infinite' }}
         >
-          {tickers.map((ticker, index) => renderTickerItem(ticker, index, 'first'))}
-          {tickers.map((ticker, index) => renderTickerItem(ticker, index, 'second'))}
+          {visibleTickers.map((ticker, index) => renderTickerItem(ticker, index, 'first'))}
+          {visibleTickers.map((ticker, index) => renderTickerItem(ticker, index, 'second'))}
         </div>
       </div>
       <style jsx>{`
