@@ -13,13 +13,45 @@ import jsPDF from 'jspdf'
 import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
 import { ListRiskArchetypes, ReadRiskProfileById } from '@/utils/clients/risk-profile'
+import {
+  investmentProposalDistributionKeys,
+  type InvestmentProposalDistribution,
+} from '@/lib/clients/investment-proposals'
 
 type Props = {
   investmentProposal: InvestmentProposalType
 }
 
 const InvestmentProposal = ({ investmentProposal }: Props) => {
-  
+  const parseDistribution = (
+    rawDistribution: InvestmentProposalType['distribution']
+  ): InvestmentProposalDistribution | null => {
+    if (!rawDistribution) return null
+
+    let parsedDistribution: unknown = rawDistribution
+
+    if (typeof rawDistribution === 'string') {
+      try {
+        parsedDistribution = JSON.parse(rawDistribution)
+      } catch {
+        return null
+      }
+    }
+
+    if (!parsedDistribution || typeof parsedDistribution !== 'object') {
+      return null
+    }
+
+    const normalizedDistribution = investmentProposalDistributionKeys.reduce((acc, key) => {
+      const value = Number((parsedDistribution as Record<string, unknown>)[key])
+      acc[key] = Number.isFinite(value) ? value : 0
+      return acc
+    }, {} as InvestmentProposalDistribution)
+
+    const totalWeight = Object.values(normalizedDistribution).reduce((sum, value) => sum + value, 0)
+    return totalWeight > 0 ? normalizedDistribution : null
+  }
+
   const RATING_COLORS = {
         'AAA/AA/A': '#1D4ED8',
         'Treasuries': '#1E3A8A',
@@ -177,9 +209,15 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     }
 
     const totalAssetCount = Object.values(groupedBonds).reduce((sum, bonds) => sum + bonds.length, 0)
-    const weights = GROUPS.reduce((acc, group) => {
+    const countBasedWeights = GROUPS.reduce((acc, group) => {
       const bonds = groupedBonds[group.key as keyof typeof groupedBonds] ?? []
       acc[group.key] = totalAssetCount > 0 ? bonds.length / totalAssetCount : 0
+      return acc
+    }, {} as Record<string, number>)
+    const distribution = parseDistribution(proposal.distribution)
+    const weights = GROUPS.reduce((acc, group) => {
+      const distributionWeight = distribution?.[group.distributionKey] ?? 0
+      acc[group.key] = distributionWeight > 0 ? distributionWeight : countBasedWeights[group.key] ?? 0
       return acc
     }, {} as Record<string, number>)
 
