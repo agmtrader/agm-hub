@@ -605,7 +605,7 @@ export const institutional_form: Application = {
                             }
                         ],
                         "identification": {
-                            "expirationDate": "2026-02-11",
+                            "expirationDate": "2033-02-08",
                             "issuingCountry": "AGO",
                             "citizenship": "ARG",
                             "nationalCard": "182381283123"
@@ -629,6 +629,64 @@ export const institutional_form: Application = {
                             "city": "San Jose",
                             "postalCode": "30301"
                         }
+                    },
+                    {
+                        "w8Ben": {
+                            "localTaxForms": [],
+                            "name": "Andy Sanchez",
+                            "foreignTaxId": "208600382",
+                            "tinOrExplanationRequired": true,
+                            "part29ACountry": "N/A",
+                            "cert": true,
+                            "signatureType": "Electronic",
+                            "blankForm": true,
+                            "taxFormFile": "Form5001.pdf",
+                            "electronicFormat": true
+                        },
+                        "name": {
+                            "first": "Andy",
+                            "last": "Sanchez"
+                        },
+                        "email": "andysanc42@gmail.com",
+                        "dateOfBirth": "2004-12-08",
+                        "countryOfBirth": "CRI",
+                        "maritalStatus": "S",
+                        "numDependents": 0,
+                        "residenceAddress": {
+                            "street1": "San Juan",
+                            "street2": "",
+                            "country": "CRI",
+                            "state": "CR-A",
+                            "city": "San Ramon",
+                            "postalCode": "20201"
+                        },
+                        "sameMailAddress": true,
+                        "phones": [
+                            {
+                                "type": "Mobile",
+                                "country": "CRI",
+                                "number": "83291475"
+                            }
+                        ],
+                        "identification": {
+                            "expirationDate": "2032-12-08",
+                            "issuingCountry": "CRI",
+                            "citizenship": "CRI",
+                            "nationalCard": "208600382"
+                        },
+                        "employmentType": "UNEMPLOYED",
+                        "employmentDetails": {
+                            "description": null
+                        },
+                        "externalId": "5707e0cf-e307-4ffe-a723-5c60ea81cf5f",
+                        "taxResidencies": [
+                            {
+                                "country": "CRI",
+                                "tinType": "NonUS_NationalId",
+                                "tin": "208600382"
+                            }
+                        ],
+                        "mailingAddress": null
                     }
                 ]
             },
@@ -694,7 +752,24 @@ export const institutional_form: Application = {
                         }
                     ]
                 }
-            ]
+            ],
+            "beneficialOwnership": {
+                "hasBeneficialOwners": true,
+                "beneficialOwners": [
+                    {
+                        "fullName": "Andy Sanchez",
+                        "ownershipPercentage": 25,
+                        "relationship": "test"
+                    },
+                    {
+                        "fullName": "Andres Aguilar",
+                        "ownershipPercentage": 25,
+                        "relationship": "test"
+                    }
+                ],
+                "intermediateEntities": [],
+                "trustees": []
+            }
         },
         "type": "ORG",
         "externalId": "a88db920-0a12-49f2-a50d-6cad0400260f",

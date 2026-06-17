@@ -24,7 +24,7 @@ import { BusinessAndOccupation, FinancialRange, FormDetails, InternalAccount } f
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/clients/account'
 import { CreateAccountContact, ReadAccountContacts, UpdateAccountContact } from '@/utils/clients/account_contact'
 import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactDocuments, ReadContactScreenings, UploadContactDocument } from '@/utils/clients/contact'
-import { individual_form, individual_form_2, joint_form } from './samples'
+import { individual_form, individual_form_2, institutional_form, joint_form } from './samples'
 import { Loader2 } from 'lucide-react'
 
 export enum FormStep {
@@ -81,7 +81,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: institutional_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
