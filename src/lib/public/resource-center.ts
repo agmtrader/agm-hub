@@ -83,58 +83,57 @@ export const resourceCenterSections: ResourceSection[] = [
     id: 'account-management',
     titleKey: 'learning.sections.account_management.title',
     descriptionKey: 'learning.sections.account_management.description',
-    slides: buildSlides([
+    slides: [
       {
         id: '01',
         title: 'How to transfer positions',
+        image: '/assets/resource-center/account-management/transfer-positions.png',
         href: '/resource-center/account-management/transfer-positions',
         eyebrow: 'Account Management',
       },
       {
         id: '02',
         title: 'How to link an existing account to AGM',
+        image: '/assets/resource-center/account-management/link-account.png',
         href: '/resource-center/account-management/link-account-to-agm',
         eyebrow: 'Account Management',
       },
       {
         id: '03',
         title: 'How to link all existing accounts under one single username',
+        image: '/assets/resource-center/account-management/link-all.png',
         href: '/resource-center/account-management/link-existing-accounts',
         eyebrow: 'Account Management',
       },
-      {
-        id: '04',
-        title: 'User menu',
-        href: 'https://www.ibkrguides.com/clientportal/gettingstarted/user-menu.htm',
-        external: true,
-        eyebrow: 'Account Management',
-      },
-    ]),
+    ],
   },
   {
     id: 'trading',
     titleKey: 'learning.sections.trading.title',
     descriptionKey: 'learning.sections.trading.description',
-    slides: buildSlides([
+    slides: [
       {
         id: '01',
         title: 'How to manage your trading permissions',
+        image: '/assets/resource-center/trading/trading-permissions.png',
         href: '/resource-center/trading/manage-trading-permissions',
         eyebrow: 'Trading',
       },
       {
         id: '02',
         title: 'How to set up options trading permissions',
+        image: '/assets/resource-center/trading/options-permissions.png',
         href: '/resource-center/trading/options-trading-permissions',
         eyebrow: 'Trading',
       },
       {
         id: '03',
         title: 'How to subscribe to market data',
+        image: '/assets/resource-center/trading/market-data.png',
         href: '/resource-center/trading/market-data-subscriptions',
         eyebrow: 'Trading',
       },
-    ]),
+    ],
   },
   {
     id: 'reporting',
