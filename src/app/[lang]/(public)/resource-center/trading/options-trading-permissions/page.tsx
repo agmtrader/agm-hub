@@ -2,14 +2,12 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://www.ibkrguides.com/clientportal/optionstradingpermissions.htm'
 
 const guideContent = {
   en: {
@@ -18,7 +16,6 @@ const guideContent = {
     description:
       'This guide follows the IBKR Client Portal options permissions flow and summarizes the four options approval levels.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
     instructionsTitle: 'How to request an options level',
     steps: [
       {
@@ -45,9 +42,10 @@ const guideContent = {
       { title: 'Level 3', body: 'Everything in Levels 1 and 2 plus short puts, synthetics, reversals, short spreads, short iron condors, butterflies, and debit calendar/diagonal structures.' },
       { title: 'Level 4', body: 'Everything in Levels 1, 2, and 3 plus short naked calls, short straddles, short strangles, short synthetics, credit calendars, and diagonal spreads where the long leg expires first.' },
     ],
-    noteTitle: 'Availability note',
-    noteBody:
-      'IBKR states that options level trading permissions are available for all IB entities except IB-IN and IB-CA.',
+    availabilityTitle: 'Availability note',
+    availability: [
+      { title: 'IBKR states that options level trading permissions are available for all IB entities except IB-IN and IB-CA' },
+    ],
   },
   es: {
     eyebrow: 'Trading',
@@ -55,7 +53,6 @@ const guideContent = {
     description:
       'Esta guía sigue el flujo de permisos de opciones en IBKR Client Portal y resume los cuatro niveles de aprobación para opciones.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
     instructionsTitle: 'Cómo solicitar un nivel de opciones',
     steps: [
       {
@@ -82,9 +79,10 @@ const guideContent = {
       { title: 'Nivel 3', body: 'Todo lo de los Niveles 1 y 2 más short puts, synthetics, reversals, short spreads, short iron condors, butterflies y estructuras calendar/diagonal de débito.' },
       { title: 'Nivel 4', body: 'Todo lo de los Niveles 1, 2 y 3 más short naked calls, short straddles, short strangles, short synthetics, calendars de crédito y diagonales donde la pierna larga vence primero.' },
     ],
-    noteTitle: 'Nota de disponibilidad',
-    noteBody:
-      'IBKR indica que estos permisos de nivel para opciones están disponibles para todas las entidades de IB excepto IB-IN e IB-CA.',
+    availabilityTitle: 'Nota de disponibilidad',
+    availability: [
+      { title: 'IBKR indica que estos permisos de nivel para opciones están disponibles para todas las entidades de IB excepto IB-IN e IB-CA' },
+    ],
   },
 } as const
 
@@ -105,61 +103,13 @@ const OptionsTradingPermissionsPage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ol className="space-y-4">
-            {copy.steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">{index + 1}</div>
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{step.title}</p>
-                  <p className="text-subtitle leading-7">{step.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.levelsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="grid md:grid-cols-2 gap-6">
-          {copy.levels.map((level) => (
-            <div key={level.title} className="rounded-lg border border-border/60 p-5 bg-muted/20">
-              <p className="font-semibold mb-2">{level.title}</p>
-              <p className="text-subtitle leading-7">{level.body}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.noteTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.noteBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.instructionsTitle} steps={copy.steps} />
+      <BankingStepsCard title={copy.levelsTitle} steps={copy.levels} />
+      <BankingStepsCard title={copy.availabilityTitle} steps={copy.availability} />
     </motion.div>
   )
 }

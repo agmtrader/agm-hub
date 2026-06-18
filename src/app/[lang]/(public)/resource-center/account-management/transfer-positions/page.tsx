@@ -2,14 +2,12 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://www.ibkrguides.com/clientportal/transferandpay/transpositions.htm'
 
 const guideContent = {
   en: {
@@ -18,7 +16,6 @@ const guideContent = {
     description:
       'This page follows the IBKR Client Portal Transfer Positions guide for moving securities into or out of your account.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
     instructionsTitle: 'Instructions',
     intro: 'The Transfer Positions screen supports both incoming and outgoing position transfers.',
     steps: [
@@ -29,29 +26,32 @@ const guideContent = {
       },
     ],
     inboundTitle: 'Inbound position transfers',
-    inboundItems: [
-      'Automated Customer Account Transfer Service (ACATS)',
-      'Account Transfer on Notification (ATON) for Canadian securities',
-      'DRS - Transfer Shares Held at Transfer Agent',
-      'DWAC - Deposit/Withdraw at Custodian',
-      'Free of Payment (FOP) for US stocks',
-      'Free of Payment Transfer of Global Securities',
-      'Internal Position Transfer',
-      'Transfer Positions Between Master and Sub Accounts',
-      'Crypto Deposit',
+    inboundSteps: [
+      { title: 'Automated Customer Account Transfer Service (ACATS)' },
+      { title: 'Account Transfer on Notification (ATON) for Canadian securities' },
+      { title: 'DRS - Transfer Shares Held at Transfer Agent' },
+      { title: 'DWAC - Deposit/Withdraw at Custodian' },
+      { title: 'Free of Payment (FOP) for US stocks' },
+      { title: 'Free of Payment Transfer of Global Securities' },
+      { title: 'Internal Position Transfer' },
+      { title: 'Transfer Positions Between Master and Sub Accounts' },
+      { title: 'Crypto Deposit' },
     ],
     outboundTitle: 'Outbound position transfers',
-    outboundItems: [
-      'DRS - Deliver Shares to the issuer transfer agent / registrar',
-      'DWAC - Deposit/Withdraw at Custodian',
-      'Free of Payment Transfer of US Securities',
-      'Free of Payment Transfer of Global Securities',
-      'Internal position transfers',
-      'Position Transfer Between Master and Sub Accounts',
+    outboundSteps: [
+      { title: 'DRS - Deliver Shares to the issuer transfer agent or registrar' },
+      { title: 'DWAC - Deposit/Withdraw at Custodian' },
+      { title: 'Free of Payment Transfer of US Securities' },
+      { title: 'Free of Payment Transfer of Global Securities' },
+      { title: 'Internal position transfers' },
+      { title: 'Position Transfer Between Master and Sub Accounts' },
     ],
-    noteTitle: 'Practical note',
-    noteBody:
-      'IBKR states that ACATS, ATON, and FOP transfers can use a Position Instruction if you want to create or reuse one during the request.',
+    noteTitle: 'Position instruction note',
+    noteSteps: [
+      {
+        title: 'IBKR states that ACATS, ATON, and FOP transfers can use a Position Instruction if you want to create or reuse one during the request',
+      },
+    ],
   },
   es: {
     eyebrow: 'Gestión de Cuenta',
@@ -59,7 +59,6 @@ const guideContent = {
     description:
       'Esta página sigue la guía de IBKR Client Portal para mover valores hacia su cuenta o fuera de ella.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
     instructionsTitle: 'Instrucciones',
     intro: 'La pantalla Transfer Positions soporta tanto transferencias de entrada como de salida.',
     steps: [
@@ -70,29 +69,32 @@ const guideContent = {
       },
     ],
     inboundTitle: 'Transferencias de entrada',
-    inboundItems: [
-      'Automated Customer Account Transfer Service (ACATS)',
-      'Account Transfer on Notification (ATON) para valores canadienses',
-      'DRS - Transfer Shares Held at Transfer Agent',
-      'DWAC - Deposit/Withdraw at Custodian',
-      'Free of Payment (FOP) para acciones de EE. UU.',
-      'Free of Payment Transfer of Global Securities',
-      'Internal Position Transfer',
-      'Transfer Positions Between Master and Sub Accounts',
-      'Crypto Deposit',
+    inboundSteps: [
+      { title: 'Automated Customer Account Transfer Service (ACATS)' },
+      { title: 'Account Transfer on Notification (ATON) para valores canadienses' },
+      { title: 'DRS - Transfer Shares Held at Transfer Agent' },
+      { title: 'DWAC - Deposit/Withdraw at Custodian' },
+      { title: 'Free of Payment (FOP) para acciones de EE. UU.' },
+      { title: 'Free of Payment Transfer of Global Securities' },
+      { title: 'Internal Position Transfer' },
+      { title: 'Transfer Positions Between Master and Sub Accounts' },
+      { title: 'Crypto Deposit' },
     ],
     outboundTitle: 'Transferencias de salida',
-    outboundItems: [
-      'DRS - Deliver Shares to the issuer transfer agent / registrar',
-      'DWAC - Deposit/Withdraw at Custodian',
-      'Free of Payment Transfer of US Securities',
-      'Free of Payment Transfer of Global Securities',
-      'Internal position transfers',
-      'Position Transfer Between Master and Sub Accounts',
+    outboundSteps: [
+      { title: 'DRS - Deliver Shares to the issuer transfer agent or registrar' },
+      { title: 'DWAC - Deposit/Withdraw at Custodian' },
+      { title: 'Free of Payment Transfer of US Securities' },
+      { title: 'Free of Payment Transfer of Global Securities' },
+      { title: 'Internal position transfers' },
+      { title: 'Position Transfer Between Master and Sub Accounts' },
     ],
-    noteTitle: 'Nota práctica',
-    noteBody:
-      'IBKR indica que las transferencias ACATS, ATON y FOP pueden usar una Position Instruction si desea crearla o reutilizarla durante la solicitud.',
+    noteTitle: 'Nota sobre Position Instruction',
+    noteSteps: [
+      {
+        title: 'IBKR indica que las transferencias ACATS, ATON y FOP pueden usar una Position Instruction si desea crearla o reutilizarla durante la solicitud',
+      },
+    ],
   },
 } as const
 
@@ -113,77 +115,14 @@ const TransferPositionsPage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-5">
-          <p className="text-base text-subtitle leading-7">{copy.intro}</p>
-          <ol className="space-y-4">
-            {copy.steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">
-                  {index + 1}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{step.title}</p>
-                  <p className="text-subtitle leading-7">{step.body}</p>
-                  {'note' in step && step.note ? <p className="text-sm text-subtitle">{step.note}</p> : null}
-                </div>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.inboundTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="grid md:grid-cols-2 gap-3">
-            {copy.inboundItems.map((item) => (
-              <li key={item} className="list-disc ml-5 text-subtitle leading-7">{item}</li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.outboundTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="grid md:grid-cols-2 gap-3">
-            {copy.outboundItems.map((item) => (
-              <li key={item} className="list-disc ml-5 text-subtitle leading-7">{item}</li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.noteTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.noteBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.instructionsTitle} intro={copy.intro} steps={copy.steps} />
+      <BankingStepsCard title={copy.inboundTitle} steps={copy.inboundSteps} />
+      <BankingStepsCard title={copy.outboundTitle} steps={copy.outboundSteps} />
+      <BankingStepsCard title={copy.noteTitle} steps={copy.noteSteps} />
     </motion.div>
   )
 }

@@ -2,14 +2,12 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://www.ibkrguides.com/clientportal/linkexistingaccounts.htm'
 
 const guideContent = {
   en: {
@@ -18,15 +16,14 @@ const guideContent = {
     description:
       'This guide follows the IBKR Client Portal process for combining multiple eligible accounts under one username and password.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
     rulesTitle: 'Rules to know first',
     rules: [
-      'You must have an IBKR Secure Login System security device.',
-      'Email addresses, account titles, tax IDs, and physical addresses across the accounts must match.',
-      'You must link all eligible accounts associated with you; IBKR does not allow linking only a subset.',
-      'Once linked, the old usernames and passwords stop working and the kept username becomes the login for all linked accounts.',
-      'The highest-level security device among linked accounts becomes the active device.',
-      'IBKR processes linked accounts every business day after 3:00 PM EST.',
+      { title: 'You must have an IBKR Secure Login System security device' },
+      { title: 'Email addresses, account titles, tax IDs, and physical addresses across the accounts must match' },
+      { title: 'You must link all eligible accounts associated with you; IBKR does not allow linking only a subset' },
+      { title: 'Once linked, the old usernames and passwords stop working and the kept username becomes the login for all linked accounts' },
+      { title: 'The highest-level security device among linked accounts becomes the active device' },
+      { title: 'IBKR processes linked accounts every business day after 3:00 PM EST' },
     ],
     instructionsTitle: 'Link existing accounts',
     steps: [
@@ -60,10 +57,16 @@ const guideContent = {
       },
     ],
     afterTitle: 'After the accounts are linked',
-    afterItems: [
-      'You can log in once and use the Account Selector to switch between linked accounts in Client Portal.',
-      'Client Portal reloads with the selected linked account as the active account.',
-      'To de-link a linked account, IBKR says you must close the linked account.',
+    afterSteps: [
+      {
+        title: 'You can log in once and use the Account Selector to switch between linked accounts in Client Portal',
+      },
+      {
+        title: 'Client Portal reloads with the selected linked account as the active account',
+      },
+      {
+        title: 'To de-link a linked account, IBKR says you must close the linked account',
+      },
     ],
   },
   es: {
@@ -72,15 +75,14 @@ const guideContent = {
     description:
       'Esta guía sigue el proceso de IBKR Client Portal para combinar varias cuentas elegibles bajo un solo usuario y contraseña.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
     rulesTitle: 'Reglas a tener claras primero',
     rules: [
-      'Debe tener un dispositivo del IBKR Secure Login System.',
-      'Los correos electrónicos, títulos de cuenta, identificaciones fiscales y direcciones físicas de las cuentas deben coincidir.',
-      'Debe vincular todas las cuentas elegibles asociadas con usted; IBKR no permite vincular solo una parte.',
-      'Una vez vinculadas, los usuarios y contraseñas anteriores dejan de funcionar y el usuario conservado pasa a servir para todas las cuentas vinculadas.',
-      'El dispositivo de seguridad de mayor nivel entre las cuentas vinculadas se vuelve el dispositivo activo.',
-      'IBKR procesa estas vinculaciones cada día hábil después de las 3:00 PM EST.',
+      { title: 'Debe tener un dispositivo del IBKR Secure Login System' },
+      { title: 'Los correos electrónicos, títulos de cuenta, identificaciones fiscales y direcciones físicas de las cuentas deben coincidir' },
+      { title: 'Debe vincular todas las cuentas elegibles asociadas con usted; IBKR no permite vincular solo una parte' },
+      { title: 'Una vez vinculadas, los usuarios y contraseñas anteriores dejan de funcionar y el usuario conservado pasa a servir para todas las cuentas vinculadas' },
+      { title: 'El dispositivo de seguridad de mayor nivel entre las cuentas vinculadas se vuelve el dispositivo activo' },
+      { title: 'IBKR procesa estas vinculaciones cada día hábil después de las 3:00 PM EST' },
     ],
     instructionsTitle: 'Vincular cuentas existentes',
     steps: [
@@ -114,10 +116,16 @@ const guideContent = {
       },
     ],
     afterTitle: 'Después de vincular las cuentas',
-    afterItems: [
-      'Podrá iniciar sesión una sola vez y usar el Account Selector para cambiar entre cuentas vinculadas dentro de Client Portal.',
-      'Client Portal se recarga con la cuenta vinculada seleccionada como cuenta activa.',
-      'Para desvincular una cuenta, IBKR indica que debe cerrarla.',
+    afterSteps: [
+      {
+        title: 'Podrá iniciar sesión una sola vez y usar el Account Selector para cambiar entre cuentas vinculadas dentro de Client Portal',
+      },
+      {
+        title: 'Client Portal se recarga con la cuenta vinculada seleccionada como cuenta activa',
+      },
+      {
+        title: 'Para desvincular una cuenta, IBKR indica que debe cerrarla',
+      },
     ],
   },
 } as const
@@ -139,64 +147,13 @@ const LinkExistingAccountsPage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.rulesTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {copy.rules.map((rule) => (
-              <li key={rule} className="list-disc ml-5 text-subtitle leading-7">{rule}</li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ol className="space-y-4">
-            {copy.steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">{index + 1}</div>
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{step.title}</p>
-                  <p className="text-subtitle leading-7">{step.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.afterTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {copy.afterItems.map((item) => (
-              <li key={item} className="list-disc ml-5 text-subtitle leading-7">{item}</li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.rulesTitle} steps={copy.rules} />
+      <BankingStepsCard title={copy.instructionsTitle} steps={copy.steps} />
+      <BankingStepsCard title={copy.afterTitle} steps={copy.afterSteps} />
     </motion.div>
   )
 }

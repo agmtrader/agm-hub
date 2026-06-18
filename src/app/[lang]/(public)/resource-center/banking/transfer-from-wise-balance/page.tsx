@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingMethodSnapshot } from '@/components/hub/learning/BankingMethodSnapshot'
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://ibkrguides.com/clientportal/transferandpay/wise-transfer.htm'
 
 const guideContent = {
   en: {
@@ -18,7 +17,25 @@ const guideContent = {
     description:
       'This version follows the cleaner IBKR Client Portal guide flow: go to Transfer Funds, choose Deposit Funds, select Wise, authorize Wise if needed, then complete the quote and transfer setup.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
+    snapshotTitle: 'Method snapshot',
+    speed: {
+      label: 'Speed',
+      value: 'Fast',
+      detail:
+        'IBKR describes this method as fast. Timing depends on currency and whether you transfer from an existing Wise balance or fund Wise first.',
+    },
+    fees: {
+      label: 'Fees',
+      value: 'Wise conversion fees may apply',
+      detail:
+        'The quote can include Wise conversion costs. The exact fee depends on the source currency, target currency, and transfer path you choose.',
+    },
+    stepsSummary: {
+      label: 'Steps',
+      value: '3 main actions',
+      detail:
+        'Authorize Wise, review the quote, then complete the transfer flow in Client Portal using the supported currency pair.',
+    },
     instructionsTitle: 'Instructions',
     intro: 'To initiate a Wise transfer, follow the steps below.',
     steps: [
@@ -52,20 +69,26 @@ const guideContent = {
         body: 'After linking Wise, the Quote screen appears. Choose a deposit currency supported by IBKR, then continue with either Bank Transfer via Wise or Transfer from Wise Balance.',
       },
     ],
-    optionsTitle: 'What the quote screen lets you do',
+    optionsTitle: 'Choose how to fund the Wise transfer',
+    optionsIntro: 'After Wise is linked and the quote screen appears, IBKR shows two ways to continue.',
     options: [
       {
-        title: 'Bank Transfer via Wise',
-        body: 'If you send money to your Wise bank account in a supported local currency, Wise can convert it and deposit it into your IBKR account in a supported target currency. The quote shows fees, conversion rate, expected arrival amount, and arrival time.',
+        title: 'Use Bank Transfer via Wise',
+        body: 'Choose this if you will send money to Wise first in a supported local currency so Wise can convert and forward it to IBKR.',
       },
       {
-        title: 'Transfer from Wise Balance',
-        body: 'You can use balances already held in your multi-currency Wise account. If the current balance currency is not supported, you must first convert it to a supported currency before transferring it to IBKR.',
+        title: 'Use Transfer from Wise Balance',
+        body: 'Choose this if you already hold funds in a supported Wise balance and want to transfer them directly to IBKR.',
+      },
+      {
+        title: 'Review the quote details',
+        body: 'Confirm the fees, conversion rate, expected arrival amount, and estimated arrival time before continuing.',
+      },
+      {
+        title: 'Complete the transfer in a supported currency',
+        body: 'Finish the transfer using a supported currency pair. If your current Wise balance currency is not supported, convert it first.',
       },
     ],
-    supportedTitle: 'Supported currency note',
-    supportedBody:
-      'The guide explicitly mentions examples such as EUR, USD, GBP, AUD, HUF, CHF, SGD and NZD, with some entity-specific restrictions for SGD and NZD.',
   },
   es: {
     eyebrow: 'Banca',
@@ -73,7 +96,25 @@ const guideContent = {
     description:
       'Esta versión sigue el flujo más claro de la guía de IBKR Client Portal: entrar a Transfer Funds, elegir Deposit Funds, seleccionar Wise, autorizar Wise si hace falta y luego completar la cotización y la transferencia.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
+    snapshotTitle: 'Resumen del método',
+    speed: {
+      label: 'Velocidad',
+      value: 'Rápido',
+      detail:
+        'IBKR describe este método como rápido. El tiempo depende de la moneda y de si transfiere desde un saldo existente de Wise o si primero fondea Wise.',
+    },
+    fees: {
+      label: 'Cargos',
+      value: 'Pueden aplicar cargos de conversión de Wise',
+      detail:
+        'La cotización puede incluir costos de conversión de Wise. El cargo exacto depende de la moneda de origen, la moneda destino y la ruta elegida.',
+    },
+    stepsSummary: {
+      label: 'Pasos',
+      value: '3 acciones principales',
+      detail:
+        'Autorice Wise, revise la cotización y luego complete la transferencia en Client Portal usando un par de monedas soportado.',
+    },
     instructionsTitle: 'Instrucciones',
     intro: 'Para iniciar una transferencia con Wise, siga estos pasos.',
     steps: [
@@ -107,20 +148,26 @@ const guideContent = {
         body: 'Después de vincular Wise, aparecerá la pantalla de Quote. Allí debe elegir una moneda de depósito soportada por IBKR y continuar con Bank Transfer via Wise o Transfer from Wise Balance.',
       },
     ],
-    optionsTitle: 'Qué permite hacer la pantalla de cotización',
+    optionsTitle: 'Elija cómo fondear la transferencia con Wise',
+    optionsIntro: 'Después de vincular Wise y de que aparezca la pantalla de cotización, IBKR muestra dos formas de continuar.',
     options: [
       {
-        title: 'Bank Transfer via Wise',
-        body: 'Si envía dinero a su cuenta bancaria de Wise en una moneda local soportada, Wise puede convertirlo y depositarlo en su cuenta de IBKR en una moneda objetivo soportada. La cotización muestra cargos, tasa de conversión, monto esperado y tiempo estimado de llegada.',
+        title: 'Use Bank Transfer via Wise',
+        body: 'Elija esta opción si primero va a enviar dinero a Wise en una moneda local soportada para que Wise lo convierta y lo envíe a IBKR.',
       },
       {
-        title: 'Transfer from Wise Balance',
-        body: 'Puede usar saldos ya disponibles en su cuenta multidivisa de Wise. Si la moneda del saldo no está soportada, primero debe convertirla a una moneda soportada antes de transferirla a IBKR.',
+        title: 'Use Transfer from Wise Balance',
+        body: 'Elija esta opción si ya tiene fondos en un saldo soportado de Wise y quiere transferirlos directamente a IBKR.',
+      },
+      {
+        title: 'Revise los detalles de la cotización',
+        body: 'Confirme los cargos, la tasa de conversión, el monto esperado de llegada y el tiempo estimado antes de continuar.',
+      },
+      {
+        title: 'Complete la transferencia en una moneda soportada',
+        body: 'Termine la transferencia usando un par de monedas soportado. Si la moneda actual de su saldo Wise no está soportada, conviértala primero.',
       },
     ],
-    supportedTitle: 'Nota sobre monedas soportadas',
-    supportedBody:
-      'La guía menciona ejemplos como EUR, USD, GBP, AUD, HUF, CHF, SGD y NZD, con algunas restricciones por entidad para SGD y NZD.',
   },
 } as const
 
@@ -129,11 +176,7 @@ const TransferFromWiseBalancePage = () => {
   const copy = guideContent[lang as keyof typeof guideContent] ?? guideContent.en
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-6xl mx-auto py-14 px-6 flex flex-col gap-8"
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-6xl mx-auto py-14 px-6 flex flex-col gap-8">
       <div className="flex justify-start">
         <Button asChild variant="ghost">
           <Link href={formatURL('/resource-center#banking', lang)}>
@@ -145,67 +188,19 @@ const TransferFromWiseBalancePage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-5">
-          <p className="text-base text-subtitle leading-7">{copy.intro}</p>
-          <ol className="space-y-4">
-            {copy.steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">
-                  {index + 1}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{step.title}</p>
-                  <p className="text-subtitle leading-7">{step.body}</p>
-                  {'note' in step && step.note ? (
-                    <p className="text-sm text-subtitle">{step.note}</p>
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
+      <BankingMethodSnapshot
+        title={copy.snapshotTitle}
+        speed={copy.speed}
+        fees={copy.fees}
+        steps={copy.stepsSummary}
+      />
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.optionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="grid md:grid-cols-2 gap-6">
-          {copy.options.map((option) => (
-            <div key={option.title} className="rounded-lg border border-border/60 p-5 bg-muted/20">
-              <p className="font-semibold mb-2">{option.title}</p>
-              <p className="text-subtitle leading-7">{option.body}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.supportedTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.supportedBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.instructionsTitle} intro={copy.intro} steps={copy.steps} />
+      <BankingStepsCard title={copy.optionsTitle} intro={copy.optionsIntro} steps={copy.options} />
     </motion.div>
   )
 }

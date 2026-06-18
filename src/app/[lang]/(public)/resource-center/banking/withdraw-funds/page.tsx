@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingMethodSnapshot } from '@/components/hub/learning/BankingMethodSnapshot'
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://www.ibkrguides.com/clientportal/transferandpay/enterwithdrawal.htm'
 
 const guideContent = {
   en: {
@@ -18,7 +17,25 @@ const guideContent = {
     description:
       'This guide follows the IBKR Client Portal withdrawal flow for sending funds out of your account using saved or newly entered withdrawal instructions.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
+    snapshotTitle: 'Method snapshot',
+    speed: {
+      label: 'Speed',
+      value: 'Depends on destination',
+      detail:
+        'Withdrawals can be fast for supported electronic destinations, but the final arrival time still depends on the bank, currency, and withdrawal rail.',
+    },
+    fees: {
+      label: 'Fees',
+      value: 'Method-specific',
+      detail:
+        'IBKR charges depend on the withdrawal type. For bank wires, IBKR commonly gives one free withdrawal per calendar month and then applies charges.',
+    },
+    stepsSummary: {
+      label: 'Steps',
+      value: 'Around 3 main actions',
+      detail:
+        'Choose or add destination instructions, enter the amount, then pass the security check and submit the request.',
+    },
     instructionsTitle: 'Enter a Withdrawal Request',
     intro: 'Use the Transfer Funds area in Client Portal to submit a withdrawal request.',
     steps: [
@@ -56,9 +73,6 @@ const guideContent = {
         body: 'Confirm the withdrawal request and wait for IBKR to show the final submission status.',
       },
     ],
-    noteTitle: 'Practical note',
-    noteBody:
-      'Exact fields and withdrawal methods can vary depending on your entity, currency, destination country, and whether the withdrawal instructions are already saved.',
   },
   es: {
     eyebrow: 'Banca',
@@ -66,7 +80,25 @@ const guideContent = {
     description:
       'Esta guía sigue el flujo de retiros de IBKR Client Portal para enviar fondos fuera de su cuenta usando instrucciones guardadas o nuevas instrucciones de retiro.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
+    snapshotTitle: 'Resumen del método',
+    speed: {
+      label: 'Velocidad',
+      value: 'Depende del destino',
+      detail:
+        'Los retiros pueden ser rápidos para destinos electrónicos soportados, pero el tiempo final depende del banco, la moneda y la vía de retiro.',
+    },
+    fees: {
+      label: 'Cargos',
+      value: 'Dependen del método',
+      detail:
+        'Los cargos de IBKR dependen del tipo de retiro. Para transferencias bancarias, IBKR normalmente da un retiro gratis por mes calendario y luego cobra.',
+    },
+    stepsSummary: {
+      label: 'Pasos',
+      value: 'Unas 3 acciones principales',
+      detail:
+        'Elija o agregue las instrucciones de destino, ingrese el monto y luego pase la validación de seguridad para enviar la solicitud.',
+    },
     instructionsTitle: 'Ingresar una solicitud de retiro',
     intro: 'Use el área de Transfer Funds en Client Portal para enviar una solicitud de retiro.',
     steps: [
@@ -104,9 +136,6 @@ const guideContent = {
         body: 'Confirme la solicitud de retiro y espere a que IBKR muestre el estado final del envío.',
       },
     ],
-    noteTitle: 'Nota práctica',
-    noteBody:
-      'Los campos exactos y los métodos de retiro pueden variar según la entidad, la moneda, el país de destino y si las instrucciones ya están guardadas.',
   },
 } as const
 
@@ -131,51 +160,18 @@ const WithdrawFundsPage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-5">
-          <p className="text-base text-subtitle leading-7">{copy.intro}</p>
-          <ol className="space-y-4">
-            {copy.steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">
-                  {index + 1}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{step.title}</p>
-                  <p className="text-subtitle leading-7">{step.body}</p>
-                  {'note' in step && step.note ? <p className="text-sm text-subtitle">{step.note}</p> : null}
-                </div>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
+      <BankingMethodSnapshot
+        title={copy.snapshotTitle}
+        speed={copy.speed}
+        fees={copy.fees}
+        steps={copy.stepsSummary}
+      />
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.noteTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.noteBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.instructionsTitle} intro={copy.intro} steps={copy.steps} />
     </motion.div>
   )
 }

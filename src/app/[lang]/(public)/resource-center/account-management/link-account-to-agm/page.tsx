@@ -2,14 +2,12 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://www.ibkrguides.com/clientportal/moveaccounttoadvisorbroker.htm'
 
 const guideContent = {
   en: {
@@ -18,14 +16,13 @@ const guideContent = {
     description:
       'This guide follows the IBKR Client Portal flow for moving an existing account to an Advisor or Broker relationship.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
     rulesTitle: 'Rules to know first',
     rules: [
-      'All cash and positions move to the Advisor/Broker-managed account.',
-      'If you move the entire account to an Advisor, you will no longer log into TWS directly and current market data subscriptions are canceled.',
-      'If you move the entire account to a Broker, you can still log into TWS and current market data subscriptions are not canceled.',
-      'Once moved, fees may be debited as specified by the Advisor or Broker.',
-      'Accounts are moved every business day after 3:00 PM EST.',
+      { title: 'All cash and positions move together' },
+      { title: 'Moving the entire account to an Advisor removes direct TWS login and cancels current market data subscriptions' },
+      { title: 'Moving the entire account to a Broker still allows TWS login and keeps current market data subscriptions active' },
+      { title: 'Advisor or Broker fees may be debited after the move' },
+      { title: 'IBKR processes these moves every business day after 3:00 PM EST' },
     ],
     instructionsTitle: 'Moving your account',
     steps: [
@@ -34,7 +31,7 @@ const guideContent = {
         body: 'Click the User menu in the top-right corner, then Settings > Account Configuration > Manage Account Linking.',
       },
       {
-        title: 'Choose the advisor/broker linking option',
+        title: 'Choose the advisor or broker linking option',
         body: 'Click Link My Existing Account to an Advisor/Broker, then press Continue.',
       },
       {
@@ -50,9 +47,18 @@ const guideContent = {
         body: 'IBKR sends a message to the Advisor or Broker. They must approve the request in Pending Items before the linked relationship is opened.',
       },
     ],
-    familyTitle: 'Family Office / FAM note',
-    familyBody:
-      'IBKR also allows standalone client accounts to request linkage to FAM and Family Office master accounts. In that case, IBKR presents a questionnaire and the master account holder must consent before review.',
+    familyTitle: 'Family Office or FAM requests',
+    familySteps: [
+      {
+        title: 'Standalone client accounts can also request linkage to FAM and Family Office master accounts',
+      },
+      {
+        title: 'IBKR presents an additional questionnaire for that case',
+      },
+      {
+        title: 'The master account holder must consent before the request moves forward for review',
+      },
+    ],
   },
   es: {
     eyebrow: 'Gestión de Cuenta',
@@ -60,14 +66,13 @@ const guideContent = {
     description:
       'Esta guía sigue el flujo de IBKR Client Portal para mover una cuenta existente a una relación con un Advisor o Broker.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
     rulesTitle: 'Reglas a tener claras primero',
     rules: [
-      'Todo el efectivo y las posiciones se mueven a la cuenta administrada por el Advisor/Broker.',
-      'Si mueve la cuenta completa a un Advisor, ya no podrá entrar directamente a TWS y sus suscripciones actuales de market data se cancelan.',
-      'Si mueve la cuenta completa a un Broker, todavía podrá entrar a TWS y sus suscripciones actuales de market data no se cancelan.',
-      'Una vez movida, se pueden debitar cargos según lo establecido por el Advisor o Broker.',
-      'Las cuentas se mueven cada día hábil después de las 3:00 PM EST.',
+      { title: 'Todo el efectivo y las posiciones se mueven a la cuenta administrada por el Advisor o Broker' },
+      { title: 'Si mueve la cuenta completa a un Advisor, ya no podrá entrar directamente a TWS y sus suscripciones actuales de market data se cancelan' },
+      { title: 'Si mueve la cuenta completa a un Broker, todavía podrá entrar a TWS y sus suscripciones actuales de market data no se cancelan' },
+      { title: 'Una vez movida, se pueden debitar cargos según lo establecido por el Advisor o Broker' },
+      { title: 'IBKR procesa estos movimientos cada día hábil después de las 3:00 PM EST' },
     ],
     instructionsTitle: 'Mover su cuenta',
     steps: [
@@ -76,7 +81,7 @@ const guideContent = {
         body: 'Haga clic en el User menu en la parte superior derecha y luego vaya a Settings > Account Configuration > Manage Account Linking.',
       },
       {
-        title: 'Elija la opción de vínculo con advisor/broker',
+        title: 'Elija la opción de vínculo con advisor o broker',
         body: 'Haga clic en Link My Existing Account to an Advisor/Broker y luego presione Continue.',
       },
       {
@@ -92,9 +97,18 @@ const guideContent = {
         body: 'IBKR envía un mensaje al Advisor o Broker. Esa persona o entidad debe aprobar la solicitud en Pending Items antes de que la relación vinculada quede abierta.',
       },
     ],
-    familyTitle: 'Nota sobre Family Office / FAM',
-    familyBody:
-      'IBKR también permite que cuentas standalone soliciten vincularse a cuentas maestras FAM y Family Office. En ese caso, IBKR presenta un cuestionario y el titular de la cuenta master debe dar su consentimiento antes de la revisión.',
+    familyTitle: 'Solicitudes Family Office o FAM',
+    familySteps: [
+      {
+        title: 'Las cuentas standalone también pueden solicitar vínculo con cuentas maestras FAM y Family Office',
+      },
+      {
+        title: 'IBKR presenta un cuestionario adicional en ese caso',
+      },
+      {
+        title: 'El titular de la cuenta master debe dar su consentimiento antes de que la solicitud avance a revisión',
+      },
+    ],
   },
 } as const
 
@@ -115,60 +129,13 @@ const LinkAccountToAgmPage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.rulesTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {copy.rules.map((rule) => (
-              <li key={rule} className="list-disc ml-5 text-subtitle leading-7">{rule}</li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ol className="space-y-4">
-            {copy.steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">{index + 1}</div>
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{step.title}</p>
-                  <p className="text-subtitle leading-7">{step.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.familyTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.familyBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.rulesTitle} steps={copy.rules} />
+      <BankingStepsCard title={copy.instructionsTitle} steps={copy.steps} />
+      <BankingStepsCard title={copy.familyTitle} steps={copy.familySteps} />
     </motion.div>
   )
 }

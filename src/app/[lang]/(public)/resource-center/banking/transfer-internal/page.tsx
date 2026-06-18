@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingMethodSnapshot } from '@/components/hub/learning/BankingMethodSnapshot'
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://www.ibkrguides.com/clientportal/transferandpay/transferinternal.htm'
 
 const guideContent = {
   en: {
@@ -18,7 +17,25 @@ const guideContent = {
     description:
       'This guide follows the IBKR Client Portal internal transfer flow for moving cash, positions, or a full account between IBKR accounts.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
+    snapshotTitle: 'Method snapshot',
+    speed: {
+      label: 'Speed',
+      value: 'Usually fast after confirmation',
+      detail:
+        'Internal transfers avoid an external bank, but timing still depends on the transfer type, destination account setup, and confirmation steps.',
+    },
+    fees: {
+      label: 'Fees',
+      value: 'Not the main constraint',
+      detail:
+        'IBKR emphasizes association and confirmation requirements more than fees here. If a fee applies, it depends on the transfer type and account setup.',
+    },
+    stepsSummary: {
+      label: 'Steps',
+      value: '3 main actions',
+      detail:
+        'Choose the transfer type and destination account, enter the amount, then confirm the request with the emailed code or security prompt.',
+    },
     instructionsTitle: 'Enter an Internal Funds Transfer',
     intro: 'Use the Fund Transfers page to transfer funds internally from your account to another IBKR account.',
     steps: [
@@ -60,16 +77,31 @@ const guideContent = {
     associationIntro:
       'If the destination account does not populate in the drop-down list, IBKR says to request a new Transfer Association using the flow below.',
     associationSteps: [
-      'Go back to Transfer & Pay > Transfer Funds and select the source account.',
-      'Open Internal Transfer from the tab menu.',
-      'Manually enter the destination account number and provide a reason for the transfer, then press Continue.',
-      'Select the Currency and enter the Amount.',
-      'If prompted, verify your identity using your login details and two-factor security device, or enter the emailed confirmation number and continue.',
-      'Go to Transfer & Pay > Saved Information > Pending to review the pending request.',
+      {
+        title: 'Return to Transfer Funds',
+        body: 'Go back to Transfer & Pay > Transfer Funds and select the source account.',
+      },
+      {
+        title: 'Open Internal Transfer again',
+        body: 'Open Internal Transfer from the tab menu.',
+      },
+      {
+        title: 'Enter the destination account manually',
+        body: 'Manually enter the destination account number and provide a reason for the transfer, then press Continue.',
+      },
+      {
+        title: 'Enter currency and amount',
+        body: 'Select the Currency and enter the Amount.',
+      },
+      {
+        title: 'Verify the request',
+        body: 'If prompted, verify your identity using your login details and two-factor security device, or enter the emailed confirmation number and continue.',
+      },
+      {
+        title: 'Review the pending request',
+        body: 'Go to Transfer & Pay > Saved Information > Pending to review the pending request.',
+      },
     ],
-    noteTitle: 'Practical note',
-    noteBody:
-      'IBKR explicitly says you can click Cancel at any time while entering the transaction.',
   },
   es: {
     eyebrow: 'Banca',
@@ -77,7 +109,25 @@ const guideContent = {
     description:
       'Esta guía sigue el flujo de IBKR Client Portal para mover efectivo, posiciones o una cuenta completa entre cuentas de IBKR.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
+    snapshotTitle: 'Resumen del método',
+    speed: {
+      label: 'Velocidad',
+      value: 'Normalmente rápido tras la confirmación',
+      detail:
+        'La transferencia interna evita un banco externo, pero el tiempo igual depende del tipo de movimiento, de la cuenta destino y de los pasos de confirmación.',
+    },
+    fees: {
+      label: 'Cargos',
+      value: 'No suelen ser la principal limitante',
+      detail:
+        'IBKR pone más foco en la asociación y la confirmación que en los cargos. Si existe algún cargo, depende del tipo de transferencia y de la cuenta.',
+    },
+    stepsSummary: {
+      label: 'Pasos',
+      value: '3 acciones principales',
+      detail:
+        'Elija el tipo de transferencia y la cuenta destino, ingrese el monto y luego confirme la solicitud con el código por correo o la validación de seguridad.',
+    },
     instructionsTitle: 'Ingresar una transferencia interna de fondos',
     intro: 'Use la página Fund Transfers para transferir fondos internamente desde su cuenta hacia otra cuenta de IBKR.',
     steps: [
@@ -119,16 +169,31 @@ const guideContent = {
     associationIntro:
       'Si la cuenta de destino no aparece en la lista desplegable, IBKR indica solicitar una nueva Transfer Association con este flujo.',
     associationSteps: [
-      'Vuelva a Transfer & Pay > Transfer Funds y seleccione la cuenta de origen.',
-      'Abra Internal Transfer desde el menú de pestañas.',
-      'Ingrese manualmente el número de cuenta destino y el motivo de la transferencia, luego presione Continue.',
-      'Seleccione la Currency e ingrese el Amount.',
-      'Si se lo piden, verifique su identidad con sus credenciales y el dispositivo de doble factor, o ingrese el número de confirmación enviado por correo y continúe.',
-      'Vaya a Transfer & Pay > Saved Information > Pending para revisar la solicitud pendiente.',
+      {
+        title: 'Vuelva a Transfer Funds',
+        body: 'Vuelva a Transfer & Pay > Transfer Funds y seleccione la cuenta de origen.',
+      },
+      {
+        title: 'Abra Internal Transfer otra vez',
+        body: 'Abra Internal Transfer desde el menú de pestañas.',
+      },
+      {
+        title: 'Ingrese manualmente la cuenta destino',
+        body: 'Ingrese manualmente el número de cuenta destino y el motivo de la transferencia, luego presione Continue.',
+      },
+      {
+        title: 'Ingrese moneda y monto',
+        body: 'Seleccione la Currency e ingrese el Amount.',
+      },
+      {
+        title: 'Verifique la solicitud',
+        body: 'Si se lo piden, verifique su identidad con sus credenciales y el dispositivo de doble factor, o ingrese el número de confirmación enviado por correo y continúe.',
+      },
+      {
+        title: 'Revise la solicitud pendiente',
+        body: 'Vaya a Transfer & Pay > Saved Information > Pending para revisar la solicitud pendiente.',
+      },
     ],
-    noteTitle: 'Nota práctica',
-    noteBody:
-      'IBKR indica de forma explícita que puede hacer clic en Cancel en cualquier momento mientras está ingresando la transacción.',
   },
 } as const
 
@@ -153,70 +218,19 @@ const InternalTransferPage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-5">
-          <p className="text-base text-subtitle leading-7">{copy.intro}</p>
-          <ol className="space-y-4">
-            {copy.steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">
-                  {index + 1}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{step.title}</p>
-                  <p className="text-subtitle leading-7">{step.body}</p>
-                  {'note' in step && step.note ? <p className="text-sm text-subtitle">{step.note}</p> : null}
-                </div>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
+      <BankingMethodSnapshot
+        title={copy.snapshotTitle}
+        speed={copy.speed}
+        fees={copy.fees}
+        steps={copy.stepsSummary}
+      />
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.associationTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-5">
-          <p className="text-base text-subtitle leading-7">{copy.associationIntro}</p>
-          <ol className="space-y-4">
-            {copy.associationSteps.map((step, index) => (
-              <li key={step} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-muted text-foreground flex items-center justify-center shrink-0 font-semibold">
-                  {index + 1}
-                </div>
-                <p className="text-subtitle leading-7">{step}</p>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.noteTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.noteBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.instructionsTitle} intro={copy.intro} steps={copy.steps} />
+      <BankingStepsCard title={copy.associationTitle} intro={copy.associationIntro} steps={copy.associationSteps} />
     </motion.div>
   )
 }

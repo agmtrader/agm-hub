@@ -2,55 +2,118 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingMethodSnapshot } from '@/components/hub/learning/BankingMethodSnapshot'
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://ibkrguides.com/fundingreference/usd.htm#Link_a_Bank_Account'
 
 const guideContent = {
   en: {
     eyebrow: 'Banking',
     title: 'Link a Bank Account',
     description:
-      'Use this option to set up your bank as a linked funding destination or source in IBKR. This page is based on the USD Funding Reference summary, so it is intentionally concise.',
+      'Use this option to set up your bank as a linked funding destination or source in IBKR.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
-    detailsTitle: 'Funding method summary',
-    rows: [
-      { label: 'Purpose', value: 'One-time setup of bank details so IBKR knows where to send or receive funds electronically.' },
-      { label: 'Availability', value: 'Varies by account entity, country, and bank support.' },
-      { label: 'Required Information', value: 'Your bank account details and any ownership or verification information IBKR requests.' },
-      { label: 'Speed', value: 'Setup and verification time depend on the method used and the bank involved.' },
-      { label: 'Limits', value: 'Transaction limits may apply depending on the linked method and your secure login setup.' },
-      { label: 'Fee(s)', value: 'Fees depend on the underlying transfer method and bank used.' },
+    snapshotTitle: 'Method snapshot',
+    snapshotDescription:
+      'This is the setup layer for later deposits or withdrawals, so timing mostly depends on bank verification.',
+    speed: {
+      label: 'Speed',
+      value: 'Depends on verification',
+      detail:
+        'The link itself can be quick, but full activation depends on the bank, ownership checks, and the transfer method behind the link.',
+    },
+    fees: {
+      label: 'Fees',
+      value: 'Depends on the linked rail',
+      detail:
+        'IBKR points back to the underlying transfer method. Wire, ACH, and bank-specific fees are not uniform here.',
+    },
+    stepsSummary: {
+      label: 'Steps',
+      value: '2 main steps',
+      detail:
+        'Enter the bank details IBKR asks for, then complete any ownership or verification checks before using the account.',
+    },
+    instructionsTitle: 'Link a bank account',
+    intro: 'Use this flow when you need to add a bank as a future funding source or withdrawal destination in IBKR.',
+    steps: [
+      {
+        title: 'Open Transfer Funds',
+        body: 'Go to Transfer & Pay and then open Transfer Funds.',
+      },
+      {
+        title: 'Choose the bank-linking flow',
+        body: 'Select the option to add or link a new bank account from the available funding methods.',
+      },
+      {
+        title: 'Enter the bank account details',
+        body: 'Provide the bank information IBKR requests, including the account details needed for the link.',
+      },
+      {
+        title: 'Complete ownership or verification checks',
+        body: 'Finish any ownership confirmation, verification, or security steps IBKR requires before activating the linked bank account.',
+      },
+      {
+        title: 'Use the linked bank for future deposits or withdrawals',
+        body: 'Once the setup is approved, the linked bank can be reused for supported funding actions.',
+      },
     ],
-    noteTitle: 'Practical note',
-    noteBody:
-      'The funding reference page is not a detailed Client Portal walkthrough. It is a method summary, so the exact onboarding screens can vary by transfer type, region, and bank.',
   },
   es: {
     eyebrow: 'Banca',
     title: 'Vincular una cuenta bancaria',
     description:
-      'Use esta opción para configurar su banco como origen o destino de fondos vinculado en IBKR. Esta página se basa en el resumen de USD Funding Reference, por eso es intencionalmente breve.',
+      'Use esta opción para configurar su banco como origen o destino de fondos vinculado en IBKR.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
-    detailsTitle: 'Resumen del método de fondeo',
-    rows: [
-      { label: 'Propósito', value: 'Configuración única de los datos bancarios para que IBKR sepa dónde enviar o desde dónde recibir fondos electrónicamente.' },
-      { label: 'Disponibilidad', value: 'Varía según la entidad de la cuenta, el país y el soporte del banco.' },
-      { label: 'Información requerida', value: 'Los datos de su cuenta bancaria y cualquier información de titularidad o verificación que IBKR solicite.' },
-      { label: 'Velocidad', value: 'El tiempo de configuración y verificación depende del método usado y del banco involucrado.' },
-      { label: 'Límites', value: 'Pueden aplicar límites de transacción según el método vinculado y su nivel de seguridad de acceso.' },
-      { label: 'Cargo(s)', value: 'Los cargos dependen del método de transferencia subyacente y del banco utilizado.' },
+    snapshotTitle: 'Resumen del método',
+    snapshotDescription:
+      'Esta es la capa de configuración para futuros depósitos o retiros, así que el tiempo depende sobre todo de la verificación bancaria.',
+    speed: {
+      label: 'Velocidad',
+      value: 'Depende de la verificación',
+      detail:
+        'La vinculación puede ser rápida, pero la activación completa depende del banco, de las validaciones de titularidad y del método de transferencia detrás del vínculo.',
+    },
+    fees: {
+      label: 'Cargos',
+      value: 'Dependen de la vía vinculada',
+      detail:
+        'IBKR remite al método subyacente. Los cargos de wire, ACH y del banco no son uniformes aquí.',
+    },
+    stepsSummary: {
+      label: 'Pasos',
+      value: '2 pasos principales',
+      detail:
+        'Ingrese los datos bancarios que IBKR pida y luego complete cualquier validación de titularidad o verificación antes de usar la cuenta.',
+    },
+    instructionsTitle: 'Vincular una cuenta bancaria',
+    intro: 'Use este flujo cuando necesite agregar un banco como origen futuro de fondos o como destino de retiro en IBKR.',
+    steps: [
+      {
+        title: 'Abra Transfer Funds',
+        body: 'Vaya a Transfer & Pay y luego abra Transfer Funds.',
+      },
+      {
+        title: 'Elija el flujo para vincular el banco',
+        body: 'Seleccione la opción para agregar o vincular una nueva cuenta bancaria desde los métodos de fondeo disponibles.',
+      },
+      {
+        title: 'Ingrese los datos de la cuenta bancaria',
+        body: 'Proporcione la información bancaria que IBKR pida, incluidos los datos necesarios para crear el vínculo.',
+      },
+      {
+        title: 'Complete las validaciones de titularidad o verificación',
+        body: 'Termine cualquier confirmación de titularidad, verificación o validación de seguridad que IBKR requiera antes de activar la cuenta bancaria vinculada.',
+      },
+      {
+        title: 'Use el banco vinculado para futuros movimientos',
+        body: 'Una vez aprobada la configuración, el banco vinculado se puede reutilizar para acciones de fondeo soportadas.',
+      },
     ],
-    noteTitle: 'Nota práctica',
-    noteBody:
-      'La página de funding reference no es una guía detallada paso a paso de Client Portal. Es un resumen del método, por lo que las pantallas exactas pueden variar según el tipo de transferencia, la región y el banco.',
   },
 } as const
 
@@ -71,44 +134,19 @@ const LinkBankAccountPage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.detailsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="grid">
-            {copy.rows.map((row) => (
-              <div key={row.label} className="grid md:grid-cols-[240px_minmax(0,1fr)] border-t first:border-t-0 border-border/60">
-                <div className="px-4 py-4 font-semibold bg-muted/20">{row.label}:</div>
-                <div className="px-4 py-4 text-subtitle leading-7">{row.value}</div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <BankingMethodSnapshot
+        title={copy.snapshotTitle}
+        description={copy.snapshotDescription}
+        speed={copy.speed}
+        fees={copy.fees}
+        steps={copy.stepsSummary}
+      />
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.noteTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.noteBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.instructionsTitle} intro={copy.intro} steps={copy.steps} />
     </motion.div>
   )
 }

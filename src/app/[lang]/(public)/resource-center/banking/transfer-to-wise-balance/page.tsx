@@ -2,53 +2,116 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingMethodSnapshot } from '@/components/hub/learning/BankingMethodSnapshot'
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://ibkrguides.com/fundingreference/usd.htm#Transfer_to_Wise_Balance_Withdrawal'
 
 const guideContent = {
   en: {
     eyebrow: 'Banking',
     title: 'Transfer to Wise Balance',
     description:
-      'This page summarizes the Wise withdrawal method shown in the USD Funding Reference. It is a cleaner method summary, not a full Client Portal walkthrough.',
+      'This page summarizes the Wise withdrawal method shown in the USD Funding Reference and presents it as a practical withdrawal guide.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
-    detailsTitle: 'Withdrawal method summary',
-    rows: [
-      { label: 'Purpose', value: 'One-time setup of a withdrawal destination at IBKR so funds can be sent electronically to your Wise account.' },
-      { label: 'Availability', value: 'All entities except IBKR Canada and Japan.' },
-      { label: 'Speed', value: 'Receive the funds next day.' },
-      { label: 'Limits', value: 'Daily limits apply and depend on your secure login setup.' },
-      { label: 'Fee(s)', value: 'One free withdrawal per calendar month. Subsequent withdrawals incur a fee at IBKR.' },
+    snapshotTitle: 'Method snapshot',
+    snapshotDescription:
+      'This withdrawal path is a dedicated Wise destination rather than the generic withdrawal flow.',
+    speed: {
+      label: 'Speed',
+      value: 'Next day',
+      detail: 'IBKR states that supported Wise withdrawals are typically received the next day.',
+    },
+    fees: {
+      label: 'Fees',
+      value: 'One free monthly withdrawal',
+      detail:
+        'IBKR gives one free withdrawal per calendar month. Additional withdrawals can trigger IBKR charges.',
+    },
+    stepsSummary: {
+      label: 'Steps',
+      value: '2 main steps',
+      detail:
+        'Set up Wise as the withdrawal destination, then submit the withdrawal request using that saved destination.',
+    },
+    instructionsTitle: 'Send funds to your Wise balance',
+    intro: 'This is the practical flow to use Wise as the withdrawal destination from your IBKR account.',
+    steps: [
+      {
+        title: 'Open Transfer Funds',
+        body: 'Go to Transfer & Pay and then open Transfer Funds.',
+      },
+      {
+        title: 'Choose Withdraw Funds',
+        body: 'Select the IBKR account you want to withdraw from and choose Withdraw Funds.',
+      },
+      {
+        title: 'Select or add Wise as the destination',
+        body: 'Use your saved Wise withdrawal destination or add Wise as a new withdrawal destination if it has not been set up yet.',
+      },
+      {
+        title: 'Enter amount and review',
+        body: 'Select the currency, enter the amount, and review the withdrawal details carefully.',
+      },
+      {
+        title: 'Pass the security check and submit',
+        body: 'Complete any required security verification and then submit the withdrawal request to Wise.',
+      },
     ],
-    noteTitle: 'Practical note',
-    noteBody:
-      'This reference page describes the funding method at a high level. The exact withdrawal screens, validations, and fields can differ based on entity and account setup.',
   },
   es: {
     eyebrow: 'Banca',
     title: 'Transferir a saldo de Wise',
     description:
-      'Esta página resume el método de retiro hacia Wise mostrado en USD Funding Reference. Es un resumen limpio del método, no una guía completa paso a paso de Client Portal.',
+      'Esta página resume el método de retiro hacia Wise mostrado en USD Funding Reference y lo presenta como una guía práctica de retiro.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
-    detailsTitle: 'Resumen del método de retiro',
-    rows: [
-      { label: 'Propósito', value: 'Configuración única de un destino de retiro en IBKR para que los fondos puedan enviarse electrónicamente a su cuenta de Wise.' },
-      { label: 'Disponibilidad', value: 'Todas las entidades excepto IBKR Canada y Japan.' },
-      { label: 'Velocidad', value: 'Reciba los fondos al día siguiente.' },
-      { label: 'Límites', value: 'Aplican límites diarios y dependen de su configuración de seguridad de acceso.' },
-      { label: 'Cargo(s)', value: 'Un retiro gratis por mes calendario. Los retiros posteriores generan un cargo en IBKR.' },
+    snapshotTitle: 'Resumen del método',
+    snapshotDescription:
+      'Esta vía de retiro usa a Wise como destino específico, no el flujo genérico de retiro.',
+    speed: {
+      label: 'Velocidad',
+      value: 'Al día siguiente',
+      detail: 'IBKR indica que los retiros soportados hacia Wise normalmente se reciben al día siguiente.',
+    },
+    fees: {
+      label: 'Cargos',
+      value: 'Un retiro mensual gratis',
+      detail:
+        'IBKR da un retiro gratis por mes calendario. Los retiros adicionales pueden generar cargos de IBKR.',
+    },
+    stepsSummary: {
+      label: 'Pasos',
+      value: '2 pasos principales',
+      detail:
+        'Configure Wise como destino de retiro y luego envíe la solicitud usando ese destino guardado.',
+    },
+    instructionsTitle: 'Enviar fondos a su saldo de Wise',
+    intro: 'Este es el flujo práctico para usar Wise como destino de retiro desde su cuenta de IBKR.',
+    steps: [
+      {
+        title: 'Abra Transfer Funds',
+        body: 'Vaya a Transfer & Pay y luego abra Transfer Funds.',
+      },
+      {
+        title: 'Elija Withdraw Funds',
+        body: 'Seleccione la cuenta de IBKR desde la que quiere retirar y elija Withdraw Funds.',
+      },
+      {
+        title: 'Seleccione o agregue Wise como destino',
+        body: 'Use su destino de retiro Wise ya guardado o agregue Wise como nuevo destino si todavía no está configurado.',
+      },
+      {
+        title: 'Ingrese el monto y revise',
+        body: 'Seleccione la moneda, ingrese el monto y revise con cuidado los detalles del retiro.',
+      },
+      {
+        title: 'Pase la validación y envíe la solicitud',
+        body: 'Complete cualquier validación de seguridad requerida y luego envíe la solicitud de retiro hacia Wise.',
+      },
     ],
-    noteTitle: 'Nota práctica',
-    noteBody:
-      'Esta página de referencia describe el método de fondeo a alto nivel. Las pantallas exactas de retiro, validaciones y campos pueden cambiar según la entidad y la configuración de la cuenta.',
   },
 } as const
 
@@ -69,44 +132,19 @@ const TransferToWiseBalancePage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.detailsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="grid">
-            {copy.rows.map((row) => (
-              <div key={row.label} className="grid md:grid-cols-[240px_minmax(0,1fr)] border-t first:border-t-0 border-border/60">
-                <div className="px-4 py-4 font-semibold bg-muted/20">{row.label}:</div>
-                <div className="px-4 py-4 text-subtitle leading-7">{row.value}</div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <BankingMethodSnapshot
+        title={copy.snapshotTitle}
+        description={copy.snapshotDescription}
+        speed={copy.speed}
+        fees={copy.fees}
+        steps={copy.stepsSummary}
+      />
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.noteTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.noteBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.instructionsTitle} intro={copy.intro} steps={copy.steps} />
     </motion.div>
   )
 }

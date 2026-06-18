@@ -2,14 +2,12 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://www.ibkrguides.com/clientportal/usersettings/marketdatasubscriptions.htm#NPQ'
 
 const guideContent = {
   en: {
@@ -18,7 +16,6 @@ const guideContent = {
     description:
       'This guide follows the IBKR Client Portal market data subscription flow for viewing, subscribing, unsubscribing, and managing related questionnaire details.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
     instructionsTitle: 'How to view or change market data subscriptions',
     steps: [
       {
@@ -55,11 +52,20 @@ const guideContent = {
       },
     ],
     terminationTitle: 'Important termination rule',
-    terminationBody:
-      'IBKR states that active market data subscriptions are terminated if you have not logged into TWS for 60 days. You can keep them active by using the Continue Subscriptions prompt within the allowed period after IBKR notifies you.',
+    termination: [
+      {
+        title: 'IBKR states that active market data subscriptions are terminated if you have not logged into TWS for 60 days',
+      },
+      {
+        title: 'You can keep them active by using the Continue Subscriptions prompt within the allowed period after IBKR notifies you',
+      },
+    ],
     questionnaireTitle: 'Non-Professional questionnaire',
-    questionnaireBody:
-      'If your personal circumstances change and you are classified as a Non-Professional subscriber, IBKR lets you update the questionnaire from the same Market Data Subscriptions area.',
+    questionnaire: [
+      {
+        title: 'If your personal circumstances change and you are classified as a Non-Professional subscriber, IBKR lets you update the questionnaire from the same Market Data Subscriptions area',
+      },
+    ],
   },
   es: {
     eyebrow: 'Trading',
@@ -67,7 +73,6 @@ const guideContent = {
     description:
       'Esta guía sigue el flujo de suscripciones de market data en IBKR Client Portal para ver, suscribirse, cancelar suscripciones y manejar detalles relacionados del cuestionario.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
     instructionsTitle: 'Cómo ver o cambiar suscripciones de market data',
     steps: [
       {
@@ -104,11 +109,20 @@ const guideContent = {
       },
     ],
     terminationTitle: 'Regla importante de terminación',
-    terminationBody:
-      'IBKR indica que las suscripciones activas de market data se terminan si no ha iniciado sesión en TWS durante 60 días. Puede mantenerlas activas usando el aviso Continue Subscriptions dentro del plazo permitido después de la notificación.',
+    termination: [
+      {
+        title: 'IBKR indica que las suscripciones activas de market data se terminan si no ha iniciado sesión en TWS durante 60 días',
+      },
+      {
+        title: 'Puede mantenerlas activas usando el aviso Continue Subscriptions dentro del plazo permitido después de la notificación',
+      },
+    ],
     questionnaireTitle: 'Cuestionario Non-Professional',
-    questionnaireBody:
-      'Si sus circunstancias personales cambian y está clasificado como suscriptor Non-Professional, IBKR permite actualizar el cuestionario desde la misma sección de Market Data Subscriptions.',
+    questionnaire: [
+      {
+        title: 'Si sus circunstancias personales cambian y está clasificado como suscriptor Non-Professional, IBKR permite actualizar el cuestionario desde la misma sección de Market Data Subscriptions',
+      },
+    ],
   },
 } as const
 
@@ -129,56 +143,13 @@ const MarketDataSubscriptionsPage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ol className="space-y-4">
-            {copy.steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">{index + 1}</div>
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{step.title}</p>
-                  <p className="text-subtitle leading-7">{step.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.terminationTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.terminationBody}</p>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.questionnaireTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.questionnaireBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.instructionsTitle} steps={copy.steps} />
+      <BankingStepsCard title={copy.terminationTitle} steps={copy.termination} />
+      <BankingStepsCard title={copy.questionnaireTitle} steps={copy.questionnaire} />
     </motion.div>
   )
 }

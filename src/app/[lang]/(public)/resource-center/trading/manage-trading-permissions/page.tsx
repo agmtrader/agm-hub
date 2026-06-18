@@ -2,14 +2,12 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
+import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
-
-const OFFICIAL_GUIDE_URL = 'https://www.ibkrguides.com/clientportal/tradingpermissions.htm?Highlight=Trading%20Permissions'
 
 const guideContent = {
   en: {
@@ -18,10 +16,6 @@ const guideContent = {
     description:
       'This guide follows the IBKR Client Portal Trading Permissions flow for requesting or modifying product and country permissions.',
     back: 'Back to Resource Center',
-    openGuide: 'Open official guide',
-    overviewTitle: 'What this controls',
-    overviewBody:
-      'Trading permissions define what products you can trade and in which countries you can trade them. IBKR may also require risk disclosures and can limit permissions based on your investment objectives or financial profile.',
     instructionsTitle: 'How to manage trading permissions',
     steps: [
       {
@@ -45,9 +39,14 @@ const guideContent = {
         body: 'After updating the desired permissions, click Save.',
       },
     ],
-    noteTitle: 'Practical note',
-    noteBody:
-      'IBKR notes that you can request permissions across all countries and products with a single click, and each product or market may include additional details through the information icon.',
+    rulesTitle: 'What these permissions control',
+    rules: [
+      { title: 'Trading permissions define what products you can trade and in which countries you can trade them' },
+      { title: 'IBKR may require additional risk disclosures before granting access' },
+      { title: 'IBKR can limit permissions based on your investment objectives or financial profile' },
+      { title: 'IBKR lets you request permissions across all countries and products with a single click' },
+      { title: 'Each product or market may include additional details through the information icon' },
+    ],
   },
   es: {
     eyebrow: 'Trading',
@@ -55,10 +54,6 @@ const guideContent = {
     description:
       'Esta guía sigue el flujo de Trading Permissions en IBKR Client Portal para solicitar o modificar permisos por producto y por país.',
     back: 'Volver al Centro de Recursos',
-    openGuide: 'Abrir guía oficial',
-    overviewTitle: 'Qué controla esto',
-    overviewBody:
-      'Los permisos de trading definen qué productos puede negociar y en qué países puede hacerlo. IBKR también puede exigir divulgaciones de riesgo y limitar permisos según sus objetivos de inversión o su perfil financiero.',
     instructionsTitle: 'Cómo administrar los permisos de trading',
     steps: [
       {
@@ -82,9 +77,14 @@ const guideContent = {
         body: 'Después de actualizar los permisos deseados, haga clic en Save.',
       },
     ],
-    noteTitle: 'Nota práctica',
-    noteBody:
-      'IBKR indica que puede solicitar permisos para todos los países y productos con un solo clic, y que cada producto o mercado puede mostrar detalles adicionales mediante el icono de información.',
+    rulesTitle: 'Qué controlan estos permisos',
+    rules: [
+      { title: 'Los permisos de trading definen qué productos puede negociar y en qué países puede hacerlo' },
+      { title: 'IBKR puede exigir divulgaciones adicionales de riesgo antes de otorgar acceso' },
+      { title: 'IBKR puede limitar permisos según sus objetivos de inversión o su perfil financiero' },
+      { title: 'IBKR permite solicitar permisos para todos los países y productos con un solo clic' },
+      { title: 'Cada producto o mercado puede mostrar detalles adicionales mediante el icono de información' },
+    ],
   },
 } as const
 
@@ -105,56 +105,12 @@ const ManageTradingPermissionsPage = () => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex flex-col gap-3 max-w-5xl">
-            <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-            <p className="text-lg text-subtitle leading-8">{copy.description}</p>
-          </div>
-          <Button asChild className="w-fit">
-            <a href={OFFICIAL_GUIDE_URL} target="_blank" rel="noopener noreferrer">
-              {copy.openGuide}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.overviewTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.overviewBody}</p>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.instructionsTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ol className="space-y-4">
-            {copy.steps.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">{index + 1}</div>
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{step.title}</p>
-                  <p className="text-subtitle leading-7">{step.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border/60 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">{copy.noteTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-subtitle leading-7">{copy.noteBody}</p>
-        </CardContent>
-      </Card>
+      <BankingStepsCard title={copy.instructionsTitle} steps={copy.steps} />
+      <BankingStepsCard title={copy.rulesTitle} steps={copy.rules} />
     </motion.div>
   )
 }
