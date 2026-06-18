@@ -114,6 +114,7 @@ export const resourceCenterSections: ResourceSection[] = [
     slides: [
       {
         id: '01',
+        image: '/assets/resource-center/trading/trading-permissions.png',
         title: 'How to manage your trading permissions',
         href: '/resource-center/trading/manage-trading-permissions',
         eyebrow: 'Trading',
@@ -159,20 +160,7 @@ export const resourceCenterSections: ResourceSection[] = [
       { id: '04', title: 'Bonds and fixed income overview', eyebrow: 'Learning' },
       { id: '05', title: 'Economic events that move markets', eyebrow: 'Learning' },
     ]),
-  },
-  {
-    id: 'interactive-learning',
-    titleKey: 'learning.sections.interactive_learning.title',
-    descriptionKey: 'learning.sections.interactive_learning.description',
-    slides: buildSlides([
-      {
-        id: '01',
-        title: 'Options',
-        href: '/resource-center/interactive-learning/options',
-        eyebrow: 'Interactive Learning',
-      },
-    ]),
-  },
+  }
 ]
 
 export const chapters = [
