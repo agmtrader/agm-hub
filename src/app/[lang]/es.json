@@ -667,7 +667,7 @@
         "managed_accounts": {
             "title": "Cuentas administradas",
             "management_fees_label": "Costos de administración",
-            "management_fees_value": "Hasta un 2.5% al año, los costos se acumulan diariamente sobre el Valor del activo Neto de la cuenta y se cobran mensualmente.",
+            "management_fees_value": "Hasta un 2% al año, los costos se acumulan diariamente sobre el Valor del activo Neto de la cuenta y se cobran mensualmente.",
             "execution_costs_label": "Costos de ejecución",
             "execution_costs_value": "Acciones/ETFs: $0.075 por acción, mínimo de $25 por transacción. Bonos: $25 por transacción + 0.005% del valor nominal",
             "custody_fees_label": "Costos de custodia",
