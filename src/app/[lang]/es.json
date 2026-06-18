@@ -721,6 +721,10 @@
             "learning": {
                 "title": "Aprendizaje",
                 "description": "Contenido educativo provisional para aprendizaje general de mercado y productos."
+            },
+            "interactive_learning": {
+                "title": "Aprendizaje Interactivo",
+                "description": "Modulos guiados con graficas practicas y preguntas para aprender activamente."
             }
         },
         "chapters": {

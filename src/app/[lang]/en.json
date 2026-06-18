@@ -721,6 +721,10 @@
             "learning": {
                 "title": "Learning",
                 "description": "Placeholder educational content for broader market and product learning."
+            },
+            "interactive_learning": {
+                "title": "Interactive Learning",
+                "description": "Guided modules with hands-on charts and questions for active learning."
             }
         },
         "chapters": {
