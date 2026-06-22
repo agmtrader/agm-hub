@@ -703,7 +703,7 @@
         "no_videos": "No hay videos disponibles para este capítulo. Por favor vuelva más tarde.",
         "sections": {
             "banking": {
-                "title": "Banca",
+                "title": "Depositos y retiros",
                 "description": "Depósitos, retiros, enlace de cuentas bancarias, transferencias con Wise y movimiento interno de dinero."
             },
             "account_management": {
