@@ -1,10 +1,14 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useEffect, useMemo, useState } from 'react'
+import type { GaugeComponentProps } from 'react-gauge-component'
 import {
   AlertCircle,
-  ArrowUpRight,
+  ChevronDown,
+  DollarSign,
   Gauge,
+  Info,
   Lock,
   ShieldAlert,
   Target,
@@ -16,7 +20,7 @@ import { Card } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
 import { RiskArchetype } from '@/lib/clients/risk-profile'
 import {
@@ -45,6 +49,8 @@ import { CreatePortfolioPlan, ReadPortfolioPlanById, UpdatePortfolioPlan } from 
 import { CreateInvestmentProposalFromPlan } from '@/utils/clients/investment_proposals'
 import { InvestmentProposal } from '@/lib/clients/investment-proposals'
 
+const GaugeComponent = dynamic(() => import('react-gauge-component'), { ssr: false }) as React.ComponentType<GaugeComponentProps>
+
 type Props = {
   customerName: string
   riskProfileId: string
@@ -66,6 +72,13 @@ const assetDescriptions: Record<AssetKey, string> = {
   treasuries: 'U.S. Treasury exposure',
   bonds: 'Corporate bond sleeve',
   stocks: 'Broad equity and ETF sleeve',
+}
+
+const assetHoverDescriptions: Record<AssetKey, string> = {
+  cash: 'Cash is the most stable sleeve. It lowers portfolio swings, but it usually contributes the least to long-term return.',
+  treasuries: 'Treasuries represent U.S. government bond exposure. They can help reduce risk and provide income with lower credit risk.',
+  bonds: 'Corporate bonds add income from company debt. They usually carry more credit risk than Treasuries and less growth risk than stocks.',
+  stocks: 'Stocks and ETFs provide growth exposure. They can raise expected return, but they usually add the most short-term volatility.',
 }
 
 const assetColors: Record<AssetKey, { accent: string; soft: string; strong: string }> = {
@@ -91,6 +104,19 @@ const riskLabels: Record<RiskTolerance, string> = {
   conservative: 'Conservative',
   moderate: 'Moderate',
   aggressive: 'Aggressive',
+}
+
+const riskToleranceDescriptions: Record<RiskTolerance, string> = {
+  conservative: 'Prioritizes capital preservation and lower volatility, accepting a lower expected return in exchange for a steadier path.',
+  moderate: 'Balances growth and stability with a diversified mix of defensive assets and growth-oriented exposure.',
+  aggressive: 'Prioritizes higher expected growth and accepts larger portfolio swings and deeper possible drawdowns.',
+}
+
+const metricDescriptions = {
+  expectedReturn: 'Weighted average annual return estimate from the current allocation and market assumptions.',
+  portfolioRisk: 'Estimated annual volatility for the current portfolio mix. Higher volatility means wider potential swings.',
+  annualGain: 'Estimated one-year dollar gain from the starting amount and expected return, with a modeled low-to-high range.',
+  instrumentRisk: 'Shows each instrument contribution to total estimated portfolio risk based on its allocation and volatility.',
 }
 
 const archetypeTone: Record<RiskTolerance, { accent: string; soft: string; border: string }> = {
@@ -152,6 +178,7 @@ const PortfolioPlanner = ({
   )
   const [lockedAssets, setLockedAssets] = useState(initialPlan?.locked_assets ?? defaultLocks)
   const [lockedBondRatings, setLockedBondRatings] = useState(initialPlan?.locked_bond_ratings ?? defaultBondLocks)
+  const [showBondLevels, setShowBondLevels] = useState(false)
   const [saving, setSaving] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [savedPlan, setSavedPlan] = useState<PortfolioPlan | null>(initialPlan)
@@ -366,6 +393,7 @@ const PortfolioPlanner = ({
     subtitle: string,
     tone: 'green' | 'amber' | 'orange' | 'neutral',
     icon: React.ReactNode,
+    description?: string,
   ) {
     const toneClasses = {
       green: 'from-emerald-50 to-white border-emerald-200',
@@ -378,7 +406,7 @@ const PortfolioPlanner = ({
       <Card className={`bg-gradient-to-br ${toneClasses[tone]} p-4 shadow-sm`}>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-foreground">{title}</p>
+            <TooltipLabel label={title} description={description} className="text-sm font-medium text-foreground" />
             <p className="mt-1 text-2xl font-semibold leading-none text-foreground">{value}</p>
             <p className="text-sm text-subtitle mt-1">{subtitle}</p>
           </div>
@@ -389,6 +417,7 @@ const PortfolioPlanner = ({
   }
 
   return (
+    <TooltipProvider delayDuration={120}>
     <div className="flex flex-col gap-6">
       <Card className="overflow-hidden border-slate-200 bg-white shadow-sm">
         <div className="grid items-start gap-6 px-6 py-5 xl:grid-cols-[1.12fr_0.88fr]">
@@ -404,6 +433,10 @@ const PortfolioPlanner = ({
             </div>
 
             <div className="mt-5 grid gap-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-foreground">Customer name</p>
+                <Input value={customerName} readOnly />
+              </div>
               <div className="space-y-2">
                 <p className="text-sm font-medium text-foreground">Target annual return</p>
                 <div className="relative">
@@ -431,9 +464,12 @@ const PortfolioPlanner = ({
                           boxShadow: isActiveTier ? `0 0 0 1px ${tone.border} inset` : undefined,
                         }}
                       >
-                        <p className="text-sm font-semibold" style={{ color: tone.accent }}>
-                          {riskLabels[tier]}
-                        </p>
+                        <TooltipLabel
+                          label={riskLabels[tier]}
+                          description={riskToleranceDescriptions[tier]}
+                          className="text-sm font-semibold"
+                          style={{ color: tone.accent }}
+                        />
                         <div className="mt-3 flex gap-2">
                           {archetypeGroups[tier].map((archetype) => {
                             const selected = selectedArchetypeName === archetype.name
@@ -471,10 +507,19 @@ const PortfolioPlanner = ({
               </div>
 
               <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-200">
-                <div
-                  className="h-full rounded-full bg-[linear-gradient(90deg,#ff8a3d_0%,#f76707_55%,#c92a2a_100%)]"
-                  style={{ width: `${Math.min(100, calculation.allocationTotal)}%` }}
-                />
+                <div className="flex h-full" style={{ width: `${Math.min(100, calculation.allocationTotal)}%` }}>
+                  {(['cash', 'treasuries', 'bonds', 'stocks'] as AssetKey[]).map((key) => (
+                    <div
+                      key={key}
+                      className="h-full"
+                      title={`${assetLabels[key]} ${allocation[key]}%`}
+                      style={{
+                        width: `${allocation[key]}%`,
+                        backgroundColor: assetColors[key].accent,
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
 
               <div className="mt-6 grid gap-5">
@@ -485,6 +530,7 @@ const PortfolioPlanner = ({
                         <AssetSliderRow
                           label={assetLabels[key]}
                           description={assets.find((asset) => asset.key === key)?.benchmark ?? assetDescriptions[key]}
+                          tooltipDescription={assetHoverDescriptions[key]}
                           color={assetColors[key].accent}
                           value={allocation[key]}
                           locked={lockedAssets[key]}
@@ -492,39 +538,35 @@ const PortfolioPlanner = ({
                           onChange={(value) => updateAsset(key, value)}
                           max={allocationCaps[key]}
                         />
-                        <Accordion type="single" collapsible defaultValue="bond-ratings" className="rounded-2xl border border-slate-200 bg-white px-4">
-                          <AccordionItem value="bond-ratings" className="border-b-0">
-                            <AccordionTrigger className="py-3 hover:no-underline">
-                              <AssetRowHeader
-                                label="Corporate bond quality mix"
-                                description="Show or hide A-AAA, BBB, and BB rating sliders."
-                                accent={assetColors[key].accent}
-                                value={allocation[key]}
-                                valueLabel="Sleeve"
+                        <button
+                          type="button"
+                          onClick={() => setShowBondLevels((current) => !current)}
+                          className="ml-4 inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-subtitle transition hover:bg-slate-100 hover:text-foreground"
+                        >
+                          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showBondLevels ? 'rotate-180' : ''}`} />
+                          Bond levels
+                        </button>
+                        {showBondLevels && (
+                        <div className="ml-4 border-l border-slate-200 pl-4">
+                          <div className="grid gap-3">
+                            {(['aaa', 'bbb', 'bb'] as BondRatingKey[]).map((ratingKey) => (
+                              <AssetSliderRow
+                                key={ratingKey}
+                                label={bondRatingLabels[ratingKey]}
+                                tooltipDescription="A corporate bond quality bucket. Higher ratings generally mean lower credit risk; lower ratings generally offer more yield with more credit risk."
+                                color={bondRatingColors[ratingKey]}
+                                value={bondRatingAllocation[ratingKey]}
+                                locked={lockedBondRatings[ratingKey]}
+                                onToggleLock={() => toggleBondLock(ratingKey)}
+                                onChange={(value) => updateBondRating(ratingKey, value)}
+                                suffix="%"
+                                max={100}
+                                nested
                               />
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              <div className="border-l border-slate-200 pl-5">
-                                <div className="grid gap-4">
-                                  {(['aaa', 'bbb', 'bb'] as BondRatingKey[]).map((ratingKey) => (
-                                    <AssetSliderRow
-                                      key={ratingKey}
-                                      label={bondRatingLabels[ratingKey]}
-                                      description="Within the corporate bond sleeve"
-                                      color={bondRatingColors[ratingKey]}
-                                      value={bondRatingAllocation[ratingKey]}
-                                      locked={lockedBondRatings[ratingKey]}
-                                      onToggleLock={() => toggleBondLock(ratingKey)}
-                                      onChange={(value) => updateBondRating(ratingKey, value)}
-                                      suffix="%"
-                                      max={100}
-                                    />
-                                  ))}
-                                </div>
-                              </div>
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
+                            ))}
+                          </div>
+                        </div>
+                        )}
                       </div>
                     )
                   }
@@ -534,12 +576,17 @@ const PortfolioPlanner = ({
                       key={key}
                       label={assetLabels[key]}
                       description={assets.find((asset) => asset.key === key)?.benchmark ?? assetDescriptions[key]}
+                      tooltipDescription={assetHoverDescriptions[key]}
                       color={assetColors[key].accent}
                       value={allocation[key]}
                       locked={lockedAssets[key]}
                       onToggleLock={() => toggleAssetLock(key)}
                       onChange={(value) => updateAsset(key, value)}
-                      max={allocationCaps[key]}
+                      max={key === 'cash' ? 100 : allocationCaps[key]}
+                      limit={key === 'cash' ? allocationCaps[key] : undefined}
+                      limitMarkerPercent={key === 'cash' ? allocationCaps[key] : undefined}
+                      dimAfterPercent={key === 'cash' ? allocationCaps[key] : undefined}
+                      compact={key === 'cash'}
                     />
                   )
                 })}
@@ -547,7 +594,11 @@ const PortfolioPlanner = ({
             </div>
 
             <div className="mt-6">
-              <p className="text-lg font-semibold text-foreground">How much of your risk comes from each instrument?</p>
+              <TooltipLabel
+                label="How much of your risk comes from each instrument?"
+                description={metricDescriptions.instrumentRisk}
+                className="text-lg font-semibold text-foreground"
+              />
               <p className="text-sm text-subtitle">Percent of risk from each instrument.</p>
 
               <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
@@ -564,7 +615,11 @@ const PortfolioPlanner = ({
                 <div className="grid gap-4">
                   {riskContribution.map((item) => (
                     <div key={item.key} className="grid grid-cols-[100px_1fr] items-center gap-4">
-                      <p className="text-sm font-semibold text-foreground">{item.label}</p>
+                      <TooltipLabel
+                        label={item.label}
+                        description={assetHoverDescriptions[item.key]}
+                        className="text-sm font-semibold text-foreground"
+                      />
                       <div className="relative h-10 rounded-xl border border-slate-200 bg-white">
                         <div className="absolute inset-x-0 top-0 grid h-full grid-cols-5">
                           {[0, 1, 2, 3, 4].map((index) => (
@@ -594,6 +649,7 @@ const PortfolioPlanner = ({
                 `${calculation.returnDelta >= 0 ? '+' : ''}${formatPercent(calculation.returnDelta)} vs target`,
                 'green',
                 <TrendingUp className="h-4 w-4" />,
+                metricDescriptions.expectedReturn,
               )}
               <RiskGaugeCard volatility={calculation.volatility} riskTier={calculation.riskTier} />
               {statCard(
@@ -601,7 +657,8 @@ const PortfolioPlanner = ({
                 formatCurrency(calculation.oneYearGain),
                 `${formatCurrency(calculation.oneYearRangeLow)} to ${formatCurrency(calculation.oneYearRangeHigh)}`,
                 'orange',
-                <ArrowUpRight className="h-4 w-4" />,
+                <DollarSign className="h-4 w-4" />,
+                metricDescriptions.annualGain,
               )}
             </div>
 
@@ -624,7 +681,6 @@ const PortfolioPlanner = ({
 
               <div className="mt-4 grid gap-3 md:grid-cols-4">
                 <MiniStat label="Target gap" value={`${Math.abs(calculation.returnDelta * 100).toFixed(1)}% ${calculation.returnDelta >= 0 ? 'above' : 'below'} target`} />
-                <MiniStat label="Risk fit" value={riskLabels[calculation.riskTier]} />
                 <MiniStat label="Base rating" value={selectedArchetypeName || matchedArchetype.name} />
                 <MiniStat label="Return driver" value={assetLabels[strongestReturnAsset]} />
                 <MiniStat label="Risk driver" value={assetLabels[strongestRiskAsset]} />
@@ -654,7 +710,7 @@ const PortfolioPlanner = ({
                 />
                 <InsightCard
                   title="Target check"
-                  body="Use the target gap together with the risk fit. A small gap with acceptable risk usually means the mix is close enough to compare tradeoffs."
+                  body="Use the target gap to see how close this mix is to the expected return goal before comparing tradeoffs."
                   tone="slate"
                 />
               </div>
@@ -689,6 +745,35 @@ const PortfolioPlanner = ({
         </Button>
       </div>
     </div>
+    </TooltipProvider>
+  )
+}
+
+function TooltipLabel({
+  label,
+  description,
+  className,
+  style,
+}: {
+  label: string
+  description?: string
+  className?: string
+  style?: React.CSSProperties
+}) {
+  if (!description) return <p className={className} style={style}>{label}</p>
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className={`inline-flex cursor-help items-center gap-1.5 ${className ?? ''}`} style={style}>
+          {label}
+          <Info className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-xs leading-snug">
+        <p>{description}</p>
+      </TooltipContent>
+    </Tooltip>
   )
 }
 
@@ -714,12 +799,14 @@ function InsightCard({ title, body, tone }: { title: string; body: string; tone:
 function AssetRowHeader({
   label,
   description,
+  tooltipDescription,
   accent,
   value,
   valueLabel = '',
 }: {
   label: string
-  description: string
+  description?: string
+  tooltipDescription?: string
   accent: string
   value: number
   valueLabel?: string
@@ -729,7 +816,7 @@ function AssetRowHeader({
       <div className="flex items-center gap-3">
         <span className="h-3 w-3 rounded-full" style={{ backgroundColor: accent }} />
         <div>
-          <p className="font-semibold text-foreground">{label}</p>
+          <TooltipLabel label={label} description={tooltipDescription} className="font-semibold text-foreground" />
           <p className="text-xs text-subtitle">{description}</p>
         </div>
       </div>
@@ -743,6 +830,7 @@ function AssetRowHeader({
 function AssetSliderRow({
   label,
   description,
+  tooltipDescription,
   color,
   value,
   locked,
@@ -750,9 +838,15 @@ function AssetSliderRow({
   onChange,
   suffix = '%',
   max = 100,
+  limit,
+  limitMarkerPercent,
+  dimAfterPercent,
+  compact = false,
+  nested = false,
 }: {
   label: string
-  description: string
+  description?: string
+  tooltipDescription?: string
   color: string
   value: number
   locked: boolean
@@ -760,15 +854,96 @@ function AssetSliderRow({
   onChange: (value: number) => void
   suffix?: string
   max?: number
+  limit?: number
+  limitMarkerPercent?: number
+  dimAfterPercent?: number
+  compact?: boolean
+  nested?: boolean
 }) {
+  const displayValue = Math.min(value, limit ?? max)
+  const markerPercent = limitMarkerPercent === undefined ? null : Math.min(100, Math.max(0, limitMarkerPercent))
+  const disabledStartPercent = dimAfterPercent === undefined ? null : Math.min(100, Math.max(0, dimAfterPercent))
+  const thumbSizePx = 20
+  const displayPercent = Math.min(100, Math.max(0, (displayValue / max) * 100))
+  const displayOffsetPx = thumbSizePx / 2 - (displayPercent / 100) * thumbSizePx
+  const markerOffsetPx = markerPercent === null ? 0 : thumbSizePx / 2 - (markerPercent / 100) * thumbSizePx
+
+  function clampChange(nextValue: number) {
+    onChange(Math.min(nextValue, limit ?? max))
+  }
+
+  if (compact) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <div className="grid items-center gap-4 sm:grid-cols-[170px_1fr_80px]">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+            <div className="min-w-0">
+              <TooltipLabel label={label} description={tooltipDescription} className="font-semibold leading-tight text-foreground" />
+              {description && <p className="truncate text-xs text-subtitle">{description}</p>}
+            </div>
+          </div>
+          <div className="relative min-w-[160px]">
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-3 -translate-y-1/2 overflow-hidden rounded-full bg-slate-200/50" />
+            {markerPercent !== null && (
+              <div
+                className="pointer-events-none absolute left-0 top-1/2 z-0 h-3 -translate-y-1/2 overflow-hidden rounded-l-full bg-slate-200"
+                style={{ width: `calc(${markerPercent}% + ${markerOffsetPx}px)` }}
+              />
+            )}
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-3 -translate-y-1/2 overflow-hidden rounded-full">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `calc(${displayPercent}% + ${displayOffsetPx}px)`,
+                  backgroundColor: color,
+                }}
+              />
+            </div>
+            {markerPercent !== null && (
+              <span
+                className="pointer-events-none absolute top-1/2 z-10 h-5 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black"
+                style={{ left: `calc(${markerPercent}% + ${markerOffsetPx}px)` }}
+              />
+            )}
+            <Slider
+              value={[displayValue]}
+              max={max}
+              step={1}
+              onValueChange={(nextValue) => clampChange(nextValue[0])}
+              className="relative z-20"
+              trackClassName="h-3 bg-transparent"
+              rangeClassName="bg-transparent"
+              thumbClassName="relative z-30 border-[var(--planner-slider-color)] bg-white"
+              style={
+                {
+                  '--planner-slider-color': color,
+                } as React.CSSProperties
+              }
+            />
+          </div>
+          <div className="relative">
+            <Input
+              className="h-10 pr-7 text-sm"
+              type="number"
+              value={displayValue}
+              onChange={(event) => clampChange(Number(event.target.value || 0))}
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-subtitle">{suffix}</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <div className={nested ? 'rounded-xl bg-white py-2' : 'rounded-2xl border border-slate-200 bg-white p-4'}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <span className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
           <div>
-            <p className="font-semibold leading-tight text-foreground">{label}</p>
-            <p className="text-xs text-subtitle">{description}</p>
+            <TooltipLabel label={label} description={tooltipDescription} className="font-semibold leading-tight text-foreground" />
+            {description && <p className="text-xs text-subtitle">{description}</p>}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -776,66 +951,112 @@ function AssetSliderRow({
             {locked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
           </Button>
           <div className="relative w-20">
-            <Input type="number" value={value} onChange={(event) => onChange(Number(event.target.value || 0))} />
+            <Input type="number" value={displayValue} onChange={(event) => clampChange(Number(event.target.value || 0))} />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-subtitle">{suffix}</span>
           </div>
         </div>
       </div>
-      <div className="mt-4">
+      <div className="relative mt-4">
         <Slider
-          value={[value]}
+          value={[displayValue]}
           max={max}
           step={1}
-          onValueChange={(nextValue) => onChange(nextValue[0])}
+          onValueChange={(nextValue) => clampChange(nextValue[0])}
+          className="relative"
           trackClassName="bg-slate-200"
           rangeClassName="bg-[var(--planner-slider-color)]"
-          thumbClassName="border-[var(--planner-slider-color)] bg-white"
+          thumbClassName="relative z-30 border-[var(--planner-slider-color)] bg-white"
           style={
             {
               '--planner-slider-color': color,
             } as React.CSSProperties
           }
         />
+        {disabledStartPercent !== null && disabledStartPercent < 100 && (
+          <div
+            className="pointer-events-none absolute right-0 top-1/2 z-10 h-2 -translate-y-1/2 rounded-r-full bg-white/50"
+            style={{ left: `${disabledStartPercent}%` }}
+          />
+        )}
+        {markerPercent !== null && (
+          <span
+            className="pointer-events-none absolute top-1/2 z-20 h-5 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black"
+            style={{ left: `${markerPercent}%` }}
+          />
+        )}
       </div>
     </div>
   )
 }
 
 function RiskGaugeCard({ volatility, riskTier }: { volatility: number; riskTier: RiskTolerance }) {
-  const percentage = Math.min(100, Math.max(0, (volatility / 0.19) * 100))
-  const angle = -90 + (percentage / 100) * 180
+  const riskValue = Math.min(19, Math.max(0, volatility * 100))
 
   return (
-    <Card className="border-amber-200 bg-gradient-to-br from-amber-50 to-white p-4 shadow-sm">
+    <Card className="border-amber-200 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-foreground">Portfolio risk</p>
+          <TooltipLabel label="Portfolio risk" description={metricDescriptions.portfolioRisk} className="text-sm font-medium text-foreground" />
           <p className="mt-1 text-sm text-subtitle capitalize">{riskLabels[riskTier]}</p>
         </div>
-        <div className="rounded-xl bg-white/80 p-1.5 text-foreground shadow-sm">
+        <div className="rounded-xl bg-white/80 p-2 text-foreground shadow-sm">
           <Gauge className="h-4 w-4" />
         </div>
       </div>
 
-      <div className="relative mx-auto mt-2 h-20 w-36 overflow-hidden">
-        <div
-          className="absolute inset-x-0 bottom-0 mx-auto h-48 w-48 rounded-full"
-          style={{
-            background:
-              'conic-gradient(from 180deg at 50% 100%, #2f9e44 0deg, #82c91e 45deg, #fcc419 90deg, #f76707 135deg, #e03131 180deg, transparent 180deg)',
-            clipPath: 'inset(0 0 50% 0)',
-            transform: 'scale(0.76)',
-            transformOrigin: 'bottom center',
-          }}
-        />
-        <div className="absolute inset-x-0 bottom-0 mx-auto h-28 w-28 rounded-full bg-white" />
-        <div
-          className="absolute left-1/2 bottom-2 h-12 w-1 -translate-x-1/2 origin-bottom rounded-full bg-slate-900"
-          style={{ transform: `translateX(-50%) rotate(${angle}deg)` }}
-        />
-        <div className="absolute left-1/2 bottom-1.5 h-3.5 w-3.5 -translate-x-1/2 rounded-full border-[3px] border-slate-900 bg-white" />
-      </div>
-      <p className="text-center text-xl font-semibold text-foreground">{formatPercent(volatility)}</p>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="mx-auto mt-3 h-36 w-full max-w-[240px] cursor-help">
+            <GaugeComponent
+              type="semicircle"
+              value={riskValue}
+              minValue={0}
+              maxValue={19}
+              marginInPercent={{ top: 0.02, bottom: 0, left: 0.03, right: 0.03 }}
+              arc={{
+                width: 0.24,
+                padding: 0.01,
+                cornerRadius: 2,
+                subArcs: [
+                  { limit: 3.8, color: '#2f9e44' },
+                  { limit: 7.6, color: '#82c91e' },
+                  { limit: 11.4, color: '#fcc419' },
+                  { limit: 15.2, color: '#f76707' },
+                  { limit: 19, color: '#e03131' },
+                ],
+              }}
+              pointer={{
+                type: 'needle',
+                color: '#111827',
+                baseColor: '#111827',
+                length: 0.74,
+                width: 14,
+                animate: true,
+                animationDuration: 500,
+              }}
+              labels={{
+                valueLabel: {
+                  hide: true,
+                },
+                tickLabels: {
+                  hideMinMax: true,
+                  ticks: [
+                    { value: 0, valueConfig: { formatTextValue: () => 'Low' }, lineConfig: { hide: true } },
+                    { value: 9.5, valueConfig: { formatTextValue: () => 'Med' }, lineConfig: { hide: true } },
+                    { value: 19, valueConfig: { formatTextValue: () => 'High' }, lineConfig: { hide: true } },
+                  ],
+                  defaultTickValueConfig: {
+                    style: { fill: '#64748b', fontSize: '11px', fontWeight: 600, textShadow: 'none' },
+                  },
+                },
+              }}
+            />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Portfolio risk: {formatPercent(volatility)}</p>
+        </TooltipContent>
+      </Tooltip>
     </Card>
   )
 }
