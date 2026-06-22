@@ -667,7 +667,7 @@
         "managed_accounts": {
             "title": "Managed accounts",
             "management_fees_label": "Management Fees",
-            "management_fees_value": "Up to 2.5% per annum, fees are accrued daily over the Net Asset Value of the account and charged monthly.",
+            "management_fees_value": "Up to 2% per annum, fees are accrued daily over the Net Asset Value of the account and charged monthly.",
             "execution_costs_label": "Execution Costs",
             "execution_costs_value": "Stocks/ETFs: $0.075 per share, minimum of $25 per transaction. Bonds: $25 per transaction + 0.005% of the Face value",
             "custody_fees_label": "Custody Fees",

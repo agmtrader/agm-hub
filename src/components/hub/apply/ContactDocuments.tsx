@@ -14,7 +14,7 @@ import { toast } from '@/hooks/use-toast'
 import { ReadContactDocuments, UploadContactDocument, UpdateContactDocument, DeleteContactDocument } from '@/utils/clients/contact'
 import { calculateSHA1, getBase64 } from '@/utils/clients/documents'
 import { formatTimestamp, getDateObjectFromTimestamp } from '@/utils/dates'
-import { documentCategories } from '@/lib/clients/documents'
+import { documentCategories, documentLanguageOptions } from '@/lib/clients/documents'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import DocumentViewer from '@/components/misc/DocumentViewer'
 import type { InternalDocument } from '@/lib/clients/documents'
@@ -39,6 +39,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
 
   const [documentCategory, setDocumentCategory] = useState<string>('')
   const [documentType, setDocumentType] = useState<string>('')
+  const [documentLanguage, setDocumentLanguage] = useState<string>('')
   const [issuedDate, setIssuedDate] = useState<Date | undefined>(undefined)
   const [expiryDate, setExpiryDate] = useState<Date | undefined>(undefined)
   const [comment, setComment] = useState<string>('')
@@ -73,6 +74,10 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
       toast({ title: 'Missing type', description: 'Select a document type', variant: 'warning' })
       return
     }
+    if (!documentLanguage) {
+      toast({ title: 'Missing language', description: 'Select the document language', variant: 'warning' })
+      return
+    }
     const file = files[0]
     try {
       setIsUploading(true)
@@ -88,6 +93,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
         base64Data,
         documentCategory,
         documentType,
+        documentLanguage,
         issuedDate ? formatTimestamp(issuedDate) : '',
         expiryDate ? formatTimestamp(expiryDate) : '',
         comment || null
@@ -96,6 +102,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
       setFiles(null)
       setDocumentCategory('')
       setDocumentType('')
+      setDocumentLanguage('')
       setIssuedDate(undefined)
       setExpiryDate(undefined)
       setComment('')
@@ -149,6 +156,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
         editingRow.document_id,
         documentCategory || undefined,
         documentType || undefined,
+        documentLanguage || undefined,
         comment || undefined,
         issuedDate ? formatTimestamp(issuedDate) : undefined,
         expiryDate ? formatTimestamp(expiryDate) : undefined
@@ -164,6 +172,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
     { header: 'Document ID', accessorKey: 'document_id' },
     { header: 'Category', accessorKey: 'category' },
     { header: 'Type', accessorKey: 'type' },
+    { header: 'Language', accessorKey: 'document_language' },
     { header: 'Issued', accessorKey: 'issued_date' },
     { header: 'Expiry', accessorKey: 'expiry_date' },
   ]
@@ -181,6 +190,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
         setEditingRow(row)
         setDocumentCategory(row?.category || '')
         setDocumentType(row?.type || '')
+        setDocumentLanguage(row?.document_language || '')
         setComment(row?.comment || '')
         setIssuedDate(row?.issued_date ? getDateObjectFromTimestamp(row.issued_date) : undefined)
         setExpiryDate(row?.expiry_date ? getDateObjectFromTimestamp(row.expiry_date) : undefined)
@@ -228,6 +238,14 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
                 ) : (
                   <Input value={documentType} onChange={(e) => setDocumentType(e.target.value)} placeholder="Type (optional)" />
                 )}
+                <Select value={documentLanguage} onValueChange={setDocumentLanguage}>
+                  <SelectTrigger><SelectValue placeholder="Document language" /></SelectTrigger>
+                  <SelectContent>
+                    {documentLanguageOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
                 <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
                 <Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment (optional)" />
@@ -267,6 +285,14 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
             ) : (
               <Input value={documentType} onChange={(e) => setDocumentType(e.target.value)} placeholder="Type (optional)" />
             )}
+            <Select value={documentLanguage} onValueChange={setDocumentLanguage}>
+              <SelectTrigger><SelectValue placeholder="Document language" /></SelectTrigger>
+              <SelectContent>
+                {documentLanguageOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
             <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
             <Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment (optional)" />
