@@ -30,14 +30,12 @@ import { ReloadIcon } from "@radix-ui/react-icons"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
 import { Progress } from "@/components/ui/progress"
-import { RiskArchetype, RiskProfile, RiskProfilePayload } from "@/lib/clients/risk-profile"
+import { RiskArchetype, RiskProfilePayload } from "@/lib/clients/risk-profile"
 import { useRiskTranslations, calcRiskScore, RiskFormValues } from "@/lib/clients/schemas/risk-questions"
-import { Account } from "@/lib/clients/account"
-import { ReadAccounts } from "@/utils/clients/account"
 import LoadingComponent from "@/components/misc/LoadingComponent"
-import { CreateInvestmentProposal } from "@/utils/clients/investment_proposals" 
 import InvestmentProposalView from "@/components/hub/risk/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/clients/investment-proposals"
+import PortfolioPlanner from "@/components/hub/risk/PortfolioPlanner"
 
 const RiskForm = () => {
 
@@ -52,27 +50,23 @@ const RiskForm = () => {
       defaultValues: getDefaults(formSchema) as unknown as RiskFormValues,
   })
 
-  const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [riskArchetypes, setRiskArchetypes] = useState<RiskArchetype[] | null>(null)
-  const [riskProfile, setRiskProfile] = useState<RiskProfilePayload | null>(null)
+  const [savedRiskProfile, setSavedRiskProfile] = useState<(RiskProfilePayload & { id: string }) | null>(null)
 
   const [submitting, setSubmitting] = useState(false)
   const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
+  const [riskScore, setRiskScore] = useState<number | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [accounts, riskArchetypes] = await Promise.all([
-          ReadAccounts(),
-          ListRiskArchetypes()
-        ])
-        setAccounts(accounts)
+        const riskArchetypes = await ListRiskArchetypes()
         setRiskArchetypes(riskArchetypes)
       } catch (error) {
         toast({
           title: 'Error',
-          description: 'Failed to fetch accounts',
+          description: 'Failed to fetch risk archetypes',
           variant: 'destructive',
         })
       }
@@ -88,35 +82,34 @@ const RiskForm = () => {
       if (!riskArchetypes) throw new Error('Risk archetypes not found')
 
       const risk_score = calcRiskScore(values)
-      const assigned_risk_archetype = riskArchetypes.find(a => risk_score >= a.min_score && risk_score < a.max_score)
+      const assigned_risk_archetype = riskArchetypes.find(a => risk_score >= a.min_score && (risk_score < a.max_score || (risk_score === a.max_score && a.max_score === 10)))
       if (!assigned_risk_archetype) throw new Error('No risk profile found')
 
       const answers = Object.fromEntries(
         questions.map(q => [q.key, q.choices.find(c => c.value === values[q.key])?.label])
       ) as RiskProfilePayload['answers']
 
+      const raw_answers = Object.fromEntries(
+        questions.map(q => [q.key, Number(values[q.key])])
+      )
+
       const riskProfilePayload: RiskProfilePayload = {
         name: values.name,
         score: risk_score,
+        assigned_risk_archetype: assigned_risk_archetype.name,
         answers,
+        raw_answers,
       }
-      setRiskProfile(riskProfilePayload)
 
       const riskProfileResponse = await CreateRiskProfile(riskProfilePayload)
-      const riskProfile = { ...riskProfilePayload, id: riskProfileResponse.id }
       if (!riskProfileResponse) throw new Error('Failed to create risk profile')
-
-      const proposal = await CreateInvestmentProposal(riskProfile)
-      if (!proposal) throw new Error('Failed to create investment proposal')
-
-      setInvestmentProposal(proposal)
-      setIsProposalOpen(true)
-      form.reset(getDefaults(formSchema))
+      setSavedRiskProfile({ ...riskProfilePayload, id: riskProfileResponse.id })
+      setRiskScore(risk_score)
 
     } catch (error:any) {
       toast({
         title: 'Error',
-        description: error.message || 'Failed to generate investment proposal',
+        description: error.message || 'Failed to create risk profile',
         variant: 'destructive'
       })
     } finally {
@@ -124,97 +117,110 @@ const RiskForm = () => {
     }
   }
 
-  if (!accounts) return <LoadingComponent />
+  if (!riskArchetypes) return <LoadingComponent />
 
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="w-full justify-center items-center"
+      className="w-full"
     >
-      <Form {...form}>
-        <motion.form 
-          onSubmit={form.handleSubmit(onSubmit)} 
-          className="w-full flex flex-col gap-10 p-5"
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-
-          {/* Name */}
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('risk.form.name')}</FormLabel>
-                <FormControl>
-                  <Input placeholder="" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Dynamic questions */}
-          {questions.map((q) => (
+      {!savedRiskProfile ? (
+        <Form {...form}>
+          <motion.form 
+            onSubmit={form.handleSubmit(onSubmit)} 
+            className="w-full flex flex-col gap-10 p-5"
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <FormField
-              key={q.key}
-              control={form.control as any}
-              name={q.key as any}
+              control={form.control}
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
-                    <FormLabel>{q.label}</FormLabel>
-                    <FormMessage />
-                  </div>
+                  <FormLabel>{t('risk.form.name')}</FormLabel>
                   <FormControl>
-                    <RadioGroup
-                      onValueChange={(v) => field.onChange(Number(v))}
-                      value={String(field.value)}
-                      className="flex flex-col"
-                    >
-                      {q.choices.map((choice) => (
-                        <FormItem key={choice.value} className="flex flex-row gap-x-2 items-center">
-                          <FormControl>
-                            <RadioGroupItem value={String(choice.value)} />
-                          </FormControl>
-                          <FormLabel className="font-normal whitespace-nowrap">{choice.label}</FormLabel>
-                          {q.key === 'diversification' && (
-                            <Progress className="bg-secondary w-64" value={choice.bonds_percentage} />
-                          )}
-                        </FormItem>
-                      ))}
-                    </RadioGroup>
+                    <Input placeholder="" {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
-          ))}
 
-          <Button type="submit" disabled={submitting}>
-            {submitting ? (
-              <>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                {t('forms.submitting')}
-              </>
-            ) : (
-              t('forms.submit')
-            )}
-          </Button>
+            {questions.map((q) => (
+              <FormField
+                key={q.key}
+                control={form.control as any}
+                name={q.key as any}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex gap-2">
+                      <FormLabel>{q.label}</FormLabel>
+                      <FormMessage />
+                    </div>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={(v) => field.onChange(Number(v))}
+                        value={String(field.value)}
+                        className="flex flex-col"
+                      >
+                        {q.choices.map((choice) => (
+                          <FormItem key={choice.value} className="flex flex-row gap-x-2 items-center">
+                            <FormControl>
+                              <RadioGroupItem value={String(choice.value)} />
+                            </FormControl>
+                            <FormLabel className="font-normal whitespace-nowrap">{choice.label}</FormLabel>
+                            {q.key === 'diversification' && (
+                              <Progress className="bg-secondary w-64" value={choice.bonds_percentage} />
+                            )}
+                          </FormItem>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            ))}
 
-          <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
-            <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Investment Proposal</DialogTitle>
-              </DialogHeader>
-              {investmentProposal && riskProfile && (
-                <InvestmentProposalView investmentProposal={investmentProposal} />
+            <Button type="submit" disabled={submitting}>
+              {submitting ? (
+                <>
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  {t('forms.submitting')}
+                </>
+              ) : (
+                'Continue to portfolio planner'
               )}
-            </DialogContent>
-          </Dialog>
-        </motion.form>
-      </Form>
+            </Button>
+          </motion.form>
+        </Form>
+      ) : (
+        <div className="w-full">
+          <PortfolioPlanner
+            customerName={savedRiskProfile.name}
+            riskProfileId={savedRiskProfile.id}
+            riskScore={riskScore ?? savedRiskProfile.score}
+            riskArchetypes={riskArchetypes}
+            onProposalGenerated={(proposal) => {
+              setInvestmentProposal(proposal)
+              setIsProposalOpen(true)
+              form.reset(getDefaults(formSchema))
+            }}
+          />
+        </div>
+      )}
+
+      <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
+        <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Investment Proposal</DialogTitle>
+          </DialogHeader>
+          {investmentProposal && (
+            <InvestmentProposalView investmentProposal={investmentProposal} />
+          )}
+        </DialogContent>
+      </Dialog>
     </motion.div>
   )
 }

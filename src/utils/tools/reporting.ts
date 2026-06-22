@@ -30,6 +30,11 @@ export async function ReadStocksReport() {
   return report
 }
 
+export async function ReadEtfsReport() {
+  const report = await accessAPI('/reporting/etfs', 'GET')
+  return report
+}
+
 export async function ReadIBKRDetails() {
   const report = await accessAPI('/reporting/ibkr_details', 'GET')
   return report

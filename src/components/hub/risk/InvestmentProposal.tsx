@@ -13,10 +13,12 @@ import jsPDF from 'jspdf'
 import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
 import { ListRiskArchetypes, ReadRiskProfileById } from '@/utils/clients/risk-profile'
+import { ReadPortfolioPlanById } from '@/utils/clients/portfolio-plans'
 import {
   investmentProposalDistributionKeys,
   type InvestmentProposalDistribution,
 } from '@/lib/clients/investment-proposals'
+import { PortfolioPlan } from '@/lib/clients/portfolio-plans'
 
 type Props = {
   investmentProposal: InvestmentProposalType
@@ -87,6 +89,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
 
   const [showPortfolioOverview, setShowPortfolioOverview] = useState(false)
   const [riskArchetypeName, setRiskArchetypeName] = useState<string | null>(null)
+  const [portfolioPlan, setPortfolioPlan] = useState<PortfolioPlan | null>(null)
 
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -129,6 +132,26 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
 
     fetchRiskArchetype()
   }, [investmentProposal?.risk_profile_id])
+
+  useEffect(() => {
+    const fetchPortfolioPlan = async () => {
+      const portfolioPlanId = investmentProposal?.portfolio_plan_id
+
+      if (!portfolioPlanId) {
+        setPortfolioPlan(null)
+        return
+      }
+
+      try {
+        const plan = await ReadPortfolioPlanById(String(portfolioPlanId))
+        setPortfolioPlan(plan)
+      } catch {
+        setPortfolioPlan(null)
+      }
+    }
+
+    fetchPortfolioPlan()
+  }, [investmentProposal?.portfolio_plan_id])
 
   async function handleExport(format: 'png' | 'pdf') {
 
@@ -355,15 +378,23 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
                   <p className="text-subtitle text-sm">Total Assets</p>
                   <p className="text-xl font-semibold text-foreground">{chartData.summaryStats?.totalBonds}</p>
                 </div>
-                {investmentProposal?.risk_profile_id && (
-                  <div>
-                    <p className="text-subtitle text-sm">Risk Profile</p>
-                    <p className="text-xl font-semibold text-foreground">
-                      {riskArchetypeName ?? 'N/A'}
-                    </p>
-                  </div>
-                )}
-            </div>
+	                {investmentProposal?.risk_profile_id && (
+	                  <div>
+	                    <p className="text-subtitle text-sm">Risk Profile</p>
+	                    <p className="text-xl font-semibold text-foreground">
+	                      {riskArchetypeName ?? 'N/A'}
+	                    </p>
+	                  </div>
+	                )}
+                  {portfolioPlan && (
+                    <div className="col-span-2">
+                      <p className="text-subtitle text-sm">Planner Scenario</p>
+                      <p className="text-base font-semibold text-foreground">
+                        Target {Number(portfolioPlan.target_return).toFixed(1)}% | Amount {Number(portfolioPlan.starting_amount).toLocaleString('en-US')} | {portfolioPlan.risk_tolerance}
+                      </p>
+                    </div>
+                  )}
+	            </div>
             <DataTable 
               data={chartData.summaryStats?.perRating ?? []} 
               columns={summaryStatsColumns} 

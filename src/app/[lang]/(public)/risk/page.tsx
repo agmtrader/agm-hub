@@ -17,14 +17,16 @@ const page = () => {
       animate="visible"
       className='w-full flex flex-col h-full'
     >
-      <div className="w-full flex flex-col gap-10 py-10 justify-center items-center">
-        <h2 className="text-5xl font-semibold text-center mb-4">
-          {t('risk.title')}
-        </h2>
-        <p className="text-center text-muted-foreground">
-          {t('risk.description')}
-        </p>
-        <div className="w-full max-w-4xl">
+      <div className="w-full flex flex-col gap-8 py-10">
+        <div className="mx-auto w-full max-w-[1680px] px-6 2xl:px-10">
+          <h2 className="text-5xl font-semibold text-center mb-4">
+            {t('risk.title')}
+          </h2>
+          <p className="text-center text-muted-foreground">
+            {t('risk.description')}
+          </p>
+        </div>
+        <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 2xl:px-10">
           <RiskForm/>
         </div>
       </div>

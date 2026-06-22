@@ -20,6 +20,7 @@ export type InvestmentProposalDistribution = Record<InvestmentProposalDistributi
 
 export interface InvestmentProposalPayload {
     risk_profile_id: string
+    portfolio_plan_id?: string | null
     treasury?: Bond[]
     aaa_a: Bond[]
     bbb: Bond[]
