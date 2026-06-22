@@ -16,9 +16,6 @@ import { Card } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
-import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { useToast } from '@/hooks/use-toast'
 import { RiskArchetype } from '@/lib/clients/risk-profile'
@@ -378,14 +375,14 @@ const PortfolioPlanner = ({
     }
 
     return (
-      <Card className={`bg-gradient-to-br ${toneClasses[tone]} p-5 shadow-sm`}>
+      <Card className={`bg-gradient-to-br ${toneClasses[tone]} p-4 shadow-sm`}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-sm font-medium text-foreground">{title}</p>
-            <p className="text-3xl font-semibold text-foreground mt-1">{value}</p>
+            <p className="mt-1 text-2xl font-semibold leading-none text-foreground">{value}</p>
             <p className="text-sm text-subtitle mt-1">{subtitle}</p>
           </div>
-          <div className="rounded-xl bg-white/80 p-2 text-foreground shadow-sm">{icon}</div>
+          <div className="rounded-xl bg-white/80 p-1.5 text-foreground shadow-sm">{icon}</div>
         </div>
       </Card>
     )
@@ -393,15 +390,9 @@ const PortfolioPlanner = ({
 
   return (
     <div className="flex flex-col gap-6">
-      <Card className="overflow-hidden border-amber-200 bg-[linear-gradient(180deg,#fffef9_0%,#ffffff_36%,#fffdfa_100%)] shadow-sm">
-        <div className="border-b border-amber-100 px-6 py-5">
-          <h3 className="text-5xl font-semibold tracking-tight text-foreground">Portfolio Builder</h3>
-          <p className="mt-2 max-w-3xl text-sm text-subtitle">
-            Set a return target, tune the asset mix, and see how each change affects expected return, risk, and the path toward your goal.
-          </p>
-        </div>
-        <div className="grid gap-6 px-6 py-5 xl:grid-cols-[1.12fr_0.88fr]">
-          <Card className="border-slate-200 p-5 shadow-sm">
+      <Card className="overflow-hidden border-slate-200 bg-white shadow-sm">
+        <div className="grid items-start gap-6 px-6 py-5 xl:grid-cols-[1.12fr_0.88fr]">
+          <Card className="border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-base font-semibold text-foreground">Goal Inputs</p>
@@ -413,10 +404,6 @@ const PortfolioPlanner = ({
             </div>
 
             <div className="mt-5 grid gap-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">Customer name</p>
-                <Input value={customerName} readOnly />
-              </div>
               <div className="space-y-2">
                 <p className="text-sm font-medium text-foreground">Target annual return</p>
                 <div className="relative">
@@ -563,7 +550,7 @@ const PortfolioPlanner = ({
               <p className="text-lg font-semibold text-foreground">How much of your risk comes from each instrument?</p>
               <p className="text-sm text-subtitle">Percent of risk from each instrument.</p>
 
-              <div className="mt-5 rounded-2xl border border-cyan-100 bg-[linear-gradient(180deg,#f5fbfb_0%,#eef7f7_100%)] p-4">
+              <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
                 <div className="mb-3 grid grid-cols-[100px_1fr] items-center gap-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <span>Instrument</span>
                   <div className="grid grid-cols-5 text-center">
@@ -578,7 +565,7 @@ const PortfolioPlanner = ({
                   {riskContribution.map((item) => (
                     <div key={item.key} className="grid grid-cols-[100px_1fr] items-center gap-4">
                       <p className="text-sm font-semibold text-foreground">{item.label}</p>
-                      <div className="relative h-10 rounded-xl border border-cyan-100 bg-white">
+                      <div className="relative h-10 rounded-xl border border-slate-200 bg-white">
                         <div className="absolute inset-x-0 top-0 grid h-full grid-cols-5">
                           {[0, 1, 2, 3, 4].map((index) => (
                             <div key={index} className="border-r border-slate-100 last:border-r-0" />
@@ -599,8 +586,8 @@ const PortfolioPlanner = ({
             </div>
           </Card>
 
-          <div className="grid gap-4">
-            <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid content-start self-start gap-3">
+            <div className="grid items-start gap-3 md:grid-cols-3">
               {statCard(
                 'Expected return',
                 formatPercent(calculation.expectedReturn),
@@ -618,13 +605,13 @@ const PortfolioPlanner = ({
               )}
             </div>
 
-            <Card className="border-slate-200 p-3 text-sm text-subtitle shadow-sm">
+            <Card className="border-slate-200 p-2.5 text-sm text-subtitle shadow-sm">
               Calculated from current mix: {Object.keys(allocation)
                 .map((key) => `${assetLabels[key as AssetKey]} ${allocation[key as AssetKey]}%`)
                 .join(' / ')}
             </Card>
 
-            <Card className="border-slate-200 p-5 shadow-sm">
+            <Card className="border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-base font-semibold text-foreground">Direction To Target</p>
@@ -673,33 +660,6 @@ const PortfolioPlanner = ({
               </div>
             </Card>
 
-            <Card className="border-slate-200 p-6 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-lg font-semibold text-foreground">Assumptions</p>
-                  <p className="text-sm text-subtitle">Market assumptions used by this scenario.</p>
-                </div>
-                <Badge variant={dataSource === 'live' ? 'success' : 'warning'}>
-                  {dataSource === 'live' ? 'Live' : 'Fallback'}
-                </Badge>
-              </div>
-
-              <div className="mt-4 grid gap-3">
-                {loadingAssets ? (
-                  <p className="text-sm text-subtitle">Loading market assumptions...</p>
-                ) : (
-                  assets.map((asset) => (
-                    <div key={asset.key} className="rounded-xl border border-slate-200 bg-white p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="font-semibold text-foreground">{asset.label}</p>
-                        <Badge variant={asset.source === 'live' ? 'success' : 'outline'}>{asset.source === 'live' ? 'Live' : 'Fallback'}</Badge>
-                      </div>
-                      <p className="mt-1 text-xs text-subtitle">{asset.note}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            </Card>
           </div>
         </div>
       </Card>
@@ -714,19 +674,16 @@ const PortfolioPlanner = ({
         </Alert>
       )}
 
-      <Card className="border-amber-200 bg-amber-50/70 p-5 shadow-sm">
+      <Card className="border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-start gap-3">
-          <ShieldAlert className="mt-0.5 h-5 w-5 text-amber-700" />
-          <p className="text-sm text-amber-900">
+          <ShieldAlert className="mt-0.5 h-5 w-5 text-foreground" />
+          <p className="text-sm text-foreground">
             Educational planning aid only. This planner is not a registered investment adviser or broker, does not place trades, and does not recommend buying a specific security before acting.
           </p>
         </div>
       </Card>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <Button type="button" variant="outline" onClick={handleSavePlan} disabled={saving || generating}>
-          {saving ? 'Saving...' : 'Save Plan'}
-        </Button>
         <Button type="button" onClick={handleGenerateProposal} disabled={saving || generating}>
           {generating ? 'Generating...' : 'Generate Investment Proposal'}
         </Button>
@@ -745,7 +702,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 }
 
 function InsightCard({ title, body, tone }: { title: string; body: string; tone: 'teal' | 'slate' }) {
-  const toneClass = tone === 'teal' ? 'border-cyan-100 bg-cyan-50/70' : 'border-slate-200 bg-white'
+  const toneClass = 'border-slate-200 bg-white'
   return (
     <div className={`rounded-xl border p-4 ${toneClass}`}>
       <p className="text-sm font-semibold text-foreground">{title}</p>
@@ -849,34 +806,36 @@ function RiskGaugeCard({ volatility, riskTier }: { volatility: number; riskTier:
   const angle = -90 + (percentage / 100) * 180
 
   return (
-    <Card className="border-amber-200 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm">
+    <Card className="border-amber-200 bg-gradient-to-br from-amber-50 to-white p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-foreground">Portfolio risk</p>
           <p className="mt-1 text-sm text-subtitle capitalize">{riskLabels[riskTier]}</p>
         </div>
-        <div className="rounded-xl bg-white/80 p-2 text-foreground shadow-sm">
+        <div className="rounded-xl bg-white/80 p-1.5 text-foreground shadow-sm">
           <Gauge className="h-4 w-4" />
         </div>
       </div>
 
-      <div className="relative mx-auto mt-4 h-28 w-48 overflow-hidden">
+      <div className="relative mx-auto mt-2 h-20 w-36 overflow-hidden">
         <div
           className="absolute inset-x-0 bottom-0 mx-auto h-48 w-48 rounded-full"
           style={{
             background:
               'conic-gradient(from 180deg at 50% 100%, #2f9e44 0deg, #82c91e 45deg, #fcc419 90deg, #f76707 135deg, #e03131 180deg, transparent 180deg)',
             clipPath: 'inset(0 0 50% 0)',
+            transform: 'scale(0.76)',
+            transformOrigin: 'bottom center',
           }}
         />
-        <div className="absolute inset-x-0 bottom-0 mx-auto h-36 w-36 rounded-full bg-white" />
+        <div className="absolute inset-x-0 bottom-0 mx-auto h-28 w-28 rounded-full bg-white" />
         <div
-          className="absolute left-1/2 bottom-3 h-16 w-1 -translate-x-1/2 origin-bottom rounded-full bg-slate-900"
+          className="absolute left-1/2 bottom-2 h-12 w-1 -translate-x-1/2 origin-bottom rounded-full bg-slate-900"
           style={{ transform: `translateX(-50%) rotate(${angle}deg)` }}
         />
-        <div className="absolute left-1/2 bottom-2 h-4 w-4 -translate-x-1/2 rounded-full border-4 border-slate-900 bg-white" />
+        <div className="absolute left-1/2 bottom-1.5 h-3.5 w-3.5 -translate-x-1/2 rounded-full border-[3px] border-slate-900 bg-white" />
       </div>
-      <p className="text-center text-2xl font-semibold text-foreground">{formatPercent(volatility)}</p>
+      <p className="text-center text-xl font-semibold text-foreground">{formatPercent(volatility)}</p>
     </Card>
   )
 }

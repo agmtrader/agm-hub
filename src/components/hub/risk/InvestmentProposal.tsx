@@ -1,13 +1,11 @@
 'use client'
 import { Card } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { PieChart, Pie, Cell } from 'recharts'
 import { useMemo, useState, useRef, useEffect } from 'react'
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart'
 import { Bond, InvestmentProposal as InvestmentProposalType, } from '@/lib/clients/investment-proposals'
 import { DataTable } from '@/components/misc/DataTable'
 import type { ColumnDefinition } from '@/components/misc/DataTable'
-import { Switch } from '@/components/ui/switch'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { Button } from '@/components/ui/button'
@@ -87,7 +85,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     return equivalent === 'UST' || symbol.includes('US-T GOVT') || symbol.includes('TREASURY')
   }
 
-  const [showPortfolioOverview, setShowPortfolioOverview] = useState(false)
   const [riskArchetypeName, setRiskArchetypeName] = useState<string | null>(null)
   const [portfolioPlan, setPortfolioPlan] = useState<PortfolioPlan | null>(null)
 
@@ -166,47 +163,30 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       return
     }
 
-    // PDF – page-per-section (overview + one per bond group)
-    // Create PDF in landscape 16:9 ratio (1280×720 points)
+    // Export only the visible overview section.
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: [2000, 1400] })
     const pdfWidth = pdf.internal.pageSize.getWidth()
     const pdfHeight = pdf.internal.pageSize.getHeight()
-
-    // Define a uniform margin (in points)
     const margin = 40
-
-    // Collect overview section and each bond section separately to ensure one page per part
     const overviewSection = document.querySelector<HTMLDivElement>('.export-overview')
-    const bondSections = Array.from(document.querySelectorAll<HTMLDivElement>('.export-page')) as HTMLDivElement[]
-    const sections = [overviewSection, ...bondSections].filter(Boolean) as HTMLDivElement[]
+    if (!overviewSection) return
 
-    if (!sections.length) return
+    const canvas = await html2canvas(overviewSection, { backgroundColor: '#ffffff', scale: 2 })
+    const imgData = canvas.toDataURL('image/png')
+    const imgWidth = pdfWidth - margin * 2
+    const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-    for (let i = 0; i < sections.length; i++) {
-      const section = sections[i]
-      const canvas = await html2canvas(section, { backgroundColor: '#ffffff', scale: 2 })
-      const imgData = canvas.toDataURL('image/png')
+    let position = margin
+    let heightLeft = imgHeight
 
-      const imgWidth = pdfWidth - margin * 2
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
+    pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight)
+    heightLeft -= (pdfHeight - margin * 2)
 
-      let position = margin
-      let heightLeft = imgHeight
-
-      // For each section, we may need multiple PDF pages if it's tall
+    while (heightLeft > 0) {
+      position -= (pdfHeight - margin * 2)
+      pdf.addPage()
       pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight)
       heightLeft -= (pdfHeight - margin * 2)
-
-      while (heightLeft > 0) {
-        position -= (pdfHeight - margin * 2)
-        pdf.addPage()
-        pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight)
-        heightLeft -= (pdfHeight - margin * 2)
-      }
-
-      if (i < sections.length - 1) {
-        pdf.addPage()
-      }
     }
 
     pdf.save('investment-proposal.pdf')
@@ -285,24 +265,8 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       perRating,
     }
 
-    return { pieData, summaryStats, groupedBonds }
+    return { pieData, summaryStats }
   }, [investmentProposal])
-  
-  const bondColumns: ColumnDefinition<Bond>[] = [
-    {
-      header: 'Symbol',
-      accessorKey: 'symbol',
-    },
-    {
-      header: 'Current Yield',
-      accessorKey: 'current_yield',
-      cell: ({ getValue }) => `${Number(getValue() ?? 0).toFixed(2)}%`,
-    },
-    {
-      header: 'Rating',
-      accessorKey: 'equivalent'
-    },
-  ]
 
   const summaryStatsColumns: ColumnDefinition<any>[] = [
     {
@@ -355,16 +319,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
         <h3 className="text-5xl font-semibold text-primary">
           Investment Proposal
         </h3>
-        
-        <div className="flex items-center gap-2">
-
-          <Switch
-            checked={showPortfolioOverview}
-            onCheckedChange={(checked) => setShowPortfolioOverview(checked === true)}
-          />
-
-          <p className="text-sm text-subtitle">Show Portfolio Overview</p>
-        </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-2 gap-5">
           <Card className="p-6 w-full h-full gap-5 flex flex-col">
@@ -468,47 +422,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
             </div>
           </Card>
         </div>
-      </div> {/* <-- end export-overview */}
-
-      {showPortfolioOverview && (
-        <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-foreground">Detailed Bond Analysis</h2>
-              {GROUPS.map((group) => {
-                const bonds = chartData?.groupedBonds
-                  ? (chartData.groupedBonds[group.key as keyof typeof chartData.groupedBonds] as any[])
-                  : []
-                const title =
-                  group.key === 'etfs'
-                    ? 'ETFs'
-                    : group.key === 'treasuries'
-                      ? 'Treasuries'
-                    : `${group.label} Rated Bonds`
-                return (
-                  <Card key={group.key} className="p-6 space-y-6 export-page">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="h-4 w-4 rounded-full"
-                          style={{ backgroundColor: group.color }}
-                        />
-                        <h3 className="text-2xl font-semibold text-foreground">
-                          {title}
-                        </h3>
-                      </div>
-                    </div>
-                    <Separator />
-                    <DataTable
-                      data={bonds}
-                      columns={bondColumns}
-                      enablePagination
-                      pageSize={10}
-                      enableFiltering
-                    />
-                  </Card>
-                )
-              })}
-        </div>
-      )}
+      </div>
 
       <p className="text-base text-error">
           The investment proposal reflects the provided distribution. If you want to see more details, please contact us and set up a meeting.
