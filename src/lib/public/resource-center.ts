@@ -107,34 +107,27 @@ export const resourceCenterSections: ResourceSection[] = [
       },
       {
         id: '04',
-        title: 'Mobile App - iOS',
-        image: '/assets/resource-center/account-management/mobile-app-ios.png',
-        href: '/resource-center/account-management/mobile-app-ios',
-        eyebrow: 'Account Management',
-      },
-      {
-        id: '05',
         title: 'IB Key Authentication',
         image: '/assets/resource-center/account-management/ib-key-authentication.png',
         href: '/resource-center/account-management/ib-key-authentication',
         eyebrow: 'Account Management',
       },
       {
-        id: '06',
+        id: '05',
         title: 'Reactivating IB Key',
         image: '/assets/resource-center/account-management/reactivating-ib-key.png',
         href: '/resource-center/account-management/reactivating-ib-key',
         eyebrow: 'Account Management',
       },
       {
-        id: '07',
+        id: '06',
         title: 'Adding another IB Key user',
         image: '/assets/resource-center/account-management/adding-ibkey-user.png',
         href: '/resource-center/account-management/adding-another-ib-key-user',
         eyebrow: 'Account Management',
       },
       {
-        id: '08',
+        id: '07',
         title: 'Message Center',
         image: '/assets/resource-center/account-management/message-center.png',
         href: '/resource-center/account-management/message-center',
@@ -176,20 +169,6 @@ export const resourceCenterSections: ResourceSection[] = [
         eyebrow: 'Trading',
       },
     ],
-  },
-  {
-    id: 'reporting',
-    titleKey: 'learning.sections.reporting.title',
-    descriptionKey: 'learning.sections.reporting.description',
-    slides: buildSlides([
-      {
-        id: '01',
-        title: 'How to download a statement',
-        href: 'https://www.ibkrguides.com/clientportal/performanceandstatements/reports.htm',
-        external: true,
-        eyebrow: 'Reporting',
-      },
-    ]),
   },
   {
     id: 'learning',

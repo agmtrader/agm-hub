@@ -29,7 +29,7 @@ export function LearningCarousel() {
   }
 
   return (
-    <div className="w-full flex justify-center items-center h-full max-w-[90%] md:max-w-[80%] lg:max-w-[65%] relative">
+    <div className="w-full flex justify-center items-center h-full max-w-[90%] md:max-w-[80%] lg:max-w-[72%] relative">
       <Button
         variant="outline"
         size="icon"
