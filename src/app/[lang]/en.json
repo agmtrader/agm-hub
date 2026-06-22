@@ -2,7 +2,7 @@
     "header": {
         "trading_portal": "Trading Portal",
         "fill_risk_profile": "Fill Risk Profile",
-        "learning_center": "Learning Center",
+        "learning_center": "Resource Center",
         "requirements": "Requirements",
         "apply": "Apply",
         "sign_in": "Sign In",
@@ -693,12 +693,40 @@
         "footnote": "All of the costs and fees are in USD and can change at any moment without notice. Other costs or fees may apply. These charges and fees are the most common that apply to the most commonly used products and services. Stocks, ETFs and Bonds (Non Euroclear) might have additional charges."
     },
     "learning": {
-        "title": "Learning Center",
-        "description": "Check out our videos to learn about international markets and trading.",
+        "title": "Resource Center",
+        "description": "Browse quick resources for FAQs, account management, trading, and market education.",
         "chapter_label": "Chapter",
+        "slide_label": "Slide",
+        "opens_external": "Opens official IBKR guide",
         "go_back": "Go back",
         "available_videos": "Available Videos",
         "no_videos": "No videos available for this chapter. Please check back later.",
+        "sections": {
+            "banking": {
+                "title": "Banking",
+                "description": "Deposits, withdrawals, bank linking, Wise transfers, and internal money movement."
+            },
+            "account_management": {
+                "title": "Account Management",
+                "description": "Position transfers, account linking, and general account administration resources."
+            },
+            "trading": {
+                "title": "Trading",
+                "description": "Trading permissions, options permissions, and market data setup."
+            },
+            "reporting": {
+                "title": "Reporting",
+                "description": "Statements and account reporting resources."
+            },
+            "learning": {
+                "title": "Learning",
+                "description": "Placeholder educational content for broader market and product learning."
+            },
+            "interactive_learning": {
+                "title": "Interactive Learning",
+                "description": "Guided modules with hands-on charts and questions for active learning."
+            }
+        },
         "chapters": {
             "1": {
                 "title": "Introduction to International Markets"
@@ -739,8 +767,8 @@
         "downloads": "Downloads",
         "downloads_mobile": "AGM Trader Mobile",
         "downloads_trader": "AGM Trader Pro",
-        "learning_center": "Learning Center",
-        "learning_overview": "All Chapters",
+        "learning_center": "Resource Center",
+        "learning_overview": "Overview",
         "chapter": "Chapter"
     }
 }
