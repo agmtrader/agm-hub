@@ -74,54 +74,6 @@ export async function SendAccountToIBKR(accountID: string, masterAccount: string
     return response
 }
 
-export async function UploadAccountDocument(accountID:string, file_name:string, file_length:number, sha1_checksum:string, mime_type:string, data:string, category:string, type:string, issued_date:string, expiry_date:string, name:string, comment:string | null) {
-    const document:InternalDocumentPayload = {
-        file_name: file_name,
-        file_length: file_length,
-        sha1_checksum: sha1_checksum,
-        mime_type: mime_type,
-        data: data
-    }
-    const uploadResponse = await accessAPI('/accounts/documents', 'POST', {
-        'account_id': accountID,
-        'file_name': document.file_name,
-        'file_length': document.file_length,
-        'sha1_checksum': document.sha1_checksum,
-        'mime_type': document.mime_type,
-        'data': document.data,
-        'category': category,
-        'type': type,
-        'issued_date': issued_date,
-        'expiry_date': expiry_date,
-        'name': name,
-        'comment': comment,
-    })
-    return uploadResponse
-}
-
-export async function ReadAccountDocuments(accountID:string): Promise<{documents: InternalDocument[], account_documents: any[]}> {
-    const response: {documents: InternalDocument[], account_documents: any[]} = await accessAPI(`/accounts/documents?account_id=${accountID}`, 'GET')
-    return response
-}
-
-export async function DeleteAccountDocument(documentID:string): Promise<any> {
-    const response: any = await accessAPI(`/accounts/documents`, 'DELETE', { 'document_id': documentID })
-    return response
-}
-
-export async function UpdateAccountDocument(documentID: string, category?: string, type?: string, name?: string, comment?: string, issued_date?: string, expiry_date?: string): Promise<any> {
-    const response: any = await accessAPI(`/accounts/documents`, 'PATCH', {
-        'document_id': documentID,
-        'category': category,
-        'type': type,
-        'name': name,
-        'comment': comment,
-        'issued_date': issued_date,
-        'expiry_date': expiry_date,
-    })
-    return response
-}
-
 export async function ReadAccountInstruction(accountID: string): Promise<any> {
     const response: any = await accessAPI(`/accounts/instructions?account_id=${accountID}`, 'GET')
     return response

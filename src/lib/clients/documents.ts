@@ -56,6 +56,11 @@ export const requiredApplicationDocuments = [
   { name: 'Source of Wealth', formNumber: 8543 },
 ] as const
 
+export const documentLanguageOptions = [
+  { value: 'en', label: 'English' },
+  { value: 'es', label: 'Spanish' },
+] as const
+
 export interface InternalDocumentPayload {
   mime_type: string;
   file_name: string;

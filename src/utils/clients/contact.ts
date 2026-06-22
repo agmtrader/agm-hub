@@ -42,6 +42,7 @@ export async function UploadContactDocument(
     data: string,
     category: string,
     type: string,
+    document_language: string,
     issued_date: string,
     expiry_date: string,
     comment: string | null = null
@@ -56,6 +57,7 @@ export async function UploadContactDocument(
         data,
         category,
         type,
+        document_language,
         issued_date,
         expiry_date,
         comment,
@@ -83,6 +85,7 @@ export async function UpdateContactDocument(
     documentID: string,
     category?: string,
     type?: string,
+    document_language?: string,
     comment?: string,
     issued_date?: string,
     expiry_date?: string
@@ -91,6 +94,7 @@ export async function UpdateContactDocument(
         document_id: documentID,
         category,
         type,
+        document_language,
         comment,
         issued_date,
         expiry_date,
