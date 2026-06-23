@@ -30,7 +30,6 @@ export type InvestmentProposalSourceType = 'hub_original' | 'planner' | 'custom'
 
 export interface InvestmentProposalPayload {
     risk_profile_id: string
-    portfolio_plan_id?: string | null
     source_type: InvestmentProposalSourceType
     assets: InvestmentProposalAssets
     derived_distribution?: InvestmentProposalDistribution | null

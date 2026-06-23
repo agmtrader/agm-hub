@@ -4,14 +4,14 @@ import {
   InvestmentProposal,
   InvestmentProposalAssetInput,
 } from "@/lib/clients/investment-proposals"
-import { PortfolioPlan } from "@/lib/clients/portfolio-plans"
+import { PortfolioPlanPayload } from "@/lib/clients/portfolio-plans"
 
 export async function CreateInvestmentProposal(risk_profile: RiskProfilePayload) {
   const report = await accessAPI('/investment_proposals/create/risk', 'POST', {'risk_profile': risk_profile})
   return report
 }
 
-export async function CreateInvestmentProposalFromPlan(portfolio_plan: PortfolioPlan) {
+export async function CreateInvestmentProposalFromPlan(portfolio_plan: PortfolioPlanPayload) {
   const report = await accessAPI('/investment_proposals/create/plan', 'POST', { portfolio_plan })
   return report
 }
@@ -29,11 +29,6 @@ export async function ReadInvestmentProposalByID(proposal_id: string): Promise<I
 
 export async function ReadInvestmentProposalsByRiskProfile(risk_profile_id: string): Promise<InvestmentProposal[] | null> {
   const proposals: InvestmentProposal[] = await accessAPI(`/investment_proposals/read?risk_profile_id=${risk_profile_id}`, 'GET')
-  return proposals || null
-}
-
-export async function ReadInvestmentProposalsByPortfolioPlan(portfolio_plan_id: string): Promise<InvestmentProposal[] | null> {
-  const proposals: InvestmentProposal[] = await accessAPI(`/investment_proposals/read?portfolio_plan_id=${portfolio_plan_id}`, 'GET')
   return proposals || null
 }
 
