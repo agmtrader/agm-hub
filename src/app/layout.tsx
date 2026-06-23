@@ -25,8 +25,8 @@ export default function RootLayout({
   }
 
   return (
-    <html lang="en" className={cn(inter.className, "min-h-screen bg-background scrollbar-hide select-none w-full")}>
-      <body className='min-h-screen w-full h-full'>
+    <html lang="en" className={cn(inter.className, "min-h-screen bg-background scrollbar-hide select-none w-full overflow-x-hidden")}>
+      <body className='min-h-screen w-full h-full overflow-x-hidden'>
         {children}
         <Toaster />
       </body>

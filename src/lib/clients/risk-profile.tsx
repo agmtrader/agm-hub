@@ -20,6 +20,7 @@ export type RiskProfile = RiskProfilePayload & Base
 export interface RiskArchetype {
   id: number;
   name: string;
+  treasuries: number;
   bonds_aaa_a: number;
   bonds_bbb: number;
   bonds_bb: number;

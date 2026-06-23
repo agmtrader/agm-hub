@@ -1,12 +1,12 @@
 import { accessAPI } from "../api"
-import { RiskProfilePayload } from "@/lib/clients/risk-profile"
+import { RiskProfile } from "@/lib/clients/risk-profile"
 import {
   InvestmentProposal,
   InvestmentProposalAssetInput,
 } from "@/lib/clients/investment-proposals"
 import { PortfolioPlan } from "@/lib/clients/portfolio-plans"
 
-export async function CreateInvestmentProposal(risk_profile: RiskProfilePayload) {
+export async function CreateInvestmentProposal(risk_profile: RiskProfile) {
   const report = await accessAPI('/investment_proposals/create/risk', 'POST', {'risk_profile': risk_profile})
   return report
 }
