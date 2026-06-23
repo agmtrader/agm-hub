@@ -985,37 +985,17 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
 
     const selectedEmployerBusiness = form.watch(`${basePath}.employmentDetails.employerBusiness` as any);
     const employmentType = form.watch(`${basePath}.employmentType` as any);
-    const selectedOccupation = form.watch(`${basePath}.employmentDetails.occupation` as any);
     
     // Get unique businesses
     const uniqueBusinesses = Array.from(new Set(businessAndOccupations.map(b => b.employerBusiness))).sort();
-    const businessOptions = businessAndOccupations.length ? uniqueBusinesses : ["Other"];
+    const businessOptions = businessAndOccupations.length ? uniqueBusinesses : [];
     
     // Get occupations for selected business
     const availableOccupations = businessAndOccupations
       .filter(b => b.employerBusiness === selectedEmployerBusiness)
       .map(b => b.occupation)
       .sort();
-    const occupationOptions = availableOccupations.length ? availableOccupations : ["Other"];
-
-    // Sync descriptions to description field
-    useEffect(() => {
-        if (selectedEmployerBusiness === 'Other' || selectedOccupation === 'Other') {
-            const businessDesc = form.getValues(`${basePath}.employmentDetails.businessDescription` as any) || '';
-            const occupationDesc = form.getValues(`${basePath}.employmentDetails.occupationDescription` as any) || '';
-            
-            let description = '';
-            if (selectedEmployerBusiness === 'Other' && businessDesc) {
-                description += `business: ${businessDesc} `;
-            }
-            if (selectedOccupation === 'Other' && occupationDesc) {
-                description += `occupation: ${occupationDesc}`;
-            }
-            form.setValue(`${basePath}.employmentDetails.description` as any, description.trim(), { shouldValidate: false });
-        } else {
-            form.setValue(`${basePath}.employmentDetails.description` as any, null, { shouldValidate: false });
-        }
-    }, [selectedEmployerBusiness, selectedOccupation, form.watch(`${basePath}.employmentDetails.businessDescription` as any), form.watch(`${basePath}.employmentDetails.occupationDescription` as any)]);
+    const occupationOptions = availableOccupations.length ? availableOccupations : [];
 
     return (
     <Card className="p-6 space-y-6">
@@ -1390,23 +1370,6 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
                                     placeholder={''} 
                                     {...field} 
                                 />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            )}
-
-            {selectedOccupation === 'Other' && (
-                <FormField
-                    control={form.control}
-                    name={`${basePath}.employmentDetails.occupationDescription` as any}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('apply.account.account_holder_info.occupation_description')}</FormLabel>
-                            <p className="text-sm text-subtitle">{t('apply.account.account_holder_info.occupation_description_comment')}</p>
-                            <FormControl>
-                                <Textarea placeholder={''} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

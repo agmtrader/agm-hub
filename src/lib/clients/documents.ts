@@ -1,49 +1,53 @@
 import { poa_schema, poe_schema, poi_schema, sow_schema } from './schemas/documents';
 import { Base } from './base';
 
-export const documentCategories = (t: (key: string) => string) => [
+type TranslateFn = ((key: string) => string) | undefined
+
+const labelOr = (t: TranslateFn, key: string, fallback: string) => (t ? t(key) : fallback)
+
+export const documentCategories = (t?: TranslateFn) => [
   {
-    name: t('apply.account.documents.document_categories.w8_form'),
+    name: labelOr(t, 'apply.account.documents.document_categories.w8_form', 'W8 Form'),
     formNumber: 5001,
-    types: poa_schema.shape.type.options,
+    types: null,
   },
   {
-    name: t('apply.account.documents.document_categories.proof_of_identity'),
+    name: labelOr(t, 'apply.account.documents.document_categories.proof_of_identity', 'Proof of Identity'),
     formNumber: 8001,
     types: poi_schema.shape.type.options,
   },
   {
-    name: t('apply.account.documents.document_categories.proof_of_address'),
+    name: labelOr(t, 'apply.account.documents.document_categories.proof_of_address', 'Proof of Address'),
     formNumber: 8002,
     types: poa_schema.shape.type.options,
   },
   {
-    name: t('apply.account.documents.document_categories.source_of_wealth'),
+    name: labelOr(t, 'apply.account.documents.document_categories.source_of_wealth', 'Source of Wealth'),
     formNumber: 8543,
     types: sow_schema.shape.type.options,
   },
   {
-    name: t('apply.account.documents.document_categories.proof_of_existence'),
+    name: labelOr(t, 'apply.account.documents.document_categories.proof_of_existence', 'Proof of Existence'),
     formNumber: null,
     types: poe_schema.shape.type.options,
   },
   {
-    name: t('apply.account.documents.document_categories.manifest'),
+    name: labelOr(t, 'apply.account.documents.document_categories.manifest', 'Manifest'),
     formNumber: null,
     types: null,
   },
   {
-    name: t('apply.account.documents.document_categories.new_application_form'),
+    name: labelOr(t, 'apply.account.documents.document_categories.new_application_form', 'New Application Form'),
     formNumber: null,
     types: null,
   },
   {
-    name: t('apply.account.documents.document_categories.tax'),
+    name: labelOr(t, 'apply.account.documents.document_categories.tax', 'Tax'),
     formNumber: null,
     types: null,
   },
   {
-    name: t('apply.account.documents.document_categories.other'),
+    name: labelOr(t, 'apply.account.documents.document_categories.other', 'Other'),
     formNumber: null,
     types: null,
   },

@@ -258,7 +258,9 @@
                     "unemployed": "Unemployed",
                     "student": "Student",
                     "retired": "Retired",
-                    "other": "Other"
+                    "other": "Other",
+                    "at_home_trader": "At-home trader",
+                    "homemaker": "Homemaker"
                 },
                 "employer": "Employer",
                 "occupation": "Occupation",

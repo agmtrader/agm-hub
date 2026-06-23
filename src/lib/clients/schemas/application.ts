@@ -1,5 +1,45 @@
 import { z } from 'zod';
 
+export const employment_type_values = [
+  'EMPLOYED',
+  'SELFEMPLOYED',
+  'UNEMPLOYED',
+  'RETIRED',
+  'STUDENT',
+  'ATHOMETRADER',
+  'HOMEMAKER',
+] as const;
+
+export const proof_of_identity_type_values = [
+  'Driver License',
+  'Passport',
+  'Alien ID Card',
+  'National ID Card',
+  'Bank Statement',
+  'Evidence of Ownership of Property',
+  'Credit Card Statement',
+  'Utility Bill',
+  'Brokerage Statement',
+  'T4 Statement',
+  'CRA Assessment',
+] as const;
+
+export const proof_of_address_type_values = [
+  'Bank Statement',
+  'Brokerage Statement',
+  'Homeowner Insurance Policy Bill',
+  'Homeowner Insurance Policy Document',
+  'Renter Insurance Policy bill',
+  'Renter Insurance Policy Document',
+  'Security System Bill',
+  'Government Issued Letters',
+  'Utility Bill',
+  'Current Lease',
+  'Evidence of Ownership of Property',
+  'Driver License',
+  'Other Document',
+] as const;
+
 const isFutureDateString = (value: string) => {
   const parsedDate = new Date(`${value}T00:00:00`);
 
@@ -78,8 +118,8 @@ export const ibkr_document_schema = z.object({
   validAddress: z.boolean().optional(),
   execLoginTimestamp: z.number(),
   execTimestamp: z.number(),
-  proofOfIdentityType: z.string().optional().nullable(),
-  proofOfAddressType: z.string().optional().nullable(),
+  proofOfIdentityType: z.enum(proof_of_identity_type_values).optional().nullable(),
+  proofOfAddressType: z.enum(proof_of_address_type_values).optional().nullable(),
   payload: z.object({
     mimeType: z.string(),
     data: z.string(),
@@ -314,7 +354,7 @@ export const account_holder_details_schema = z.object({
   numDependents: z.number({errorMap: () => ({ message: 'Required' })}).int(),
   phones: z.array(phone_schema),
   identification: identification_schema,
-  employmentType: z.string({errorMap: () => ({ message: 'Required' })}),
+  employmentType: z.enum(employment_type_values, { errorMap: () => ({ message: 'Required' }) }),
   employmentDetails: z.any().optional().nullable(),
   taxResidencies: z.array(tax_residency_schema).min(1, { message: 'Required' }),
   w8Ben: w8ben_schema.optional().nullable(),

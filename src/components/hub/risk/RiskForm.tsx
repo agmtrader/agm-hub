@@ -148,6 +148,7 @@ const RiskForm = () => {
               )}
             />
 
+<<<<<<< Updated upstream
             {questions.map((q) => (
               <FormField
                 key={q.key}
@@ -210,6 +211,20 @@ const RiskForm = () => {
           />
         </div>
       )}
+=======
+          <Button type="submit" disabled={submitting}>
+            {submitting ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                {t('forms.submitting')}
+              </>
+            ) : (
+              'Submit'
+            )}
+          </Button>
+        </motion.form>
+      </Form>
+>>>>>>> Stashed changes
 
       <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
         <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">

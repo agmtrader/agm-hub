@@ -28,7 +28,8 @@ import {
     trading_permission_schema,
     organization_schema,
     local_tax_form_schema,
-    w8ben_schema
+    w8ben_schema,
+    employment_type_values
 } from './schemas/application';
 import { Base } from './base';
 import { Map } from '../public/types';
@@ -307,165 +308,121 @@ export const currencies = [
   { label: "KRW", value: "KRW" },
 ]
 
-export const knowledge_levels = (t: (key: string) => string) => [
-  { label: t('apply.account.financial.knowledge_levels.none'), value: "None" },
-  { label: t('apply.account.financial.knowledge_levels.limited'), value: "Limited" },
-  { label: t('apply.account.financial.knowledge_levels.good'), value: "Good" },
-  { label: t('apply.account.financial.knowledge_levels.extensive'), value: "Extensive" },
+type TranslateFn = ((key: string) => string) | undefined
+
+const labelOr = (t: TranslateFn, key: string, fallback: string) => (t ? t(key) : fallback)
+
+export const knowledge_levels = (t?: TranslateFn) => [
+  { label: labelOr(t, 'apply.account.financial.knowledge_levels.none', 'None'), value: "None" },
+  { label: labelOr(t, 'apply.account.financial.knowledge_levels.limited', 'Limited'), value: "Limited" },
+  { label: labelOr(t, 'apply.account.financial.knowledge_levels.good', 'Good'), value: "Good" },
+  { label: labelOr(t, 'apply.account.financial.knowledge_levels.extensive', 'Extensive'), value: "Extensive" },
 ]
 
-export const asset_classes = (t: (key: string) => string) => [
-  { label: t('apply.account.financial.products.bonds'), value: "BOND" },
-  { label: t('apply.account.financial.products.etfs'), value: "FUND" },
-  { label: t('apply.account.financial.products.stocks'), value: "STK" },
-  { label: t('apply.account.financial.products.options'), value: "OPT" },
-  { label: t('apply.account.financial.products.futures'), value: "FUT" },
+export const asset_classes = (t?: TranslateFn) => [
+  { label: labelOr(t, 'apply.account.financial.products.bonds', 'Bonds'), value: "BOND" },
+  { label: 'Cash', value: "CASH" },
+  { label: 'CFDs', value: "CFD" },
+  { label: 'Combination Products', value: "COMB" },
+  { label: 'Futures Options', value: "FOP" },
+  { label: labelOr(t, 'apply.account.financial.products.etfs', 'ETFs'), value: "FUND" },
+  { label: 'Single Stock Futures', value: "SSF" },
+  { label: labelOr(t, 'apply.account.financial.products.stocks', 'Stocks'), value: "STK" },
+  { label: labelOr(t, 'apply.account.financial.products.options', 'Options'), value: "OPT" },
+  { label: labelOr(t, 'apply.account.financial.products.futures', 'Futures'), value: "FUT" },
+  { label: 'Warrants', value: "WAR" },
+  { label: 'Margin', value: "MRGN" },
+  { label: 'Bills', value: "BILL" },
 ]
 
-export const marital_status = (t: (key: string) => string) => [
-    { label: t('apply.account.account_holder_info.single'), value: "S" },
-    { label: t('apply.account.account_holder_info.married'), value: "M" },
-    { label: t('apply.account.account_holder_info.divorced'), value: "D" },
-    { label: t('apply.account.account_holder_info.widowed'), value: "W" },
+export const marital_status = (t?: TranslateFn) => [
+  { label: labelOr(t, 'apply.account.account_holder_info.single', 'Single'), value: "S" },
+  { label: labelOr(t, 'apply.account.account_holder_info.married', 'Married'), value: "M" },
+  { label: labelOr(t, 'apply.account.account_holder_info.divorced', 'Divorced'), value: "D" },
+  { label: labelOr(t, 'apply.account.account_holder_info.widowed', 'Widowed'), value: "W" },
 ]
 
-export const phone_types = (t: (key: string) => string) => [
-  { label: t('apply.account.account_holder_info.mobile'), value: "Mobile" },
-  { label: t('apply.account.account_holder_info.home'), value: "Home" },
+export const phone_types = (t?: TranslateFn) => [
+  { label: labelOr(t, 'apply.account.account_holder_info.mobile', 'Mobile'), value: "Mobile" },
+  { label: labelOr(t, 'apply.account.account_holder_info.home', 'Home'), value: "Home" },
 ]
 
-export const id_type = (t: (key: string) => string) => [
-    { label: t('apply.account.account_holder_info.passport'), value: "Passport" },
-    { label: t('apply.account.account_holder_info.national_id'), value: "National ID Card" },
-    { label: t('apply.account.account_holder_info.license'), value: "Driver License" },
+export const id_type = (t?: TranslateFn) => [
+  { label: labelOr(t, 'apply.account.account_holder_info.passport', 'Passport'), value: "Passport" },
+  { label: labelOr(t, 'apply.account.account_holder_info.national_id', 'National ID Card'), value: "National ID Card" },
+  { label: labelOr(t, 'apply.account.account_holder_info.license', 'Driver License'), value: "Driver License" },
 ]
 
-export const employment_status = (t: (key: string) => string) => [
-  { value: 'EMPLOYED', label: t('apply.account.account_holder_info.employment_types.employed') }, 
-  { value: 'SELFEMPLOYED', label: t('apply.account.account_holder_info.employment_types.self_employed') }, 
-  { value: 'UNEMPLOYED', label: t('apply.account.account_holder_info.employment_types.unemployed') }, 
-  { value: 'STUDENT', label: t('apply.account.account_holder_info.employment_types.student') }, 
-  { value: 'RETIRED', label: t('apply.account.account_holder_info.employment_types.retired') }, 
-  { value: 'OTHER', label: t('apply.account.account_holder_info.employment_types.other') }
+export const employment_status = (t?: TranslateFn) => [
+  { value: employment_type_values[0], label: labelOr(t, 'apply.account.account_holder_info.employment_types.employed', 'Employed') },
+  { value: employment_type_values[1], label: labelOr(t, 'apply.account.account_holder_info.employment_types.self_employed', 'Self-employed') },
+  { value: employment_type_values[2], label: labelOr(t, 'apply.account.account_holder_info.employment_types.unemployed', 'Unemployed') },
+  { value: employment_type_values[3], label: labelOr(t, 'apply.account.account_holder_info.employment_types.retired', 'Retired') },
+  { value: employment_type_values[4], label: labelOr(t, 'apply.account.account_holder_info.employment_types.student', 'Student') },
+  { value: employment_type_values[5], label: labelOr(t, 'apply.account.account_holder_info.employment_types.at_home_trader', 'At-home trader') },
+  { value: employment_type_values[6], label: labelOr(t, 'apply.account.account_holder_info.employment_types.homemaker', 'Homemaker') },
 ]
 
-export const account_types = (t: (key: string) => string) => [
-  { label: t('apply.account.account_holder_info.cash_account'), value: "Cash" },
-  { label: t('apply.account.account_holder_info.margin_account'), value: "Margin" },
+export const account_types = (t?: TranslateFn) => [
+  { label: labelOr(t, 'apply.account.account_holder_info.cash_account', 'Cash'), value: "Cash" },
+  { label: labelOr(t, 'apply.account.account_holder_info.margin_account', 'Margin'), value: "Margin" },
 ]
 
-export const sources_of_wealth = (t: (key: string) => string) => [
-  {
-    id: "SOW-IND-Income",
-    label: t('apply.account.financial.sources_of_wealth.income')
-  },
-  {
-    id: "SOW-IND-Inheritance",
-    label: t('apply.account.financial.sources_of_wealth.inheritance')
-  },
-  {
-    id: "SOW-IND-Interest",
-    label: t('apply.account.financial.sources_of_wealth.interest')
-  },
-  {
-    id: "SOW-IND-MarketProfit",
-    label: t('apply.account.financial.sources_of_wealth.market_profit')
-  },
-  {
-    id: "SOW-IND-Property",
-    label: t('apply.account.financial.sources_of_wealth.property')
-  },
-  {
-    id: "SOW-IND-Pension",
-    label: t('apply.account.financial.sources_of_wealth.pension')
-  },
-  {
-    id: "SOW-IND-Allowance",
-    label: t('apply.account.financial.sources_of_wealth.allowance')
-  },
-  {
-    id: "SOW-IND-Disability",
-    label: t('apply.account.financial.sources_of_wealth.disability')
-  },
-  {
-    id: "SOW-IND-Other",
-    label: t('apply.account.financial.sources_of_wealth.other')
-  },
+export const sources_of_wealth = (t?: TranslateFn) => [
+  { id: "SOW-IND-Income", label: labelOr(t, 'apply.account.financial.sources_of_wealth.income', 'Income') },
+  { id: "SOW-IND-Inheritance", label: labelOr(t, 'apply.account.financial.sources_of_wealth.inheritance', 'Inheritance') },
+  { id: "SOW-IND-Interest", label: labelOr(t, 'apply.account.financial.sources_of_wealth.interest', 'Interest') },
+  { id: "SOW-IND-MarketProfit", label: labelOr(t, 'apply.account.financial.sources_of_wealth.market_profit', 'Market Profit') },
+  { id: "SOW-IND-Property", label: labelOr(t, 'apply.account.financial.sources_of_wealth.property', 'Property') },
+  { id: "SOW-IND-Pension", label: labelOr(t, 'apply.account.financial.sources_of_wealth.pension', 'Pension') },
+  { id: "SOW-IND-Allowance", label: labelOr(t, 'apply.account.financial.sources_of_wealth.allowance', 'Allowance') },
+  { id: "SOW-IND-Disability", label: labelOr(t, 'apply.account.financial.sources_of_wealth.disability', 'Disability') },
+  { id: "SOW-IND-Other", label: labelOr(t, 'apply.account.financial.sources_of_wealth.other', 'Other') },
 ]
 
-export const investment_objectives = (t: (key: string) => string) => [
-  {
-    id: "Growth",
-    label: t('apply.account.financial.investment_objectives_list.growth')
-  },
-  {
-    id: "Trading",
-    label: t('apply.account.financial.investment_objectives_list.trading')
-  },
-  {
-    id: "Income",
-    label: t('apply.account.financial.investment_objectives_list.income')
-  },
-  {
-    id: "Hedging",
-    label: t('apply.account.financial.investment_objectives_list.hedging')
-  },
-  {
-    id: "Speculation",
-    label: t('apply.account.financial.investment_objectives_list.speculation')
-  }
+export const investment_objectives = (t?: TranslateFn) => [
+  { id: "Growth", label: labelOr(t, 'apply.account.financial.investment_objectives_list.growth', 'Growth') },
+  { id: "Trading", label: labelOr(t, 'apply.account.financial.investment_objectives_list.trading', 'Trading') },
+  { id: "Income", label: labelOr(t, 'apply.account.financial.investment_objectives_list.income', 'Income') },
+  { id: "Hedging", label: labelOr(t, 'apply.account.financial.investment_objectives_list.hedging', 'Hedging') },
+  { id: "Speculation", label: labelOr(t, 'apply.account.financial.investment_objectives_list.speculation', 'Speculation') },
 ]
 
-export const regulatory_codes = (t: (key: string) => string) => [
+export const regulatory_codes = (t?: TranslateFn) => [
   {
     code: "AFFILIATION",
-    label: t('apply.account.regulatory.affiliation'),
-    positive: t('apply.account.regulatory.affiliation_yes'),
-    negative: t('apply.account.regulatory.affiliation_no')
+    label: labelOr(t, 'apply.account.regulatory.affiliation', 'Affiliation'),
+    positive: labelOr(t, 'apply.account.regulatory.affiliation_yes', 'Yes'),
+    negative: labelOr(t, 'apply.account.regulatory.affiliation_no', 'No'),
   },
   {
     code: "EmployeePubTrade",
-    label: t('apply.account.regulatory.employee_pub_trade'),
-    positive: t('apply.account.regulatory.employee_pub_trade_yes'),
-    negative: t('apply.account.regulatory.employee_pub_trade_no')
+    label: labelOr(t, 'apply.account.regulatory.employee_pub_trade', 'Employee Public Trade'),
+    positive: labelOr(t, 'apply.account.regulatory.employee_pub_trade_yes', 'Yes'),
+    negative: labelOr(t, 'apply.account.regulatory.employee_pub_trade_no', 'No'),
   },
   {
     code: "ControlPubTraded",
-    label: t('apply.account.regulatory.control_pub_traded'),
-    positive: t('apply.account.regulatory.control_pub_traded_yes'),
-    negative: t('apply.account.regulatory.control_pub_traded_no')
-  }
+    label: labelOr(t, 'apply.account.regulatory.control_pub_traded', 'Control Public Traded'),
+    positive: labelOr(t, 'apply.account.regulatory.control_pub_traded_yes', 'Yes'),
+    negative: labelOr(t, 'apply.account.regulatory.control_pub_traded_no', 'No'),
+  },
 ]
 
-export const affiliation_relationships = (t: (key: string) => string) => [
-  { label: t('apply.account.regulatory.affiliation_fields.relationships.other'), value: "Other" },
-  { label: t('apply.account.regulatory.affiliation_fields.relationships.spouse'), value: "Spouse" },
-  { label: t('apply.account.regulatory.affiliation_fields.relationships.parent'), value: "Parent" },
-  { label: t('apply.account.regulatory.affiliation_fields.relationships.child'), value: "Child" },
-  { label: t('apply.account.regulatory.affiliation_fields.relationships.self'), value: "Self" },
+export const affiliation_relationships = (t?: TranslateFn) => [
+  { label: labelOr(t, 'apply.account.regulatory.affiliation_fields.relationships.other', 'Other'), value: "Other" },
+  { label: labelOr(t, 'apply.account.regulatory.affiliation_fields.relationships.spouse', 'Spouse'), value: "Spouse" },
+  { label: labelOr(t, 'apply.account.regulatory.affiliation_fields.relationships.parent', 'Parent'), value: "Parent" },
+  { label: labelOr(t, 'apply.account.regulatory.affiliation_fields.relationships.child', 'Child'), value: "Child" },
+  { label: labelOr(t, 'apply.account.regulatory.affiliation_fields.relationships.self', 'Self'), value: "Self" },
 ]
 
-export const trading_products = (t: (key: string) => string) => [
-  {
-    id: "BONDS",
-    label: t('apply.account.financial.products.bonds')
-  },
-  {
-    id: "MUTUAL FUNDS",
-    label: t('apply.account.financial.products.mutual_funds')
-  },
-  {
-    id: "STOCKS",
-    label: t('apply.account.financial.products.stocks')
-  },
-  {
-    id: "OPTIONS",
-    label: t('apply.account.financial.products.options')
-  },
-  {
-    id: "FUTURES",
-    label: t('apply.account.financial.products.futures')
-  }
+export const trading_products = (t?: TranslateFn) => [
+  { id: "BONDS", label: labelOr(t, 'apply.account.financial.products.bonds', 'Bonds') },
+  { id: "MUTUAL FUNDS", label: labelOr(t, 'apply.account.financial.products.mutual_funds', 'Mutual Funds') },
+  { id: "STOCKS", label: labelOr(t, 'apply.account.financial.products.stocks', 'Stocks') },
+  { id: "OPTIONS", label: labelOr(t, 'apply.account.financial.products.options', 'Options') },
+  { id: "FUTURES", label: labelOr(t, 'apply.account.financial.products.futures', 'Futures') },
 ]
 
 export const trading_countries = [

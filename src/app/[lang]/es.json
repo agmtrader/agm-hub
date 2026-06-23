@@ -258,7 +258,9 @@
                     "unemployed": "Desempleado",
                     "student": "Estudiante",
                     "retired": "Jubilado",
-                    "other": "Otro"
+                    "other": "Otro",
+                    "at_home_trader": "Trader desde casa",
+                    "homemaker": "Ama de casa"
                 },
                 "employer": "Empleador",
                 "occupation": "Ocupación",
