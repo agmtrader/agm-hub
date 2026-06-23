@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import 'chart.js/auto'
 import {
@@ -26,6 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { CreateRiskProfile, ListRiskArchetypes } from "@/utils/clients/risk-profile"
+import { CreateInvestmentProposal } from "@/utils/clients/investment_proposals"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
@@ -35,7 +35,6 @@ import { useRiskTranslations, calcRiskScore, RiskFormValues } from "@/lib/client
 import LoadingComponent from "@/components/misc/LoadingComponent"
 import InvestmentProposalView from "@/components/hub/risk/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/clients/investment-proposals"
-import PortfolioPlanner from "@/components/hub/risk/PortfolioPlanner"
 
 const RiskForm = () => {
 
@@ -51,12 +50,9 @@ const RiskForm = () => {
   })
 
   const [riskArchetypes, setRiskArchetypes] = useState<RiskArchetype[] | null>(null)
-  const [savedRiskProfile, setSavedRiskProfile] = useState<(RiskProfilePayload & { id: string }) | null>(null)
-
   const [submitting, setSubmitting] = useState(false)
   const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
-  const [riskScore, setRiskScore] = useState<number | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,8 +99,18 @@ const RiskForm = () => {
 
       const riskProfileResponse = await CreateRiskProfile(riskProfilePayload)
       if (!riskProfileResponse) throw new Error('Failed to create risk profile')
-      setSavedRiskProfile({ ...riskProfilePayload, id: riskProfileResponse.id })
-      setRiskScore(risk_score)
+
+      const savedRiskProfile = { ...riskProfilePayload, id: riskProfileResponse.id }
+      const proposal = await CreateInvestmentProposal(savedRiskProfile)
+      if (!proposal) throw new Error('Failed to create investment proposal')
+
+      setInvestmentProposal(proposal)
+      setIsProposalOpen(true)
+      form.reset(getDefaults(formSchema) as unknown as RiskFormValues)
+      toast({
+        title: 'Success',
+        description: 'Risk profile and investment proposal created successfully',
+      })
 
     } catch (error:any) {
       toast({
@@ -126,92 +132,62 @@ const RiskForm = () => {
       exit={{ opacity: 0 }}
       className="w-full"
     >
-      {!savedRiskProfile ? (
-        <Form {...form}>
-          <motion.form 
-            onSubmit={form.handleSubmit(onSubmit)} 
-            className="w-full flex flex-col gap-10 p-5"
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
+      <Form {...form}>
+        <motion.form 
+          onSubmit={form.handleSubmit(onSubmit)} 
+          className="w-full flex flex-col gap-10 p-5"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('risk.form.name')}</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {questions.map((q) => (
             <FormField
-              control={form.control}
-              name="name"
+              key={q.key}
+              control={form.control as any}
+              name={q.key as any}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('risk.form.name')}</FormLabel>
+                  <div className="flex gap-2">
+                    <FormLabel>{q.label}</FormLabel>
+                    <FormMessage />
+                  </div>
                   <FormControl>
-                    <Input placeholder="" {...field} />
+                    <RadioGroup
+                      onValueChange={(v) => field.onChange(Number(v))}
+                      value={String(field.value)}
+                      className="flex flex-col"
+                    >
+                      {q.choices.map((choice) => (
+                        <FormItem key={choice.value} className="flex flex-row gap-x-2 items-center">
+                          <FormControl>
+                            <RadioGroupItem value={String(choice.value)} />
+                          </FormControl>
+                          <FormLabel className="font-normal whitespace-nowrap">{choice.label}</FormLabel>
+                          {q.key === 'diversification' && (
+                            <Progress className="bg-secondary w-64" value={choice.bonds_percentage} />
+                          )}
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
                   </FormControl>
                 </FormItem>
               )}
             />
+          ))}
 
-<<<<<<< Updated upstream
-            {questions.map((q) => (
-              <FormField
-                key={q.key}
-                control={form.control as any}
-                name={q.key as any}
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex gap-2">
-                      <FormLabel>{q.label}</FormLabel>
-                      <FormMessage />
-                    </div>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={(v) => field.onChange(Number(v))}
-                        value={String(field.value)}
-                        className="flex flex-col"
-                      >
-                        {q.choices.map((choice) => (
-                          <FormItem key={choice.value} className="flex flex-row gap-x-2 items-center">
-                            <FormControl>
-                              <RadioGroupItem value={String(choice.value)} />
-                            </FormControl>
-                            <FormLabel className="font-normal whitespace-nowrap">{choice.label}</FormLabel>
-                            {q.key === 'diversification' && (
-                              <Progress className="bg-secondary w-64" value={choice.bonds_percentage} />
-                            )}
-                          </FormItem>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            ))}
-
-            <Button type="submit" disabled={submitting}>
-              {submitting ? (
-                <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  {t('forms.submitting')}
-                </>
-              ) : (
-                'Continue to portfolio planner'
-              )}
-            </Button>
-          </motion.form>
-        </Form>
-      ) : (
-        <div className="w-full">
-          <PortfolioPlanner
-            customerName={savedRiskProfile.name}
-            riskProfileId={savedRiskProfile.id}
-            riskScore={riskScore ?? savedRiskProfile.score}
-            riskArchetypes={riskArchetypes}
-            onProposalGenerated={(proposal) => {
-              setInvestmentProposal(proposal)
-              setIsProposalOpen(true)
-              form.reset(getDefaults(formSchema))
-            }}
-          />
-        </div>
-      )}
-=======
           <Button type="submit" disabled={submitting}>
             {submitting ? (
               <>
@@ -224,7 +200,6 @@ const RiskForm = () => {
           </Button>
         </motion.form>
       </Form>
->>>>>>> Stashed changes
 
       <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
         <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
