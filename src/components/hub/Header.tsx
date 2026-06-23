@@ -17,8 +17,8 @@ const Header = () => {
   const sidebarItems = [
     { name: t('header.about'), url: '/#about' },
     { name: t('header.accounts'), url: '/#steps' },
-    { name: t('header.tools'), url: '/#get-started' },
     { name: t('header.products'), url: '/#products' },
+    { name: t('header.tools'), url: '/#get-started' },
     { name: t('header.learning_center'), url: '/resource-center' },
   ]
 
