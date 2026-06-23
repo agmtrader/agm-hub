@@ -24,7 +24,7 @@ type Props = {
 
 const InvestmentProposal = ({ investmentProposal }: Props) => {
   const parseDistribution = (
-    rawDistribution: InvestmentProposalType['distribution']
+    rawDistribution: InvestmentProposalType['derived_distribution']
   ): InvestmentProposalDistribution | null => {
     if (!rawDistribution) return null
 
@@ -78,12 +78,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     { key: 'bb', distributionKey: 'bonds_bb', label: 'BB', color: RATING_COLORS['BB'] },
     { key: 'etfs', distributionKey: 'etfs', label: 'ETFs', color: RATING_COLORS['ETFs'] },
   ] as const
-
-  const isTreasuryBond = (bond: Bond) => {
-    const equivalent = String(bond?.equivalent ?? '').toUpperCase()
-    const symbol = String(bond?.symbol ?? '').toUpperCase()
-    return equivalent === 'UST' || symbol.includes('US-T GOVT') || symbol.includes('TREASURY')
-  }
 
   const [riskArchetypeName, setRiskArchetypeName] = useState<string | null>(null)
   const [portfolioPlan, setPortfolioPlan] = useState<PortfolioPlan | null>(null)
@@ -196,19 +190,13 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     if (!investmentProposal) return { pieData: [], summaryStats: null as any }
 
     const proposal = investmentProposal
-    const explicitTreasuries = proposal.treasury ?? []
-    const hasExplicitTreasuries = explicitTreasuries.length > 0
 
     const groupedBonds = {
-      treasuries: hasExplicitTreasuries
-        ? explicitTreasuries
-        : (proposal.aaa_a ?? []).filter((bond) => isTreasuryBond(bond)),
-      aaa_a: hasExplicitTreasuries
-        ? (proposal.aaa_a ?? [])
-        : (proposal.aaa_a ?? []).filter((bond) => !isTreasuryBond(bond)),
-      bbb: proposal.bbb ?? [],
-      bb: proposal.bb ?? [],
-      etfs: proposal.etfs ?? [],
+      treasuries: proposal.assets?.treasury ?? [],
+      aaa_a: proposal.assets?.aaa_a ?? [],
+      bbb: proposal.assets?.bbb ?? [],
+      bb: proposal.assets?.bb ?? [],
+      etfs: proposal.assets?.etfs ?? [],
     }
 
     const totalAssetCount = Object.values(groupedBonds).reduce((sum, bonds) => sum + bonds.length, 0)
@@ -217,7 +205,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       acc[group.key] = totalAssetCount > 0 ? bonds.length / totalAssetCount : 0
       return acc
     }, {} as Record<string, number>)
-    const distribution = parseDistribution(proposal.distribution)
+    const distribution = parseDistribution(proposal.derived_distribution)
     const weights = GROUPS.reduce((acc, group) => {
       const distributionWeight = distribution?.[group.distributionKey] ?? 0
       acc[group.key] = distributionWeight > 0 ? distributionWeight : countBasedWeights[group.key] ?? 0
@@ -425,7 +413,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       </div>
 
       <p className="text-base text-error">
-          The investment proposal reflects the provided distribution. If you want to see more details, please contact us and set up a meeting.
+          The investment proposal reflects the saved asset selection at creation time. If you want to see more details, please contact us and set up a meeting.
           </p>
       </div>
     </div>

@@ -18,15 +18,22 @@ export type InvestmentProposalDistributionKey = (typeof investmentProposalDistri
 
 export type InvestmentProposalDistribution = Record<InvestmentProposalDistributionKey, number>
 
-export interface InvestmentProposalPayload {
-    risk_profile_id: string
-    portfolio_plan_id?: string | null
-    treasury?: Bond[]
+export interface InvestmentProposalAssets {
+    treasury: Bond[]
     aaa_a: Bond[]
     bbb: Bond[]
     bb: Bond[]
     etfs: Bond[]
-    distribution?: InvestmentProposalDistribution | null
+}
+
+export type InvestmentProposalSourceType = 'hub_original' | 'planner' | 'custom'
+
+export interface InvestmentProposalPayload {
+    risk_profile_id: string
+    portfolio_plan_id?: string | null
+    source_type: InvestmentProposalSourceType
+    assets: InvestmentProposalAssets
+    derived_distribution?: InvestmentProposalDistribution | null
 }
 
 export interface InvestmentProposalAssetInput {

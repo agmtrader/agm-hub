@@ -78,8 +78,6 @@ const RiskForm = () => {
       if (!riskArchetypes) throw new Error('Risk archetypes not found')
 
       const risk_score = calcRiskScore(values)
-      const assigned_risk_archetype = riskArchetypes.find(a => risk_score >= a.min_score && (risk_score < a.max_score || (risk_score === a.max_score && a.max_score === 10)))
-      if (!assigned_risk_archetype) throw new Error('No risk profile found')
 
       const answers = Object.fromEntries(
         questions.map(q => [q.key, q.choices.find(c => c.value === values[q.key])?.label])
@@ -92,7 +90,6 @@ const RiskForm = () => {
       const riskProfilePayload: RiskProfilePayload = {
         name: values.name,
         score: risk_score,
-        assigned_risk_archetype: assigned_risk_archetype.name,
         answers,
         raw_answers,
       }
