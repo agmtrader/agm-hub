@@ -200,9 +200,6 @@ const RiskForm = () => {
 
       <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
         <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Investment Proposal</DialogTitle>
-          </DialogHeader>
           {investmentProposal && (
             <InvestmentProposalView investmentProposal={investmentProposal} />
           )}
