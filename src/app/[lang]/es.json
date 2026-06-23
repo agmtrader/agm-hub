@@ -134,8 +134,8 @@
             },
             "portfolio_calculator": {
                 "title": "Calculadora de Portafolio",
-                "description": "Selecciona tus activos preferidos y genera una propuesta de inversión personalizada. Analiza los rendimientos potenciales y riesgos basados en tus elecciones de asignación de activos.",
-                "badge": "En Progreso"
+                "description": "Comienza desde tu perfil de riesgo y genera una propuesta de inversión utilizando el mismo flujo de datos de mercado vigente que usamos en AGM.",
+                "button": "Abrir Herramienta"
             }
         },
         "faq": {

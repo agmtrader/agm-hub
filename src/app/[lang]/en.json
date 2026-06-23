@@ -134,8 +134,8 @@
             },
             "portfolio_calculator": {
                 "title": "Portfolio Calculator",
-                "description": "Select your preferred assets and generate a customized investment proposal. Analyze potential returns and risks based on your asset allocation choices.",
-                "badge": "Work in Progress"
+                "description": "Start from your risk profile and generate an investment proposal using the same current market data workflow used across AGM.",
+                "button": "Open Tool"
             }
         },
         "faq": {

@@ -21,10 +21,28 @@ const Products = () => {
     align: 'center',
     slidesToScroll: 1,
   })
+  const [selectedIndex, setSelectedIndex] = React.useState(0)
 
   const { t, lang } = useTranslationProvider()
 
   const apps = products(t)
+
+  React.useEffect(() => {
+    if (!emblaApi) return
+
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap())
+    }
+
+    onSelect()
+    emblaApi.on("select", onSelect)
+    emblaApi.on("reInit", onSelect)
+
+    return () => {
+      emblaApi.off("select", onSelect)
+      emblaApi.off("reInit", onSelect)
+    }
+  }, [emblaApi])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -48,28 +66,28 @@ const Products = () => {
 
   return (
     <motion.div 
-      className='flex flex-col text-foreground justify-center text-center items-center h-full p-10 gap-y-10 w-full'
+      className='flex flex-col text-foreground justify-center text-center items-center h-full px-4 py-10 md:p-10 gap-y-10 w-full'
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       id='download'
     >
-      <motion.h2 className='text-5xl font-bold' variants={itemVariants}>
+      <motion.h2 className='text-4xl md:text-5xl font-bold' variants={itemVariants}>
         {t('main.products.title')}
       </motion.h2>
       
-      <motion.p className='text-xl font-light max-w-2xl' variants={itemVariants}>
+      <motion.p className='text-lg md:text-xl font-light max-w-2xl' variants={itemVariants}>
         {t('main.products.description')}
       </motion.p>
 
       <motion.div 
-        className="w-full flex justify-center items-center h-full max-w-[90%] md:max-w-[80%] lg:max-w-[65%] relative"
+        className="w-full flex justify-center items-center h-full max-w-full md:max-w-[80%] lg:max-w-[65%] relative"
         variants={itemVariants}
       >
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full shadow-md absolute left-0 z-10"
+          className="hidden md:inline-flex rounded-full shadow-md absolute left-0 z-10"
           onClick={() => emblaApi?.scrollPrev()}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -78,33 +96,54 @@ const Products = () => {
         <div className="overflow-hidden w-full" ref={emblaRef}>
           <div className="flex">
             {apps.map((app, index) => (
-              <div key={index} className="flex-[0_0_100%] min-w-0 px-4">
+              <div key={index} className="flex-[0_0_100%] min-w-0 px-2 md:px-4">
                 <div className="p-1 group">
                   <Card className="h-full">
-                    <CardContent className="flex flex-col items-center justify-center p-8 h-full space-y-6">
+                    <CardContent className="flex flex-col items-center justify-center p-4 md:p-8 h-full space-y-5 md:space-y-6">
                       <div className="w-full text-foreground text-center flex flex-col items-center justify-center space-y-6">
                         {/* Device Preview */}
                         {index === 0 ? (
-                          <div className="flex items-end justify-center">
-                            <DualMonitor width={872} height={408} srcLeft={'/assets/products/trader-pro-left.png'} srcRight={'/assets/products/trader-pro-right.png'} />
+                          <div className="flex items-end justify-center w-full max-w-[280px] sm:max-w-[360px] md:max-w-[620px] lg:max-w-[872px]">
+                            <DualMonitor
+                              width={872}
+                              height={408}
+                              className="w-full h-auto"
+                              srcLeft={'/assets/products/trader-pro-left.png'}
+                              srcRight={'/assets/products/trader-pro-right.png'}
+                            />
                           </div>
                         ) : index === 1 ? (
-                          <div className="flex items-end justify-center gap-6">
-                            <div className="relative" style={{ width: 568, height: 408 }}>
+                          <div className="flex items-end justify-center gap-3 sm:gap-6 w-full">
+                            <div className="relative w-[160px] h-[115px] sm:w-[220px] sm:h-[158px] md:w-[568px] md:h-[408px]">
                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90">
-                                <IPad width={408} height={568} src={'/assets/products/mobile-app.png'} />
+                                <IPad
+                                  width={408}
+                                  height={568}
+                                  className="h-[115px] w-auto sm:h-[158px] md:h-[408px]"
+                                  src={'/assets/products/mobile-app.png'}
+                                />
                               </div>
                             </div>
-                            <Iphone15Pro width={207} height={408} src={'/assets/products/iphone-app.png'} />
+                            <Iphone15Pro
+                              width={207}
+                              height={408}
+                              className="h-[115px] w-auto sm:h-[158px] md:h-[408px]"
+                              src={'/assets/products/iphone-app.png'}
+                            />
                           </div>
                         ) : (
-                          <div className="flex items-end justify-center">
-                            <Macbook width={632} height={408} src={'/assets/products/web-portal.jpg'} />
+                          <div className="flex items-end justify-center w-full max-w-[280px] sm:max-w-[360px] md:max-w-[632px]">
+                            <Macbook
+                              width={632}
+                              height={408}
+                              className="w-full h-auto"
+                              src={'/assets/products/web-portal.jpg'}
+                            />
                           </div>
                         )}
 
                         <div className="flex flex-col items-center justify-center space-y-2">
-                          <h3 className="text-2xl font-bold">{app.name}</h3>
+                          <h3 className="text-xl md:text-2xl font-bold">{app.name}</h3>
                           <div className="flex items-center justify-center gap-x-6">
                             {app.platforms.map((platform, index) => (
                               <div key={index} className="flex items-center justify-center">
@@ -143,11 +182,31 @@ const Products = () => {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full shadow-md absolute right-0 z-10"
+          className="hidden md:inline-flex rounded-full shadow-md absolute right-0 z-10"
           onClick={() => emblaApi?.scrollNext()}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
+      </motion.div>
+
+      <motion.div
+        className="flex items-center justify-center gap-2"
+        variants={itemVariants}
+      >
+        {apps.map((app, index) => (
+          <button
+            key={app.name}
+            type="button"
+            aria-label={`Go to ${app.name}`}
+            aria-pressed={selectedIndex === index}
+            className={`h-2.5 rounded-full transition-all ${
+              selectedIndex === index
+                ? "w-6 bg-primary"
+                : "w-2.5 bg-primary/30 hover:bg-primary/50"
+            }`}
+            onClick={() => emblaApi?.scrollTo(index)}
+          />
+        ))}
       </motion.div>
     </motion.div>
   )
