@@ -74,8 +74,11 @@ export function Globe({
     }
   }
 
+  const getPixelRatio = () =>
+    typeof config.devicePixelRatio === "number" ? config.devicePixelRatio : window.devicePixelRatio || 1
+
   const onResize = () => {
-    const pixelRatio = window.devicePixelRatio || 1
+    const pixelRatio = getPixelRatio()
     const nextSize =
       size ??
       Math.min(
@@ -90,7 +93,7 @@ export function Globe({
   }
 
   useEffect(() => {
-    const pixelRatio = window.devicePixelRatio || 1
+    const pixelRatio = getPixelRatio()
     onResize()
 
     const globe = createGlobe(canvasRef.current!, {
@@ -133,7 +136,7 @@ export function Globe({
       style={size ? { width: size, height: size } : undefined}
     >
       <canvas
-        className="opacity-0 transition-opacity duration-500"
+        className="block opacity-0 transition-opacity duration-500"
         ref={canvasRef}
         style={size ? { width: size, height: size } : { width: "100%", height: "100%" }}
         onPointerDown={(e) => {

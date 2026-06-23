@@ -18,7 +18,7 @@ const Title = () => {
             <CandlesBackground />
         </div>
         <div className="container relative z-20">
-            <div className="h-full w-full flex flex-col lg:flex-row p-4 md:p-10 lg:p-20 gap-10 lg:gap-32 justify-center items-center">
+            <div className="h-full w-full flex flex-col lg:flex-row p-4 md:p-10 lg:p-20 gap-4 md:gap-10 lg:gap-32 justify-center items-center">
                 <div className="flex flex-col gap-4 z-20">
                     <div className="flex flex-col gap-4">
                         <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-foreground text-center lg:text-left">
@@ -44,7 +44,7 @@ const Title = () => {
                         </Link>
                     </div>
                 </div>
-                <div className="relative flex items-center justify-center w-full max-w-[300px] md:max-w-[400px] lg:max-w-[520px] aspect-square">
+                <div className="relative flex items-center justify-center w-full max-w-[170px] sm:max-w-[220px] md:max-w-[400px] lg:max-w-[520px] aspect-square">
                     <Globe />
                 </div>
             </div>

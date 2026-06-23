@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
         
-        <section id="title" className="relative py-16 md:py-24">
+        <section id="title" className="relative pt-8 pb-16 md:py-24">
             <Title />
         </section>
 
