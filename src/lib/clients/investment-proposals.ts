@@ -18,6 +18,19 @@ export type InvestmentProposalDistributionKey = (typeof investmentProposalDistri
 
 export type InvestmentProposalDistribution = Record<InvestmentProposalDistributionKey, number>
 
+export type PlannerInputs = {
+    risk_profile_id: string
+    name?: string | null
+    target_return: number
+    starting_amount: number
+    risk_tolerance: 'conservative' | 'moderate' | 'aggressive'
+    selected_risk_archetype?: string | null
+    allocation: Record<'cash' | 'treasuries' | 'bonds' | 'stocks', number>
+    bond_rating_allocation: Record<'aaa' | 'bbb' | 'bb', number>
+    locked_assets?: Record<'cash' | 'treasuries' | 'bonds' | 'stocks', boolean> | null
+    locked_bond_ratings?: Record<'aaa' | 'bbb' | 'bb', boolean> | null
+}
+
 export interface InvestmentProposalAssets {
     treasury: Bond[]
     aaa_a: Bond[]
@@ -32,6 +45,7 @@ export interface InvestmentProposalPayload {
     risk_profile_id: string
     source_type: InvestmentProposalSourceType
     assets: InvestmentProposalAssets
+    planner_inputs?: PlannerInputs | null
     derived_distribution?: InvestmentProposalDistribution | null
 }
 
