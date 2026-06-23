@@ -57,7 +57,6 @@ export const requiredApplicationDocuments = [
   { name: 'W8 Form', formNumber: 5001 },
   { name: 'Proof of Identity', formNumber: 8001 },
   { name: 'Proof of Address', formNumber: 8002 },
-  { name: 'Source of Wealth', formNumber: 8543 },
 ] as const
 
 export const documentLanguageOptions = [
