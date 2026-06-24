@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, ChevronRight, Circle, RefreshCcw, X } from 'lucide-react'
 
@@ -68,64 +69,198 @@ function buildPath(
   return points.join(' ')
 }
 
-function getPreviewPath(strategy: OptionsLessonVisualStrategy) {
-  if (strategy === 'long_call') {
-    return {
-      primary: 'M 0 78 L 56 78 L 100 22',
-      secondary: 'M 0 78 L 56 78 L 77 50'
-    }
-  }
-
-  if (strategy === 'covered_call') {
-    return {
-      primary: 'M 0 72 L 42 72 L 74 32 L 100 32',
-      secondary: 'M 0 58 L 42 58 L 74 32 L 100 32'
-    }
-  }
-
-  if (strategy === 'long_straddle') {
-    return {
-      primary: 'M 0 28 L 50 78 L 100 28'
-    }
-  }
-
-  return {
-    primary: 'M 0 82 C 18 82 28 80 38 48 C 45 18 55 18 62 48 C 72 80 82 82 100 82'
-  }
+type ScenarioGraphic = {
+  title: string
+  axis: string
+  paths: Array<{ d: string; color: string; dash?: string }>
+  labels: Array<{ x: number; y: number; text: string; color?: string }>
+  zones?: Array<{ x: number; y: number; width: number; height: number; color: string }>
+  markerLabel?: string
 }
 
-function ModulePreviewGraph({ strategy }: { strategy: OptionsLessonVisualStrategy }) {
-  const preview = getPreviewPath(strategy)
+const scenarioGraphics: Record<string, ScenarioGraphic> = {
+  'house-option': {
+    title: '3-month option timeline', axis: 'Today → Expiration', markerLabel: 'Timeline',
+    paths: [{ d: 'M 12 48 L 48 48 M 48 48 L 88 22 M 48 48 L 88 74', color: '#0b66ff' }],
+    labels: [{ x: 12, y: 38, text: 'Today: -$5k premium' }, { x: 48, y: 42, text: '$500k strike' }, { x: 88, y: 17, text: '$600k house', color: '#059669' }, { x: 88, y: 84, text: '$400k house', color: '#64748b' }],
+  },
+  'capping-downside': {
+    title: 'Stock loss vs. option loss', axis: 'Stock price', markerLabel: 'Crash',
+    paths: [{ d: 'M 10 18 C 24 22 30 34 42 30 S 58 55 70 52 S 82 78 92 82', color: '#e11d48' }, { d: 'M 10 68 L 92 68', color: '#0b66ff', dash: '3 2' }],
+    labels: [{ x: 12, y: 13, text: '$100 stock' }, { x: 89, y: 91, text: '$20' }, { x: 72, y: 64, text: 'Option floor: -$500', color: '#0b66ff' }],
+  },
+  'intrinsic-value': {
+    title: 'In-the-money boundary', axis: 'Stock price', markerLabel: 'Price', zones: [{ x: 42, y: 8, width: 50, height: 38, color: '#dcfce7' }, { x: 42, y: 46, width: 50, height: 42, color: '#e2e8f0' }],
+    paths: [{ d: 'M 42 8 L 42 88', color: '#334155' }, { d: 'M 35 46 L 92 46', color: '#f97316', dash: '3 2' }],
+    labels: [{ x: 20, y: 48, text: 'Strike $50' }, { x: 68, y: 28, text: '$55 → $5 intrinsic', color: '#059669' }, { x: 68, y: 68, text: 'Out of the money' }],
+  },
+  'insurance-floor': {
+    title: 'Protective put floor', axis: 'Stock price', markerLabel: 'Stock',
+    paths: [{ d: 'M 10 20 C 28 24 34 34 48 31 S 62 55 76 66 S 86 78 92 82', color: '#e11d48' }, { d: 'M 10 55 L 92 55', color: '#2563eb', dash: '3 2' }],
+    labels: [{ x: 72, y: 51, text: 'Put strike: $90', color: '#2563eb' }, { x: 84, y: 88, text: 'Market: $70' }],
+  },
+  'time-decay': {
+    title: 'Time-value decay', axis: 'Days to expiration', markerLabel: 'Day',
+    paths: [{ d: 'M 10 18 C 38 20 58 28 70 42 C 82 58 87 72 92 84', color: '#f97316' }],
+    labels: [{ x: 12, y: 13, text: 'Day 1: $4.00' }, { x: 51, y: 31, text: 'Day 15: lower value' }, { x: 89, y: 92, text: 'Day 30' }],
+  },
+  'seller-obligation': {
+    title: 'Rights and obligations', axis: 'Contract relationship', markerLabel: 'Premium',
+    paths: [{ d: 'M 28 45 L 72 45', color: '#10b981' }, { d: 'M 72 60 L 28 60', color: '#f97316', dash: '3 2' }],
+    labels: [{ x: 18, y: 35, text: 'BUYER' }, { x: 18, y: 72, text: 'Gets a right', color: '#0b66ff' }, { x: 82, y: 35, text: 'SELLER' }, { x: 82, y: 72, text: 'Takes obligation', color: '#e11d48' }, { x: 50, y: 40, text: 'Premium →', color: '#059669' }],
+  },
+  'break-even': {
+    title: 'Long call break-even', axis: 'Stock price at expiration', markerLabel: 'Price', zones: [{ x: 10, y: 8, width: 61, height: 80, color: '#fff1f2' }, { x: 71, y: 8, width: 21, height: 80, color: '#ecfdf5' }],
+    paths: [{ d: 'M 10 68 L 60 68 L 92 20', color: '#f97316' }, { d: 'M 71 8 L 71 88', color: '#10b981', dash: '3 2' }],
+    labels: [{ x: 60, y: 76, text: 'Strike $100' }, { x: 73, y: 13, text: 'Break-even $105', color: '#059669' }, { x: 20, y: 63, text: '-$5 premium' }],
+  },
+  'hockey-stick': {
+    title: 'Reading the hockey stick', axis: 'Stock price at expiration', markerLabel: 'Price',
+    paths: [{ d: 'M 10 70 L 56 70 L 92 18', color: '#f97316' }], labels: [{ x: 56, y: 78, text: 'Inflection = Strike', color: '#0b66ff' }, { x: 79, y: 34, text: 'Upside' }],
+  },
+  'leverage-engine': {
+    title: 'Stock return vs. option return', axis: 'Percentage return', markerLabel: 'Compare', zones: [{ x: 18, y: 70, width: 24, height: 18, color: '#dbeafe' }, { x: 58, y: 18, width: 24, height: 70, color: '#dcfce7' }],
+    paths: [], labels: [{ x: 30, y: 65, text: 'STOCK +10%', color: '#2563eb' }, { x: 70, y: 13, text: 'OPTION +400%', color: '#059669' }, { x: 30, y: 94, text: '$100 → $110' }, { x: 70, y: 94, text: '$2 → $10' }],
+  },
+  'contract-exposure': {
+    title: 'Order entry', axis: '3 × 100 × $1.50', markerLabel: 'Quantity', zones: [{ x: 12, y: 18, width: 76, height: 58, color: '#eff6ff' }], paths: [],
+    labels: [{ x: 24, y: 35, text: 'QUANTITY  3' }, { x: 50, y: 35, text: 'TYPE  CALL' }, { x: 76, y: 35, text: 'PRICE  $1.50' }, { x: 50, y: 60, text: 'TOTAL DEBIT  $450', color: '#e11d48' }, { x: 50, y: 86, text: '1 contract = 100 shares' }],
+  },
+  'short-call-trap': {
+    title: 'Naked short-call risk', axis: 'Stock price', markerLabel: 'Price',
+    paths: [{ d: 'M 10 28 L 52 28 L 92 86', color: '#e11d48' }], labels: [{ x: 28, y: 23, text: 'Premium kept', color: '#059669' }, { x: 54, y: 20, text: '$50 strike' }, { x: 79, y: 72, text: 'Unlimited loss', color: '#e11d48' }],
+  },
+  'volatility-expansion': {
+    title: 'Implied volatility expansion', axis: 'Uncertainty', markerLabel: 'IV',
+    paths: [{ d: 'M 12 62 C 30 58 36 38 50 38 C 64 38 70 58 88 62', color: '#94a3b8' }, { d: 'M 8 78 C 26 72 34 20 50 20 C 66 20 74 72 92 78', color: '#8b5cf6' }],
+    labels: [{ x: 25, y: 55, text: 'IV 20%' }, { x: 76, y: 74, text: 'IV 60%', color: '#7c3aed' }, { x: 50, y: 92, text: 'Stock unchanged' }],
+  },
+  'iv-crush': {
+    title: 'Post-earnings IV crush', axis: 'Event timeline', markerLabel: 'IV',
+    paths: [{ d: 'M 10 22 L 48 22 L 52 72 L 92 72', color: '#8b5cf6' }], labels: [{ x: 26, y: 16, text: 'Before: IV 60%' }, { x: 72, y: 82, text: 'After: IV 20%' }, { x: 51, y: 48, text: 'Earnings' }],
+  },
+  'delta-action': {
+    title: 'Delta response', axis: '$1 underlying move', markerLabel: 'Stock',
+    paths: [{ d: 'M 18 68 L 42 38', color: '#0b66ff' }, { d: 'M 58 68 L 82 50', color: '#10b981' }], labels: [{ x: 30, y: 78, text: 'STOCK +$1.00' }, { x: 70, y: 78, text: 'OPTION +$0.60' }, { x: 50, y: 20, text: 'DELTA 0.60', color: '#7c3aed' }],
+  },
+  'delta-probability': {
+    title: 'Delta probability map', axis: 'Future stock-price distribution', markerLabel: 'Strike',
+    paths: [{ d: 'M 8 82 C 22 81 30 68 40 38 C 46 18 54 18 60 38 C 70 68 78 81 92 82', color: '#334155' }, { d: 'M 78 18 L 78 84', color: '#f97316', dash: '3 2' }], labels: [{ x: 78, y: 13, text: 'OTM strike' }, { x: 82, y: 35, text: 'Δ 0.10 ≈ 10%', color: '#f97316' }],
+  },
+  'theta-cliff': {
+    title: 'The Theta cliff', axis: 'Days remaining: 90 → 0', markerLabel: 'Day',
+    paths: [{ d: 'M 10 22 C 40 24 58 30 68 42 C 80 56 86 72 92 86', color: '#e11d48' }], labels: [{ x: 15, y: 17, text: '90 days' }, { x: 68, y: 37, text: '30 days' }, { x: 85, y: 92, text: 'Fastest decay', color: '#e11d48' }],
+  },
+  'vertical-ceiling': {
+    title: '$100 / $110 bull call spread', axis: 'Stock price', markerLabel: 'Price',
+    paths: [{ d: 'M 10 72 L 48 72 L 76 24 L 92 24', color: '#10b981' }, { d: 'M 10 78 L 48 78 L 92 20', color: '#2563eb', dash: '3 2' }], labels: [{ x: 34, y: 68, text: 'Max loss -$3' }, { x: 48, y: 88, text: 'Long $100' }, { x: 76, y: 18, text: 'Short $110' }],
+  },
+  'spread-cap': {
+    title: 'Capped spread profit', axis: 'Stock price at expiration', markerLabel: 'Price',
+    paths: [{ d: 'M 10 72 L 45 72 L 68 26 L 92 26', color: '#10b981' }], labels: [{ x: 34, y: 68, text: '-$3 debit' }, { x: 75, y: 20, text: 'Max +$7 / $700', color: '#059669' }, { x: 90, y: 38, text: 'Stock $160' }],
+  },
+  'straddle': {
+    title: 'Long straddle', axis: 'Stock price', markerLabel: 'Price',
+    paths: [{ d: 'M 10 22 L 50 76 L 90 22', color: '#e11d48' }], labels: [{ x: 50, y: 86, text: '$50 strike' }, { x: 22, y: 17, text: 'Profit if down big', color: '#059669' }, { x: 78, y: 17, text: 'Profit if up big', color: '#059669' }],
+  },
+  'iron-condor': {
+    title: 'Iron condor profit corridor', axis: 'Stock price', markerLabel: 'Price', zones: [{ x: 36, y: 20, width: 30, height: 40, color: '#dcfce7' }],
+    paths: [{ d: 'M 10 76 L 25 76 L 38 30 L 64 30 L 77 76 L 92 76', color: '#0f766e' }], labels: [{ x: 38, y: 24, text: '$90' }, { x: 64, y: 24, text: '$110' }, { x: 51, y: 52, text: 'MAX PROFIT ZONE', color: '#059669' }],
+  },
+  assignment: {
+    title: 'Expiration assignment', axis: 'Friday close → Weekend', markerLabel: 'Close',
+    paths: [{ d: 'M 12 40 L 44 40 L 58 68 L 88 68', color: '#e11d48' }], labels: [{ x: 28, y: 34, text: 'Short Put strike $40' }, { x: 62, y: 63, text: 'Stock closes $38' }, { x: 72, y: 82, text: 'Assigned: Buy 100 @ $40', color: '#e11d48' }],
+  },
+  'bid-ask': {
+    title: 'Illiquid option order book', axis: 'Immediate round-trip cost', markerLabel: 'Spread', zones: [{ x: 10, y: 22, width: 34, height: 50, color: '#dcfce7' }, { x: 56, y: 22, width: 34, height: 50, color: '#fee2e2' }],
+    paths: [], labels: [{ x: 27, y: 36, text: 'BID $1.00', color: '#059669' }, { x: 27, y: 52, text: '10 buyers' }, { x: 73, y: 36, text: 'ASK $3.00', color: '#e11d48' }, { x: 73, y: 52, text: '5 sellers' }, { x: 50, y: 84, text: 'Market buy → immediate -$2 loss' }],
+  },
+  'limit-order': {
+    title: 'Order type selection', axis: 'Maximum entry cost', markerLabel: 'Limit', zones: [{ x: 14, y: 20, width: 72, height: 56, color: '#eff6ff' }],
+    paths: [{ d: 'M 22 58 L 78 58', color: '#0b66ff', dash: '3 2' }], labels: [{ x: 30, y: 37, text: 'MARKET' }, { x: 50, y: 37, text: 'LIMIT', color: '#0b66ff' }, { x: 70, y: 37, text: 'STOP' }, { x: 50, y: 54, text: 'MAX $1.50' }, { x: 50, y: 69, text: 'Price control, no fill guarantee' }],
+  },
+  'covered-call-execution': {
+    title: 'Covered-call income', axis: 'Stock price', markerLabel: 'Price',
+    paths: [{ d: 'M 10 76 L 50 48 L 70 30 L 92 30', color: '#0f766e' }, { d: 'M 10 52 L 92 52', color: '#94a3b8', dash: '3 2' }], labels: [{ x: 35, y: 48, text: '100 shares @ $100' }, { x: 70, y: 24, text: 'Short Call $105' }, { x: 62, y: 65, text: '+$2 premium kept', color: '#059669' }],
+  },
+}
+
+const spanishScenarioCopy: Record<string, { title: string; axis: string; markerLabel?: string; labels: string[] }> = {
+  'house-option': { title: 'Línea de tiempo de la opción a 3 meses', axis: 'Hoy → Vencimiento', markerLabel: 'Línea de tiempo', labels: ['Hoy: prima de -$5k', 'Strike de $500k', 'Casa de $600k', 'Casa de $400k'] },
+  'capping-downside': { title: 'Pérdida de la acción vs. la opción', axis: 'Precio de la acción', markerLabel: 'Caída', labels: ['Acción a $100', '$20', 'Piso de la opción: -$500'] },
+  'intrinsic-value': { title: 'Límite in-the-money', axis: 'Precio de la acción', markerLabel: 'Precio', labels: ['Strike $50', '$55 → $5 intrínsecos', 'Out of the money'] },
+  'insurance-floor': { title: 'Piso de la Put protectora', axis: 'Precio de la acción', markerLabel: 'Acción', labels: ['Strike de la Put: $90', 'Mercado: $70'] },
+  'time-decay': { title: 'Deterioro del valor temporal', axis: 'Días hasta el vencimiento', markerLabel: 'Día', labels: ['Día 1: $4.00', 'Día 15: menor valor', 'Día 30'] },
+  'seller-obligation': { title: 'Derechos y obligaciones', axis: 'Relación contractual', markerLabel: 'Prima', labels: ['COMPRADOR', 'Obtiene un derecho', 'VENDEDOR', 'Asume una obligación', 'Prima →'] },
+  'break-even': { title: 'Equilibrio de una Call larga', axis: 'Precio al vencimiento', markerLabel: 'Precio', labels: ['Strike $100', 'Equilibrio $105', 'Prima de -$5'] },
+  'hockey-stick': { title: 'Leyendo el palo de hockey', axis: 'Precio al vencimiento', markerLabel: 'Precio', labels: ['Inflexión = Strike', 'Potencial alcista'] },
+  'leverage-engine': { title: 'Rendimiento de acción vs. opción', axis: 'Rendimiento porcentual', markerLabel: 'Comparar', labels: ['ACCIÓN +10%', 'OPCIÓN +400%', '$100 → $110', '$2 → $10'] },
+  'contract-exposure': { title: 'Entrada de la orden', axis: '3 × 100 × $1.50', markerLabel: 'Cantidad', labels: ['CANTIDAD  3', 'TIPO  CALL', 'PRECIO  $1.50', 'DÉBITO TOTAL  $450', '1 contrato = 100 acciones'] },
+  'short-call-trap': { title: 'Riesgo de una Call corta descubierta', axis: 'Precio de la acción', markerLabel: 'Precio', labels: ['Prima conservada', 'Strike de $50', 'Pérdida ilimitada'] },
+  'volatility-expansion': { title: 'Expansión de volatilidad implícita', axis: 'Incertidumbre', markerLabel: 'IV', labels: ['IV 20%', 'IV 60%', 'Acción sin cambios'] },
+  'iv-crush': { title: 'IV Crush después de resultados', axis: 'Línea de tiempo del evento', markerLabel: 'IV', labels: ['Antes: IV 60%', 'Después: IV 20%', 'Resultados'] },
+  'delta-action': { title: 'Respuesta de Delta', axis: 'Movimiento de $1 del subyacente', markerLabel: 'Acción', labels: ['ACCIÓN +$1.00', 'OPCIÓN +$0.60', 'DELTA 0.60'] },
+  'delta-probability': { title: 'Mapa de probabilidad de Delta', axis: 'Distribución futura del precio', markerLabel: 'Strike', labels: ['Strike OTM', 'Δ 0.10 ≈ 10%'] },
+  'theta-cliff': { title: 'El precipicio de Theta', axis: 'Días restantes: 90 → 0', markerLabel: 'Día', labels: ['90 días', '30 días', 'Deterioro más rápido'] },
+  'vertical-ceiling': { title: 'Bull Call Spread de $100 / $110', axis: 'Precio de la acción', markerLabel: 'Precio', labels: ['Pérdida máxima -$3', 'Larga $100', 'Corta $110'] },
+  'spread-cap': { title: 'Ganancia limitada del spread', axis: 'Precio al vencimiento', markerLabel: 'Precio', labels: ['Débito de -$3', 'Máximo +$7 / $700', 'Acción $160'] },
+  straddle: { title: 'Long Straddle', axis: 'Precio de la acción', markerLabel: 'Precio', labels: ['Strike de $50', 'Gana si cae mucho', 'Gana si sube mucho'] },
+  'iron-condor': { title: 'Corredor de ganancia del Iron Condor', axis: 'Precio de la acción', markerLabel: 'Precio', labels: ['$90', '$110', 'ZONA DE GANANCIA MÁXIMA'] },
+  assignment: { title: 'Asignación al vencimiento', axis: 'Cierre del viernes → Fin de semana', markerLabel: 'Cierre', labels: ['Put corta con strike $40', 'La acción cierra en $38', 'Asignación: Compra 100 a $40'] },
+  'bid-ask': { title: 'Libro de órdenes ilíquido', axis: 'Costo inmediato de ida y vuelta', markerLabel: 'Spread', labels: ['BID $1.00', '10 compradores', 'ASK $3.00', '5 vendedores', 'Compra a mercado → pérdida inmediata de -$2'] },
+  'limit-order': { title: 'Selección del tipo de orden', axis: 'Costo máximo de entrada', markerLabel: 'Límite', labels: ['MERCADO', 'LÍMITE', 'STOP', 'MÁXIMO $1.50', 'Control de precio, sin garantía de ejecución'] },
+  'covered-call-execution': { title: 'Ingreso de la Covered Call', axis: 'Precio de la acción', markerLabel: 'Precio', labels: ['100 acciones a $100', 'Call corta de $105', 'Prima de +$2 conservada'] },
+}
+
+function ScenarioConceptGraph({ visual }: { visual: OptionsLessonVisualConfig }) {
+  const { lang } = useTranslationProvider()
+  const [marker, setMarker] = useState(50)
+  const baseGraphic = visual.scenario ? scenarioGraphics[visual.scenario] : undefined
+  const translatedCopy = lang === 'es' && visual.scenario ? spanishScenarioCopy[visual.scenario] : undefined
+  const graphic = baseGraphic && translatedCopy
+    ? {
+        ...baseGraphic,
+        title: translatedCopy.title,
+        axis: translatedCopy.axis,
+        markerLabel: translatedCopy.markerLabel,
+        labels: baseGraphic.labels.map((label, index) => ({ ...label, text: translatedCopy.labels[index] ?? label.text })),
+      }
+    : baseGraphic
+
+  if (!graphic) return null
+
+  const markerX = 10 + marker * 0.82
 
   return (
-    <div className="relative h-44 overflow-hidden border-b border-slate-200 bg-slate-50/80">
-      <svg viewBox="0 0 100 100" className="h-full w-full">
-        <line x1="0" y1="58" x2="100" y2="58" stroke="#111827" strokeWidth="0.45" opacity="0.7" />
-        <line x1="24" y1="0" x2="24" y2="100" stroke="#0b66ff" strokeWidth={strategy === 'long_call' ? '1.8' : '0'} />
-        <line x1="0" y1="10" x2="100" y2="90" stroke="#dbe2ea" strokeWidth="0.35" />
-        <line x1="0" y1="90" x2="100" y2="10" stroke="#dbe2ea" strokeWidth="0.35" />
-        {preview.secondary && (
-          <path d={preview.secondary} stroke="#ef233c" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-        )}
-        <path
-          d={preview.primary}
-          stroke={strategy === 'greeks_curve' ? '#303030' : strategy === 'long_straddle' ? '#e11d48' : '#22c55e'}
-          strokeWidth="1.2"
-          fill="none"
-          strokeLinecap="round"
-        />
-        {strategy !== 'greeks_curve' && <circle cx={strategy === 'long_call' ? '24' : strategy === 'long_straddle' ? '50' : '60'} cy={strategy === 'long_call' ? '30' : strategy === 'long_straddle' ? '54' : '40'} r="3" fill="#0b66ff" />}
-      </svg>
-      {strategy === 'long_call' && (
-        <div className="absolute left-14 top-10 rounded-md bg-[#444] px-2 py-1 text-xs font-medium text-white">
-          Drag Me
-        </div>
-      )}
+    <div className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-[0_12px_30px_rgba(15,46,77,0.06)]">
+      <div className="mb-4 rounded-2xl border border-[#0b66ff]/15 bg-[#0b66ff]/5 px-4 py-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0b66ff]">{graphic.title}</p>
+        <p className="mt-2 text-sm leading-6 text-[#113a63]/72">{visual.description}</p>
+      </div>
+      <div className="rounded-[1.35rem] border border-slate-200 bg-slate-50/80 p-4">
+        <svg viewBox="0 0 100 100" className="aspect-[1.22/1] h-full w-full" role="img" aria-label={graphic.title}>
+          {[20, 40, 60, 80].map((point) => <line key={`h-${point}`} x1="7" y1={point} x2="95" y2={point} stroke="#e5e7eb" strokeWidth="0.35" />)}
+          {(graphic.zones ?? []).map((zone, index) => <rect key={index} {...zone} fill={zone.color} rx="2" />)}
+          {graphic.paths.map((path, index) => <path key={index} d={path.d} stroke={path.color} strokeWidth="1.35" strokeDasharray={path.dash} fill="none" strokeLinecap="round" strokeLinejoin="round" />)}
+          <line x1={markerX} y1="8" x2={markerX} y2="88" stroke="#0b66ff" strokeWidth="0.65" opacity="0.55" />
+          <circle cx={markerX} cy="88" r="1.8" fill="#0b66ff" />
+          {graphic.labels.map((label, index) => <text key={index} x={label.x} y={label.y} textAnchor="middle" fontSize="3.15" fontWeight="600" fill={label.color ?? '#475569'}>{label.text}</text>)}
+          <text x="50" y="98" textAnchor="middle" fontSize="3.2" fill="#64748b">{graphic.axis}</text>
+        </svg>
+        <label className="mt-3 block text-xs font-semibold uppercase tracking-[0.14em] text-[#113a63]/55">
+          {graphic.markerLabel ?? 'Explore'}
+          <input className="mt-2 block w-full accent-[#0b66ff]" type="range" min="0" max="100" value={marker} onChange={(event) => setMarker(Number(event.target.value))} />
+        </label>
+      </div>
     </div>
   )
 }
 
 function BasicConceptGraph({ visual }: { visual: OptionsLessonVisualConfig }) {
+  if (visual.scenario && scenarioGraphics[visual.scenario]) {
+    return <ScenarioConceptGraph visual={visual} />
+  }
+
   const [price, setPrice] = useState(100)
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -210,7 +345,13 @@ function BasicConceptGraph({ visual }: { visual: OptionsLessonVisualConfig }) {
 
   return (
     <div className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-[0_12px_30px_rgba(15,46,77,0.06)]">
-      <p className="mb-4 text-sm leading-6 text-[#113a63]/75">{visual.instruction}</p>
+      {!visual.description && <p className="mb-4 text-sm leading-6 text-[#113a63]/75">{visual.instruction}</p>}
+      {visual.description && (
+        <div className="mb-4 rounded-2xl border border-[#0b66ff]/15 bg-[#0b66ff]/5 px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0b66ff]">Visual guide</p>
+          <p className="mt-2 text-sm leading-6 text-[#113a63]/72">{visual.description}</p>
+        </div>
+      )}
       <div className="rounded-[1.35rem] border border-slate-200 bg-slate-50/80 p-4">
         <div className="relative aspect-[1.22/1] w-full">
           <svg ref={svgRef} viewBox="0 0 100 100" className="h-full w-full touch-none">
@@ -688,7 +829,15 @@ export function InteractiveOptionsLesson() {
                       onClick={() => openModule(module.id)}
                       className="h-full w-full overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white text-left shadow-[0_14px_32px_rgba(15,46,77,0.07)] transition-transform hover:-translate-y-1"
                     >
-                      <ModulePreviewGraph strategy={module.previewStrategy} />
+                      <div className="relative h-44 overflow-hidden border-b border-slate-200 bg-[#fbf8f1]">
+                        <Image
+                          src={module.image}
+                          alt=""
+                          fill
+                          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                          className="object-cover"
+                        />
+                      </div>
                       <div className="space-y-3 p-6">
                         <p className="text-sm font-medium text-[#0b66ff]">{module.level}</p>
                         <h3 className="text-3xl font-semibold leading-tight text-[#2f3136]">{module.title}</h3>
@@ -791,13 +940,12 @@ export function InteractiveOptionsLesson() {
                 <div className="space-y-4">
                   <p className="text-sm font-medium text-[#113a63]/65">{content.keepLearning}</p>
                   <div className="grid gap-3">
-                    {selectedModule.steps.map((step, index) => (
+                    {selectedModule.steps.map((step) => (
                       <div key={step.id} className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs uppercase tracking-[0.16em] text-[#113a63]/45">{content.questionLabel} {index + 1}</span>
+                          <p className="text-sm font-medium text-[#113a63]">{step.title}</p>
                           {completedSteps.includes(step.id) ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <Circle className="h-4 w-4 text-slate-400" />}
                         </div>
-                        <p className="mt-2 text-sm font-medium text-[#113a63]">{step.title}</p>
                       </div>
                     ))}
                   </div>
@@ -805,31 +953,9 @@ export function InteractiveOptionsLesson() {
               ) : currentStep ? (
                 <>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-[0.18em] text-[#113a63]/45">{content.questionLabel} {currentStepIndex + 1}</span>
-                      {completedSteps.includes(currentStep.id) ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <Circle className="h-4 w-4 text-slate-400" />}
-                    </div>
                     <h3 className="text-3xl font-semibold leading-tight text-[#113a63]">{currentStep.title}</h3>
                     <p className="text-base leading-8 text-[#113a63]/78">{currentStep.prompt}</p>
                     <p className="text-sm font-medium text-[#113a63]/55">{currentStep.context}</p>
-                  </div>
-
-                  <div className="grid gap-3">
-                    {selectedModule.steps.map((step, index) => (
-                      <div
-                        key={step.id}
-                        className={cn(
-                          'rounded-2xl border px-4 py-3 text-sm',
-                          index === currentStepIndex ? 'border-[#f97316]/25 bg-[#fff7f1] text-[#113a63]' : 'border-slate-200 bg-white text-[#113a63]/76'
-                        )}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs uppercase tracking-[0.16em] text-[#113a63]/45">{content.questionLabel} {index + 1}</span>
-                          {completedSteps.includes(step.id) ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <Circle className="h-4 w-4 text-slate-400" />}
-                        </div>
-                        <p className="mt-2 font-medium">{step.title}</p>
-                      </div>
-                    ))}
                   </div>
 
                   {currentStep.kind === 'quiz' && currentStep.choices && (
