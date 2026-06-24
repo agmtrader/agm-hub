@@ -13,6 +13,7 @@ import { modernTools } from '@/lib/public/modern-tools'
 import { Badge } from '@/components/ui/badge'
 
 const ModernTools = () => {
+  
   const { t, lang } = useTranslationProvider()
   
   const [emblaRef, emblaApi] = useEmblaCarousel({

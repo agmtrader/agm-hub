@@ -186,14 +186,15 @@ export const resourceCenterSections: ResourceSection[] = [
     id: 'interactive-learning',
     titleKey: 'learning.sections.interactive_learning.title',
     descriptionKey: 'learning.sections.interactive_learning.description',
-    slides: buildSlides([
+    slides: [
       {
         id: '01',
         title: 'Options',
+        image: '/assets/resource-center/interactive-learning/cover.png',
         href: '/resource-center/interactive-learning/options',
         eyebrow: 'Interactive Learning',
       },
-    ]),
+    ],
   }
 ]
 
