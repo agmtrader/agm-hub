@@ -24,26 +24,6 @@ const ModernTools = () => {
 
   const tools = modernTools(t)
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        when: "beforeChildren",
-        staggerChildren: 0.2
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { type: 'spring', stiffness: 300, damping: 24 }
-    }
-  }
-
   return (
     <div className="container flex flex-col items-center justify-center gap-8 overflow-hidden px-4 py-6 md:gap-10 md:py-10">
       
@@ -96,7 +76,7 @@ const ModernTools = () => {
                       <div className="mt-auto pt-2">
                           {tool.isWip ? (
                               <Badge variant="secondary" className="px-4 py-1 text-sm font-medium">
-                                  {tool.badgeText || "Coming Soon"}
+                                  {"Coming Soon"}
                               </Badge>
                           ) : (
                               <Link href={formatURL(tool.link || '#', lang)}>
