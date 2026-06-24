@@ -1,17 +1,6 @@
 import { Calculator, FileText } from 'lucide-react'
 
-type ModernTool = {
-  title: string
-  description: string
-  buttonText?: string
-  badgeText?: string
-  link?: string
-  icon: typeof Calculator
-  image?: string
-  isWip: boolean
-}
-
-export const modernTools = (t: (key: string) => string): ModernTool[] => [
+export const modernTools = (t: (key: string) => string) => [
   {
     title: t('main.modern_tools.risk_profile.title'),
     description: t('main.modern_tools.risk_profile.description'),
