@@ -1,4 +1,4 @@
-import { InteractiveOptionsLesson } from '@/components/hub/learning/InteractiveOptionsLesson'
+import { InteractiveOptionsLesson } from "@/components/hub/resource-center/InteractiveOptionsLesson"
 
 const InteractiveOptionsPage = () => {
   return (

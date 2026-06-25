@@ -10,7 +10,7 @@ type SnapshotMetric = {
   detail: string
 }
 
-interface BankingMethodSnapshotProps {
+interface ResourceSnapshotProps {
   title: string
   description?: string
   speed: SnapshotMetric
@@ -24,13 +24,13 @@ const metricConfig = [
   { key: 'steps', icon: ListOrdered, accent: 'text-amber-600 bg-amber-50 border-amber-200' },
 ] as const
 
-export function BankingMethodSnapshot({
+export function ResourceSnapshot({
   title,
   description,
   speed,
   fees,
   steps,
-}: BankingMethodSnapshotProps) {
+}: ResourceSnapshotProps) {
   const metrics = { speed, fees, steps }
 
   return (

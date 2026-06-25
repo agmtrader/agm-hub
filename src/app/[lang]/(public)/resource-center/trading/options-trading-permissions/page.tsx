@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 
-import { BankingStepsCard } from '@/components/hub/learning/BankingStepsCard'
+import { ResourceSteps } from '@/components/hub/resource-center/ResourceSteps'
+import { ResourceGuidePage } from '@/components/hub/resource-center/ResourceGuidePage'
 import { Button } from '@/components/ui/button'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
@@ -86,32 +87,8 @@ const guideContent = {
   },
 } as const
 
-const OptionsTradingPermissionsPage = () => {
-  const { lang } = useTranslationProvider()
-  const copy = guideContent[lang as keyof typeof guideContent] ?? guideContent.en
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-6xl mx-auto py-14 px-6 flex flex-col gap-8">
-      <div className="flex justify-start">
-        <Button asChild variant="ghost">
-          <Link href={formatURL('/resource-center#trading', lang)}>
-            <ArrowLeft className="w-4 h-4 text-foreground" />
-            {copy.back}
-          </Link>
-        </Button>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
-      </div>
-
-      <BankingStepsCard title={copy.instructionsTitle} steps={copy.steps} />
-      <BankingStepsCard title={copy.levelsTitle} steps={copy.levels} />
-      <BankingStepsCard title={copy.availabilityTitle} steps={copy.availability} />
-    </motion.div>
-  )
-}
+const OptionsTradingPermissionsPage = () => (
+  <ResourceGuidePage sectionAnchor="trading" content={guideContent} />
+)
 
 export default OptionsTradingPermissionsPage

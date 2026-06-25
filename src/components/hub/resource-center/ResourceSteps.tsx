@@ -8,13 +8,13 @@ type StepItem = {
   note?: string
 }
 
-interface BankingStepsCardProps {
+interface ResourceStepsProps {
   title: string
   intro?: string
   steps: readonly StepItem[]
 }
 
-export function BankingStepsCard({ title, intro, steps }: BankingStepsCardProps) {
+export function ResourceSteps({ title, intro, steps }: ResourceStepsProps) {
   return (
     <Card className="border border-border/60 shadow-sm">
       <CardHeader>

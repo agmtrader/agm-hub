@@ -1,4 +1,4 @@
-import { ResourceGuidePage } from '@/components/hub/learning/ResourceGuidePage'
+import { ResourceGuidePage } from '@/components/hub/resource-center/ResourceGuidePage'
 
 const guideContent = {
   en: {

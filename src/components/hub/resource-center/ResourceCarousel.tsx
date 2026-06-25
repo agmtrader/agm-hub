@@ -13,9 +13,10 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface ResourceCarouselProps {
   slides: ResourceSlide[]
+  renderTitle?: (slide: ResourceSlide) => React.ReactNode
 }
 
-export function ResourceCarousel({ slides }: ResourceCarouselProps) {
+export function ResourceCarousel({ slides, renderTitle }: ResourceCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: 'center',
@@ -60,7 +61,7 @@ export function ResourceCarousel({ slides }: ResourceCarouselProps) {
                         {slide.eyebrow}
                       </p>
                     ) : null}
-                    <p className="text-md font-semibold">{slide.title}</p>
+                    <div className="text-md font-semibold">{renderTitle ? renderTitle(slide) : slide.title}</div>
                     {slide.external ? (
                       <span className="inline-flex items-center gap-1 text-xs text-subtitle">
                         {t('learning.opens_external')}
