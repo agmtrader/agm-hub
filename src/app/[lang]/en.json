@@ -443,7 +443,7 @@
             "application_success": {
                 "title": "Application Submitted Successfully!",
                 "description": "Your IBKR application has been submitted and is being reviewed.",
-                "description_2": "You will receive a confirmation email in the next day or two with next steps.",
+                "description_2": "You will receive a confirmation email in the next days with next steps.",
                 "missing_documents_reminder": "Please remember to upload the required documents to complete your application.",
                 "go_back_home": "Go Back Home"
             },

@@ -66,13 +66,15 @@ export async function UploadContactDocument(
 
 export async function ReadContactDocuments(
     contactID?: string,
-    options?: { includeData?: boolean; includeDocuments?: boolean; documentIds?: string[] }
+    options?: { includeData?: boolean; includeDocuments?: boolean; includeProcessing?: boolean; documentIds?: string[] }
 ): Promise<{documents: InternalDocument[], contact_documents: any[]}> {
     const includeData = options?.includeData ? 'true' : 'false'
     const includeDocuments = options?.includeDocuments === false ? 'false' : 'true'
+    const includeProcessing = options?.includeProcessing ? 'true' : 'false'
     const params = new URLSearchParams({
         include_data: includeData,
         include_documents: includeDocuments,
+        include_processing: includeProcessing,
     })
     if (contactID) params.set('contact_id', contactID)
     for (const documentId of options?.documentIds || []) {

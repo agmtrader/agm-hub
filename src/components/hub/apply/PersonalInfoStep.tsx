@@ -924,7 +924,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             <FormMessage />
             </div>
             <FormControl>
-              <Textarea placeholder="" {...field} />
+              <Input placeholder="" {...field} />
             </FormControl>
           </FormItem>
         )}

@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { Application } from '@/lib/clients/application'
 import ContactDocuments from './ContactDocuments'
-import { ReadContactByEmail } from '@/utils/clients/contact'
+import { ReadContactByID } from '@/utils/clients/contact'
+import { ReadAccountContacts } from '@/utils/clients/account_contact'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface DocumentsStepProps {
@@ -13,42 +14,43 @@ interface DocumentsStepProps {
   accountId?: string | null
 }
 
-const DocumentsStep = ({ form, formData, accountId }: DocumentsStepProps) => {
-  const data = formData || form?.getValues()
+const DocumentsStep = ({ accountId }: DocumentsStepProps) => {
   const [contacts, setContacts] = useState<Array<{ id: string; name: string }>>([])
 
   useEffect(() => {
     const resolveContacts = async () => {
-      const out: Array<{ name: string; email?: string }> = []
-      const customer: any = data?.customer
-      if (!customer) return
-
-      if (customer.type === 'INDIVIDUAL') {
-        const h = customer.accountHolder?.accountHolderDetails?.[0]
-        if (h?.name?.first || h?.name?.last) out.push({ name: `${h.name.first} ${h.name.last}`.trim(), email: h.email })
-      } else if (customer.type === 'JOINT') {
-        const first = customer.jointHolders?.firstHolderDetails?.[0]
-        const second = customer.jointHolders?.secondHolderDetails?.[0]
-        if (first?.name?.first || first?.name?.last) out.push({ name: `${first.name.first} ${first.name.last}`.trim(), email: first.email })
-        if (second?.name?.first || second?.name?.last) out.push({ name: `${second.name.first} ${second.name.last}`.trim(), email: second.email })
-      } else if (customer.type === 'ORG') {
-        const individuals = customer.organization?.associatedEntities?.associatedIndividuals || []
-        individuals.forEach((ind: any) => {
-          if (ind?.name?.first || ind?.name?.last) out.push({ name: `${ind.name.first} ${ind.name.last}`.trim(), email: ind.email })
-        })
+      if (!accountId) {
+        setContacts([])
+        return
       }
 
-      const resolved: Array<{ id: string; name: string }> = []
-      for (const c of out) {
-        if (!c.email) continue
-        const contact = await ReadContactByEmail(c.email)
-        if (contact?.id) resolved.push({ id: contact.id, name: c.name })
-      }
-      setContacts(Array.from(new Map(resolved.map((c) => [c.id, c])).values()))
+      const links = await ReadAccountContacts({ account_id: accountId })
+      const resolvedContacts = await Promise.all(
+        links
+          .map((link) => String(link.contact_id || '').trim())
+          .filter(Boolean)
+          .map((contactId) => ReadContactByID(contactId))
+      )
+
+      const deduped = Array.from(
+        new Map(
+          resolvedContacts
+            .filter((contact) => Boolean(contact?.id))
+            .map((contact) => [
+              String(contact!.id),
+              {
+                id: String(contact!.id),
+                name: contact!.company_name || contact!.name || contact!.email || String(contact!.id),
+              },
+            ])
+        ).values()
+      )
+
+      setContacts(deduped)
     }
 
     void resolveContacts()
-  }, [data?.customer])
+  }, [accountId])
 
   if (!accountId) {
     return (

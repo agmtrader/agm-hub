@@ -24,11 +24,6 @@ const ApplicationSuccess = ({ documentsUploaded }: ApplicationSuccessProps) => {
         <div className='flex flex-col items-center gap-y-4 text-center'>
             <p className='text-lg text-subtitle'>{t('apply.account.application_success.description')}</p>
             <p className='text-sm text-subtitle'>{t('apply.account.application_success.description_2')}</p>
-            {!documentsUploaded && (
-                <p className='text-sm text-warning font-medium mt-2'>
-                    {t('apply.account.application_success.missing_documents_reminder')}
-                </p>
-            )}
         </div>
         <div className='flex gap-4'>
             <Button>

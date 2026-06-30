@@ -23,8 +23,8 @@ import ProgressMeter from './ProgressMeter'
 import { BusinessAndOccupation, FinancialRange, FormDetails, InternalAccount } from '@/lib/clients/account'
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/clients/account'
 import { CreateAccountContact, ReadAccountContacts, UpdateAccountContact } from '@/utils/clients/account_contact'
-import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactDocuments, ReadContactScreenings, UploadContactDocument } from '@/utils/clients/contact'
-import { individual_form, individual_form_2, joint_form } from './samples'
+import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactByID, ReadContactDocuments, ReadContactScreenings, UpdateContactByID, UploadContactDocument } from '@/utils/clients/contact'
+import { individual_form, individual_form_2, institutional_form, joint_form } from './samples'
 import { Loader2 } from 'lucide-react'
 
 export enum FormStep {
@@ -54,6 +54,15 @@ type LinkedContact = {
   entityId?: string | null;
 };
 
+type ApplicantContact = {
+  name: string;
+  email?: string;
+  externalId?: string | null;
+  entityId?: string | null;
+  type?: 'company' | 'person';
+  companyName?: string | null;
+};
+
 const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
   const { t } = useTranslationProvider();
@@ -81,7 +90,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: getApplicationDefaults(application_schema),
+    defaultValues: institutional_form,
     mode: 'onChange',
     shouldUnregister: false,
   });
@@ -221,8 +230,11 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     fetchData();
   }, [prefetchedData]);
 
-  const extractApplicantContacts = (values: Application) => {
-    const contacts: { name: string; email?: string; externalId?: string | null; entityId?: string | null }[] = [];
+  const normalizeContactName = (value: string) =>
+    String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+
+  const extractApplicantContacts = (values: Application): ApplicantContact[] => {
+    const contacts: ApplicantContact[] = [];
     const { customer } = values;
 
     switch (customer.type) {
@@ -234,6 +246,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
             email: holder.email,
             externalId: holder.externalId ?? null,
             entityId: (holder as any)?.entityId ? String((holder as any).entityId) : null,
+            type: 'person',
           });
         }
         break;
@@ -247,6 +260,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
             email: first.email,
             externalId: first.externalId ?? null,
             entityId: (first as any)?.entityId ? String((first as any).entityId) : null,
+            type: 'person',
           });
         }
         if (second?.name?.first || second?.name?.last) {
@@ -255,11 +269,21 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
             email: second.email,
             externalId: second.externalId ?? null,
             entityId: (second as any)?.entityId ? String((second as any).entityId) : null,
+            type: 'person',
           });
         }
         break;
       }
       case 'ORG': {
+        const companyName = String(customer.organization?.identifications?.[0]?.name || '').trim();
+        if (companyName) {
+          contacts.push({
+            name: companyName,
+            externalId: customer.externalId ?? null,
+            type: 'company',
+            companyName,
+          });
+        }
         const individuals = customer.organization?.associatedEntities?.associatedIndividuals || [];
         individuals.forEach((ind) => {
           if (ind?.name?.first || ind?.name?.last) {
@@ -268,6 +292,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
               email: ind.email,
               externalId: ind.externalId ?? null,
               entityId: (ind as any)?.entityId ? String((ind as any).entityId) : null,
+              type: 'person',
             });
           }
         });
@@ -277,18 +302,75 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     return contacts.filter((c) => c.name);
   }
 
-  async function ensureContacts(values: Application) {
+  async function findExistingLinkedContact(
+    persistedAccountId: string,
+    contact: ApplicantContact
+  ) {
+    const existingLinks = await ReadAccountContacts({ account_id: persistedAccountId });
+    const existingContacts = await Promise.all(
+      existingLinks
+        .map((link) => String(link.contact_id || '').trim())
+        .filter(Boolean)
+        .map((contactId) => ReadContactByID(contactId))
+    );
+
+    const targetName = normalizeContactName(contact.name);
+    const targetType = String(contact.type || '').trim().toLowerCase();
+
+    return existingContacts.find((existingContact: any) => {
+      if (!existingContact?.id) return false;
+
+      const existingName = normalizeContactName(
+        existingContact.company_name || existingContact.name || ''
+      );
+      const existingType = String(existingContact.type || '').trim().toLowerCase();
+
+      if (targetType === 'company') {
+        return existingName === targetName || existingType === 'company';
+      }
+
+      if (contact.email) {
+        const existingEmail = String(existingContact.email || '').trim().toLowerCase();
+        if (existingEmail && existingEmail === String(contact.email).trim().toLowerCase()) return true;
+      }
+
+      return existingName === targetName;
+    }) || null;
+  }
+
+  async function ensureContacts(values: Application, persistedAccountId: string) {
     const applicantContacts = extractApplicantContacts(values);
     const linkedContacts: LinkedContact[] = [];
 
     for (const c of applicantContacts) {
       let existingContact = c.email ? await ReadContactByEmail(c.email) : null;
       if (!existingContact) {
+        existingContact = await findExistingLinkedContact(persistedAccountId, c);
+      }
+      if (!existingContact) {
         const createResp = await CreateContact({
           name: c.name,
           email: c.email ?? undefined,
+          company_name: c.companyName ?? undefined,
+          type: c.type,
         } as any);
         existingContact = { id: createResp.id } as any;
+      } else {
+        const existingType = String((existingContact as any).type || '').trim().toLowerCase();
+        const desiredType = String(c.type || '').trim().toLowerCase();
+        const desiredCompanyName = c.companyName ?? undefined;
+        const needsTypeUpdate = Boolean(desiredType) && existingType !== desiredType;
+        const needsCompanyNameUpdate =
+          desiredType === 'company' &&
+          desiredCompanyName &&
+          String((existingContact as any).company_name || '').trim() !== String(desiredCompanyName).trim();
+
+        if (needsTypeUpdate || needsCompanyNameUpdate) {
+          await UpdateContactByID(existingContact.id, {
+            ...(needsTypeUpdate ? { type: c.type } : {}),
+            ...(needsCompanyNameUpdate ? { company_name: desiredCompanyName } : {}),
+          } as any);
+        }
       }
 
       if (!existingContact?.id) continue;
@@ -886,11 +968,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     const sanitizedValues = sanitizeApplication(valuesWithNormalizedW8Signers);
     const storageValues = buildApplicationJsonForStorage(sanitizedValues);
     const shouldSyncContacts = prepareContacts || finalizeApplication;
-    const linkedContacts = shouldSyncContacts ? await ensureContacts(sanitizedValues) : [];
-
-    if (shouldSyncContacts && linkedContacts.length === 0) {
-      return { persistedAccountId: accountId, linkedContacts };
-    }
+    let linkedContacts: LinkedContact[] = [];
 
     let persistedAccountId = accountId;
     if (!accountId) {
@@ -926,6 +1004,13 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
     if (!persistedAccountId) {
       return { persistedAccountId: null, linkedContacts };
+    }
+
+    if (shouldSyncContacts) {
+      linkedContacts = await ensureContacts(sanitizedValues, persistedAccountId);
+      if (linkedContacts.length === 0) {
+        return { persistedAccountId, linkedContacts };
+      }
     }
 
     if (shouldSyncContacts && linkedContacts.length > 0) {
