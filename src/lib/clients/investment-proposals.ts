@@ -52,6 +52,7 @@ export interface InvestmentProposalPayload {
 export interface InvestmentProposalAssetInput {
     symbol: string
     percentage: number
+    source_bucket?: 'BONDS' | 'UST' | 'STOCKS' | 'ETFS'
 }
 
 

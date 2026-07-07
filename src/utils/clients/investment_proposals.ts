@@ -37,7 +37,13 @@ export async function ReadInvestmentProposalsByAccount(account_id: string): Prom
   return proposals || null
 }
 
-export async function CreateInvestmentProposalFromAssets(assets: InvestmentProposalAssetInput[]): Promise<InvestmentProposal> {
-  const proposal: InvestmentProposal = await accessAPI('/investment_proposals/create/assets', 'POST', { assets: assets })
+export async function CreateInvestmentProposalFromAssets(
+  assets: InvestmentProposalAssetInput[],
+  risk_profile_id?: string | null,
+): Promise<InvestmentProposal> {
+  const proposal: InvestmentProposal = await accessAPI('/investment_proposals/create/assets', 'POST', {
+    assets,
+    risk_profile_id,
+  })
   return proposal
 }

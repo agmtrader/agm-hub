@@ -379,10 +379,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
           </Card>
         </div>
       </div>
-
-      <p className="text-base text-error">
-          The investment proposal reflects the saved asset selection at creation time. If you want to see more details, please contact us and set up a meeting.
-          </p>
       </div>
     </div>
   )
