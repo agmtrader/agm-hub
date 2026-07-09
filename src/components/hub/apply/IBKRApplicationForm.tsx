@@ -90,7 +90,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
   const form = useForm<Application>({
     resolver: zodResolver(application_schema),
-    defaultValues: institutional_form,
+    defaultValues: getApplicationDefaults(application_schema),
     mode: 'onChange',
     shouldUnregister: false,
   });
