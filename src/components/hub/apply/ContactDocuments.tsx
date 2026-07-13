@@ -14,18 +14,25 @@ import { toast } from '@/hooks/use-toast'
 import { ReadContactDocuments, UploadContactDocument, UpdateContactDocument, DeleteContactDocument } from '@/utils/clients/contact'
 import { calculateSHA1, getBase64 } from '@/utils/clients/documents'
 import { formatTimestamp, getDateObjectFromTimestamp } from '@/utils/dates'
-import { documentCategories, documentLanguageOptions } from '@/lib/clients/documents'
+import {
+  documentCategories,
+  documentLanguageOptions,
+  getDocumentCategoryByKey,
+  getDocumentCategoryKey,
+} from '@/lib/clients/documents'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import DocumentViewer from '@/components/misc/DocumentViewer'
 import type { InternalDocument } from '@/lib/clients/documents'
 
 type Props = {
   contactId: string
-  accountId: string
+  accountId: string | null
   holderName?: string
+  uploadOnly?: boolean
+  allowedCategoryKeys?: string[] | null
 }
 
-const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
+const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false, allowedCategoryKeys = null }: Props) => {
   const { t } = useTranslationProvider()
   const [links, setLinks] = useState<any[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -37,7 +44,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
   const [selectedDocumentName, setSelectedDocumentName] = useState<string>('')
   const [isViewerOpen, setIsViewerOpen] = useState(false)
 
-  const [documentCategory, setDocumentCategory] = useState<string>('')
+  const [documentCategoryKey, setDocumentCategoryKey] = useState<string>('')
   const [documentType, setDocumentType] = useState<string>('')
   const [documentLanguage, setDocumentLanguage] = useState<string>('')
   const [issuedDate, setIssuedDate] = useState<Date | undefined>(undefined)
@@ -45,10 +52,21 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
   const [comment, setComment] = useState<string>('')
 
   const categories = documentCategories(t)
-  const selectedCategory = categories.find((c) => c.name === documentCategory)
+  const allowedCategorySet = Array.isArray(allowedCategoryKeys) ? new Set(allowedCategoryKeys) : null
+  const visibleCategories = allowedCategorySet
+    ? categories.filter((category) => allowedCategorySet.has(String((category as any).key || '')))
+    : categories
+  const selectedCategory = getDocumentCategoryByKey(documentCategoryKey, t)
   const availableTypes: readonly string[] | null = Array.isArray(selectedCategory?.types)
     ? (selectedCategory.types as readonly string[])
     : null
+
+  useEffect(() => {
+    if (!visibleCategories.some((category) => category.key === documentCategoryKey)) {
+      setDocumentCategoryKey(visibleCategories[0]?.key || '')
+      setDocumentType('')
+    }
+  }, [documentCategoryKey, visibleCategories])
 
   async function refreshLinks() {
     if (!contactId) return
@@ -66,7 +84,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
 
   async function handleUpload() {
     if (!files || files.length === 0) return
-    if (!documentCategory) {
+    if (!selectedCategory?.canonicalName) {
       toast({ title: 'Missing category', description: 'Select a document category', variant: 'warning' })
       return
     }
@@ -91,7 +109,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
         sha1Checksum,
         file.type,
         base64Data,
-        documentCategory,
+        selectedCategory.canonicalName,
         documentType,
         documentLanguage,
         issuedDate ? formatTimestamp(issuedDate) : '',
@@ -100,7 +118,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
       )
       setIsDialogOpen(false)
       setFiles(null)
-      setDocumentCategory('')
+      setDocumentCategoryKey('')
       setDocumentType('')
       setDocumentLanguage('')
       setIssuedDate(undefined)
@@ -154,7 +172,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
     try {
       await UpdateContactDocument(
         editingRow.document_id,
-        documentCategory || undefined,
+        selectedCategory?.canonicalName || undefined,
         documentType || undefined,
         documentLanguage || undefined,
         comment || undefined,
@@ -177,7 +195,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
     { header: 'Expiry', accessorKey: 'expiry_date' },
   ]
 
-  const rowActions = [
+  const rowActions = uploadOnly ? [] : [
     {
       label: 'View',
       icon: Eye,
@@ -188,7 +206,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
       icon: FileText,
       onClick: (row: any) => {
         setEditingRow(row)
-        setDocumentCategory(row?.category || '')
+        setDocumentCategoryKey(getDocumentCategoryKey(row?.category || '', t) || '')
         setDocumentType(row?.type || '')
         setDocumentLanguage(row?.document_language || '')
         setComment(row?.comment || '')
@@ -218,10 +236,10 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
             <DialogContent className="max-w-xl">
               <DialogHeader><DialogTitle>Upload Document</DialogTitle></DialogHeader>
               <div className="space-y-4">
-                <Select value={documentCategory} onValueChange={setDocumentCategory}>
+                <Select value={documentCategoryKey} onValueChange={setDocumentCategoryKey}>
                   <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
                   <SelectContent>
-                    {categories.map((c) => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
+                    {visibleCategories.map((c) => <SelectItem key={c.key} value={c.key}>{c.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 {availableTypes?.length ? (
@@ -252,7 +270,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
                   <FileInput><div className="p-4 text-center text-sm text-muted-foreground">Drag & drop or click to upload</div></FileInput>
                   <FileUploaderContent>{files?.map((f, i) => <FileUploaderItem key={i} index={i}>{f.name}</FileUploaderItem>)}</FileUploaderContent>
                 </FileUploader>
-                <Button onClick={handleUpload} disabled={isUploading || !files?.length} className="w-full">
+                <Button onClick={handleUpload} disabled={isUploading || !files?.length || visibleCategories.length === 0} className="w-full">
                   {isUploading ? 'Uploading...' : 'Upload'}
                 </Button>
               </div>
@@ -260,7 +278,12 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
           </Dialog>
         </CardHeader>
         <CardContent>
-          <DataTable data={links} columns={columns} rowActions={rowActions} enableRowActions />
+          <DataTable
+            data={links}
+            columns={columns}
+            rowActions={uploadOnly ? undefined : rowActions}
+            enableRowActions={!uploadOnly}
+          />
         </CardContent>
       </Card>
 
@@ -268,10 +291,10 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
         <DialogContent className="max-w-xl">
           <DialogHeader><DialogTitle>Edit Document Metadata</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <Select value={documentCategory} onValueChange={setDocumentCategory}>
+            <Select value={documentCategoryKey} onValueChange={setDocumentCategoryKey}>
               <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
               <SelectContent>
-                {categories.map((c) => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
+                {categories.map((c) => <SelectItem key={c.key} value={c.key}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
             {availableTypes?.length ? (
@@ -299,12 +322,14 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
           </div>
         </DialogContent>
       </Dialog>
-      <DocumentViewer
-        isOpen={isViewerOpen}
-        onOpenChange={setIsViewerOpen}
-        document={selectedDocument}
-        documentName={selectedDocumentName}
-      />
+      {!uploadOnly && (
+        <DocumentViewer
+          isOpen={isViewerOpen}
+          onOpenChange={setIsViewerOpen}
+          document={selectedDocument}
+          documentName={selectedDocumentName}
+        />
+      )}
     </>
   )
 }

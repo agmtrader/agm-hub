@@ -24,6 +24,7 @@ import { BusinessAndOccupation, FinancialRange, FormDetails, InternalAccount } f
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/clients/account'
 import { CreateAccountContact, ReadAccountContacts, UpdateAccountContact } from '@/utils/clients/account_contact'
 import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactByID, ReadContactDocuments, ReadContactScreenings, UpdateContactByID, UploadContactDocument } from '@/utils/clients/contact'
+import { getCanonicalDocumentCategory } from '@/lib/clients/documents'
 import { individual_form, individual_form_2, institutional_form, joint_form } from './samples'
 import { Loader2 } from 'lucide-react'
 
@@ -440,11 +441,11 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
       const signers = document.signedBy || [];
       if (signers.length === 0) continue;
 
-      const category = document.formNumber === 5001
+      const category = getCanonicalDocumentCategory(document.formNumber === 5001
         ? 'Tax'
         : document.formNumber === 8001
           ? 'Proof of Identity'
-          : 'Proof of Address';
+          : 'Proof of Address')
 
       const type = document.formNumber === 5001
         ? 'W8 Form'

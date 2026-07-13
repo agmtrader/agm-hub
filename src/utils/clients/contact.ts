@@ -33,7 +33,7 @@ export async function UpdateContactByID(id: string, contact: Partial<Contact>): 
 }
 
 export async function UploadContactDocument(
-    accountID: string,
+    accountID: string | null,
     contactID: string,
     file_name: string,
     file_length: number,
