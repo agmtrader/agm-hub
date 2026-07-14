@@ -32,8 +32,35 @@ type Props = {
   allowedCategoryKeys?: string[] | null
 }
 
+const formatDocumentDate = (value: unknown, locale: string) => {
+  const timestamp = String(value || '').trim()
+  if (!timestamp) return '-'
+
+  try {
+    const date = getDateObjectFromTimestamp(timestamp)
+    if (Number.isNaN(date.getTime())) return '-'
+
+    return new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date)
+  } catch {
+    return '-'
+  }
+}
+
+const formatDocumentLanguage = (value: unknown) => {
+  const language = String(value || '').trim()
+  const normalizedLanguage = language.toLowerCase()
+
+  if (normalizedLanguage === 'en' || normalizedLanguage === 'english') return 'English'
+  if (normalizedLanguage === 'es' || normalizedLanguage === 'spanish' || normalizedLanguage === 'español') return 'Spanish'
+  return language || '-'
+}
+
 const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false, allowedCategoryKeys = null }: Props) => {
-  const { t } = useTranslationProvider()
+  const { t, lang } = useTranslationProvider()
   const [links, setLinks] = useState<any[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -187,12 +214,31 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
   }
 
   const columns: ColumnDefinition<any>[] = [
-    { header: 'Document ID', accessorKey: 'document_id' },
     { header: 'Category', accessorKey: 'category' },
     { header: 'Type', accessorKey: 'type' },
-    { header: 'Language', accessorKey: 'document_language' },
-    { header: 'Issued', accessorKey: 'issued_date' },
-    { header: 'Expiry', accessorKey: 'expiry_date' },
+    {
+      header: 'Language',
+      accessorKey: 'document_language',
+      cell: ({ getValue }) => formatDocumentLanguage(getValue()),
+    },
+    {
+      header: 'Issued Date',
+      accessorKey: 'issued_date',
+      cell: ({ getValue }) => (
+        <span className="tabular-nums">
+          {formatDocumentDate(getValue(), lang === 'es' ? 'es-CR' : 'en-US')}
+        </span>
+      ),
+    },
+    {
+      header: 'Expiration Date',
+      accessorKey: 'expiry_date',
+      cell: ({ getValue }) => (
+        <span className="tabular-nums">
+          {formatDocumentDate(getValue(), lang === 'es' ? 'es-CR' : 'en-US')}
+        </span>
+      ),
+    },
   ]
 
   const rowActions = uploadOnly ? [] : [

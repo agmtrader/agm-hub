@@ -572,6 +572,7 @@
                 "description": "Uno de los siguientes documentos de acuerdo con el Tipo de Ingreso",
                 "documents": {
                     "salary": "Salarios (Copia de la Orden Patronal mas reciente o Certificación por parte de un CPA)",
+                    "income_certification": "Certificación de ingresos por contador público o privado",
                     "investments": "Ingresos producto de ganancias sobre Inversiones (Estado de Cuenta Bursátil donde aparezcan dichas ganancias)",
                     "property": "Venta de Propiedad (Contrato de compra/Venta de la Propiedad)",
                     "inheritance": "Herencia (Copia del Documento Legal: Fideicomiso, Testamento, etc.)",
@@ -651,6 +652,7 @@
                 "title": "Fuente de Ingresos",
                 "description": "Uno de los siguientes documentos de acuerdo con el Tipo de Ingreso",
                 "documents": {
+                    "income_certification": "Certificación de ingresos por contador público o privado",
                     "investments": "Ingresos producto de ganancias sobre Inversiones: (Estado de Cuenta Bursátil donde aparezcan dichas ganancias)",
                     "property": "Venta de Propiedad: (Contrato de compra/Venta de la Propiedad)",
                     "inheritance": "Herencia: (Copia del Documento Legal: Fideicomiso, Testamento, etc.)",

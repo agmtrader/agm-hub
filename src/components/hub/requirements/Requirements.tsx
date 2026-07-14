@@ -94,6 +94,10 @@ const RequirementsPage = () => {
                             </li>
                             <li className="flex items-start gap-2">
                             <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
+                            {t('requirements.personal.source_of_wealth.documents.income_certification')}
+                            </li>
+                            <li className="flex items-start gap-2">
+                            <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
                             {t('requirements.personal.source_of_wealth.documents.investments')}
                             </li>
                             <li className="flex items-start gap-2">
@@ -265,6 +269,10 @@ const RequirementsPage = () => {
                             <ul className="space-y-2 text-sm text-muted-foreground">
                                 <li className="flex items-start gap-2">
                                     <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
+                                    {t('requirements.institutional.source_of_wealth.documents.income_certification')}
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
                                     {t('requirements.institutional.source_of_wealth.documents.investments')}
                                 </li>
                                 <li className="flex items-start gap-2">
@@ -277,7 +285,7 @@ const RequirementsPage = () => {
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
-                                    {t('requirements.institutional.source_of_wealth.documents.profits]')}
+                                    {t('requirements.institutional.source_of_wealth.documents.profits')}
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>

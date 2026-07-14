@@ -572,6 +572,7 @@
                 "description": "One of the following documents according to the Type of Income",
                 "documents": {
                     "salary": "Salaries (Copy of the most recent Employer Order or Certification by a CPA)",
+                    "income_certification": "Income certification by a public or private accountant",
                     "investments": "Income from Investment Gains (Brokerage Account Statement showing such gains)",
                     "property": "Property Sale (Property Purchase/Sale Contract)",
                     "inheritance": "Inheritance (Copy of Legal Document: Will, etc.)",
@@ -651,6 +652,7 @@
                 "title": "Source of Income",
                 "description": "One of the following documents according to the Type of Income",
                 "documents": {
+                    "income_certification": "Income certification by a public or private accountant",
                     "investments": "Income from Investment Gains: (Stock Exchange Account Statement showing such gains)",
                     "property": "Property Sale: (Property Purchase/Sale Contract)",
                     "inheritance": "Inheritance: (Copy of Legal Document: Will, etc.)",
