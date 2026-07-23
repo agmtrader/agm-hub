@@ -434,10 +434,45 @@ export const organization_account_support_schema = z.object({
   type: z.string().optional().nullable(),
 });
 
+export const beneficial_owner_schema = z.object({
+  fullName: z.string({errorMap: () => ({ message: 'Required' })}),
+  ownershipPercentage: z.number({errorMap: () => ({ message: 'Required' })}).min(25, { message: 'Must be 25% or greater' }),
+  relationship: z.string().optional().nullable(),
+});
+
+export const ownership_intermediate_entity_schema = z.object({
+  entityName: z.string({errorMap: () => ({ message: 'Required' })}),
+  ownershipPercentage: z.number().optional().nullable(),
+  relationship: z.string().optional().nullable(),
+  parentEntity: z.string().optional().nullable(),
+});
+
+export const ownership_trustee_schema = z.object({
+  trustName: z.string({errorMap: () => ({ message: 'Required' })}),
+  trusteeName: z.string({errorMap: () => ({ message: 'Required' })}),
+  ownershipPercentage: z.number().optional().nullable(),
+});
+
+export const organization_beneficial_ownership_schema = z.object({
+  hasBeneficialOwners: z.boolean({errorMap: () => ({ message: 'Required' })}),
+  beneficialOwners: z.array(beneficial_owner_schema).optional().nullable(),
+  intermediateEntities: z.array(ownership_intermediate_entity_schema).optional().nullable(),
+  trustees: z.array(ownership_trustee_schema).optional().nullable(),
+}).superRefine((data, ctx) => {
+  if (data.hasBeneficialOwners && (!data.beneficialOwners || data.beneficialOwners.length === 0)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Add at least one beneficial owner',
+      path: ['beneficialOwners'],
+    });
+  }
+});
+
 export const organization_schema = z.object({
   identifications: z.array(organization_identification_schema).optional().nullable(),
   accountSupport: organization_account_support_schema.optional().nullable(),
   associatedEntities: organization_associated_entities_schema.optional().nullable(),
+  beneficialOwnership: organization_beneficial_ownership_schema.optional().nullable(),
   financialInformation: z.array(financial_information_schema).optional().nullable(),
   regulatoryInformation: z.array(regulatory_information_schema).optional().nullable(),
   accreditedInvestorInformation: z.any().optional().nullable(),
