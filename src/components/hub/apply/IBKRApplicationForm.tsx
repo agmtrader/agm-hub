@@ -22,7 +22,7 @@ import { getApplicationDefaults } from '@/utils/clients/application'
 import ProgressMeter from './ProgressMeter'
 import { BusinessAndOccupation, FinancialRange, FormDetails, InternalAccount } from '@/lib/clients/account'
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/clients/account'
-import { CreateAccountContact, ReadAccountContacts, UpdateAccountContact } from '@/utils/clients/account_contact'
+import { LinkAccountContact, ReadAccountContacts, UpdateAccountContact } from '@/utils/clients/account'
 import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactByID, ReadContactDocuments, ReadContactScreenings, UpdateContactByID, UploadContactDocument } from '@/utils/clients/contact'
 import { getCanonicalDocumentCategory } from '@/lib/clients/documents'
 import { individual_form, individual_form_2, institutional_form, joint_form } from './samples'
@@ -396,7 +396,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     for (const linkedContact of linkedContacts) {
       const existing = existingByContact.get(linkedContact.contact_id);
       if (!existing) {
-        await CreateAccountContact({
+        await LinkAccountContact({
           account_id: persistedAccountId,
           contact_id: linkedContact.contact_id,
           entity_id: linkedContact.entityId ?? null,

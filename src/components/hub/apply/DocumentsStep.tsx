@@ -5,7 +5,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { Application } from '@/lib/clients/application'
 import ContactDocuments from './ContactDocuments'
 import { ReadContactByID } from '@/utils/clients/contact'
-import { ReadAccountContacts } from '@/utils/clients/account_contact'
+import { ReadAccountContacts } from '@/utils/clients/account'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface DocumentsStepProps {

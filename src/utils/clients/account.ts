@@ -6,6 +6,33 @@ import { Contact } from "@/lib/clients/contact"
 import type { Application, IBKRDocument } from "@/lib/clients/application"
 export type { Account } from '@/lib/clients/account';
 
+export type AccountContactPayload = {
+    account_id: string
+    contact_id: string
+    entity_id?: string | number | null
+    external_id?: string | null
+}
+
+export async function LinkAccountContact(accountContact: AccountContactPayload): Promise<IDResponse> {
+    return accessAPI('/accounts/contact', 'POST', { account_contact: accountContact })
+}
+
+export async function ReadAccountContacts(query?: {
+    id?: string
+    account_id?: string
+    contact_id?: string
+    entity_id?: string
+}): Promise<any[]> {
+    const params = new URLSearchParams()
+    Object.entries(query || {}).forEach(([key, value]) => value && params.set(key, value))
+    const queryString = params.toString()
+    return accessAPI(queryString ? `/accounts/contacts?${queryString}` : '/accounts/contacts', 'GET')
+}
+
+export async function UpdateAccountContact(query: Record<string, string>, accountContact: Partial<AccountContactPayload>): Promise<any> {
+    return accessAPI('/accounts/contact/update', 'POST', { query, account_contact: accountContact })
+}
+
 type IBKRApplicationSubmission = Application & {
     documents: IBKRDocument[]
 }

@@ -110,7 +110,7 @@ export async function DeleteContactDocument(documentID: string): Promise<any> {
 export async function CreateContactScreening(
     contactID: string
 ): Promise<IDResponse> {
-    return accessAPI('/contacts/screening', 'POST', {
+    return accessAPI('/contacts/screen', 'POST', {
         contact_id: contactID
     })
 }
