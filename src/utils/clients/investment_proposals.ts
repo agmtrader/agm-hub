@@ -1,12 +1,13 @@
 import { accessAPI } from "../api"
-import { RiskProfilePayload } from "@/lib/clients/risk-profile"
+import { RiskProfile, RiskProfilePayload } from "@/lib/clients/risk-profile"
 import {
   InvestmentProposal,
   InvestmentProposalAssetInput,
+  InvestmentProposalPreview,
 } from "@/lib/clients/investment-proposals"
 import { PortfolioPlanPayload } from "@/lib/clients/portfolio-plans"
 
-export async function CreateInvestmentProposal(risk_profile: RiskProfilePayload) {
+export async function CreateInvestmentProposal(risk_profile: RiskProfilePayload & Pick<RiskProfile, 'id'>) {
   const report = await accessAPI('/investment_proposals/create/risk', 'POST', {'risk_profile': risk_profile})
   return report
 }
@@ -16,24 +17,13 @@ export async function CreateInvestmentProposalFromPlan(portfolio_plan: Portfolio
   return report
 }
 
-export async function ReadInvestmentProposals(): Promise<InvestmentProposal[] | null> {
-  const proposals: InvestmentProposal[] = await accessAPI('/investment_proposals/read', 'GET')
-  return proposals || null
-}
-
-export async function ReadInvestmentProposalByID(proposal_id: string): Promise<InvestmentProposal | null> {
-  const proposals: InvestmentProposal[] = await accessAPI(`/investment_proposals/read?id=${proposal_id}`, 'GET')
-  const proposal = proposals[0] || null
-  return proposal
+export async function PreviewInvestmentProposalFromPlan(portfolio_plan: Partial<PortfolioPlanPayload>): Promise<InvestmentProposalPreview> {
+  const report: InvestmentProposalPreview = await accessAPI('/investment_proposals/preview/plan', 'POST', { portfolio_plan })
+  return report
 }
 
 export async function ReadInvestmentProposalsByRiskProfile(risk_profile_id: string): Promise<InvestmentProposal[] | null> {
   const proposals: InvestmentProposal[] = await accessAPI(`/investment_proposals/read?risk_profile_id=${risk_profile_id}`, 'GET')
-  return proposals || null
-}
-
-export async function ReadInvestmentProposalsByAccount(account_id: string): Promise<InvestmentProposal[] | null> {
-  const proposals: InvestmentProposal[] = await accessAPI(`/investment_proposals/read?account_id=${account_id}`, 'GET')
   return proposals || null
 }
 

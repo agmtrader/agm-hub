@@ -18,6 +18,13 @@ export type InvestmentProposalDistributionKey = (typeof investmentProposalDistri
 
 export type InvestmentProposalDistribution = Record<InvestmentProposalDistributionKey, number>
 
+export type InvestmentProposalPreviewBucketSummary = {
+    key: InvestmentProposalDistributionKey
+    weight: number
+    asset_count: number
+    average_yield: number
+}
+
 export type PlannerInputs = {
     risk_profile_id: string
     name?: string | null
@@ -55,5 +62,11 @@ export interface InvestmentProposalAssetInput {
     source_bucket?: 'BONDS' | 'UST' | 'STOCKS' | 'ETFS'
 }
 
+export interface InvestmentProposalPreview extends InvestmentProposalPayload {
+    total_assets: number
+    bucket_summaries: InvestmentProposalPreviewBucketSummary[]
+    expected_average_yield: number
+    expected_return_decimal: number
+}
 
 export type InvestmentProposal = InvestmentProposalPayload & Base

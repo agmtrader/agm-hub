@@ -1,5 +1,6 @@
 import type {
   AssetKey,
+  BondBucketProfiles,
   BondRatingAllocation,
   BondRatingKey,
   PlannerAssetProfile,
@@ -87,8 +88,40 @@ const fallbackAssets: PlannerAssetProfile[] = [
   },
 ]
 
+const fallbackBondBucketProfiles: BondBucketProfiles = {
+  aaa: {
+    expectedReturn: 0.053,
+    volatility: 0.04,
+    benchmark: 'AGM A-AAA proxy',
+    note: 'Fallback estimate for higher-quality corporate bonds.',
+    source: 'fallback',
+  },
+  bbb: {
+    expectedReturn: 0.074,
+    volatility: 0.07,
+    benchmark: 'AGM BBB proxy',
+    note: 'Fallback estimate for medium-quality corporate bonds.',
+    source: 'fallback',
+  },
+  bb: {
+    expectedReturn: 0.087,
+    volatility: 0.11,
+    benchmark: 'AGM BB proxy',
+    note: 'Fallback estimate for higher-yield corporate bonds.',
+    source: 'fallback',
+  },
+}
+
 export function getFallbackPlannerAssets(): PlannerAssetProfile[] {
   return fallbackAssets.map((asset) => ({ ...asset }))
+}
+
+export function getFallbackBondBucketProfiles(): BondBucketProfiles {
+  return {
+    aaa: { ...fallbackBondBucketProfiles.aaa },
+    bbb: { ...fallbackBondBucketProfiles.bbb },
+    bb: { ...fallbackBondBucketProfiles.bb },
+  }
 }
 
 export function getRiskToleranceFromScore(score: number): RiskTolerance {
@@ -100,7 +133,7 @@ export function getRiskToleranceFromScore(score: number): RiskTolerance {
 export function getAllocationFromRiskArchetype(archetype: RiskArchetype): PortfolioAllocation {
   const bonds = Math.round((Number(archetype.bonds_aaa_a) + Number(archetype.bonds_bbb) + Number(archetype.bonds_bb)) * 100)
   const stocks = Math.round(Number(archetype.etfs) * 100)
-  const treasuries = Math.max(0, 100 - bonds - stocks)
+  const treasuries = Math.round(Number(archetype.treasuries) * 100)
   return {
     cash: 0,
     treasuries,
@@ -160,6 +193,41 @@ export function calculatePortfolio(
     riskTier: getRiskTier(volatility),
     guidance: buildGuidance(expectedReturn, targetReturn / 100, volatility, riskTolerance, allocationTotal),
   }
+}
+
+export function buildPlannerAssetsForAllocation(
+  assets: PlannerAssetProfile[],
+  bondRatingAllocation: BondRatingAllocation,
+  bondBucketProfiles: BondBucketProfiles,
+): PlannerAssetProfile[] {
+  const nextAssets = assets.map((asset) => ({ ...asset }))
+  const bondAsset = nextAssets.find((asset) => asset.key === 'bonds')
+  if (!bondAsset) return nextAssets
+
+  const weights = {
+    aaa: Number(bondRatingAllocation.aaa || 0) / 100,
+    bbb: Number(bondRatingAllocation.bbb || 0) / 100,
+    bb: Number(bondRatingAllocation.bb || 0) / 100,
+  }
+
+  bondAsset.expectedReturn =
+    bondBucketProfiles.aaa.expectedReturn * weights.aaa +
+    bondBucketProfiles.bbb.expectedReturn * weights.bbb +
+    bondBucketProfiles.bb.expectedReturn * weights.bb
+
+  bondAsset.volatility =
+    bondBucketProfiles.aaa.volatility * weights.aaa +
+    bondBucketProfiles.bbb.volatility * weights.bbb +
+    bondBucketProfiles.bb.volatility * weights.bb
+
+  bondAsset.benchmark = `AGM blended bond sleeve (${bondRatingAllocation.aaa}% A-AAA / ${bondRatingAllocation.bbb}% BBB / ${bondRatingAllocation.bb}% BB)`
+  bondAsset.note = 'Derived from the live AGM bond universe using the current bond rating sliders.'
+  bondAsset.source =
+    bondBucketProfiles.aaa.source === 'live' || bondBucketProfiles.bbb.source === 'live' || bondBucketProfiles.bb.source === 'live'
+      ? 'live'
+      : 'fallback'
+
+  return nextAssets
 }
 
 export function normalizeAllocation(
@@ -256,9 +324,8 @@ export async function loadPlannerAssetProfiles(): Promise<PlannerAssetProfile[]>
 
     const treasuryYield = medianYield(Array.isArray(treasuries) ? treasuries : [])
     const corporateYield = medianYield(Array.isArray(corporateBonds) ? corporateBonds : [])
-    const stockMoves = dailyPercentMoves([...(Array.isArray(stocks) ? stocks : []), ...(Array.isArray(etfs) ? etfs : [])])
-    const stockVolatility = annualizedVolatility(stockMoves)
-    const stockExpectedReturn = annualizedReturn(stockMoves)
+    const spyReturn = averageSpyYearOverYearReturn([...(Array.isArray(stocks) ? stocks : []), ...(Array.isArray(etfs) ? etfs : [])])
+    const spyVolatility = estimateSpyVolatility([...(Array.isArray(stocks) ? stocks : []), ...(Array.isArray(etfs) ? etfs : [])])
 
     if (treasuryYield !== null) {
       applyAsset(assets, 'treasuries', {
@@ -284,18 +351,44 @@ export async function loadPlannerAssetProfiles(): Promise<PlannerAssetProfile[]>
       })
     }
 
-    if (stockMoves.length >= 3 && stockVolatility !== null && stockExpectedReturn !== null) {
+    if (spyReturn !== null) {
       applyAsset(assets, 'stocks', {
-        expectedReturn: clamp(stockExpectedReturn, -0.2, 0.3),
-        volatility: clamp(stockVolatility, 0.04, 0.45),
-        benchmark: 'AGM stocks and ETFs feed',
-        note: 'Derived from AGM stock and ETF snapshot changes.',
+        expectedReturn: clamp(spyReturn, 0, 0.3),
+        volatility: clamp(spyVolatility ?? 0.19, 0.08, 0.45),
+        benchmark: 'AGM SPY proposal-equity feed',
+        note: 'Derived from the same SPY-style live proposal equity feed used by proposal generation.',
       })
     }
 
     return assets
   } catch {
     return assets
+  }
+}
+
+export async function loadPlannerBondBucketProfiles(): Promise<BondBucketProfiles> {
+  const bondBucketProfiles = getFallbackBondBucketProfiles()
+
+  try {
+    const corporateBonds = await ReadBondsReport()
+    const corporateRows = Array.isArray(corporateBonds) ? corporateBonds : []
+
+    applyBondBucketProfile(bondBucketProfiles, 'aaa', filterBondRowsByBucket(corporateRows, 'aaa'), {
+      benchmark: 'AGM A-AAA bond feed',
+      note: 'Derived from higher-quality corporate bonds in the AGM live universe.',
+    })
+    applyBondBucketProfile(bondBucketProfiles, 'bbb', filterBondRowsByBucket(corporateRows, 'bbb'), {
+      benchmark: 'AGM BBB bond feed',
+      note: 'Derived from BBB corporate bonds in the AGM live universe.',
+    })
+    applyBondBucketProfile(bondBucketProfiles, 'bb', filterBondRowsByBucket(corporateRows, 'bb'), {
+      benchmark: 'AGM BB bond feed',
+      note: 'Derived from BB corporate bonds in the AGM live universe.',
+    })
+
+    return bondBucketProfiles
+  } catch {
+    return bondBucketProfiles
   }
 }
 
@@ -353,6 +446,24 @@ function applyAsset(
   asset.source = 'live'
 }
 
+function applyBondBucketProfile(
+  bucketProfiles: BondBucketProfiles,
+  key: BondRatingKey,
+  rows: Record<string, unknown>[],
+  details: Pick<PlannerAssetProfile, 'benchmark' | 'note'>,
+) {
+  const expectedReturn = medianYield(rows)
+  if (expectedReturn === null) return
+
+  bucketProfiles[key] = {
+    expectedReturn: clamp(expectedReturn, 0, 0.2),
+    volatility: clamp(estimateBondVolatility(rows), 0.03, 0.16),
+    benchmark: details.benchmark,
+    note: details.note,
+    source: 'live',
+  }
+}
+
 function firstNumber(row: Record<string, unknown>, keys: string[]): number | null {
   for (const key of keys) {
     const value = row[key]
@@ -364,6 +475,38 @@ function firstNumber(row: Record<string, unknown>, keys: string[]): number | nul
 
 function normalizePercent(value: number): number {
   return value > 1 ? value / 100 : value
+}
+
+function normalizeRatingToken(value: unknown): string {
+  return String(value ?? '').trim().toUpperCase().replace(/\s+/g, '')
+}
+
+function extractSpLikeRating(value: unknown): string {
+  const text = String(value ?? '').toUpperCase()
+  const candidates = [
+    'AAA', 'AA+', 'AA', 'AA-', 'A+', 'A', 'A-',
+    'BBB+', 'BBB', 'BBB-', 'BB+', 'BB', 'BB-',
+  ]
+  return candidates.find((candidate) => text.includes(candidate)) ?? ''
+}
+
+function resolveBondBucket(row: Record<string, unknown>): BondRatingKey | null {
+  const rating = normalizeRatingToken(
+    row['S&P Equivalent'] ??
+    row['SP'] ??
+    extractSpLikeRating(row['Ratings']) ??
+    '',
+  )
+
+  const normalized = rating.replace('+', '').replace('-', '')
+  if (normalized === 'AAA' || normalized === 'AA' || normalized === 'A') return 'aaa'
+  if (normalized === 'BBB') return 'bbb'
+  if (normalized === 'BB') return 'bb'
+  return null
+}
+
+function filterBondRowsByBucket(rows: Record<string, unknown>[], bucket: BondRatingKey): Record<string, unknown>[] {
+  return rows.filter((row) => resolveBondBucket(row) === bucket)
 }
 
 function medianYield(rows: Record<string, unknown>[]): number | null {
@@ -390,22 +533,81 @@ function estimateBondVolatility(rows: Record<string, unknown>[]): number {
   return Math.max(yieldDispersion, durationRisk)
 }
 
-function dailyPercentMoves(rows: Record<string, unknown>[]): number[] {
-  return rows
-    .map((row) => firstNumber(row, ['Change_percent', 'Change percent', 'Change Percent']))
+function averageSpyYearOverYearReturn(rows: Record<string, unknown>[]): number | null {
+  const spyRows = rows
+    .filter((row) => String(row.sheet_name ?? '').trim().toUpperCase() === 'SPY')
+    .map((row) => ({
+      date: new Date(String(row.Date ?? '')),
+      close: Number(row.Close),
+    }))
+    .filter((row) => !Number.isNaN(row.date.getTime()) && Number.isFinite(row.close) && row.close > 0)
+    .sort((left, right) => left.date.getTime() - right.date.getTime())
+
+  if (spyRows.length < 2) return null
+
+  const points = [
+    0,
+    365.25,
+    365.25 * 2,
+    365.25 * 3,
+    365.25 * 4,
+    365.25 * 5,
+  ]
+
+  const latest = spyRows[spyRows.length - 1].date
+  const prices = points
+    .map((days) => priceAsOf(spyRows, new Date(latest.getTime() - days * 24 * 60 * 60 * 1000)))
     .filter((value): value is number => value !== null)
-    .map(normalizePercent)
+
+  if (prices.length < 6) return null
+
+  const yields = [
+    prices[0] / prices[1] - 1,
+    prices[1] / prices[2] - 1,
+    prices[2] / prices[3] - 1,
+    prices[3] / prices[4] - 1,
+    prices[4] / prices[5] - 1,
+  ]
+
+  const average = yields.reduce((sum, value) => sum + value, 0) / yields.length
+  return average
 }
 
-function annualizedReturn(returns: number[]): number | null {
-  if (returns.length === 0) return null
-  const mean = returns.reduce((sum, value) => sum + value, 0) / returns.length
-  return Math.exp(mean * 252) - 1
-}
+function estimateSpyVolatility(rows: Record<string, unknown>[]): number | null {
+  const spyRows = rows
+    .filter((row) => String(row.sheet_name ?? '').trim().toUpperCase() === 'SPY')
+    .map((row) => ({
+      date: new Date(String(row.Date ?? '')),
+      close: Number(row.Close),
+    }))
+    .filter((row) => !Number.isNaN(row.date.getTime()) && Number.isFinite(row.close) && row.close > 0)
+    .sort((left, right) => left.date.getTime() - right.date.getTime())
 
-function annualizedVolatility(returns: number[]): number | null {
+  if (spyRows.length < 2) return null
+
+  const returns: number[] = []
+  for (let index = 1; index < spyRows.length; index += 1) {
+    const previous = spyRows[index - 1].close
+    const current = spyRows[index].close
+    if (previous > 0 && current > 0) {
+      returns.push(current / previous - 1)
+    }
+  }
+
   if (returns.length < 2) return null
   return standardDeviation(returns) * Math.sqrt(252)
+}
+
+function priceAsOf(rows: Array<{ date: Date; close: number }>, targetDate: Date): number | null {
+  let match: number | null = null
+  for (const row of rows) {
+    if (row.date.getTime() <= targetDate.getTime()) {
+      match = row.close
+      continue
+    }
+    break
+  }
+  return match
 }
 
 function standardDeviation(values: number[]): number {

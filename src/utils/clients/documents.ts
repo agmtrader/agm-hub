@@ -1,8 +1,8 @@
-import { InternalDocument } from '@/lib/clients/documents'
 import { accessAPI } from '../api'
 
-export type AccountDocument = {
-  account_id: string
+export type ContactDocument = {
+  account_id?: string | null
+  contact_id?: string | null
   document_id: string
   category?: string
   type?: string
@@ -10,14 +10,6 @@ export type AccountDocument = {
   issued_date?: string
   expiry_date?: string
   comment?: string | null
-}
-
-export async function ReadDocuments(): Promise<{ documents: InternalDocument[]; account_documents: AccountDocument[] }> {
-  const response: { documents: InternalDocument[]; account_documents: AccountDocument[] } = await accessAPI(
-    '/documents/read',
-    'GET'
-  )
-  return response
 }
 
 export function getBase64(file: File): Promise<string> {

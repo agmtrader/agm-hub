@@ -37,7 +37,3 @@ export async function UpdateAccountContact(
     account_contact: accountContact,
   })
 }
-
-export async function DeleteAccountContact(query: Record<string, unknown>): Promise<{ status: string }> {
-  return accessAPI('/account_contacts/delete', 'POST', { query })
-}

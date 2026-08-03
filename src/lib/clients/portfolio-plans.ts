@@ -22,6 +22,16 @@ export type PlannerAssetProfile = {
   note: string
 }
 
+export type BondBucketProfile = {
+  expectedReturn: number
+  volatility: number
+  benchmark: string
+  note: string
+  source: PlannerDataSource
+}
+
+export type BondBucketProfiles = Record<BondRatingKey, BondBucketProfile>
+
 export type PortfolioPlanPayload = {
   risk_profile_id: string
   account_id?: string | null

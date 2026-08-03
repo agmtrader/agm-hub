@@ -60,8 +60,22 @@ export async function ReadEndingBalancesFromStatements() {
   return report
 }
 
-export async function ReadDepositsWithdrawalsReport(years: string[] = [], months: string[] = []) {
+type DepositsWithdrawalsRangeParams = {
+  startDate?: string
+  endDate?: string
+  years?: string[]
+  months?: string[]
+}
+
+export async function ReadDepositsWithdrawalsReport({
+  startDate,
+  endDate,
+  years = [],
+  months = [],
+}: DepositsWithdrawalsRangeParams = {}) {
   const params = new URLSearchParams()
+  if (startDate) params.set('start_date', startDate)
+  if (endDate) params.set('end_date', endDate)
   if (years.length > 0) params.set('years', years.join(','))
   if (months.length > 0) params.set('months', months.join(','))
   const query = params.toString() ? `?${params.toString()}` : ''
@@ -70,8 +84,15 @@ export async function ReadDepositsWithdrawalsReport(years: string[] = [], months
   return report
 }
 
-export async function ReadMonthlyDepositsReport(years: string[] = [], months: string[] = []) {
+export async function ReadMonthlyDepositsReport({
+  startDate,
+  endDate,
+  years = [],
+  months = [],
+}: DepositsWithdrawalsRangeParams = {}) {
   const params = new URLSearchParams()
+  if (startDate) params.set('start_date', startDate)
+  if (endDate) params.set('end_date', endDate)
   if (years.length > 0) params.set('years', years.join(','))
   if (months.length > 0) params.set('months', months.join(','))
   const query = params.toString() ? `?${params.toString()}` : ''

@@ -128,6 +128,8 @@ export interface IBKRAccount {
   dateApproved?: string;
   dateFunded?: string;
   dateOpened?: string;
+  dateClosed?: string;
+  signatures?: string[];
 }
 
 export interface FeeTemplate {

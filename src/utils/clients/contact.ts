@@ -33,7 +33,7 @@ export async function UpdateContactByID(id: string, contact: Partial<Contact>): 
 }
 
 export async function UploadContactDocument(
-    accountID: string | null,
+    accountID: string | null | undefined,
     contactID: string,
     file_name: string,
     file_length: number,
@@ -90,7 +90,7 @@ export async function UpdateContactDocument(
     document_language?: string,
     comment?: string,
     issued_date?: string,
-    expiry_date?: string
+    expiry_date?: string | null
 ): Promise<any> {
     return accessAPI('/contacts/documents', 'PATCH', {
         document_id: documentID,
@@ -115,6 +115,9 @@ export async function CreateContactScreening(
     })
 }
 
-export async function ReadContactScreenings(contactID: string): Promise<any[]> {
+export async function ReadContactScreenings(contactID?: string): Promise<any[]> {
+    if (!contactID) {
+        return accessAPI('/contacts/screening', 'GET')
+    }
     return accessAPI(`/contacts/screening?contact_id=${contactID}`, 'GET')
 }
