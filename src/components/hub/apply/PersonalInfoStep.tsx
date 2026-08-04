@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
   FormField,
@@ -15,12 +15,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { id_type, marital_status, employment_status, account_types } from '@/lib/clients/application';
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider';
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { format as formatDateFns } from "date-fns";
 import StatesFormField from "@/components/misc/StatesFormField";
 import { BusinessAndOccupation } from '@/lib/clients/account';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Plus, Trash2 } from "lucide-react";
 
 const generateUUID = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -46,14 +49,119 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
   const secondHolderIdRef = useRef<string>(generateUUID())
 
   const accountType = form.watch("customer.type");
+  const associatedIndividualsBasePath = "customer.organization.associatedEntities.associatedIndividuals";
+  const beneficialOwnershipBasePath = "customer.organization.beneficialOwnership";
+  const hasBeneficialOwners = form.watch(
+    `${beneficialOwnershipBasePath}.hasBeneficialOwners` as any
+  );
 
-  const taxResidencyPathsByType: Record<string, string[]> = {
-    INDIVIDUAL: ["customer.accountHolder.accountHolderDetails.0"],
-    JOINT: [
-      "customer.jointHolders.firstHolderDetails.0",
-      "customer.jointHolders.secondHolderDetails.0",
+  const defaultW8Ben = {
+    localTaxForms: [],
+    name: "",
+    foreignTaxId: "",
+    tinOrExplanationRequired: true,
+    part29ACountry: "N/A",
+    cert: true,
+    signatureType: "Electronic",
+    blankForm: true,
+    taxFormFile: "Form5001.pdf",
+    electronicFormat: true,
+  };
+
+  const createAssociatedIndividualDefaults = () => ({
+    externalId: generateUUID(),
+    name: {
+      first: "",
+      last: "",
+    },
+    email: "",
+    residenceAddress: {
+      street1: "",
+      street2: "",
+      country: "",
+      state: "",
+      city: "",
+      postalCode: "",
+    },
+    sameMailAddress: true,
+    mailingAddress: null,
+    countryOfBirth: "",
+    dateOfBirth: "",
+    maritalStatus: "",
+    numDependents: 0,
+    phones: [
+      {
+        type: "Mobile",
+        country: "",
+        number: "",
+      },
     ],
-    ORG: ["customer.organization.associatedEntities.associatedIndividuals.0"],
+    identificationType: "Passport",
+    identification: {
+      issuingCountry: "",
+      expirationDate: "",
+      citizenship: "",
+      passport: "",
+    },
+    employmentType: "UNEMPLOYED",
+    employmentDetails: {
+      description: null,
+    },
+    taxResidencies: [
+      {
+        country: "",
+        tinType: "NonUS_NationalId",
+        tin: "",
+      },
+    ],
+    w8Ben: { ...defaultW8Ben },
+  });
+
+  const associatedIndividualFields = useFieldArray({
+    control: form.control,
+    name: associatedIndividualsBasePath as any,
+  });
+
+  const beneficialOwnerFields = useFieldArray({
+    control: form.control,
+    name: `${beneficialOwnershipBasePath}.beneficialOwners` as any,
+  });
+
+  const intermediateEntityFields = useFieldArray({
+    control: form.control,
+    name: `${beneficialOwnershipBasePath}.intermediateEntities` as any,
+  });
+
+  const trusteeFields = useFieldArray({
+    control: form.control,
+    name: `${beneficialOwnershipBasePath}.trustees` as any,
+  });
+
+  const getHolderPaths = (currentAccountType?: string, value?: Partial<Application>) => {
+    if (currentAccountType === "INDIVIDUAL") {
+      return ["customer.accountHolder.accountHolderDetails.0"];
+    }
+
+    if (currentAccountType === "JOINT") {
+      return [
+        "customer.jointHolders.firstHolderDetails.0",
+        "customer.jointHolders.secondHolderDetails.0",
+      ];
+    }
+
+    if (currentAccountType === "ORG") {
+      const individuals =
+        value?.customer?.organization?.associatedEntities?.associatedIndividuals ??
+        form.getValues(associatedIndividualsBasePath as any) ??
+        [];
+      const count = Math.max(individuals.length, associatedIndividualFields.fields.length, 1);
+      return Array.from(
+        { length: count },
+        (_, index) => `${associatedIndividualsBasePath}.${index}`
+      );
+    }
+
+    return [];
   };
 
   // Base Syncing
@@ -111,6 +219,15 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         "customer.organization.associatedEntities.associatedIndividuals.0.externalId",
         externalIdRef.current
       );
+      const associatedIndividuals = value?.customer?.organization?.associatedEntities?.associatedIndividuals ?? [];
+      associatedIndividuals.forEach((individual, index) => {
+        if (!individual?.externalId) {
+          syncIfEmpty(
+            `${associatedIndividualsBasePath}.${index}.externalId`,
+            index === 0 ? externalIdRef.current : generateUUID()
+          );
+        }
+      });
     }
 
     if (currentAccountType === "JOINT") {
@@ -231,10 +348,10 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         applyPrefixToSecondHolder("customer.jointHolders.secondHolderDetails.0");
       }
     } else if (currentAccountType === "ORG") {
-      if (
-        name.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.first") ||
-        name.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.last")
-      ) {
+      const associatedIndividualNameMatch = name.match(
+        /^customer\.organization\.associatedEntities\.associatedIndividuals\.(\d+)\.name\.(first|last)$/
+      );
+      if (associatedIndividualNameMatch?.[1] === "0") {
         applyPrefixToAccountHolder(
           "customer.organization.associatedEntities.associatedIndividuals.0"
         );
@@ -247,7 +364,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
     if (
       name !== "customer.accountHolder.accountHolderDetails.0.email" &&
       name !== "customer.jointHolders.firstHolderDetails.0.email" &&
-      name !== "customer.organization.associatedEntities.associatedIndividuals.0.email"
+      !/^customer\.organization\.associatedEntities\.associatedIndividuals\.0\.email$/.test(name ?? "")
     ) {
       return;
     }
@@ -488,23 +605,25 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         );
       }
     } else if (currentAccountType === "ORG") {
-      if (name?.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.first") || name?.includes("customer.organization.associatedEntities.associatedIndividuals.0.name.last")) {
-        const firstName = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.name?.first;
-        const lastName = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.name?.last;
+      const associatedIndividualMatch = name?.match(
+        /^customer\.organization\.associatedEntities\.associatedIndividuals\.(\d+)\.name\.(first|last)$/
+      );
+      if (associatedIndividualMatch) {
+        const index = Number(associatedIndividualMatch[1]);
+        const associatedIndividual = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[index];
         applyW8BenToAccountHolder(
-          "customer.organization.associatedEntities.associatedIndividuals.0",
-          firstName ?? undefined,
-          lastName ?? undefined
+          `${associatedIndividualsBasePath}.${index}`,
+          associatedIndividual?.name?.first ?? undefined,
+          associatedIndividual?.name?.last ?? undefined
         );
       }
-      if (name?.includes("customer.organization.associatedEntities.associatedIndividuals.0.taxResidencies.0.tin")) {
-        const tin = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]?.taxResidencies?.[0]?.tin;
-        applyW8BenToAccountHolder(
-          "customer.organization.associatedEntities.associatedIndividuals.0",
-          undefined,
-          undefined,
-          tin ?? undefined
-        );
+      const associatedIndividualTinMatch = name?.match(
+        /^customer\.organization\.associatedEntities\.associatedIndividuals\.(\d+)\.taxResidencies\.0\.tin$/
+      );
+      if (associatedIndividualTinMatch) {
+        const index = Number(associatedIndividualTinMatch[1]);
+        const tin = value.customer?.organization?.associatedEntities?.associatedIndividuals?.[index]?.taxResidencies?.[0]?.tin;
+        applyW8BenToAccountHolder(`${associatedIndividualsBasePath}.${index}`, undefined, undefined, tin ?? undefined);
       }
     }
 
@@ -558,9 +677,10 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         ? value.customer?.jointHolders?.firstHolderDetails?.[0]?.employmentType
         : name.includes("customer.jointHolders.secondHolderDetails.0.employmentType")
           ? value.customer?.jointHolders?.secondHolderDetails?.[0]?.employmentType
-          : name.includes("customer.organization.associatedEntities.associatedIndividuals.0.employmentType")
-            ? value.customer?.organization?.associatedEntities?.associatedIndividuals?.[0]
-                ?.employmentType
+          : name.match(/^customer\.organization\.associatedEntities\.associatedIndividuals\.(\d+)\.employmentType$/)
+            ? value.customer?.organization?.associatedEntities?.associatedIndividuals?.[
+                Number(name.match(/^customer\.organization\.associatedEntities\.associatedIndividuals\.(\d+)\.employmentType$/)?.[1] ?? 0)
+              ]?.employmentType
             : null;
 
     if (employmentType === "EMPLOYED") {
@@ -713,7 +833,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
       if (name === 'documents' || name?.startsWith('documents.')) return;
 
       const currentAccountType = value.customer?.type;
-      const holderPaths = taxResidencyPathsByType[currentAccountType ?? ""] ?? [];
+      const holderPaths = getHolderPaths(currentAccountType, value as Application);
 
       // Account Type Changes
       syncExternalIds(currentAccountType, value as Application, name);
@@ -737,10 +857,10 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
   }, [form]);
 
   useEffect(() => {
-    const holderPaths = taxResidencyPathsByType[accountType ?? ""] ?? [];
+    const holderPaths = getHolderPaths(accountType);
     syncPhoneTypes(holderPaths);
     syncMailingAddresses(holderPaths);
-  }, [accountType, form]);
+  }, [accountType, associatedIndividualFields.fields.length, form]);
 
   // Manual validation for Identification fields (Type and Number)
   useEffect(() => {
@@ -754,7 +874,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         paths.push("customer.jointHolders.firstHolderDetails.0");
         paths.push("customer.jointHolders.secondHolderDetails.0");
       } else if (type === "ORG") {
-        paths.push("customer.organization.associatedEntities.associatedIndividuals.0");
+        paths.push(...getHolderPaths(type));
       }
 
       const idFieldMapping: Record<string, string> = {
@@ -969,6 +1089,351 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
       />
       <h4 className="text-lg font-semibold pt-4">{t('apply.account.account_holder_info.place_of_business_address')}</h4>
       {renderAddressFields('customer.organization.identifications.0.placeOfBusinessAddress')}
+      </CardContent>
+    </Card>
+  );
+
+  const renderInstitutionalOwnershipFields = () => (
+    <Card className="p-6 space-y-6">
+      <CardHeader>
+        <CardTitle>Identification of 25% Or Greater Underlying Beneficial Owners</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <p className="text-sm text-muted-foreground">
+          This is for each individual, if any, who, directly or indirectly, through any contract,
+          arrangement, understanding, relationship or otherwise, owns 25% or more of the equity
+          interests of the legal entity listed above.
+        </p>
+
+        <FormField
+          control={form.control}
+          name={`${beneficialOwnershipBasePath}.hasBeneficialOwners` as any}
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <div className="flex flex-row gap-2 items-center">
+                <FormLabel>Beneficial owner certification</FormLabel>
+                <FormMessage />
+              </div>
+              <FormControl>
+                <RadioGroup
+                  value={field.value === undefined || field.value === null ? "" : String(field.value)}
+                  onValueChange={(value) => {
+                    const nextValue = value === "true";
+                    field.onChange(nextValue);
+
+                    if (nextValue && beneficialOwnerFields.fields.length === 0) {
+                      beneficialOwnerFields.append({
+                        fullName: "",
+                        ownershipPercentage: 25,
+                        relationship: "",
+                      });
+                    }
+
+                    if (!nextValue) {
+                      form.setValue(`${beneficialOwnershipBasePath}.beneficialOwners` as any, [], {
+                        shouldDirty: true,
+                        shouldValidate: false,
+                      });
+                    }
+                  }}
+                  className="space-y-3"
+                >
+                  <FormItem className="flex items-start gap-3 rounded-md border p-4">
+                    <FormControl>
+                      <RadioGroupItem value="true" className="mt-1" />
+                    </FormControl>
+                    <FormLabel className="font-normal leading-relaxed">
+                      Yes, there are one or more persons who are beneficial owners of 25% or more
+                      of the equity interests of the legal entity for which the account is being opened.
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-start gap-3 rounded-md border p-4">
+                    <FormControl>
+                      <RadioGroupItem value="false" className="mt-1" />
+                    </FormControl>
+                    <FormLabel className="font-normal leading-relaxed">
+                      No, I certify that to the best of my knowledge there are no natural persons
+                      who own, directly or indirectly, 25% or more of the equity interests of the
+                      legal entity for which the account is being opened.
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        {hasBeneficialOwners === true && (
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-lg font-semibold">Beneficial owners</h4>
+              <p className="text-sm text-muted-foreground">
+                Provide each individual who directly or indirectly owns 25% or more of any ownership
+                interest in the applying entity.
+              </p>
+            </div>
+            {beneficialOwnerFields.fields.map((fieldItem, index) => (
+              <div key={fieldItem.id} className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end rounded-md border p-4">
+                <FormField
+                  control={form.control}
+                  name={`${beneficialOwnershipBasePath}.beneficialOwners.${index}.fullName` as any}
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-5">
+                      <div className="flex flex-row gap-2 items-center">
+                        <FormLabel>Full legal name</FormLabel>
+                        <FormMessage />
+                      </div>
+                      <FormControl>
+                        <Input placeholder="" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`${beneficialOwnershipBasePath}.beneficialOwners.${index}.ownershipPercentage` as any}
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-3">
+                      <div className="flex flex-row gap-2 items-center">
+                        <FormLabel>Ownership %</FormLabel>
+                        <FormMessage />
+                      </div>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={25}
+                          max={100}
+                          placeholder=""
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`${beneficialOwnershipBasePath}.beneficialOwners.${index}.relationship` as any}
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-3">
+                      <FormLabel>Relationship or ownership path</FormLabel>
+                      <FormControl>
+                        <Input placeholder="" {...field} value={field.value ?? ""} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="sm:col-span-1"
+                  onClick={() => beneficialOwnerFields.remove(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                beneficialOwnerFields.append({
+                  fullName: "",
+                  ownershipPercentage: 25,
+                  relationship: "",
+                })
+              }
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add beneficial owner
+            </Button>
+          </div>
+        )}
+
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-lg font-semibold">Ownership hierarchy</h4>
+            <p className="text-sm text-muted-foreground">
+              Use the tool below to describe the ownership structure of the applying entity. Add
+              intermediate entities between the applying entity and any 25% or greater beneficial
+              owner. If a trust directly or indirectly owns 25% or more of the applying entity, add
+              the trustee for the trust below.
+            </p>
+          </div>
+
+          {intermediateEntityFields.fields.map((fieldItem, index) => (
+            <div key={fieldItem.id} className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end rounded-md border p-4">
+              <FormField
+                control={form.control}
+                name={`${beneficialOwnershipBasePath}.intermediateEntities.${index}.entityName` as any}
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-4">
+                    <div className="flex flex-row gap-2 items-center">
+                      <FormLabel>Intermediate entity</FormLabel>
+                      <FormMessage />
+                    </div>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`${beneficialOwnershipBasePath}.intermediateEntities.${index}.parentEntity` as any}
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-3">
+                    <FormLabel>Owned by</FormLabel>
+                    <FormControl>
+                      <Input placeholder="" {...field} value={field.value ?? ""} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`${beneficialOwnershipBasePath}.intermediateEntities.${index}.ownershipPercentage` as any}
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel>Ownership %</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        placeholder=""
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`${beneficialOwnershipBasePath}.intermediateEntities.${index}.relationship` as any}
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel>Relationship</FormLabel>
+                    <FormControl>
+                      <Input placeholder="" {...field} value={field.value ?? ""} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="sm:col-span-1"
+                onClick={() => intermediateEntityFields.remove(index)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              intermediateEntityFields.append({
+                entityName: "",
+                parentEntity: "",
+                ownershipPercentage: null,
+                relationship: "",
+              })
+            }
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add intermediate entity
+          </Button>
+        </div>
+
+        <div className="space-y-4">
+          {trusteeFields.fields.map((fieldItem, index) => (
+            <div key={fieldItem.id} className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end rounded-md border p-4">
+              <FormField
+                control={form.control}
+                name={`${beneficialOwnershipBasePath}.trustees.${index}.trustName` as any}
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-4">
+                    <div className="flex flex-row gap-2 items-center">
+                      <FormLabel>Trust name</FormLabel>
+                      <FormMessage />
+                    </div>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`${beneficialOwnershipBasePath}.trustees.${index}.trusteeName` as any}
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-4">
+                    <div className="flex flex-row gap-2 items-center">
+                      <FormLabel>Trustee name</FormLabel>
+                      <FormMessage />
+                    </div>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`${beneficialOwnershipBasePath}.trustees.${index}.ownershipPercentage` as any}
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-3">
+                    <FormLabel>Trust ownership %</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        placeholder=""
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="sm:col-span-1"
+                onClick={() => trusteeFields.remove(index)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              trusteeFields.append({
+                trustName: "",
+                trusteeName: "",
+                ownershipPercentage: null,
+              })
+            }
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add trustee
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
@@ -1449,11 +1914,42 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         <div className="space-y-6">
           {renderOrganizationFields()}
 
-          {/* Associated Individual (first entry) */}
-          {renderAccountHolderFields(
-            "customer.organization.associatedEntities.associatedIndividuals.0",
-            "Associated Individual Details"
-          )}
+          <div className="space-y-4">
+            {associatedIndividualFields.fields.map((fieldItem, index) => (
+              <div key={fieldItem.id} className="space-y-2">
+                {renderAccountHolderFields(
+                  `${associatedIndividualsBasePath}.${index}`,
+                  index === 0
+                    ? "Associated Individual Details"
+                    : `Associated Individual ${index + 1} Details`
+                )}
+                {index > 0 && (
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => associatedIndividualFields.remove(index)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Remove associated individual
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => associatedIndividualFields.append(createAssociatedIndividualDefaults())}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add associated individual
+            </Button>
+          </div>
+
+          {renderInstitutionalOwnershipFields()}
           
         </div>
       ) : (
