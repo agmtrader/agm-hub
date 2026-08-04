@@ -67,23 +67,6 @@ type DepositsWithdrawalsRangeParams = {
   months?: string[]
 }
 
-export async function ReadDepositsWithdrawalsReport({
-  startDate,
-  endDate,
-  years = [],
-  months = [],
-}: DepositsWithdrawalsRangeParams = {}) {
-  const params = new URLSearchParams()
-  if (startDate) params.set('start_date', startDate)
-  if (endDate) params.set('end_date', endDate)
-  if (years.length > 0) params.set('years', years.join(','))
-  if (months.length > 0) params.set('months', months.join(','))
-  const query = params.toString() ? `?${params.toString()}` : ''
-
-  const report = await accessAPI(`/reporting/deposits_withdrawals/monthly${query}`, 'GET')
-  return report
-}
-
 export async function ReadMonthlyDepositsReport({
   startDate,
   endDate,
@@ -116,14 +99,5 @@ export async function ReadNavMonthlyReport(year: string, month: string[]) {
   if (month.length > 0) params.set('month', month.join(','))
   const query = params.toString() ? `?${params.toString()}` : ''
   const response = await fetch(`/api/reporting/nav/monthly${query}`, { cache: 'no-store' })
-  return response.json()
-}
-
-export async function ReadMonthlyClientFeesReport(years: string[], months: string[]) {
-  const params = new URLSearchParams()
-  if (years.length > 0) params.set('years', years.join(','))
-  if (months.length > 0) params.set('months', months.join(','))
-  const query = params.toString() ? `?${params.toString()}` : ''
-  const response = await fetch(`/api/reporting/clients/fees/monthly${query}`, { cache: 'no-store' })
   return response.json()
 }
