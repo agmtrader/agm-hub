@@ -2,7 +2,6 @@ import { accessAPI } from "../api"
 import { Account, RegistrationTasksResponse, PendingTasksResponse, DocumentSubmissionRequest, AllForms, InternalAccount, AccountWritePayload, ProductCountryBundlesResponse, DepositInstruction, WithdrawalInstruction, AccountScreening, FinancialRangesResponse, BusinessAndOccupationResponse, ActiveBankInstructionsResponse, WithdrawableCashResponse, FinancialInformationUpdate, InvestmentExperience } from "@/lib/clients/account"
 import { IDResponse } from "@/lib/clients/base"
 import { InternalDocument, InternalDocumentPayload } from "@/lib/clients/documents"
-import { Contact } from "@/lib/clients/contact"
 import type { Application, IBKRDocument } from "@/lib/clients/application"
 export type { Account } from '@/lib/clients/account';
 
@@ -64,22 +63,9 @@ export async function ReadAccounts() {
     return accounts
 }
 
-export async function ReadAccountsWithMetadata() {
-    const accountsWithMetadata = await accessAPI('/accounts/with_metadata', 'GET')
-    return accountsWithMetadata
-}
-
 export async function ReadAccountByAccountID(accountID:string): Promise<Account | null> {
     let accounts:Account[] = await accessAPI(`/accounts/read?id=${accountID}`, 'GET')
     return accounts[0] || null
-}
-
-export async function ReadAccountContactsAndScreenings(accountID: string): Promise<{
-    account_contacts: Array<{ id: string; account_id: string; contact_id: string; entity_id?: string | null; external_id?: string | null }>
-    contacts: Contact[]
-    screenings_by_contact_id: Record<string, any[]>
-}> {
-    return accessAPI(`/accounts/contacts_screenings_summary?account_id=${accountID}`, 'GET')
 }
 
 export async function ReadAccountsByAdvisorCode(advisorCode: string): Promise<Account[]> {
