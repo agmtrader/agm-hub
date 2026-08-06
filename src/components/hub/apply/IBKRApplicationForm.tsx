@@ -27,6 +27,7 @@ import { CreateContact, CreateContactScreening, ReadContactByEmail, ReadContactB
 import { getCanonicalDocumentCategory } from '@/lib/clients/documents'
 import { individual_form, individual_form_2, institutional_form, joint_form } from './samples'
 import { Loader2 } from 'lucide-react'
+import Confetti from '@/components/ui/confetti'
 
 export enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -1032,7 +1033,21 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     const documents = form.getValues('documents') || [];
     const uploadedDocs = documents.filter(d => d && d.formNumber !== 5001);
     const documentsUploaded = uploadedDocs.length > 0;
-    return <ApplicationSuccess documentsUploaded={documentsUploaded} />;
+    return (
+      <>
+        <Confetti
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 z-50 h-full w-full"
+          options={{
+            particleCount: 120,
+            spread: 70,
+            origin: { x: 0.5, y: 0.6 },
+            disableForReducedMotion: true,
+          }}
+        />
+        <ApplicationSuccess documentsUploaded={documentsUploaded} />
+      </>
+    );
   }
 
   return (
