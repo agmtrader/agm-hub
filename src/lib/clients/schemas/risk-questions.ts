@@ -98,6 +98,7 @@ export const riskQuestions: Question[] = [
 
 export type RiskFormValues = {
   name: string;
+  email: string;
 } & {
   [K in QuestionKey]: number;
 };

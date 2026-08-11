@@ -20,6 +20,7 @@ export const risk_assesment_schema = (t: (key: string) => string) => {
 
   return z.object({
     name: z.string({ required_error: t("forms.errors.input_required") }),
+    email: z.string({ required_error: t("forms.errors.input_required") }).email(),
     ...dynamicShape,
   });
 };

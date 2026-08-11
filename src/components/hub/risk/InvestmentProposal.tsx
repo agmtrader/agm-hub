@@ -182,11 +182,12 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       return acc
     }, {} as Record<string, number>)
     const distribution = parseDistribution(proposal.derived_distribution)
-    const weights = GROUPS.reduce((acc, group) => {
-      const distributionWeight = distribution?.[group.distributionKey] ?? 0
-      acc[group.key] = distributionWeight > 0 ? distributionWeight : countBasedWeights[group.key] ?? 0
-      return acc
-    }, {} as Record<string, number>)
+    const weights = distribution
+      ? GROUPS.reduce((acc, group) => {
+          acc[group.key] = distribution[group.distributionKey]
+          return acc
+        }, {} as Record<string, number>)
+      : countBasedWeights
 
     // Build pie data where "count" actually represents the allocation percentage (×100 for nicer numbers)
     const pieData = GROUPS.map(group => {

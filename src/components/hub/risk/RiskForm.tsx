@@ -89,6 +89,7 @@ const RiskForm = () => {
 
       const riskProfilePayload: RiskProfilePayload = {
         name: values.name,
+        email: values.email,
         score: risk_score,
         answers,
         raw_answers,
@@ -97,7 +98,11 @@ const RiskForm = () => {
       const riskProfileResponse = await CreateRiskProfile(riskProfilePayload)
       if (!riskProfileResponse) throw new Error('Failed to create risk profile')
 
-      const savedRiskProfile = { ...riskProfilePayload, id: riskProfileResponse.id }
+      const savedRiskProfile = {
+        ...riskProfilePayload,
+        id: riskProfileResponse.id,
+        contact_id: riskProfileResponse.contact_id,
+      }
       const proposal = await CreateInvestmentProposal(savedRiskProfile)
       if (!proposal) throw new Error('Failed to create investment proposal')
 
@@ -146,6 +151,20 @@ const RiskForm = () => {
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="name@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

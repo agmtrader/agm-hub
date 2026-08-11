@@ -2,6 +2,8 @@ import { Base } from './base';
 
 export interface RiskProfilePayload {
   name: string;
+  email: string;
+  contact_id?: string | null;
   score: number;
   answers: {
     gain: string | undefined;

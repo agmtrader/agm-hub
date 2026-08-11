@@ -25,19 +25,6 @@ export type InvestmentProposalPreviewBucketSummary = {
     average_yield: number
 }
 
-export type PlannerInputs = {
-    risk_profile_id: string
-    name?: string | null
-    target_return: number
-    starting_amount: number
-    risk_tolerance: 'conservative' | 'moderate' | 'aggressive'
-    selected_risk_archetype?: string | null
-    allocation: Record<'cash' | 'treasuries' | 'bonds' | 'stocks', number>
-    bond_rating_allocation: Record<'aaa' | 'bbb' | 'bb', number>
-    locked_assets?: Record<'cash' | 'treasuries' | 'bonds' | 'stocks', boolean> | null
-    locked_bond_ratings?: Record<'aaa' | 'bbb' | 'bb', boolean> | null
-}
-
 export interface InvestmentProposalAssets {
     treasury: Bond[]
     aaa_a: Bond[]
@@ -46,13 +33,13 @@ export interface InvestmentProposalAssets {
     etfs: Bond[]
 }
 
-export type InvestmentProposalSourceType = 'hub_original' | 'planner' | 'custom'
+export type InvestmentProposalSourceType = 'risk_profile' | 'portfolio_plan' | 'custom'
 
 export interface InvestmentProposalPayload {
-    risk_profile_id: string
+  risk_profile_id?: string | null
+  contact_id?: string | null
     source_type: InvestmentProposalSourceType
     assets: InvestmentProposalAssets
-    planner_inputs?: PlannerInputs | null
     derived_distribution?: InvestmentProposalDistribution | null
 }
 
