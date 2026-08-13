@@ -64,6 +64,13 @@ export const documentCategories = (t?: TranslateFn) => [
     types: null,
   },
   {
+    key: 'advisor_contract',
+    name: labelOr(t, 'apply.account.documents.document_categories.advisor_contract', 'Advisor Contract'),
+    canonicalName: 'Advisor Contract',
+    formNumber: null,
+    types: null,
+  },
+  {
     key: 'tax',
     name: labelOr(t, 'apply.account.documents.document_categories.tax', 'Tax'),
     canonicalName: 'Tax',
