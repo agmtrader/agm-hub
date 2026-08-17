@@ -22,6 +22,7 @@ import {
 } from '@/lib/clients/documents'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import DocumentViewer from '@/components/misc/DocumentViewer'
+import UploadDocumentPreview from '@/components/misc/UploadDocumentPreview'
 import type { InternalDocument } from '@/lib/clients/documents'
 
 type Props = {
@@ -65,6 +66,7 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [isPreparingDocument, setIsPreparingDocument] = useState(false)
   const [files, setFiles] = useState<File[] | null>(null)
   const [editingRow, setEditingRow] = useState<any | null>(null)
   const [selectedDocument, setSelectedDocument] = useState<InternalDocument | null>(null)
@@ -312,12 +314,36 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
                 <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
                 <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
                 <Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment (optional)" />
-                <FileUploader value={files} onValueChange={setFiles} dropzoneOptions={{ maxFiles: 1, maxSize: 10 * 1024 * 1024 }}>
+                <FileUploader
+                  value={files}
+                  onValueChange={setFiles}
+                  dropzoneOptions={{
+                    accept: {
+                      'application/pdf': ['.pdf'],
+                      'image/jpeg': ['.jpg', '.jpeg'],
+                      'image/png': ['.png'],
+                      'image/webp': ['.webp'],
+                    },
+                    maxFiles: 1,
+                    maxSize: 10 * 1024 * 1024,
+                    multiple: false,
+                  }}
+                >
                   <FileInput><div className="p-4 text-center text-sm text-muted-foreground">Drag & drop or click to upload</div></FileInput>
-                  <FileUploaderContent>{files?.map((f, i) => <FileUploaderItem key={i} index={i}>{f.name}</FileUploaderItem>)}</FileUploaderContent>
+                  <FileUploaderContent>
+                    {files?.map((file, index) => (
+                      <FileUploaderItem key={index} index={index} className="h-auto min-h-24 p-2">
+                        <UploadDocumentPreview
+                          file={file}
+                          onFileChange={(editedFile) => setFiles([editedFile])}
+                          onBusyChange={setIsPreparingDocument}
+                        />
+                      </FileUploaderItem>
+                    ))}
+                  </FileUploaderContent>
                 </FileUploader>
-                <Button onClick={handleUpload} disabled={isUploading || !files?.length || visibleCategories.length === 0} className="w-full">
-                  {isUploading ? 'Uploading...' : 'Upload'}
+                <Button onClick={handleUpload} disabled={isUploading || isPreparingDocument || !files?.length || visibleCategories.length === 0} className="w-full">
+                  {isUploading ? 'Uploading...' : isPreparingDocument ? 'Preparing document...' : 'Upload'}
                 </Button>
               </div>
             </DialogContent>

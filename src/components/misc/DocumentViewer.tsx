@@ -19,18 +19,16 @@ interface DocumentViewerProps {
 }
 
 const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: DocumentViewerProps) => {
-  if (!document || !document.data) return null
-
-  const mimeType = document.mime_type
-  const data = document.data
-  const fileName = document.file_name || 'document'
+  const mimeType = document?.mime_type || ''
+  const data = document?.data || ''
+  const fileName = document?.file_name || 'document'
 
   const dataUrl = `data:${mimeType};base64,${data}`
 
   const [blobUrl, setBlobUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!document) {
+    if (!document || !data) {
       setBlobUrl(null)
       return
     }
@@ -55,6 +53,8 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
       setBlobUrl(null)
     }
   }, [document, mimeType, data])
+
+  if (!document || !data) return null
 
   const handleOpenInNewTab = () => {
     window.open(blobUrl || dataUrl, '_blank')
