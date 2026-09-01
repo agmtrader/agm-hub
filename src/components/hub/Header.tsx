@@ -7,10 +7,24 @@ import LanguageSwitcher from '../misc/LanguageSwitcher'
 import TickerHeader from '../misc/TickerHeader'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import { formatURL } from '@/utils/language/lang'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 const Header = () => {
 
   const { t, lang } = useTranslationProvider();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const isProviderSurface = pathname?.includes('/apply') || pathname?.includes('/requirements');
+  const providerId = isProviderSurface
+    ? searchParams.get('provider_id') || searchParams.get('provider') || searchParams.get('application_provider') || (pathname?.includes('/apply') ? searchParams.get('id') : null)
+    : null;
+  const providerLogoId = providerId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(providerId)
+    ? providerId
+    : null;
+  const logoSrc = providerLogoId
+    ? `/assets/providers/${providerLogoId}.png`
+    : '/assets/brand/agm-logo.png';
+  const logoAlt = providerLogoId ? 'Application provider logo' : 'AGM Logo';
 
   const ibkrURL = 'https://www.clientam.com/sso/Login?partnerID=agmbvi2022'
 
@@ -26,23 +40,33 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <TickerHeader />
         <div className="container flex h-16 items-center justify-between py-10">
-          <Link href={formatURL('/', lang)} className="flex items-center space-x-2">
-              <Image src="/assets/brand/agm-logo.png" alt="AGM Logo" width={150} height={50} />
-          </Link>
-          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-              {sidebarItems.map((item) => (
-                  <Link key={item.name} href={formatURL(item.url, lang)} className="transition-colors hover:text-primary">
-                      {item.name}
-                  </Link>
-              ))}
-          </nav>
+          {providerId ? (
+            <div aria-label={logoAlt} className="flex items-center space-x-2 cursor-default">
+              <Image src={logoSrc} alt={logoAlt} width={150} height={50} className="object-contain" />
+            </div>
+          ) : (
+            <Link href={formatURL('/', lang)} className="flex items-center space-x-2">
+              <Image src={logoSrc} alt={logoAlt} width={150} height={50} />
+            </Link>
+          )}
+          {!providerId && (
+            <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+                {sidebarItems.map((item) => (
+                    <Link key={item.name} href={formatURL(item.url, lang)} className="transition-colors hover:text-primary">
+                        {item.name}
+                    </Link>
+                ))}
+            </nav>
+          )}
           <div className='flex items-center gap-5'>
-            <Button variant='ghost' asChild>
-                <Link href={ibkrURL} target='_blank' rel='noopener noreferrer'>{t('header.sign_in')}</Link>
-            </Button>
-            <Button asChild>
-                <Link href={formatURL('/apply', lang)} target='_blank' rel='noopener noreferrer'>{t('header.apply')}</Link>
-            </Button>
+            {!providerId && <>
+              <Button variant='ghost' asChild>
+                  <Link href={ibkrURL} target='_blank' rel='noopener noreferrer'>{t('header.sign_in')}</Link>
+              </Button>
+              <Button asChild>
+                  <Link href={formatURL('/apply', lang)} target='_blank' rel='noopener noreferrer'>{t('header.apply')}</Link>
+              </Button>
+            </>}
             <LanguageSwitcher />
           </div>
         </div>

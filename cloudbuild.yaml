@@ -27,5 +27,8 @@ steps:
         '--platform=managed',
         '--region=us-central1',
         '--image=us-central1-docker.pkg.dev/agm-datalake/cloud-run-source-deploy/agm-hub',
+        '--service-account=agm-hub@agm-datalake.iam.gserviceaccount.com',
+        '--update-env-vars=AGM_API_HUB_EMAIL=info@agmtechnology.com',
+        '--update-secrets=AGM_API_HUB_PASSWORD=AGM_API_HUB_PASSWORD:2',
         '--quiet'
       ]

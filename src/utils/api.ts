@@ -34,17 +34,27 @@ export async function getToken(): Promise<string> {
     if (inFlightTokenRequest) return inFlightTokenRequest
 
     inFlightTokenRequest = (async () => {
-        const response = await fetch(`${api_url}/token`, {
-            method: 'POST',
-            headers: {
-                'Cache-Control': 'no-cache',
-            },
-            body: JSON.stringify({token: 'all'}),
-        })
+        const email = process.env.AGM_API_HUB_EMAIL;
+        const password = process.env.AGM_API_HUB_PASSWORD;
+        if (!email || !password) throw new Error('Hub API credentials are not configured.')
 
-        if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`Failed to get authentication token.`);
-
-        const auth_response: AuthenticationResponse = await response.json();
+        let response: Response
+        try {
+            response = await fetch(`${api_url}/token`, {
+                method: 'POST',
+                headers: { 'Cache-Control': 'no-cache', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            })
+        } catch {
+            throw new Error('The AGM API is unavailable. Please try again shortly.')
+        }
+        const payload = await response.json().catch(() => ({}))
+        if (!response.ok) {
+            throw new Error(
+                typeof payload?.message === 'string' ? payload.message : 'Hub authentication failed.',
+            )
+        }
+        const auth_response: AuthenticationResponse = payload;
         if (!auth_response.access_token) throw new Error(`Failed to get authentication token.`);
 
         const tokenLifetimeSeconds = Math.max(0, Number(auth_response.expires_in || 0) - TOKEN_EXPIRY_BUFFER_SECONDS)
@@ -61,53 +71,45 @@ export async function getToken(): Promise<string> {
 }
 
 async function GetData(url: string, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`
-        },
-    });
-
-    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
-    return await response.json();
+    return request(url, 'GET', undefined, token)
 }
 
 async function PostData(url: string, params: Map | undefined, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        method: 'POST',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(params),
-    });
-
-    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
-    return await response.json();
+    return request(url, 'POST', params, token)
 }
 
 async function DeleteData(url: string, params: Map | undefined, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        method: 'DELETE',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(params),
-    });
-    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
-    return await response.json();
+    return request(url, 'DELETE', params, token)
 }
 
 async function PatchData(url: string, params: Map | undefined, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        method: 'PATCH',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(params),
-    });
-    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
-    return await response.json();
+    return request(url, 'PATCH', params, token)
+}
+
+async function request(url: string, method: string, params: Map | undefined, token: string) {
+    let response: Response
+    try {
+        response = await fetch(`${api_url}${url}`, {
+            method,
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Authorization': `Bearer ${token}`,
+                ...(method !== 'GET' ? { 'Content-Type': 'application/json' } : {}),
+            },
+            ...(method !== 'GET' ? { body: JSON.stringify(params) } : {}),
+        })
+    } catch {
+        throw new Error('The AGM API is unavailable. Please try again shortly.')
+    }
+
+    const requestId = response.headers.get('X-Request-ID') || undefined
+    const payload = await response.json().catch(() => ({}))
+    if (!response.ok) {
+        const message = typeof payload?.message === 'string' ? payload.message :
+            response.status === 403 ? 'This operation is not enabled for the Hub.' :
+            response.status === 401 ? 'Hub authentication expired or was rejected.' :
+            'The request could not be completed.'
+        throw new Error(`${message}${requestId ? ` (request ID: ${requestId})` : ''}`)
+    }
+    return payload
 }

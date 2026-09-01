@@ -9,6 +9,7 @@ import { formatURL } from '@/utils/language/lang'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 import { InteractiveGridPattern } from '@/components/ui/interactive-grid-pattern'
+import { useSearchParams } from 'next/navigation'
 
 interface Props {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -16,6 +17,9 @@ interface Props {
 
 const Title = ({ setStarted }: Props) => {
   const { t, lang } = useTranslationProvider()
+  const searchParams = useSearchParams()
+  const providerId = searchParams.get('provider_id') || searchParams.get('provider') || searchParams.get('application_provider') || searchParams.get('id')
+  const requirementsUrl = `${formatURL('/requirements', lang)}${providerId ? `?provider_id=${encodeURIComponent(providerId)}` : ''}`
 
   return (
     <div className='relative w-full h-[calc(100vh-80px)] flex flex-col justify-center items-center overflow-hidden bg-background'>
@@ -52,7 +56,7 @@ const Title = ({ setStarted }: Props) => {
             </Button>
 
             <p className='text-sm text-muted-foreground'>
-              {t('apply.account.title.get_started')} <Link href={formatURL('/requirements', lang)} className='text-primary hover:underline underline-offset-4 font-medium'>{t('apply.account.title.get_started_link')}</Link>.
+              {t('apply.account.title.get_started')} <Link href={requirementsUrl} className='text-primary hover:underline underline-offset-4 font-medium'>{t('apply.account.title.get_started_link')}</Link>.
             </p>
           </motion.div>
         </motion.div>

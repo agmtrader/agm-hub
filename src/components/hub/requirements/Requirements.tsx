@@ -7,10 +7,14 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import Link from 'next/link'
 import { formatURL } from '@/utils/language/lang'
 import { Button } from '@/components/ui/button'
+import { useSearchParams } from 'next/navigation'
 
 const RequirementsPage = () => {
 
     const { t, lang } = useTranslationProvider()
+    const searchParams = useSearchParams()
+    const providerId = searchParams.get('provider_id') || searchParams.get('provider') || searchParams.get('application_provider') || searchParams.get('id')
+    const applicationUrl = `${formatURL('/apply', lang)}${providerId ? `?provider_id=${encodeURIComponent(providerId)}` : ''}`
 
   return (
     <div className="container flex-col flex py-6 gap-6 justify-center items-center">
@@ -301,7 +305,7 @@ const RequirementsPage = () => {
                 </div>
             </TabsContent>
         </Tabs>
-        <Link href={formatURL('/apply', lang)} target="_blank" rel="noopener noreferrer">
+        <Link href={applicationUrl}>
             <Button className="w-full">
                 {t('shared.apply_for_an_account')}
                 <ArrowRight className="h-4 w-4" />
