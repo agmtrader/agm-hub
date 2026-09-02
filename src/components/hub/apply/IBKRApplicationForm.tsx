@@ -70,6 +70,8 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
   const { t } = useTranslationProvider();
   const searchParams = useSearchParams();
   const advisorCode = searchParams.get('ad')
+  const providerId = searchParams.get('provider_id') || searchParams.get('provider') || searchParams.get('application_provider') || searchParams.get('id')
+  const applicationProviderId = providerId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(providerId) ? providerId : null
 
   const [currentStep, setCurrentStep] = useState<FormStep>(FormStep.ACCOUNT_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -983,6 +985,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
         master_account: null,
         date_sent_to_ibkr: null,
         estimated_deposit: estimatedDeposit ?? null,
+        application_provider_id: applicationProviderId,
         management_type: null,
         referrer: referrer ?? null,
         emailed_credentials: false,
