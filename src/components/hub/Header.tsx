@@ -42,11 +42,11 @@ const Header = () => {
         <div className="container flex h-16 items-center justify-between py-10">
           {providerId ? (
             <div aria-label={logoAlt} className="flex items-center space-x-2 cursor-default">
-              <Image src={logoSrc} alt={logoAlt} width={150} height={50} className="object-contain" />
+              <Image src={logoSrc} alt={logoAlt} width={200} height={50} className="h-[50px] w-auto object-contain" />
             </div>
           ) : (
             <Link href={formatURL('/', lang)} className="flex items-center space-x-2">
-              <Image src={logoSrc} alt={logoAlt} width={150} height={50} />
+              <Image src={logoSrc} alt={logoAlt} width={150} height={50} className="h-[50px] w-auto object-contain" />
             </Link>
           )}
           {!providerId && (
