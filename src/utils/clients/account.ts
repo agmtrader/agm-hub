@@ -233,8 +233,8 @@ export async function GetWithdrawableCash(
     return response
 }
 
-export async function GetStatusOfInstruction(clientInstructionID: string): Promise<any> {
-    const response: any = await accessAPI(`/accounts/ibkr/instructions?client_instruction_id=${clientInstructionID}`, 'GET')
+export async function GetStatusOfInstruction(clientInstructionID: string, masterAccount: string): Promise<any> {
+    const response: any = await accessAPI(`/accounts/ibkr/instructions?client_instruction_id=${encodeURIComponent(clientInstructionID)}&master_account=${encodeURIComponent(masterAccount)}`, 'GET')
     return response
 }
 
