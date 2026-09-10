@@ -38,7 +38,13 @@ html {
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
   }
+}
+
+@layer utilities {
+  .text-wrap-balance { text-wrap: balance; }
+  .text-wrap-pretty { text-wrap: pretty; }
 }
 
 

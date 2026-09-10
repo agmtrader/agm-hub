@@ -32,6 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/resource-center/trading/market-data-subscriptions',
     '/requirements',
     '/risk',
+    '/greetings',
     '/sitemap',
   ]
 
