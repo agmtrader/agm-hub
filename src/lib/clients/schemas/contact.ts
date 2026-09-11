@@ -8,4 +8,5 @@ export const contact_schema = z.object({
     image: z.string().optional(),
     country: z.string().optional(),
     company_name: z.string().optional(),
+    met_place: z.string().nullable().optional(),
 })

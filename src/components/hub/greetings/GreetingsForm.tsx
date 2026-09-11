@@ -40,7 +40,7 @@ const GreetingsForm = () => {
     setSubmitError(null)
 
     try {
-      await CreateContact(values)
+      await CreateContact({ ...values, met_place: 'FIAB' })
       form.reset(defaultValues)
       setSubmitted(true)
     } catch (error) {
