@@ -23,7 +23,7 @@ const Title = () => {
                     <div className="flex flex-col gap-4">
                         <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-foreground text-center lg:text-left">
                             {t('main.title.empowering_traders')} {" "}
-                            <span className="bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
                             {t('main.title.worldwide')}
                             </span>
                         </h1>
