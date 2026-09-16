@@ -9,11 +9,18 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { contact_schema } from '@/lib/clients/schemas/contact'
 import { CreateContact } from '@/utils/clients/contact'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
-type FormSchema = z.infer<typeof contact_schema>
+const greetings_schema = z.object({
+  name: z.string().trim().min(1, 'Required'),
+  email: z.string().trim().min(1, 'Required').email('Invalid email address'),
+  phone: z.string().trim().min(1, 'Required'),
+  country: z.string().trim().min(1, 'Required'),
+  company_name: z.string().trim().min(1, 'Required'),
+})
+
+type FormSchema = z.infer<typeof greetings_schema>
 
 const defaultValues: FormSchema = {
   name: '',
@@ -21,7 +28,6 @@ const defaultValues: FormSchema = {
   phone: '',
   country: '',
   company_name: '',
-  image: '',
 }
 
 const GreetingsForm = () => {
@@ -30,7 +36,7 @@ const GreetingsForm = () => {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm<FormSchema>({
-    resolver: zodResolver(contact_schema),
+    resolver: zodResolver(greetings_schema),
     defaultValues,
   })
 
@@ -76,7 +82,7 @@ const GreetingsForm = () => {
               <FormItem>
                 <FormLabel>{t('greetings.name')}</FormLabel>
                 <FormControl>
-                  <Input autoComplete="name" placeholder={t('greetings.name_placeholder')} {...field} />
+                  <Input required autoComplete="name" placeholder={t('greetings.name_placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -89,7 +95,7 @@ const GreetingsForm = () => {
               <FormItem>
                 <FormLabel>{t('greetings.email')}</FormLabel>
                 <FormControl>
-                  <Input type="email" autoComplete="email" inputMode="email" placeholder={t('greetings.email_placeholder')} {...field} />
+                  <Input required type="email" autoComplete="email" inputMode="email" placeholder={t('greetings.email_placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -100,9 +106,9 @@ const GreetingsForm = () => {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('greetings.phone')} <span className="font-normal text-muted-foreground">({t('greetings.optional')})</span></FormLabel>
+                <FormLabel>{t('greetings.phone')}</FormLabel>
                 <FormControl>
-                  <Input type="tel" autoComplete="tel" inputMode="tel" placeholder={t('greetings.phone_placeholder')} {...field} />
+                  <Input required type="tel" autoComplete="tel" inputMode="tel" placeholder={t('greetings.phone_placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -113,9 +119,9 @@ const GreetingsForm = () => {
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('greetings.country')} <span className="font-normal text-muted-foreground">({t('greetings.optional')})</span></FormLabel>
+                <FormLabel>{t('greetings.country')}</FormLabel>
                 <FormControl>
-                  <Input autoComplete="country-name" placeholder={t('greetings.country_placeholder')} {...field} />
+                  <Input required autoComplete="country-name" placeholder={t('greetings.country_placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -127,9 +133,9 @@ const GreetingsForm = () => {
           name="company_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('greetings.company')} <span className="font-normal text-muted-foreground">({t('greetings.optional')})</span></FormLabel>
+              <FormLabel>{t('greetings.company')}</FormLabel>
               <FormControl>
-                <Input autoComplete="organization" placeholder={t('greetings.company_placeholder')} {...field} />
+                <Input required autoComplete="organization" placeholder={t('greetings.company_placeholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
