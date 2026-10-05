@@ -106,6 +106,7 @@ async function request(url: string, method: string, params: Map | undefined, tok
     const payload = await response.json().catch(() => ({}))
     if (!response.ok) {
         const message = typeof payload?.message === 'string' ? payload.message :
+            typeof payload?.error === 'string' ? payload.error :
             response.status === 403 ? 'This operation is not enabled for the Hub.' :
             response.status === 401 ? 'Hub authentication expired or was rejected.' :
             'The request could not be completed.'
