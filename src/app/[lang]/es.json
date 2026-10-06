@@ -469,6 +469,8 @@
         "title": "Cuestionario de Evaluación de Riesgo",
         "description": "Por favor, completa este formulario para ayudarnos a entender tu tolerancia al riesgo y preferencias de inversión.",
         "form": {
+            "load_error": "El cuestionario no está disponible temporalmente. Por favor, inténtalo de nuevo.",
+            "retry": "Intentar de nuevo",
             "account_id": "Número de cuenta",
             "email": "Correo electrónico",
             "name": "Nombre",

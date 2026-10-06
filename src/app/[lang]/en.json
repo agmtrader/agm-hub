@@ -469,6 +469,8 @@
         "title": "Risk Assessment Questionnaire",
         "description": "Please complete this form to help us understand your risk tolerance and investment preferences.",
         "form": {
+            "load_error": "The questionnaire is temporarily unavailable. Please try again.",
+            "retry": "Try again",
             "account_id": "Account number",
             "email": "Email",
             "name": "Name",

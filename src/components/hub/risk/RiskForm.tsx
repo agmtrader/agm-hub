@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { getDefaults } from '@/utils/form'
 import { risk_assesment_schema } from "@/lib/clients/schemas/risk-profile"
 import { Input } from "@/components/ui/input"
@@ -50,25 +50,27 @@ const RiskForm = () => {
   })
 
   const [riskArchetypes, setRiskArchetypes] = useState<RiskArchetype[] | null>(null)
+  const [archetypesLoadFailed, setArchetypesLoadFailed] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const riskArchetypes = await ListRiskArchetypes()
-        setRiskArchetypes(riskArchetypes)
-      } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch risk archetypes',
-          variant: 'destructive',
-        })
+  const loadRiskArchetypes = useCallback(async () => {
+    setArchetypesLoadFailed(false)
+    try {
+      const archetypes = await ListRiskArchetypes()
+      if (!Array.isArray(archetypes) || archetypes.length === 0) {
+        throw new Error('No risk archetypes returned')
       }
+      setRiskArchetypes(archetypes)
+    } catch {
+      setArchetypesLoadFailed(true)
     }
-    fetchData()
   }, [])
+
+  useEffect(() => {
+    void loadRiskArchetypes()
+  }, [loadRiskArchetypes])
 
   async function onSubmit(values: RiskFormValues) {
 
@@ -123,6 +125,17 @@ const RiskForm = () => {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (archetypesLoadFailed) {
+    return (
+      <div role="alert" className="flex flex-col items-center gap-4 p-5 text-center">
+        <p>{t('risk.form.load_error')}</p>
+        <Button type="button" onClick={() => void loadRiskArchetypes()}>
+          {t('risk.form.retry')}
+        </Button>
+      </div>
+    )
   }
 
   if (!riskArchetypes) return <LoadingComponent />
