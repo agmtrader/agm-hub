@@ -205,8 +205,8 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
         documentType || undefined,
         documentLanguage || undefined,
         comment || undefined,
-        issuedDate ? formatTimestamp(issuedDate) : undefined,
-        expiryDate ? formatTimestamp(expiryDate) : undefined
+        issuedDate ? formatTimestamp(issuedDate) : null,
+        expiryDate ? formatTimestamp(expiryDate) : null
       )
       setIsEditDialogOpen(false)
       await refreshLinks()
@@ -311,8 +311,22 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
                     ))}
                   </SelectContent>
                 </Select>
-                <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
-                <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
+                <div className="space-y-2">
+                  <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
+                  {issuedDate ? (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setIssuedDate(undefined)}>
+                      Clear issue date
+                    </Button>
+                  ) : null}
+                </div>
+                <div className="space-y-2">
+                  <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
+                  {expiryDate ? (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setExpiryDate(undefined)}>
+                      Clear expiry date
+                    </Button>
+                  ) : null}
+                </div>
                 <Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment (optional)" />
                 <FileUploader
                   value={files}
@@ -387,8 +401,22 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
                 ))}
               </SelectContent>
             </Select>
-            <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
-            <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
+            <div className="space-y-2">
+              <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
+              {issuedDate ? (
+                <Button type="button" variant="outline" size="sm" onClick={() => setIssuedDate(undefined)}>
+                  Clear issue date
+                </Button>
+              ) : null}
+            </div>
+            <div className="space-y-2">
+              <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
+              {expiryDate ? (
+                <Button type="button" variant="outline" size="sm" onClick={() => setExpiryDate(undefined)}>
+                  Clear expiry date
+                </Button>
+              ) : null}
+            </div>
             <Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment (optional)" />
             <Button onClick={handleSaveEdit} className="w-full">Save</Button>
           </div>

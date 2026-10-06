@@ -89,7 +89,7 @@ export async function UpdateContactDocument(
     type?: string,
     document_language?: string,
     comment?: string,
-    issued_date?: string,
+    issued_date?: string | null,
     expiry_date?: string | null
 ): Promise<any> {
     return accessAPI('/contacts/documents', 'PATCH', {
