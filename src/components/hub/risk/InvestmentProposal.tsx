@@ -1,6 +1,6 @@
 'use client'
 import { Card } from '@/components/ui/card'
-import { PieChart, Pie, Cell } from 'recharts'
+import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { useMemo, useState, useRef, useEffect } from 'react'
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart'
 import { Bond, InvestmentProposal as InvestmentProposalType, } from '@/lib/clients/investment-proposals'
@@ -19,6 +19,8 @@ import {
 type Props = {
   investmentProposal: InvestmentProposalType
 }
+
+const PROJECTION_DISCLAIMER = 'This is a simulated projection. Each yearly return is applied to the previous year\'s portfolio value. The average annual return is the arithmetic average of the 10 simulated yearly returns.'
 
 const InvestmentProposal = ({ investmentProposal }: Props) => {
   const parseDistribution = (
@@ -78,6 +80,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
   ] as const
 
   const [riskArchetypeName, setRiskArchetypeName] = useState<string | null>(null)
+  const [projectionSeed, setProjectionSeed] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -233,6 +236,79 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     return { pieData, summaryStats }
   }, [investmentProposal])
 
+  const currencyFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }),
+    []
+  )
+
+  useEffect(() => {
+    // Generate the random sequence after mount so server and client render the same initial chart.
+    setProjectionSeed(Math.random())
+  }, [chartData.summaryStats?.averageYield, (investmentProposal as InvestmentProposalType & { starting_amount?: number | null }).starting_amount, (investmentProposal as InvestmentProposalType & { startingAmount?: number | string | null }).startingAmount])
+
+  const projectionData = useMemo(() => {
+    const portfolioYield = Number(chartData.summaryStats?.averageYield ?? 0)
+    const maxAnnualReturn = Number.isFinite(portfolioYield) ? Math.abs(portfolioYield) : 0
+    const rawStartingAmount = (investmentProposal as InvestmentProposalType & { starting_amount?: number | null }).starting_amount ?? (investmentProposal as InvestmentProposalType & { startingAmount?: number | string | null }).startingAmount
+    const parsedStartingAmount = Number(rawStartingAmount)
+    const startingAmount = Number.isFinite(parsedStartingAmount) && parsedStartingAmount > 0 ? parsedStartingAmount : 100
+    const hasStartingAmount = Number.isFinite(parsedStartingAmount) && parsedStartingAmount > 0
+    const baselineValue = hasStartingAmount ? startingAmount : 100
+    let portfolioValue = baselineValue
+    let randomSeed = projectionSeed
+
+    const nextRandom = () => {
+      randomSeed = (randomSeed * 9301 + 49297) % 233280
+      return randomSeed / 233280
+    }
+
+    const yearlyProjection = [
+      {
+        year: 'Initial',
+        value: Number(baselineValue.toFixed(2)),
+        annualReturn: 0,
+      },
+      ...Array.from({ length: 10 }, (_, index) => {
+      const yearOffset = index + 1
+      // Repeat three growth years followed by one correction year.
+      const isCorrection = yearOffset % 4 === 0
+      const halfYield = maxAnnualReturn / 2
+      const minimumReturn = isCorrection ? -halfYield : halfYield
+      const maximumReturn = isCorrection ? 0 : maxAnnualReturn
+      const sampledReturn = minimumReturn + nextRandom() * (maximumReturn - minimumReturn)
+      const annualReturn = Math.min(maximumReturn, Math.max(minimumReturn, Number(sampledReturn.toFixed(2))))
+      portfolioValue *= 1 + annualReturn / 100
+
+      return {
+        year: `Year ${yearOffset}`,
+        value: Number(portfolioValue.toFixed(2)),
+        annualReturn,
+      }
+      }),
+    ]
+
+    const annualReturns = yearlyProjection.slice(1)
+    const averageAnnualReturn = annualReturns.reduce((sum, point) => sum + point.annualReturn, 0) / annualReturns.length
+    const projectedValue = yearlyProjection.at(-1)?.value ?? baselineValue
+
+    return {
+      averageAnnualReturn,
+      hasStartingAmount,
+      baselineValue,
+      maxVolatility: maxAnnualReturn,
+      projectedValue,
+      data: yearlyProjection.map((point, yearOffset) => ({
+        ...point,
+        averageValue: Number((baselineValue + (projectedValue - baselineValue) * yearOffset / annualReturns.length).toFixed(2)),
+      })),
+    }
+  }, [chartData.summaryStats?.averageYield, (investmentProposal as InvestmentProposalType & { starting_amount?: number | null }).starting_amount, (investmentProposal as InvestmentProposalType & { startingAmount?: number | string | null }).startingAmount, projectionSeed])
+
   const summaryStatsColumns: ColumnDefinition<any>[] = [
     {
       header: 'Description',
@@ -379,6 +455,98 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
             </div>
           </Card>
         </div>
+          <Card className="col-span-2 p-6 w-full h-full gap-5 flex flex-col">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-semibold text-foreground">10-Year Return Projection</h3>
+                <p className="mt-1 text-sm text-subtitle">
+                  Three growth years at +half to +full portfolio yield, followed by one correction year at 0 to −half yield.
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-subtitle">Projected Value</p>
+                <p className="text-2xl font-bold text-primary">
+                  {projectionData.hasStartingAmount
+                    ? currencyFormatter.format(projectionData.projectedValue)
+                    : `${projectionData.projectedValue.toFixed(1)} index`}
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm text-subtitle tabular-nums">
+                Simulated annual returns range from −{projectionData.maxVolatility.toFixed(2)}% to +{projectionData.maxVolatility.toFixed(2)}%, with an average annual return of {projectionData.averageAnnualReturn.toFixed(2)}%.
+              </p>
+            </div>
+
+            {!projectionData.hasStartingAmount && (
+              <p className="text-xs text-subtitle">
+                No starting amount was saved for this proposal, so this chart uses a base index of 100.
+              </p>
+            )}
+
+            <div className="h-[320px] w-full">
+              <ChartContainer
+                config={{
+                  projectedValue: {
+                    label: 'Projected Value',
+                    color: '#1D4ED8',
+                  },
+                }}
+                className="h-full w-full"
+              >
+                <LineChart data={projectionData.data} margin={{ top: 16, right: 24, left: 12, bottom: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="year" tickLine={false} axisLine={false} />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    width={90}
+                    tickFormatter={(value) =>
+                      projectionData.hasStartingAmount
+                        ? currencyFormatter.format(Number(value))
+                        : `${Number(value).toFixed(0)}`
+                    }
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="var(--color-projectedValue)"
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: '#1D4ED8' }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <ChartTooltip
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.length) return null
+
+                      const data = payload[0].payload as { year: string; value: number; annualReturn: number }
+
+                      return (
+                        <div className="rounded-lg border bg-background p-3 shadow-lg">
+                          <p className="text-xs text-subtitle">{data.year}</p>
+                          <p className="text-sm font-medium text-foreground">
+                            {projectionData.hasStartingAmount
+                              ? currencyFormatter.format(data.value)
+                              : `${data.value.toFixed(2)} index`}
+                          </p>
+                          <p className="text-xs text-subtitle">Return that year: {data.annualReturn.toFixed(2)}%</p>
+                        </div>
+                      )
+                    }}
+                  />
+                  <Line type="linear" dataKey="averageValue" stroke="#64748B" strokeWidth={2} strokeDasharray="2 5" strokeLinecap="round" dot={false} isAnimationActive={false} />
+                </LineChart>
+              </ChartContainer>
+            </div>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-subtitle" aria-label="Projection legend">
+              <div className="flex items-center gap-2"><span className="w-8 shrink-0 border-t-2 border-[#1D4ED8]" aria-hidden="true" />Solid blue: simulated portfolio value with annual variation.</div>
+              <div className="flex items-center gap-2"><span className="w-8 shrink-0 border-t-2 border-dotted border-[#64748B]" aria-hidden="true" />Dotted gray: straight-line reference from the initial value to the same simulated final value.</div>
+            </div>
+            <p className="text-pretty text-xs leading-relaxed text-subtitle">
+              {PROJECTION_DISCLAIMER}
+            </p>
+          </Card>
       </div>
       </div>
     </div>
