@@ -22,6 +22,12 @@ type Props = {
 
 const PROJECTION_DISCLAIMER = 'This is a simulated projection. Each yearly return is applied to the previous year\'s portfolio value. The average annual return is the arithmetic average of the 10 simulated yearly returns.'
 
+const PROJECTION_OUTCOMES = [
+  { key: 'current', label: 'Current', labelEs: 'Actual', color: '#1E3A8A', growthMin: 0.62, declineMax: 0.38 },
+  { key: 'positive', label: 'Positive', labelEs: 'Positivo', color: '#2563EB', growthMin: 0.8, declineMax: 0.2 },
+  { key: 'optimistic', label: 'Very optimistic', labelEs: 'Muy optimista', color: '#60A5FA', growthMin: 0.95, declineMax: 0.05 },
+] as const
+
 const InvestmentProposal = ({ investmentProposal }: Props) => {
   const parseDistribution = (
     rawDistribution: InvestmentProposalType['derived_distribution']
@@ -259,55 +265,81 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     const startingAmount = Number.isFinite(parsedStartingAmount) && parsedStartingAmount > 0 ? parsedStartingAmount : 100
     const hasStartingAmount = Number.isFinite(parsedStartingAmount) && parsedStartingAmount > 0
     const baselineValue = hasStartingAmount ? startingAmount : 100
-    let portfolioValue = baselineValue
     let randomSeed = projectionSeed
-
-    const nextRandom = () => {
+    const yearlySamples = Array.from({ length: 10 }, () => {
       randomSeed = (randomSeed * 9301 + 49297) % 233280
       return randomSeed / 233280
-    }
+    })
 
-    const yearlyProjection = [
-      {
-        year: 'Initial',
-        value: Number(baselineValue.toFixed(2)),
-        annualReturn: 0,
-      },
-      ...Array.from({ length: 10 }, (_, index) => {
-      const yearOffset = index + 1
-      // Repeat three growth years followed by one correction year.
-      const isCorrection = yearOffset % 4 === 0
-      const halfYield = maxAnnualReturn / 2
-      const minimumReturn = isCorrection ? -halfYield : halfYield
-      const maximumReturn = isCorrection ? 0 : maxAnnualReturn
-      const sampledReturn = minimumReturn + nextRandom() * (maximumReturn - minimumReturn)
-      const annualReturn = Math.min(maximumReturn, Math.max(minimumReturn, Number(sampledReturn.toFixed(2))))
-      portfolioValue *= 1 + annualReturn / 100
-
+    // Share yearly samples so stronger assumptions produce comparable outcomes.
+    const outcomes = PROJECTION_OUTCOMES.map((outcome) => {
+      let portfolioValue = baselineValue
+      const points = [
+        { year: 'Initial', value: Number(baselineValue.toFixed(2)), annualReturn: 0 },
+        ...yearlySamples.map((sample, index) => {
+          const isCorrection = (index + 1) % 4 === 0
+          const minimumReturn = isCorrection ? -maxAnnualReturn * outcome.declineMax : maxAnnualReturn * outcome.growthMin
+          const maximumReturn = isCorrection ? 0 : maxAnnualReturn
+          const sampledReturn = minimumReturn + sample * (maximumReturn - minimumReturn)
+          const annualReturn = Math.min(maximumReturn, Math.max(minimumReturn, Number(sampledReturn.toFixed(2))))
+          portfolioValue *= 1 + annualReturn / 100
+          return { year: `Year ${index + 1}`, value: Number(portfolioValue.toFixed(2)), annualReturn }
+        }),
+      ]
       return {
-        year: `Year ${yearOffset}`,
-        value: Number(portfolioValue.toFixed(2)),
-        annualReturn,
+        ...outcome,
+        points,
+        averageAnnualReturn: points.slice(1).reduce((sum, point) => sum + point.annualReturn, 0) / yearlySamples.length,
+        projectedValue: points.at(-1)?.value ?? baselineValue,
       }
-      }),
-    ]
-
-    const annualReturns = yearlyProjection.slice(1)
-    const averageAnnualReturn = annualReturns.reduce((sum, point) => sum + point.annualReturn, 0) / annualReturns.length
-    const projectedValue = yearlyProjection.at(-1)?.value ?? baselineValue
+    })
+    const current = outcomes[0]
 
     return {
-      averageAnnualReturn,
+      outcomes,
+      averageAnnualReturn: current.averageAnnualReturn,
       hasStartingAmount,
       baselineValue,
       maxVolatility: maxAnnualReturn,
-      projectedValue,
-      data: yearlyProjection.map((point, yearOffset) => ({
+      projectedValue: current.projectedValue,
+      data: current.points.map((point, yearOffset) => ({
         ...point,
-        averageValue: Number((baselineValue + (projectedValue - baselineValue) * yearOffset / annualReturns.length).toFixed(2)),
+        current: outcomes[0].points[yearOffset].value,
+        positive: outcomes[1].points[yearOffset].value,
+        optimistic: outcomes[2].points[yearOffset].value,
+        averageValue: Number((baselineValue + (current.projectedValue - baselineValue) * yearOffset / yearlySamples.length).toFixed(2)),
       })),
     }
   }, [chartData.summaryStats?.averageYield, (investmentProposal as InvestmentProposalType & { starting_amount?: number | null }).starting_amount, (investmentProposal as InvestmentProposalType & { startingAmount?: number | string | null }).startingAmount, projectionSeed])
+
+  const renderProjectionSummaries = (language: 'en' | 'es' = 'en') => (
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {projectionData.outcomes.map((outcome) => (
+        <div key={outcome.key} className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm tabular-nums">
+          <p className="font-semibold" style={{ color: outcome.color }}>{language === 'es' ? outcome.labelEs : outcome.label}</p>
+          <p className="mt-1 text-xl font-bold" style={{ color: outcome.color }}>
+            {projectionData.hasStartingAmount ? currencyFormatter.format(outcome.projectedValue) : `${outcome.projectedValue.toFixed(1)} ${language === 'es' ? 'índice' : 'index'}`}
+          </p>
+          <p className="mt-1 text-subtitle">{language === 'es' ? 'Promedio anual' : 'Average annual return'}: {outcome.averageAnnualReturn.toFixed(2)}%</p>
+        </div>
+      ))}
+    </div>
+  )
+
+  const renderProjectionLegend = (language: 'en' | 'es' = 'en') => (
+    <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-subtitle" aria-label="Projection legend">
+      {PROJECTION_OUTCOMES.map((outcome) => (
+        <div key={outcome.key} className="flex items-center gap-2">
+          <span className="w-8 shrink-0 border-t-2" style={{ borderColor: outcome.color }} aria-hidden="true" />
+          {language === 'es' ? outcome.labelEs : outcome.label}
+        </div>
+      ))}
+      <div className="flex items-center gap-2">
+        <span className="w-8 shrink-0 border-t-2 border-dotted border-[#64748B]" aria-hidden="true" />
+        {language === 'es' ? 'Referencia lineal del resultado actual' : 'Straight-line reference for the current outcome'}
+      </div>
+    </div>
+  )
 
   const summaryStatsColumns: ColumnDefinition<any>[] = [
     {
@@ -460,24 +492,13 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
               <div>
                 <h3 className="text-xl font-semibold text-foreground">10-Year Return Projection</h3>
                 <p className="mt-1 text-sm text-subtitle">
-                  Three growth years at +half to +full portfolio yield, followed by one correction year at 0 to −half yield.
+                  Three outcomes, each with three growth years followed by one correction year.
                 </p>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-subtitle">Projected Value</p>
-                <p className="text-2xl font-bold text-primary">
-                  {projectionData.hasStartingAmount
-                    ? currencyFormatter.format(projectionData.projectedValue)
-                    : `${projectionData.projectedValue.toFixed(1)} index`}
-                </p>
-              </div>
+
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm text-subtitle tabular-nums">
-                Simulated annual returns range from −{projectionData.maxVolatility.toFixed(2)}% to +{projectionData.maxVolatility.toFixed(2)}%, with an average annual return of {projectionData.averageAnnualReturn.toFixed(2)}%.
-              </p>
-            </div>
+            {renderProjectionSummaries()}
 
             {!projectionData.hasStartingAmount && (
               <p className="text-xs text-subtitle">
@@ -508,29 +529,28 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
                         : `${Number(value).toFixed(0)}`
                     }
                   />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="var(--color-projectedValue)"
-                    strokeWidth={3}
-                    dot={{ r: 4, fill: '#1D4ED8' }}
-                    activeDot={{ r: 6 }}
-                  />
+                  {PROJECTION_OUTCOMES.map((outcome) => (
+                    <Line key={outcome.key} type="monotone" dataKey={outcome.key} name={outcome.label} stroke={outcome.color} strokeWidth={3} dot={{ r: 3, fill: outcome.color }} activeDot={{ r: 5 }} />
+                  ))}
                   <ChartTooltip
                     content={({ active, payload }) => {
                       if (!active || !payload?.length) return null
 
-                      const data = payload[0].payload as { year: string; value: number; annualReturn: number }
-
+                      const data = payload[0].payload as { year: string }
+                      const yearIndex = projectionData.data.findIndex((point) => point.year === data.year)
+                      if (yearIndex < 0) return null
                       return (
                         <div className="rounded-lg border bg-background p-3 shadow-lg">
                           <p className="text-xs text-subtitle">{data.year}</p>
-                          <p className="text-sm font-medium text-foreground">
-                            {projectionData.hasStartingAmount
-                              ? currencyFormatter.format(data.value)
-                              : `${data.value.toFixed(2)} index`}
-                          </p>
-                          <p className="text-xs text-subtitle">Return that year: {data.annualReturn.toFixed(2)}%</p>
+                          {projectionData.outcomes.map((outcome) => {
+                            const point = outcome.points[yearIndex]
+                            return (
+                              <div key={outcome.key} className="mt-2 text-xs">
+                                <p className="font-semibold" style={{ color: outcome.color }}>{outcome.label}: {projectionData.hasStartingAmount ? currencyFormatter.format(point.value) : `${point.value.toFixed(2)} index`}</p>
+                                <p className="text-subtitle">Return that year: {point.annualReturn.toFixed(2)}%</p>
+                              </div>
+                            )
+                          })}
                         </div>
                       )
                     }}
@@ -539,10 +559,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
                 </LineChart>
               </ChartContainer>
             </div>
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-subtitle" aria-label="Projection legend">
-              <div className="flex items-center gap-2"><span className="w-8 shrink-0 border-t-2 border-[#1D4ED8]" aria-hidden="true" />Solid blue: simulated portfolio value with annual variation.</div>
-              <div className="flex items-center gap-2"><span className="w-8 shrink-0 border-t-2 border-dotted border-[#64748B]" aria-hidden="true" />Dotted gray: straight-line reference from the initial value to the same simulated final value.</div>
-            </div>
+            {renderProjectionLegend()}
             <p className="text-pretty text-xs leading-relaxed text-subtitle">
               {PROJECTION_DISCLAIMER}
             </p>
