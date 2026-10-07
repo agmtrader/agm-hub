@@ -23,9 +23,9 @@ type Props = {
 const PROJECTION_DISCLAIMER = 'This is a simulated projection. Each yearly return is applied to the previous year\'s portfolio value. The average annual return is the arithmetic average of the 10 simulated yearly returns.'
 
 const PROJECTION_OUTCOMES = [
-  { key: 'current', label: 'Current', labelEs: 'Actual', color: '#1E3A8A', growthMin: 0.62, declineMax: 0.38 },
-  { key: 'positive', label: 'Positive', labelEs: 'Positivo', color: '#2563EB', growthMin: 0.8, declineMax: 0.2 },
-  { key: 'optimistic', label: 'Very optimistic', labelEs: 'Muy optimista', color: '#60A5FA', growthMin: 0.95, declineMax: 0.05 },
+  { key: 'current', label: 'Scenario 1', labelEs: 'Escenario 1', color: '#1E3A8A', growthMin: 0.62, declineMax: 0.38 },
+  { key: 'positive', label: 'Scenario 2', labelEs: 'Escenario 2', color: '#2563EB', growthMin: 0.8, declineMax: 0.2 },
+  { key: 'optimistic', label: 'Scenario 3', labelEs: 'Escenario 3', color: '#60A5FA', growthMin: 0.95, declineMax: 0.05 },
 ] as const
 
 const InvestmentProposal = ({ investmentProposal }: Props) => {
@@ -307,7 +307,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
         current: outcomes[0].points[yearOffset].value,
         positive: outcomes[1].points[yearOffset].value,
         optimistic: outcomes[2].points[yearOffset].value,
-        averageValue: Number((baselineValue + (current.projectedValue - baselineValue) * yearOffset / yearlySamples.length).toFixed(2)),
       })),
     }
   }, [chartData.summaryStats?.averageYield, (investmentProposal as InvestmentProposalType & { starting_amount?: number | null }).starting_amount, (investmentProposal as InvestmentProposalType & { startingAmount?: number | string | null }).startingAmount, projectionSeed])
@@ -334,10 +333,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
           {language === 'es' ? outcome.labelEs : outcome.label}
         </div>
       ))}
-      <div className="flex items-center gap-2">
-        <span className="w-8 shrink-0 border-t-2 border-dotted border-[#64748B]" aria-hidden="true" />
-        {language === 'es' ? 'Referencia lineal del resultado actual' : 'Straight-line reference for the current outcome'}
-      </div>
     </div>
   )
 
@@ -491,9 +486,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-xl font-semibold text-foreground">10-Year Return Projection</h3>
-                <p className="mt-1 text-sm text-subtitle">
-                  Three outcomes, each with three growth years followed by one correction year.
-                </p>
               </div>
 
             </div>
@@ -520,6 +512,8 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="year" tickLine={false} axisLine={false} />
                   <YAxis
+                    domain={['dataMin', 'dataMax']}
+                    padding={{ top: 16, bottom: 16 }}
                     tickLine={false}
                     axisLine={false}
                     width={90}
@@ -555,7 +549,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
                       )
                     }}
                   />
-                  <Line type="linear" dataKey="averageValue" stroke="#64748B" strokeWidth={2} strokeDasharray="2 5" strokeLinecap="round" dot={false} isAnimationActive={false} />
                 </LineChart>
               </ChartContainer>
             </div>
