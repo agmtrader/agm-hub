@@ -1,4 +1,5 @@
 'use client'
+import { ReadApplicationReferences } from '@/utils/clients/read-batches'
 
 import React, { useEffect, useState } from 'react'
 import { FieldErrors, useForm } from 'react-hook-form'
@@ -213,15 +214,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
       try {
         const bootstrap = prefetchedData
           ? prefetchedData
-          : await Promise.all([
-              GetFinancialRanges(),
-              GetBusinessAndOccupation(),
-              GetForms(agreementFormNumbers),
-            ]).then(([financialRangesResult, businessResult, agreementsResult]) => ({
-              financialRangesResult,
-              businessResult,
-              agreementsResult,
-            }));
+          : await ReadApplicationReferences(agreementFormNumbers);
 
         setFinancialRanges(bootstrap.financialRangesResult?.jsonData ?? []);  
         setAgreementForms(bootstrap.agreementsResult?.formDetails ?? null);

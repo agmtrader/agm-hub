@@ -1,4 +1,5 @@
 'use client'
+import { ReadApplicationReferences } from '@/utils/clients/read-batches'
 import React, { useEffect, useState } from 'react';
 import Title from '@/components/hub/apply/Title';
 import IBKRApplicationForm from '@/components/hub/apply/IBKRApplicationForm';
@@ -22,11 +23,7 @@ const page = () => {
     let active = true;
     const load = async () => {
       try {
-        const [financialRangesResult, businessResult, agreementsResult] = await Promise.all([
-          GetFinancialRanges(),
-          GetBusinessAndOccupation(),
-          GetForms(agreementFormNumbers),
-        ]);
+        const { financialRangesResult, businessResult, agreementsResult } = await ReadApplicationReferences(agreementFormNumbers);
         if (!active) return;
         setPrefetchedData({
           financialRangesResult,

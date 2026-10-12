@@ -1,4 +1,5 @@
 'use client'
+import { ReadProposalRiskContext } from '@/utils/clients/read-batches'
 import { Card } from '@/components/ui/card'
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { useMemo, useState, useRef, useEffect } from 'react'
@@ -99,10 +100,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       }
 
       try {
-        const [matchedRiskProfile, riskArchetypes] = await Promise.all([
-          ReadRiskProfileById(String(riskProfileId)),
-          ListRiskArchetypes(),
-        ])
+        const { profile: matchedRiskProfile, archetypes: riskArchetypes } = await ReadProposalRiskContext(String(riskProfileId))
 
         if (!matchedRiskProfile) {
           setRiskArchetypeName(null)

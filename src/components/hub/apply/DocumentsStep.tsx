@@ -1,4 +1,6 @@
 'use client'
+import { ReadApplicationDocumentHolders } from '@/utils/clients/read-batches'
+import { Button } from '@/components/ui/button'
 
 import React, { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -17,40 +19,31 @@ interface DocumentsStepProps {
 const DocumentsStep = ({ accountId }: DocumentsStepProps) => {
   const [contacts, setContacts] = useState<Array<{ id: string; name: string }>>([])
 
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [attempt, setAttempt] = useState(0)
   useEffect(() => {
+    let active = true
+    setContacts([])
+    setError(null)
     const resolveContacts = async () => {
       if (!accountId) {
         setContacts([])
         return
       }
 
-      const links = await ReadAccountContacts({ account_id: accountId })
-      const resolvedContacts = await Promise.all(
-        links
-          .map((link) => String(link.contact_id || '').trim())
-          .filter(Boolean)
-          .map((contactId) => ReadContactByID(contactId))
-      )
-
-      const deduped = Array.from(
-        new Map(
-          resolvedContacts
-            .filter((contact) => Boolean(contact?.id))
-            .map((contact) => [
-              String(contact!.id),
-              {
-                id: String(contact!.id),
-                name: contact!.company_name || contact!.name || contact!.email || String(contact!.id),
-              },
-            ])
-        ).values()
-      )
-
-      setContacts(deduped)
+      setLoading(true)
+      try {
+        const rows = await ReadApplicationDocumentHolders(accountId)
+        if (active) setContacts(rows)
+      } catch (failure) {
+        if (active) setError(failure instanceof Error ? failure.message : 'Document holders could not be loaded.')
+      } finally { if (active) setLoading(false) }
     }
 
     void resolveContacts()
-  }, [accountId])
+    return () => { active = false }
+  }, [accountId, attempt])
 
   if (!accountId) {
     return (
@@ -61,6 +54,8 @@ const DocumentsStep = ({ accountId }: DocumentsStepProps) => {
     )
   }
 
+  if (error) return <div role="alert"><p>{error}</p><Button onClick={() => setAttempt(value => value + 1)}>Try again</Button></div>
+  if (loading) return <p role="status">Loading document holders…</p>
   return (
     <div className="space-y-4">
       {contacts.map((c) => (
