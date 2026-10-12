@@ -1,4 +1,5 @@
-import { accessAPI } from "../api"
+import { unwrapApiResult } from "../api-result"
+import { accessAPI, accessAPIResult } from "../api"
 import { RiskProfile, RiskProfilePayload } from "@/lib/clients/risk-profile"
 import {
   InvestmentProposal,
@@ -8,7 +9,7 @@ import {
 import { PortfolioPlanPayload } from "@/lib/clients/portfolio-plans"
 
 export async function CreateInvestmentProposal(risk_profile: RiskProfilePayload & Pick<RiskProfile, 'id'>) {
-  const report = await accessAPI('/investment_proposals/create/risk', 'POST', {'risk_profile': risk_profile})
+  const report = unwrapApiResult(await accessAPIResult('/investment_proposals/create/risk', 'POST', {'risk_profile': risk_profile}))
   return report
 }
 

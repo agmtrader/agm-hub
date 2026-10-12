@@ -1,8 +1,9 @@
-import { accessAPI } from "@/utils/api"
+import { unwrapApiResult } from "../api-result"
+import { accessAPI, accessAPIResult } from "@/utils/api"
 import { RiskProfilePayload, RiskArchetype, RiskProfile  } from "@/lib/clients/risk-profile"
 
 export async function CreateRiskProfile(risk_profile:RiskProfilePayload) {
-    let risk_profile_id = await accessAPI('/risk_profiles/create','POST', {'data': risk_profile})
+    let risk_profile_id = unwrapApiResult(await accessAPIResult('/risk_profiles/create','POST', {'data': risk_profile}))
     return risk_profile_id  
 }
 
@@ -17,6 +18,6 @@ export async function ReadRiskProfileById(id: string): Promise<RiskProfile | nul
 }
 
 export async function ListRiskArchetypes(): Promise<RiskArchetype[] | null> {
-    let risk_archetypes = await accessAPI('/risk_profiles/list','GET')
+    let risk_archetypes = unwrapApiResult(await accessAPIResult('/risk_profiles/list','GET'))
     return risk_archetypes
 }
