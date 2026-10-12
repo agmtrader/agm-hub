@@ -148,9 +148,9 @@ export function getBondRatingAllocationFromRiskArchetype(archetype: RiskArchetyp
     return { aaa: 0, bbb: 50, bb: 50 }
   }
 
-  const aaa = Math.round((Number(archetype.bonds_aaa_a) / totalBondShare) * 100)
-  const bbb = Math.round((Number(archetype.bonds_bbb) / totalBondShare) * 100)
-  const bb = Math.max(0, 100 - aaa - bbb)
+  const aaa = Number(((Number(archetype.bonds_aaa_a) / totalBondShare) * 100).toFixed(10))
+  const bbb = Number(((Number(archetype.bonds_bbb) / totalBondShare) * 100).toFixed(10))
+  const bb = Number(Math.max(0, 100 - aaa - bbb).toFixed(10))
   return { aaa, bbb, bb }
 }
 
@@ -220,7 +220,7 @@ export function buildPlannerAssetsForAllocation(
     bondBucketProfiles.bbb.volatility * weights.bbb +
     bondBucketProfiles.bb.volatility * weights.bb
 
-  bondAsset.benchmark = `AGM blended bond sleeve (${bondRatingAllocation.aaa}% A-AAA / ${bondRatingAllocation.bbb}% BBB / ${bondRatingAllocation.bb}% BB)`
+  bondAsset.benchmark = `Within corporate bonds (${bondRatingAllocation.aaa}% A-AAA / ${bondRatingAllocation.bbb}% BBB / ${bondRatingAllocation.bb}% BB)`
   bondAsset.note = 'Derived from the live AGM bond universe using the current bond rating sliders.'
   bondAsset.source =
     bondBucketProfiles.aaa.source === 'live' || bondBucketProfiles.bbb.source === 'live' || bondBucketProfiles.bb.source === 'live'
@@ -274,26 +274,16 @@ export function normalizeBondRatingAllocation(
   nextValue: number,
   lockedKeys: BondRatingKey[] = [],
 ): BondRatingAllocation {
-  const clamped = Math.max(0, Math.min(100, Math.round(nextValue)))
+  const clamped = Math.max(0, Math.min(100, Number(nextValue.toFixed(10))))
   const nextAllocation = { ...allocation, [changedKey]: clamped }
-  let total = bondRatingKeys.reduce((sum, key) => sum + nextAllocation[key], 0)
   const locked = new Set(lockedKeys.filter((key) => key !== changedKey))
   const adjustableKeys = bondRatingKeys.filter((key) => key !== changedKey && !locked.has(key))
+  let adjustment = 100 - bondRatingKeys.reduce((sum, key) => sum + nextAllocation[key], 0)
 
-  if (adjustableKeys.length === 0) return nextAllocation
-
-  while (total > 100) {
-    const target = adjustableKeys.find((key) => nextAllocation[key] > 0)
-    if (!target) break
-    nextAllocation[target] -= 1
-    total -= 1
-  }
-
-  while (total < 100) {
-    const target = adjustableKeys[0]
-    if (!target) break
-    nextAllocation[target] += 1
-    total += 1
+  for (const key of adjustableKeys) {
+    const delta = Math.max(-nextAllocation[key], Math.min(100 - nextAllocation[key], adjustment))
+    nextAllocation[key] = Number((nextAllocation[key] + delta).toFixed(10))
+    adjustment -= delta
   }
 
   return nextAllocation
