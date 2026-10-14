@@ -130,7 +130,7 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
       setIsUploading(true)
       const base64Data = await getBase64(file)
       const sha1Checksum = await calculateSHA1(file)
-      await UploadContactDocument(
+      const uploaded = await UploadContactDocument(
         accountId,
         contactId,
         file.name,
@@ -145,6 +145,9 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
         expiryDate ? formatTimestamp(expiryDate) : '',
         comment || null
       )
+      if (uploaded?.duplicate) {
+        toast({ title: 'Document saved', description: uploaded.link_reused ? 'This file is already attached to this contact.' : 'The existing file was reused and linked to this contact.', variant: 'success' })
+      }
       setIsDialogOpen(false)
       setFiles(null)
       setDocumentCategoryKey('')
@@ -164,7 +167,7 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
   async function handleDelete(row: any) {
     if (!row?.document_id) return
     try {
-      await DeleteContactDocument(row.document_id)
+      await DeleteContactDocument(row.document_id, row.id)
       await refreshLinks()
     } catch {
       toast({ title: 'Error', description: 'Failed to delete document', variant: 'destructive' })
@@ -206,7 +209,8 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
         documentLanguage || undefined,
         comment || undefined,
         issuedDate ? formatTimestamp(issuedDate) : null,
-        expiryDate ? formatTimestamp(expiryDate) : null
+        expiryDate ? formatTimestamp(expiryDate) : null,
+        editingRow.id
       )
       setIsEditDialogOpen(false)
       await refreshLinks()

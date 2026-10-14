@@ -90,10 +90,12 @@ export async function UpdateContactDocument(
     document_language?: string,
     comment?: string,
     issued_date?: string | null,
-    expiry_date?: string | null
+    expiry_date?: string | null,
+    contactDocumentID?: string
 ): Promise<any> {
     return accessAPI('/contacts/documents', 'PATCH', {
         document_id: documentID,
+        contact_document_id: contactDocumentID,
         category,
         type,
         document_language,
@@ -103,8 +105,8 @@ export async function UpdateContactDocument(
     })
 }
 
-export async function DeleteContactDocument(documentID: string): Promise<any> {
-    return accessAPI('/contacts/documents', 'DELETE', { document_id: documentID })
+export async function DeleteContactDocument(documentID: string, contactDocumentID?: string): Promise<any> {
+    return accessAPI('/contacts/documents', 'DELETE', { document_id: documentID, contact_document_id: contactDocumentID })
 }
 
 export async function CreateContactScreening(
