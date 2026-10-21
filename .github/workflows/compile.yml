@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [24.x]
 
     steps:
       - name: Checkout repository
@@ -25,10 +25,13 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn
+        run: yarn install --frozen-lockfile
 
       - name: Hub API error transport regressions
         run: node --test scripts/test-api-errors.cjs scripts/test-read-batches.cjs
+
+      - name: Image optimizer security regressions
+        run: node --test scripts/test-next-image-security.cjs
 
       - name: Next.js build
         run: yarn build

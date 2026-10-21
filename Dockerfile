@@ -1,6 +1,6 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:18-alpine AS base
+FROM node:24-alpine AS base
 
 # Add labels for metadata
 LABEL maintainer="AGM Technology"

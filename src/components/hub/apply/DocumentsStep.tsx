@@ -6,17 +6,17 @@ import React, { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { Application } from '@/lib/clients/application'
 import ContactDocuments from './ContactDocuments'
-import { ReadContactByID } from '@/utils/clients/contact'
-import { ReadAccountContacts } from '@/utils/clients/account'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface DocumentsStepProps {
   form?: UseFormReturn<Application>
   formData?: Application
   accountId?: string | null
+  contactSync?: 'pending' | 'ready' | 'failed'
+  onRetryContacts?: () => void
 }
 
-const DocumentsStep = ({ accountId }: DocumentsStepProps) => {
+const DocumentsStep = ({ accountId, contactSync = 'ready', onRetryContacts }: DocumentsStepProps) => {
   const [contacts, setContacts] = useState<Array<{ id: string; name: string }>>([])
 
   const [error, setError] = useState<string | null>(null)
@@ -27,7 +27,7 @@ const DocumentsStep = ({ accountId }: DocumentsStepProps) => {
     setContacts([])
     setError(null)
     const resolveContacts = async () => {
-      if (!accountId) {
+      if (!accountId || contactSync !== 'ready') {
         setContacts([])
         return
       }
@@ -35,6 +35,7 @@ const DocumentsStep = ({ accountId }: DocumentsStepProps) => {
       setLoading(true)
       try {
         const rows = await ReadApplicationDocumentHolders(accountId)
+        if (rows.length === 0) throw new Error('No document holders are linked to this application. Try contact setup again.')
         if (active) setContacts(rows)
       } catch (failure) {
         if (active) setError(failure instanceof Error ? failure.message : 'Document holders could not be loaded.')
@@ -43,7 +44,7 @@ const DocumentsStep = ({ accountId }: DocumentsStepProps) => {
 
     void resolveContacts()
     return () => { active = false }
-  }, [accountId, attempt])
+  }, [accountId, attempt, contactSync])
 
   if (!accountId) {
     return (
@@ -54,7 +55,12 @@ const DocumentsStep = ({ accountId }: DocumentsStepProps) => {
     )
   }
 
-  if (error) return <div role="alert"><p>{error}</p><Button onClick={() => setAttempt(value => value + 1)}>Try again</Button></div>
+  if (contactSync === 'pending') return <p role="status">Preparing document holders…</p>
+  if (contactSync === 'failed') return <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2">
+    <p>Your progress is saved. Document holders could not be prepared.</p>
+    <Button type="button" onClick={onRetryContacts}>Try contact setup again</Button>
+  </div>
+  if (error) return <div role="alert"><p>{error}</p><Button type="button" onClick={() => setAttempt(value => value + 1)}>Try again</Button></div>
   if (loading) return <p role="status">Loading document holders…</p>
   return (
     <div className="space-y-4">
