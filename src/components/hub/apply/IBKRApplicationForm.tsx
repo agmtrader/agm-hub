@@ -29,6 +29,7 @@ import { individual_form, individual_form_2, institutional_form, joint_form } fr
 import { Loader2 } from 'lucide-react'
 import Confetti from '@/components/ui/confetti'
 import { createApplicationSyncQueue } from '@/utils/clients/application-sync-queue'
+import { applicationSyncFailure, ApplicationSyncError, ApplicationSyncFailure, ApplicationSyncOperation } from '@/utils/clients/application-sync-feedback'
 
 export enum FormStep {
   ACCOUNT_TYPE = 0,
@@ -75,6 +76,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
   const syncGeneration = useRef(0);
   const mounted = useRef(true);
   const [contactSync, setContactSync] = useState<'pending' | 'ready' | 'failed'>('pending');
+  const [syncFailure, setSyncFailure] = useState<ApplicationSyncFailure | null>(null);
   useEffect(() => {
     mounted.current = true;
     return () => { mounted.current = false; };
@@ -244,6 +246,9 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     linkedContacts: LinkedContact[]
   ) {
     const documents = values.documents || [];
+    // Reuse one saved-file inventory per holder for this attempt only. Update it
+    // after confirmed uploads so repeated files do not trigger extra reads/writes.
+    const holderChecksums = new Map<string, Set<string>>();
 
     for (const document of documents) {
       if (!document?.attachedFile || !document?.payload) continue;
@@ -269,11 +274,14 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
         if (candidates.length !== 1) throw new Error('A document signer cannot be resolved to one saved holder. Please review the document and retry.');
         const contactId = candidates[0].contact_id;
 
-        const existing = await ReadContactDocuments(contactId);
-        const alreadyUploaded = (existing?.documents || []).some(
-          (doc: any) => doc?.sha1_checksum && doc.sha1_checksum === document.attachedFile?.sha1Checksum
-        );
-        if (alreadyUploaded) continue;
+        let checksums = holderChecksums.get(contactId);
+        if (!checksums) {
+          const existing = await ReadContactDocuments(contactId);
+          checksums = new Set<string>((existing?.documents || []).map(doc => doc.sha1_checksum).filter(Boolean));
+          holderChecksums.set(contactId, checksums);
+        }
+        const checksum = document.attachedFile.sha1Checksum;
+        if (checksum && checksums.has(checksum)) continue;
 
         await UploadContactDocument(
           accountIdForDocuments,
@@ -290,6 +298,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
           (document as any).expiryDate || '',
           null,
         );
+        if (checksum) checksums.add(checksum);
       }
     }
   }
@@ -298,8 +307,9 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     const snapshot = structuredClone(values);
     const generation = ++syncGeneration.current;
     setContactSync('pending');
+    setSyncFailure(null);
     return syncQueue.current.enqueue(async () => {
-      let operation = 'contacts_and_links';
+      let operation: ApplicationSyncOperation = 'contacts_and_links';
       try {
         const linked = await ReconcileApplicationContacts(id);
         // Screening stays at finalization, after financial/regulatory inputs
@@ -313,20 +323,20 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
         if (mounted.current && generation === syncGeneration.current) setContactSync('ready');
         return linked;
       } catch (error) {
-        if (mounted.current && generation === syncGeneration.current) setContactSync('failed');
+        const failure = applicationSyncFailure(error, operation);
+        if (mounted.current && generation === syncGeneration.current) {
+          setContactSync('failed');
+          setSyncFailure(failure);
+          if (!finalize) toast({ title: t('forms.application_sync.title'),
+            description: t(`forms.application_sync.${failure.kind}`), variant: 'destructive' });
+        }
         const context = { accountId: id, customerType: snapshot.customer.type, operation,
-          error: error instanceof Error ? error.message : String(error) };
+          failureKind: failure.kind, requestId: failure.requestId };
         console.error('Application reconciliation failed', context);
         await sendClientLog('application_reconciliation_failed', context, 'ERROR');
-        throw error;
+        throw new ApplicationSyncError(failure);
       }
     });
-  }
-
-  function reportBackgroundSyncFailure() {
-    if (mounted.current) toast({ title: 'Application needs attention',
-      description: 'Your progress is saved. Contact setup failed; try again from Documents or continue to retry. Submission requires successful setup.',
-      variant: 'destructive' });
   }
 
   const sanitizeEmploymentDetails = (application: Application): Application => {
@@ -763,7 +773,8 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
         );
         toast({
           title: "Submission Failed",
-          description: error instanceof Error ? error.message : 'There was an error submitting your application. Please try again.',
+          description: error instanceof ApplicationSyncError ? t(`forms.application_sync.${error.failure.kind}`)
+            : error instanceof Error ? error.message : 'There was an error submitting your application. Please try again.',
           variant: "destructive"
         });
       } finally {
@@ -840,7 +851,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
     const attempt = queueReconciliation(sanitizedValues, persistedAccountId, finalizeApplication);
     let linkedContacts: LinkedContact[] = [];
     if (finalizeApplication) linkedContacts = await attempt;
-    else void attempt.catch(reportBackgroundSyncFailure);
+    else void attempt.catch(() => undefined);
     return { persistedAccountId, linkedContacts };
   }
 
@@ -960,11 +971,12 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
 
             {currentStep === FormStep.DOCUMENTS && (
               <>
-                <DocumentsStep form={form} accountId={accountId} contactSync={contactSync}
+                <DocumentsStep form={form} accountId={accountId} contactSync={contactSync} syncFailure={syncFailure}
+                  onReviewPersonalInfo={() => setCurrentStep(FormStep.PERSONAL_INFO)}
                   onRetryContacts={() => {
                     if (!persistedAccount.current) return;
                     const values = sanitizeApplication(normalizeJointW8Signers(form.getValues()));
-                    void queueReconciliation(values, persistedAccount.current, false).catch(reportBackgroundSyncFailure);
+                    void queueReconciliation(values, persistedAccount.current, false).catch(() => undefined);
                   }} />
                 <div className="flex justify-between">
                   <Button

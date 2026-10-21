@@ -7,16 +7,22 @@ import { UseFormReturn } from 'react-hook-form'
 import { Application } from '@/lib/clients/application'
 import ContactDocuments from './ContactDocuments'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import ApplicationSyncStatus from './ApplicationSyncStatus'
+import { ApplicationSyncFailure } from '@/utils/clients/application-sync-feedback'
+import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
 interface DocumentsStepProps {
   form?: UseFormReturn<Application>
   formData?: Application
   accountId?: string | null
   contactSync?: 'pending' | 'ready' | 'failed'
+  syncFailure?: ApplicationSyncFailure | null
   onRetryContacts?: () => void
+  onReviewPersonalInfo?: () => void
 }
 
-const DocumentsStep = ({ accountId, contactSync = 'ready', onRetryContacts }: DocumentsStepProps) => {
+const DocumentsStep = ({ accountId, contactSync = 'ready', syncFailure, onRetryContacts, onReviewPersonalInfo }: DocumentsStepProps) => {
+  const { t } = useTranslationProvider()
   const [contacts, setContacts] = useState<Array<{ id: string; name: string }>>([])
 
   const [error, setError] = useState<string | null>(null)
@@ -37,8 +43,8 @@ const DocumentsStep = ({ accountId, contactSync = 'ready', onRetryContacts }: Do
         const rows = await ReadApplicationDocumentHolders(accountId)
         if (rows.length === 0) throw new Error('No document holders are linked to this application. Try contact setup again.')
         if (active) setContacts(rows)
-      } catch (failure) {
-        if (active) setError(failure instanceof Error ? failure.message : 'Document holders could not be loaded.')
+      } catch {
+        if (active) setError('load_failed')
       } finally { if (active) setLoading(false) }
     }
 
@@ -49,19 +55,17 @@ const DocumentsStep = ({ accountId, contactSync = 'ready', onRetryContacts }: Do
   if (!accountId) {
     return (
       <Card>
-        <CardHeader><CardTitle>Documents</CardTitle></CardHeader>
-        <CardContent>Save personal info first to create account/contact links.</CardContent>
+        <CardHeader><CardTitle>{t('forms.application_sync.documents_title')}</CardTitle></CardHeader>
+        <CardContent>{t('forms.application_sync.save_first')}</CardContent>
       </Card>
     )
   }
 
-  if (contactSync === 'pending') return <p role="status">Preparing document holders…</p>
-  if (contactSync === 'failed') return <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2">
-    <p>Your progress is saved. Document holders could not be prepared.</p>
-    <Button type="button" onClick={onRetryContacts}>Try contact setup again</Button>
-  </div>
-  if (error) return <div role="alert"><p>{error}</p><Button type="button" onClick={() => setAttempt(value => value + 1)}>Try again</Button></div>
-  if (loading) return <p role="status">Loading document holders…</p>
+  if (contactSync === 'pending') return <p role="status">{t('forms.application_sync.preparing')}</p>
+  if (contactSync === 'failed') return <ApplicationSyncStatus failure={syncFailure || { kind: 'temporary' }}
+    onRetry={onRetryContacts} onReviewPersonalInfo={onReviewPersonalInfo} />
+  if (error) return <div role="alert"><p>{t('forms.application_sync.load_failed')}</p><Button type="button" onClick={() => setAttempt(value => value + 1)}>{t('forms.application_sync.retry')}</Button></div>
+  if (loading) return <p role="status">{t('forms.application_sync.loading')}</p>
   return (
     <div className="space-y-4">
       {contacts.map((c) => (

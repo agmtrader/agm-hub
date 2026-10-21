@@ -753,6 +753,23 @@
         }
     },
     "forms": {
+        "application_sync": {
+            "title": "Application needs attention",
+            "invalid": "Your progress is saved. Review each applicant’s name, date of birth, identification number and issuing country in Personal Information. Save that step again after correcting the details.",
+            "review": "Your progress is saved. We could not safely match the applicant details to our records. Contact your AGM advisor for an identity review before submitting. Retrying the same details will not resolve this.",
+            "support": "Your progress is saved, but this application cannot complete setup right now. Contact your AGM advisor before submitting. You do not need to start another application.",
+            "temporary": "Your progress is saved. Applicant setup is temporarily unavailable. Go to Documents to try setup again before submitting.",
+            "documents": "Your progress is saved. Supporting documents could not finish saving. Try setup again before submitting; files already saved will be reused.",
+            "screenings": "Your progress is saved. The required applicant checks could not finish. Try setup again before submitting; submission remains blocked until the checks succeed.",
+            "reference": "Support reference",
+            "retry": "Try again",
+            "review_personal": "Review Personal Information",
+            "preparing": "Preparing document holders…",
+            "loading": "Loading document holders…",
+            "load_failed": "Document holders could not be loaded. Try again.",
+            "documents_title": "Documents",
+            "save_first": "Save Personal Information before adding documents."
+        },
         "search": "Search...",
         "no_results": "No results found.",
         "submit": "Submit",

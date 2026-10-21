@@ -28,7 +28,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Hub API error transport regressions
-        run: node --test scripts/test-api-errors.cjs scripts/test-read-batches.cjs
+        run: node --test scripts/test-api-errors.cjs scripts/test-read-batches.cjs scripts/test-application-sync-feedback.cjs scripts/test-application-company-contacts.cjs scripts/test-application-sync-queue.cjs
 
       - name: Image optimizer security regressions
         run: node --test scripts/test-next-image-security.cjs

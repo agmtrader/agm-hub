@@ -753,6 +753,23 @@
         }
     },
     "forms": {
+        "application_sync": {
+            "title": "La solicitud requiere atención",
+            "invalid": "Tu progreso está guardado. Revisa el nombre, la fecha de nacimiento, el número de identificación y el país emisor de cada solicitante en Información personal. Guarda ese paso de nuevo después de corregir los datos.",
+            "review": "Tu progreso está guardado. No pudimos vincular de forma segura los datos del solicitante con nuestros registros. Contacta a tu asesor de AGM para revisar la identidad antes de enviar la solicitud. Reintentar con los mismos datos no resolverá el problema.",
+            "support": "Tu progreso está guardado, pero no podemos completar la preparación de esta solicitud en este momento. Contacta a tu asesor de AGM antes de enviarla. No necesitas iniciar otra solicitud.",
+            "temporary": "Tu progreso está guardado. La preparación de los solicitantes no está disponible temporalmente. Reintenta desde Documentos antes de enviar la solicitud.",
+            "documents": "Tu progreso está guardado. No se pudieron terminar de guardar los documentos de respaldo. Reintenta antes de enviar la solicitud; se reutilizarán los archivos ya guardados.",
+            "screenings": "Tu progreso está guardado. No se pudieron completar las revisiones requeridas de los solicitantes. Reintenta antes de enviar la solicitud; el envío seguirá bloqueado hasta que las revisiones se completen.",
+            "reference": "Referencia para soporte",
+            "retry": "Reintentar",
+            "review_personal": "Revisar información personal",
+            "preparing": "Preparando los titulares de los documentos…",
+            "loading": "Cargando los titulares de los documentos…",
+            "load_failed": "No se pudieron cargar los titulares de los documentos. Reintenta.",
+            "documents_title": "Documentos",
+            "save_first": "Guarda la información personal antes de agregar documentos."
+        },
         "search": "Buscar...",
         "no_results": "No se encontraron resultados.",
         "submit": "Enviar",
