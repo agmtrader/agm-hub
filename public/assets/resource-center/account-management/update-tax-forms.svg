@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <rect width="640" height="360" rx="24" fill="#f1f5f9"/>
+  <rect x="106" y="62" width="194" height="248" rx="16" fill="#062d47" opacity=".08"/>
+  <rect x="98" y="50" width="194" height="248" rx="16" fill="#fff" stroke="#2571a5" stroke-width="3"/>
+  <rect x="338" y="62" width="194" height="248" rx="16" fill="#062d47" opacity=".08"/>
+  <rect x="330" y="50" width="194" height="248" rx="16" fill="#fff" stroke="#2571a5" stroke-width="3"/>
+  <g fill="#062d47" font-family="Arial, sans-serif" font-size="44" font-weight="700">
+    <text x="132" y="122">W-8</text>
+    <text x="364" y="122">W-9</text>
+  </g>
+  <g stroke="#5996c0" stroke-width="8" stroke-linecap="round">
+    <path d="M134 160h120m-120 32h88m-88 32h120M366 160h120m-120 32h88m-88 32h120"/>
+  </g>
+  <circle cx="505" cy="275" r="40" fill="#f26c0d"/>
+  <path d="m486 275 13 13 25-27" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
