@@ -93,6 +93,7 @@ const RiskForm = () => {
       const riskProfilePayload: RiskProfilePayload = {
         name: values.name,
         email: values.email,
+        estimated_deposit: values.starting_amount,
         score: risk_score,
         answers,
         raw_answers,

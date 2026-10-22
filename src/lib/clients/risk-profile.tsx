@@ -5,6 +5,7 @@ export interface RiskProfilePayload {
   email: string;
   contact_id?: string | null;
   score: number;
+  estimated_deposit?: number | null;
   answers: {
     gain: string | undefined;
     loss: string | undefined;

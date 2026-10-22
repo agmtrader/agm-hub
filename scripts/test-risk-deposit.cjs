@@ -68,3 +68,15 @@ test('proposal request sends the deposit separately from risk answers and retain
   await api.CreateInvestmentProposal(profile)
   assert.equal(requests[1][2].starting_amount, undefined)
 })
+
+test('risk-profile request preserves the estimated deposit independently of proposal creation', async () => {
+  let request
+  const api = load('src/utils/clients/risk-profile.ts', {
+    '../api-result': { unwrapApiResult: (value) => value.data },
+    '@/utils/api': { accessAPIResult: async (...args) => { request = args; return { ok: true, data: { id: 'profile' } } } },
+  })
+  const payload = { name: values.name, email: values.email, score: 2.25, answers: {}, estimated_deposit: 12345.67 }
+  await api.CreateRiskProfile(payload)
+  assert.equal(request[0], '/risk_profiles/create')
+  assert.equal(request[2].data.estimated_deposit, 12345.67)
+})
