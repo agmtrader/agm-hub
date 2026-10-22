@@ -37,6 +37,7 @@ export type PortfolioPlanPayload = {
   account_id?: string | null
   name?: string | null
   target_return: number
+  total_assets?: number
   starting_amount: number
   risk_tolerance: RiskTolerance
   selected_risk_archetype?: string | null

@@ -2,6 +2,7 @@ import { Base } from "./base"
 
 export interface Bond {
     symbol: string
+    percentage?: number
     current_yield: number
     equivalent: string
 }

@@ -1,4 +1,5 @@
 'use client'
+import { proposalBucketStats } from '@/lib/clients/proposal-presentation'
 import { ReadProposalRiskContext } from '@/utils/clients/read-batches'
 import { Card } from '@/components/ui/card'
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
@@ -198,30 +199,30 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
 
     // Build pie data where "count" actually represents the allocation percentage (×100 for nicer numbers)
     const pieData = GROUPS.map(group => {
-      const bonds = groupedBonds[group.key as keyof typeof groupedBonds] as Bond[]
+      const stats = proposalBucketStats(groupedBonds[group.key as keyof typeof groupedBonds] as Bond[], weights[group.key] || 0)
+      const bonds = stats.holdings as Bond[]
       return {
         name: group.label,
         // use percentage * 100 so the PieChart adds up to ~100 (or 1 if required)
-        count: (weights[group.key] || 0) * 100,
+        count: stats.weight * 100,
         color: group.color,
         bonds,
       }
-    })
+    }).filter((item) => item.count > 0)
 
     // Calculate stats per rating (table) – we still want the actual # of bonds
     const perRating = GROUPS.map(group => {
-      const bonds = groupedBonds[group.key as keyof typeof groupedBonds] as Bond[]
-      const avgYield = bonds.length
-        ? bonds.reduce((s, b) => s + (b['current_yield'] || 0), 0) / bonds.length
-        : 0
+      const stats = proposalBucketStats(groupedBonds[group.key as keyof typeof groupedBonds] as Bond[], weights[group.key] || 0)
+      const bonds = stats.holdings as Bond[]
+      const avgYield = stats.avgYield
       return {
         name: group.label,
         count: bonds.length,
         avgYield,
-        percentage: (weights[group.key] || 0) * 100,
+        percentage: stats.weight * 100,
         color: group.color,
       }
-    })
+    }).filter((row) => row.percentage > 0)
 
     // Expected average portfolio yield – weight each group's average by its allocation
     const averageYield = perRating.reduce((sum, item) => {
