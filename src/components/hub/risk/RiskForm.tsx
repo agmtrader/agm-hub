@@ -7,6 +7,7 @@ import 'chart.js/auto'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -105,7 +106,7 @@ const RiskForm = () => {
         id: riskProfileResponse.id,
         contact_id: riskProfileResponse.contact_id,
       }
-      const proposal = await CreateInvestmentProposal(savedRiskProfile)
+      const proposal = await CreateInvestmentProposal(savedRiskProfile, values.starting_amount)
       if (!proposal) throw new Error('Failed to create investment proposal')
 
       setInvestmentProposal(proposal)
@@ -149,6 +150,7 @@ const RiskForm = () => {
     >
       <Form {...form}>
         <motion.form 
+          noValidate
           onSubmit={form.handleSubmit(onSubmit)} 
           className="w-full flex flex-col gap-10 p-5"
           initial={{ y: 50, opacity: 0 }}
@@ -177,6 +179,30 @@ const RiskForm = () => {
                 <FormControl>
                   <Input type="email" placeholder="name@example.com" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="starting_amount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('risk.form.estimated_deposit')}</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    required
+                    inputMode="decimal"
+                    min="0.01"
+                    step="0.01"
+                    value={field.value ?? ''}
+                    onChange={(event) => field.onChange(event.target.value === '' ? null : Number(event.target.value))}
+                  />
+                </FormControl>
+                <FormDescription>{t('risk.form.estimated_deposit_help')}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

@@ -474,6 +474,9 @@
             "account_id": "Account number",
             "email": "Email",
             "name": "Name",
+            "estimated_deposit": "Estimated initial deposit (USD)",
+            "estimated_deposit_help": "How much do you plan to deposit initially? This amount will be used as the starting amount in your investment proposal.",
+            "estimated_deposit_error": "Enter a USD amount greater than zero with no more than two decimal places.",
             "type": {
                 "title": "What type of investor do you consider yourself?",
                 "conservative": "Conservative",

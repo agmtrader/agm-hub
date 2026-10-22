@@ -21,6 +21,11 @@ export const risk_assesment_schema = (t: (key: string) => string) => {
   return z.object({
     name: z.string({ required_error: t("forms.errors.input_required") }),
     email: z.string({ required_error: t("forms.errors.input_required") }).email(),
+    starting_amount: z.coerce
+      .number({ invalid_type_error: t("risk.form.estimated_deposit_error") })
+      .finite(t("risk.form.estimated_deposit_error"))
+      .positive(t("risk.form.estimated_deposit_error"))
+      .multipleOf(0.01, t("risk.form.estimated_deposit_error")),
     ...dynamicShape,
   });
 };

@@ -99,6 +99,7 @@ export const riskQuestions: Question[] = [
 export type RiskFormValues = {
   name: string;
   email: string;
+  starting_amount: number;
 } & {
   [K in QuestionKey]: number;
 };

@@ -8,8 +8,11 @@ import {
 } from "@/lib/clients/investment-proposals"
 import { PortfolioPlanPayload } from "@/lib/clients/portfolio-plans"
 
-export async function CreateInvestmentProposal(risk_profile: RiskProfilePayload & Pick<RiskProfile, 'id'>) {
-  const report = unwrapApiResult(await accessAPIResult('/investment_proposals/create/risk', 'POST', {'risk_profile': risk_profile}))
+export async function CreateInvestmentProposal(
+  risk_profile: RiskProfilePayload & Pick<RiskProfile, 'id'>,
+  starting_amount?: number,
+) {
+  const report = unwrapApiResult(await accessAPIResult('/investment_proposals/create/risk', 'POST', { risk_profile, starting_amount }))
   return report
 }
 

@@ -474,6 +474,9 @@
             "account_id": "Número de cuenta",
             "email": "Correo electrónico",
             "name": "Nombre",
+            "estimated_deposit": "Depósito inicial estimado (USD)",
+            "estimated_deposit_help": "¿Cuánto planeas depositar inicialmente? Este será el monto inicial de tu propuesta de inversión.",
+            "estimated_deposit_error": "Ingresa un monto en USD mayor que cero con un máximo de dos decimales.",
             "type": {
                 "title": "¿Qué tipo de inversor te consideras?",
                 "conservative": "Conservador",
