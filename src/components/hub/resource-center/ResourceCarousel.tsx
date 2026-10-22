@@ -36,6 +36,7 @@ export function ResourceCarousel({ slides, renderTitle }: ResourceCarouselProps)
         size="icon"
         className="rounded-full shadow-md absolute left-0 z-10"
         onClick={() => emblaApi?.scrollPrev()}
+        aria-label={lang === 'es' ? 'Recursos anteriores' : 'Previous resources'}
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -100,6 +101,7 @@ export function ResourceCarousel({ slides, renderTitle }: ResourceCarouselProps)
         size="icon"
         className="rounded-full shadow-md absolute right-0 z-10"
         onClick={() => emblaApi?.scrollNext()}
+        aria-label={lang === 'es' ? 'Recursos siguientes' : 'Next resources'}
       >
         <ChevronRight className="h-4 w-4" />
       </Button>

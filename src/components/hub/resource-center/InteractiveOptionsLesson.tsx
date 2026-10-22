@@ -1,25 +1,45 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import useEmblaCarousel from 'embla-carousel-react'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, ChevronRight, Circle, RefreshCcw, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle2, Circle, RefreshCcw } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { Input } from '@/components/ui/input'
+import { ResourceCarousel } from './ResourceCarousel'
 import { cn } from '@/lib/utils'
 import {
   optionsLessonContent,
+  getInteractiveLessonSlides,
   type OptionsLessonBuilderConfig,
   type OptionsLessonVisualConfig,
   type OptionsLessonVisualStrategy
 } from '@/lib/public/options-lesson'
 import { formatURL } from '@/utils/language/lang'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
+
+const pillTones = {
+  blue: 'border-secondary-light/60 bg-secondary-light/10 text-secondary',
+  orange: 'border-primary-light bg-primary-light/20 text-primary-dark',
+  green: 'border-green-500/40 bg-green-500/10 text-green-700',
+  red: 'border-red-500/40 bg-red-500/10 text-red-700',
+  neutral: 'border-slate-300 bg-slate-100 text-subtitle',
+}
+
+function LessonPill({ children, tone = 'blue' }: { children: ReactNode; tone?: keyof typeof pillTones }) {
+  return <Badge variant="outline" className={cn('px-3 py-1 font-medium', pillTones[tone])}>{children}</Badge>
+}
+
+function LessonFeedback({ correct, label, children }: { correct: boolean; label: string; children: ReactNode }) {
+  return (
+    <div role="status" className={cn('rounded-lg border px-4 py-3 text-sm', correct ? pillTones.green : pillTones.orange)}>
+      <p className="font-semibold">{label}</p>
+      <p className="mt-1.5 leading-6 text-foreground">{children}</p>
+    </div>
+  )
+}
 
 const GRAPH_MIN_PRICE = 50
 const GRAPH_MAX_PRICE = 150
@@ -232,12 +252,12 @@ function ScenarioConceptGraph({ visual }: { visual: OptionsLessonVisualConfig })
   const markerX = 10 + marker * 0.82
 
   return (
-    <div className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-[0_12px_30px_rgba(15,46,77,0.06)]">
-      <div className="mb-4 rounded-2xl border border-[#0b66ff]/15 bg-[#0b66ff]/5 px-4 py-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0b66ff]">{graphic.title}</p>
-        <p className="mt-2 text-sm leading-6 text-[#113a63]/72">{visual.description}</p>
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-secondary">{graphic.title}</p>
+        <p className="text-sm leading-6 text-subtitle">{visual.description}</p>
       </div>
-      <div className="rounded-[1.35rem] border border-slate-200 bg-slate-50/80 p-4">
+      <div className="rounded-xl bg-muted/60 p-3 sm:p-4">
         <svg viewBox="0 0 100 100" className="aspect-[1.22/1] h-full w-full" role="img" aria-label={graphic.title}>
           {[20, 40, 60, 80].map((point) => <line key={`h-${point}`} x1="7" y1={point} x2="95" y2={point} stroke="#e5e7eb" strokeWidth="0.35" />)}
           {(graphic.zones ?? []).map((zone, index) => <rect key={index} {...zone} fill={zone.color} rx="2" />)}
@@ -247,9 +267,9 @@ function ScenarioConceptGraph({ visual }: { visual: OptionsLessonVisualConfig })
           {graphic.labels.map((label, index) => <text key={index} x={label.x} y={label.y} textAnchor="middle" fontSize="3.15" fontWeight="600" fill={label.color ?? '#475569'}>{label.text}</text>)}
           <text x="50" y="98" textAnchor="middle" fontSize="3.2" fill="#64748b">{graphic.axis}</text>
         </svg>
-        <label className="mt-3 block text-xs font-semibold uppercase tracking-[0.14em] text-[#113a63]/55">
+        <label className="mt-3 block text-xs font-medium text-subtitle">
           {graphic.markerLabel ?? 'Explore'}
-          <input className="mt-2 block w-full accent-[#0b66ff]" type="range" min="0" max="100" value={marker} onChange={(event) => setMarker(Number(event.target.value))} />
+          <input className="mt-1 block h-10 w-full accent-secondary" type="range" min="0" max="100" value={marker} onChange={(event) => setMarker(Number(event.target.value))} />
         </label>
       </div>
     </div>
@@ -261,6 +281,11 @@ function BasicConceptGraph({ visual }: { visual: OptionsLessonVisualConfig }) {
     return <ScenarioConceptGraph visual={visual} />
   }
 
+  return <PayoffConceptGraph visual={visual} />
+}
+
+function PayoffConceptGraph({ visual }: { visual: OptionsLessonVisualConfig }) {
+  const { lang } = useTranslationProvider()
   const [price, setPrice] = useState(100)
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -294,10 +319,7 @@ function BasicConceptGraph({ visual }: { visual: OptionsLessonVisualConfig }) {
     return Math.abs(underlyingPrice - 100) - 12
   }
 
-  const graphPath = useMemo(
-    () => buildPath(GRAPH_MIN_PRICE, GRAPH_MAX_PRICE, getPnl),
-    [visual.strategy]
-  )
+  const graphPath = buildPath(GRAPH_MIN_PRICE, GRAPH_MAX_PRICE, getPnl)
 
   const currentPnl = getPnl(price)
   const currentX = priceToGraphX(price)
@@ -344,15 +366,15 @@ function BasicConceptGraph({ visual }: { visual: OptionsLessonVisualConfig }) {
             : '#f97316'
 
   return (
-    <div className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-[0_12px_30px_rgba(15,46,77,0.06)]">
-      {!visual.description && <p className="mb-4 text-sm leading-6 text-[#113a63]/75">{visual.instruction}</p>}
+    <div className="space-y-4">
+      {!visual.description && <p className="mb-4 text-sm leading-6 text-subtitle">{visual.instruction}</p>}
       {visual.description && (
-        <div className="mb-4 rounded-2xl border border-[#0b66ff]/15 bg-[#0b66ff]/5 px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0b66ff]">Visual guide</p>
-          <p className="mt-2 text-sm leading-6 text-[#113a63]/72">{visual.description}</p>
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-secondary">{lang === 'es' ? 'Guía visual' : 'Visual guide'}</p>
+          <p className="text-sm leading-6 text-subtitle">{visual.description}</p>
         </div>
       )}
-      <div className="rounded-[1.35rem] border border-slate-200 bg-slate-50/80 p-4">
+      <div className="rounded-xl bg-muted/60 p-3 sm:p-4">
         <div className="relative aspect-[1.22/1] w-full">
           <svg ref={svgRef} viewBox="0 0 100 100" className="h-full w-full touch-none">
             {Array.from({ length: 6 }, (_, index) => {
@@ -408,27 +430,26 @@ function BasicConceptGraph({ visual }: { visual: OptionsLessonVisualConfig }) {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
-          <p className="text-xs uppercase tracking-[0.18em] text-[#113a63]/45">{visual.currentPriceLabel}</p>
-          <p className="mt-2 text-lg font-semibold text-[#113a63]">${price}</p>
+      <dl className="grid grid-cols-3 gap-3 border-b border-slate-200 pb-4 text-sm">
+        <div>
+          <dt className="text-xs text-subtitle">{visual.currentPriceLabel}</dt>
+          <dd className="mt-1 font-semibold tabular-nums text-foreground">${price}</dd>
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
-          <p className="text-xs uppercase tracking-[0.18em] text-[#113a63]/45">{visual.strikeLabel}</p>
-          <p className="mt-2 text-lg font-semibold text-[#113a63]">${strike}</p>
+        <div>
+          <dt className="text-xs text-subtitle">{visual.strikeLabel}</dt>
+          <dd className="mt-1 font-semibold tabular-nums text-foreground">${strike}</dd>
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
-          <p className="text-xs uppercase tracking-[0.18em] text-[#113a63]/45">P&L</p>
-          <p className={cn('mt-2 text-lg font-semibold', currentPnl >= 0 ? 'text-emerald-600' : 'text-rose-600')}>
+        <div>
+          <dt className="text-xs text-subtitle">P&amp;L</dt>
+          <dd className={cn('mt-1 font-semibold tabular-nums', currentPnl >= 0 ? 'text-green-700' : 'text-red-700')}>
             {currentPnl >= 0 ? '+' : ''}${currentPnl.toFixed(0)}
-          </p>
+          </dd>
         </div>
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium">
-        {visual.maxLossLabel && <span className="rounded-full bg-rose-50 px-3 py-1 text-rose-700">{visual.maxLossLabel}</span>}
-        {visual.maxProfitLabel && <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-700">{visual.maxProfitLabel}</span>}
-        {visual.breakEvenLabel && <span className="rounded-full bg-amber-50 px-3 py-1 text-amber-700">{visual.breakEvenLabel}</span>}
+      </dl>
+      <div className="flex flex-wrap gap-2">
+        {visual.maxLossLabel && <LessonPill tone="red">{visual.maxLossLabel}</LessonPill>}
+        {visual.maxProfitLabel && <LessonPill tone="green">{visual.maxProfitLabel}</LessonPill>}
+        {visual.breakEvenLabel && <LessonPill tone="orange">{visual.breakEvenLabel}</LessonPill>}
       </div>
     </div>
   )
@@ -438,8 +459,8 @@ function getInitialBuilderState(config: OptionsLessonBuilderConfig): BuilderStat
   return {
     selectedLong: false,
     selectedShort: false,
-    longStrike: config.targetLongStrike + 10,
-    shortStrike: config.targetShortStrike - 10
+    longStrike: config.targetLongStrike + 5,
+    shortStrike: config.targetShortStrike - 5
   }
 }
 
@@ -567,62 +588,80 @@ function StrategyBuilderStep({
   }
 
   return (
-    <div className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-[0_12px_30px_rgba(15,46,77,0.06)]">
-      <div className="rounded-[1.35rem] border border-slate-200 bg-[#115ccf] px-5 py-4 text-white">
-        <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/70">{config.contractPrompt}</p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <button
-            type="button"
+    <div className="space-y-4">
+      <div>
+        <p className="text-sm font-medium text-foreground">{config.contractPrompt}</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            aria-pressed={state.selectedLong}
             onClick={() => toggleContract('long')}
-            className={cn(
-              'rounded-xl border px-4 py-2 text-sm font-semibold transition-all',
-              state.selectedLong ? 'border-white bg-white text-[#115ccf]' : 'border-white/40 bg-white/10 text-white'
-            )}
+            className={cn('h-10 rounded-full transition-colors', state.selectedLong ? 'border-secondary-light/60 bg-secondary-light/10 text-secondary hover:bg-secondary-light/20 hover:text-secondary' : 'border-slate-300 text-subtitle')}
           >
+            {state.selectedLong ? <CheckCircle2 className="mr-2 h-4 w-4" /> : <Circle className="mr-2 h-4 w-4" />}
             {config.longCallLabel}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="outline"
+            aria-pressed={state.selectedShort}
             onClick={() => toggleContract('short')}
-            className={cn(
-              'rounded-xl border px-4 py-2 text-sm font-semibold transition-all',
-              state.selectedShort ? 'border-white bg-white text-[#115ccf]' : 'border-white/40 bg-white/10 text-white'
-            )}
+            className={cn('h-10 rounded-full transition-colors', state.selectedShort ? 'border-primary-light bg-primary-light/20 text-primary-dark hover:bg-primary-light/30 hover:text-primary-dark' : 'border-slate-300 text-subtitle')}
           >
+            {state.selectedShort ? <CheckCircle2 className="mr-2 h-4 w-4" /> : <Circle className="mr-2 h-4 w-4" />}
             {config.shortCallLabel}
-          </button>
+          </Button>
         </div>
       </div>
 
-      <div className="mt-5 space-y-4">
-        <p className="text-sm text-[#113a63]/75">{config.instruction}</p>
+      <div className="space-y-4">
+        <p className="text-sm leading-6 text-subtitle">{config.instruction}</p>
+        {(state.selectedLong || state.selectedShort) && (
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs tabular-nums text-subtitle">
+            {state.selectedLong && <p>{config.longCallLabel}: ${config.longPremium} {config.premiumDebitLabel}</p>}
+            {state.selectedShort && <p>{config.shortCallLabel}: ${config.shortPremium} {config.premiumCreditLabel}</p>}
+          </div>
+        )}
 
-        <div className="flex flex-wrap gap-3">
-          {state.selectedLong && (
-            <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-[#113a63]">{config.longCallLabel} @ ${state.longStrike}</p>
-                <p className="text-xs text-[#113a63]/60">${config.longPremium} {config.premiumDebitLabel}</p>
-              </div>
-              <button type="button" onClick={() => toggleContract('long')} className="text-[#0b66ff]">
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-          {state.selectedShort && (
-            <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-[#113a63]">{config.shortCallLabel} @ ${state.shortStrike}</p>
-                <p className="text-xs text-[#113a63]/60">${config.shortPremium} {config.premiumCreditLabel}</p>
-              </div>
-              <button type="button" onClick={() => toggleContract('short')} className="text-[#0b66ff]">
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          )}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="space-y-2 text-sm font-medium text-foreground">
+            <span>{config.longStrikeLabel}: ${state.longStrike}</span>
+            <Input
+              type="range"
+              aria-label={config.longStrikeLabel}
+              min={GRAPH_MIN_PRICE + 5}
+              max={state.selectedShort ? state.shortStrike - 5 : GRAPH_MAX_PRICE - 5}
+              step={1}
+              value={state.longStrike}
+              disabled={!state.selectedLong}
+              className="h-8 border-0 p-0 shadow-none accent-primary"
+              onChange={(event) => {
+                const value = Number(event.target.value)
+                onReset()
+                setState((current) => ({ ...current, longStrike: value }))
+              }}
+            />
+          </label>
+          <label className="space-y-2 text-sm font-medium text-foreground">
+            <span>{config.shortStrikeLabel}: ${state.shortStrike}</span>
+            <Input
+              type="range"
+              aria-label={config.shortStrikeLabel}
+              min={state.selectedLong ? state.longStrike + 5 : GRAPH_MIN_PRICE + 5}
+              max={GRAPH_MAX_PRICE - 5}
+              step={1}
+              value={state.shortStrike}
+              disabled={!state.selectedShort}
+              className="h-8 border-0 p-0 shadow-none accent-primary"
+              onChange={(event) => {
+                const value = Number(event.target.value)
+                onReset()
+                setState((current) => ({ ...current, shortStrike: value }))
+              }}
+            />
+          </label>
         </div>
 
-        <div className="rounded-[1.35rem] border border-slate-200 bg-slate-50/80 p-4">
+        <div className="rounded-xl bg-muted/60 p-3 sm:p-4">
           <div className="relative aspect-[1.22/1] w-full">
             <svg ref={svgRef} viewBox="0 0 100 100" className="h-full w-full touch-none">
               {Array.from({ length: 6 }, (_, index) => {
@@ -673,23 +712,18 @@ function StrategyBuilderStep({
         </div>
 
         {revealed && (
-          <div className={cn('rounded-3xl border p-5', correct ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50')}>
-            <Badge className={cn('w-fit', correct ? 'bg-emerald-500 text-white hover:bg-emerald-500' : 'bg-amber-500 text-white hover:bg-amber-500')}>
-              {correct ? config.successLabel : config.retryLabel}
-            </Badge>
-            <p className="mt-4 text-sm leading-7 text-[#113a63]/80">
-              {correct
-                ? `${config.maxLossLabel}: $${maxLoss}. ${config.maxProfitLabel}: $${maxProfit}. ${config.breakEvenLabel}: $${breakEven}.`
-                : `${config.retryHint} $${config.targetLongStrike} and $${config.targetShortStrike}.`}
-            </p>
-          </div>
+          <LessonFeedback correct={correct} label={correct ? config.successLabel : config.retryLabel}>
+            {correct
+              ? `${config.maxLossLabel}: $${maxLoss}. ${config.maxProfitLabel}: $${maxProfit}. ${config.breakEvenLabel}: $${breakEven}.`
+              : `${config.retryHint} $${config.targetLongStrike} and $${config.targetShortStrike}.`}
+          </LessonFeedback>
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Button onClick={() => onCheck(builderCorrect)} className="bg-[#f97316] text-white hover:bg-[#ea6a10]">
+          <Button onClick={() => onCheck(builderCorrect)} className="min-h-10">
             {config.checkPlacement}
           </Button>
-          <Button variant="outline" onClick={handleReset} className="border-slate-200 bg-white text-[#113a63] hover:bg-slate-50 hover:text-[#113a63]">
+          <Button variant="outline" onClick={handleReset} className="min-h-10 border-slate-200 bg-background text-foreground hover:bg-muted">
             {config.resetStrategy}
           </Button>
         </div>
@@ -698,46 +732,21 @@ function StrategyBuilderStep({
   )
 }
 
-export function InteractiveOptionsLesson() {
+export function InteractiveOptionsLesson({ initialModuleId }: { initialModuleId?: string }) {
   const { lang } = useTranslationProvider()
   const content = optionsLessonContent[lang] ?? optionsLessonContent.en
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: false,
-    align: 'center',
-    slidesToScroll: 1,
-    breakpoints: {
-      '(min-width: 768px)': { slidesToScroll: 2 },
-      '(min-width: 1024px)': { slidesToScroll: 3 }
-    }
-  })
-  const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null)
   const [revealed, setRevealed] = useState(false)
   const [builderSolved, setBuilderSolved] = useState(false)
   const [completedSteps, setCompletedSteps] = useState<string[]>([])
 
-  const selectedModule = content.modules.find((module) => module.id === selectedModuleId) ?? null
+  const selectedModule = content.modules.find((module) => module.id === initialModuleId) ?? null
+  const chapterIndex = content.modules.findIndex((module) => module.id === initialModuleId)
+  const nextChapter = content.modules[chapterIndex + 1]
   const currentStep = selectedModule?.steps[currentStepIndex] ?? null
   const isCompleted = !!selectedModule && currentStepIndex >= selectedModule.steps.length
   const moduleProgress = selectedModule ? (Math.min(currentStepIndex, selectedModule.steps.length) / selectedModule.steps.length) * 100 : 0
-  const lessonProgress = content.modules.length === 0 ? 0 : (completedSteps.length / content.modules.reduce((sum, module) => sum + module.steps.length, 0)) * 100
-
-  const openModule = (moduleId: string) => {
-    setSelectedModuleId(moduleId)
-    setCurrentStepIndex(0)
-    setSelectedChoiceId(null)
-    setRevealed(false)
-    setBuilderSolved(false)
-  }
-
-  const backToModules = () => {
-    setSelectedModuleId(null)
-    setCurrentStepIndex(0)
-    setSelectedChoiceId(null)
-    setRevealed(false)
-    setBuilderSolved(false)
-  }
 
   const markStepCompleted = (stepId: string) => {
     setCompletedSteps((current) => (current.includes(stepId) ? current : [...current, stepId]))
@@ -782,142 +791,80 @@ export function InteractiveOptionsLesson() {
 
   if (!selectedModule) {
     return (
-      <section className="w-full max-w-7xl px-4 md:px-8">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_45px_rgba(15,46,77,0.08)] md:p-10">
-          <div className="flex flex-col gap-4">
-            <Badge className="w-fit border-0 bg-[#f97316]/10 px-4 py-1 text-[#f97316] hover:bg-[#f97316]/10">
-              {content.badge}
-            </Badge>
-            <h2 className="max-w-3xl text-4xl font-semibold tracking-tight text-[#113a63] md:text-5xl">{content.title}</h2>
-            <p className="max-w-3xl text-lg leading-8 text-[#113a63]/78">{content.description}</p>
-          </div>
-
-          <div className="mt-8 rounded-[1.5rem] border border-slate-200 bg-slate-50/60 p-5">
-            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-              <div>
-                <h3 className="text-2xl font-semibold text-[#113a63]">{content.browseTitle}</h3>
-                <p className="mt-2 max-w-3xl text-sm leading-7 text-[#113a63]/72">{content.browseDescription}</p>
-              </div>
-              <div className="min-w-[220px]">
-                <div className="mb-2 flex items-center justify-between text-sm text-[#113a63]/65">
-                  <span>{content.lessonProgressLabel}</span>
-                  <span>{completedSteps.length}</span>
-                </div>
-                <Progress value={lessonProgress} className="h-2 bg-slate-100 [&>div]:bg-[#f97316]" />
-              </div>
-            </div>
-          </div>
-
-          <div className="relative mt-8 flex w-full items-center justify-center">
-            <Button
-              variant="outline"
-              size="icon"
-              className="absolute left-0 z-10 rounded-full shadow-md"
-              onClick={() => emblaApi?.scrollPrev()}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="w-full overflow-hidden px-8" ref={emblaRef}>
-              <div className="flex">
-                {content.modules.map((module, index) => (
-                  <div key={module.id} className="flex-[0_0_100%] px-4 md:flex-[0_0_50%] lg:flex-[0_0_33.33%]">
-                    <motion.button
-                      type="button"
-                      initial={{ opacity: 0, y: 18 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.06, duration: 0.3 }}
-                      onClick={() => openModule(module.id)}
-                      className="h-full w-full overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white text-left shadow-[0_14px_32px_rgba(15,46,77,0.07)] transition-transform hover:-translate-y-1"
-                    >
-                      <div className="relative h-44 overflow-hidden border-b border-slate-200 bg-[#fbf8f1]">
-                        <Image
-                          src={module.image}
-                          alt=""
-                          fill
-                          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="space-y-3 p-6">
-                        <p className="text-sm font-medium text-[#0b66ff]">{module.level}</p>
-                        <h3 className="text-3xl font-semibold leading-tight text-[#2f3136]">{module.title}</h3>
-                        <p className="text-base leading-8 text-[#3f4650]">{module.description}</p>
-                        <div className="flex items-center justify-between gap-4 pt-2">
-                          <span className="text-sm font-medium text-[#113a63]/55">
-                            {module.steps.length} {content.questionPlural}
-                          </span>
-                          <span className="inline-flex items-center gap-2 text-sm font-medium text-[#f97316]">
-                            {content.startModule}
-                            <ArrowRight className="h-4 w-4" />
-                          </span>
-                        </div>
-                      </div>
-                    </motion.button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              className="absolute right-0 z-10 rounded-full shadow-md"
-              onClick={() => emblaApi?.scrollNext()}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+      <section className="flex w-full flex-col items-center gap-6">
+        <div className="flex flex-col items-center gap-4 px-6 text-center">
+          <Link href={formatURL('/resource-center#interactive-learning', lang)} className="inline-flex items-center gap-2 text-sm text-foreground/70 hover:text-primary">
+            <ArrowLeft className="h-4 w-4" />
+            {lang === 'es' ? 'Volver al Centro de Recursos' : 'Back to Resource Center'}
+          </Link>
+          <h1 className="text-3xl font-semibold text-foreground">{lang === 'es' ? 'Opciones' : 'Options'}</h1>
+          <p className="max-w-2xl text-subtitle">{content.description}</p>
         </div>
+        <ResourceCarousel slides={getInteractiveLessonSlides(lang)} />
       </section>
     )
   }
 
   return (
-    <section className="w-full max-w-7xl px-4 md:px-8">
-      <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_45px_rgba(15,46,77,0.08)] md:p-10">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-3">
-            <button type="button" onClick={backToModules} className="inline-flex items-center gap-2 text-sm font-medium text-[#113a63]/70">
+    <section className="w-full max-w-6xl px-5 sm:px-8">
+      <div className="space-y-8">
+        <div className="flex flex-col gap-6 border-b border-slate-200 pb-7 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0 space-y-3">
+            <Link href={formatURL('/resource-center/interactive-learning/options', lang)} className="inline-flex min-h-10 items-center gap-2 text-sm font-medium text-subtitle transition-colors hover:text-primary">
               <ArrowLeft className="h-4 w-4" />
               {content.backToModules}
-            </button>
-            <div className="flex flex-wrap items-center gap-3">
-              <Badge className="border-0 bg-[#f97316]/10 px-4 py-1 text-[#f97316] hover:bg-[#f97316]/10">{selectedModule.level}</Badge>
-              <Badge variant="outline" className="border-slate-200 text-[#113a63]">{selectedModule.steps.length} {content.questionPlural}</Badge>
+            </Link>
+            <div className="flex flex-wrap items-center gap-2">
+              <LessonPill>{lang === 'es' ? 'Capítulo' : 'Chapter'} {chapterIndex + 1}</LessonPill>
+              <LessonPill tone="orange">{selectedModule.level}</LessonPill>
+              <span className="text-xs tabular-nums text-subtitle">{selectedModule.steps.length} {content.questionPlural}</span>
             </div>
-            <h2 className="text-4xl font-semibold tracking-tight text-[#113a63] md:text-5xl">{selectedModule.title}</h2>
-            <p className="max-w-3xl text-base leading-8 text-[#113a63]/76">{selectedModule.description}</p>
+            <h1 className="text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{selectedModule.title}</h1>
+            <p className="max-w-2xl text-sm leading-6 text-subtitle">{selectedModule.description}</p>
           </div>
-          <div className="min-w-[260px]">
-            <div className="mb-2 flex items-center justify-between text-sm text-[#113a63]/65">
+          <div className="w-full shrink-0 lg:w-52">
+            <div className="mb-2 flex items-center justify-between gap-3 text-xs tabular-nums text-subtitle">
               <span>{content.moduleProgressLabel}</span>
               <span>{Math.min(currentStepIndex, selectedModule.steps.length)} / {selectedModule.steps.length}</span>
             </div>
-            <Progress value={moduleProgress} className="h-2 bg-slate-100 [&>div]:bg-[#f97316]" />
+            <Progress value={moduleProgress} className="h-1.5 bg-muted [&>div]:bg-primary" />
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
+        <div className="grid items-start gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-10">
           <div>
             {isCompleted ? (
-              <Card className="border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,46,77,0.06)]">
-                <CardContent className="p-8">
-                  <Badge className="border-0 bg-emerald-100 text-emerald-700 hover:bg-emerald-100">{content.moduleComplete}</Badge>
-                  <h3 className="mt-5 text-3xl font-semibold text-[#113a63]">{content.moduleCompletedTitle}</h3>
-                  <p className="mt-4 text-sm leading-7 text-[#113a63]/78">{content.moduleCompletedDescription}</p>
+              <div className="py-2">
+                  <LessonPill tone="green">{content.moduleComplete}</LessonPill>
+                  <h2 className="mt-4 text-2xl font-semibold text-foreground">{content.moduleCompletedTitle}</h2>
+                  <p className="mt-4 text-sm leading-7 text-subtitle">{content.moduleCompletedDescription}</p>
                   <div className="mt-6 flex flex-wrap gap-3">
-                    <Button onClick={handleRestartModule} className="bg-[#f97316] text-white hover:bg-[#ea6a10]">
+                    {nextChapter ? (
+                      <Button asChild>
+                        <Link href={formatURL(`/resource-center/interactive-learning/options?module=${nextChapter.id}`, lang)}>
+                          {lang === 'es' ? 'Siguiente capítulo' : 'Next chapter'}
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button asChild>
+                        <Link href={formatURL('/resource-center/interactive-learning/options', lang)}>
+                          {lang === 'es' ? 'Todos los capítulos' : 'All chapters'}
+                        </Link>
+                      </Button>
+                    )}
+                    <Button onClick={handleRestartModule} variant="outline">
                       <RefreshCcw className="mr-2 h-4 w-4" />
                       {content.restartModule}
                     </Button>
-                    <Button asChild variant="outline" className="border-slate-200 bg-white text-[#113a63] hover:bg-slate-50 hover:text-[#113a63]">
+                    <Button asChild variant="outline" className="min-h-10 border-slate-200 bg-background text-foreground hover:bg-muted">
                       <Link href={formatURL('/resource-center/learning/1', lang)}>
                         {content.reviewVideos}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+              </div>
             ) : currentStep?.kind === 'builder' && currentStep.builder ? (
               <StrategyBuilderStep
                 config={currentStep.builder}
@@ -934,16 +881,15 @@ export function InteractiveOptionsLesson() {
             ) : null}
           </div>
 
-          <Card className="border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,46,77,0.06)]">
-            <CardContent className="flex flex-col gap-6 p-6 md:p-8">
+          <div className="flex min-w-0 flex-col gap-5 border-t border-slate-200 pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
               {isCompleted ? (
                 <div className="space-y-4">
-                  <p className="text-sm font-medium text-[#113a63]/65">{content.keepLearning}</p>
+                  <p className="text-sm font-medium text-subtitle">{content.keepLearning}</p>
                   <div className="grid gap-3">
                     {selectedModule.steps.map((step) => (
-                      <div key={step.id} className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3">
+                      <div key={step.id} className="border-b border-slate-200 py-3 last:border-b-0">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-[#113a63]">{step.title}</p>
+                          <p className="text-sm font-medium text-foreground">{step.title}</p>
                           {completedSteps.includes(step.id) ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <Circle className="h-4 w-4 text-slate-400" />}
                         </div>
                       </div>
@@ -953,9 +899,10 @@ export function InteractiveOptionsLesson() {
               ) : currentStep ? (
                 <>
                   <div className="space-y-3">
-                    <h3 className="text-3xl font-semibold leading-tight text-[#113a63]">{currentStep.title}</h3>
-                    <p className="text-base leading-8 text-[#113a63]/78">{currentStep.prompt}</p>
-                    <p className="text-sm font-medium text-[#113a63]/55">{currentStep.context}</p>
+                    <LessonPill tone="neutral">{lang === 'es' ? 'Ejercicio' : 'Exercise'} {currentStepIndex + 1} / {selectedModule.steps.length}</LessonPill>
+                    <h2 className="text-balance text-xl font-semibold leading-snug text-foreground sm:text-2xl">{currentStep.title}</h2>
+                    <p className="text-sm leading-7 text-foreground">{currentStep.prompt}</p>
+                    <p className="text-xs leading-6 text-subtitle">{currentStep.context}</p>
                   </div>
 
                   {currentStep.kind === 'quiz' && currentStep.choices && (
@@ -968,9 +915,10 @@ export function InteractiveOptionsLesson() {
                           const showWrong = revealed && isSelected && !isCorrect
 
                           return (
-                            <button
+                            <Button
                               key={choice.id}
-                              type="button"
+                              variant="outline"
+                              aria-pressed={isSelected}
                               onClick={() => {
                                 setSelectedChoiceId(choice.id)
                                 if (revealed) {
@@ -978,39 +926,36 @@ export function InteractiveOptionsLesson() {
                                 }
                               }}
                               className={cn(
-                                'rounded-2xl border bg-white p-4 text-left transition-all',
-                                isSelected ? 'border-[#f97316] bg-[#fff7f1]' : 'border-slate-200 hover:bg-slate-50',
-                                showCorrect && 'border-emerald-500 bg-emerald-50',
-                                showWrong && 'border-rose-300 bg-rose-50'
+                                'h-auto min-h-12 w-full justify-start whitespace-normal rounded-lg border px-4 py-3 text-left shadow-none transition-colors',
+                                isSelected ? 'border-primary-light bg-primary-light/20 hover:bg-primary-light/30' : 'border-slate-200 bg-background hover:bg-muted/60',
+                                showCorrect && 'border-green-500/40 bg-green-500/10 hover:bg-green-500/10',
+                                showWrong && 'border-red-500/40 bg-red-500/10 hover:bg-red-500/10'
                               )}
                             >
-                              <div className="flex items-center justify-between gap-3">
-                                <p className="text-sm font-medium text-[#113a63]">{choice.label}</p>
-                                {showCorrect ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <Circle className="h-4 w-4 text-slate-300" />}
+                              <div className="flex w-full items-center justify-between gap-3">
+                                <p className="text-sm font-medium text-foreground">{choice.label}</p>
+                                {showCorrect ? <CheckCircle2 className="h-4 w-4 shrink-0 text-green-700" /> : <Circle className={cn('h-4 w-4 shrink-0', isSelected ? 'fill-primary-light/40 text-primary' : 'text-slate-400')} />}
                               </div>
-                            </button>
+                            </Button>
                           )
                         })}
                       </div>
 
                       {revealed && (
-                        <div className={cn('rounded-3xl border p-5', selectedChoiceId === currentStep.correctChoiceId ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50')}>
-                          <Badge className={cn('w-fit', selectedChoiceId === currentStep.correctChoiceId ? 'bg-emerald-500 text-white hover:bg-emerald-500' : 'bg-amber-500 text-white hover:bg-amber-500')}>
-                            {selectedChoiceId === currentStep.correctChoiceId ? content.correctLabel : content.wrongLabel}
-                          </Badge>
-                          <p className="mt-4 text-sm leading-7 text-[#113a63]/80">{currentStep.insight}</p>
-                        </div>
+                        <LessonFeedback correct={selectedChoiceId === currentStep.correctChoiceId} label={selectedChoiceId === currentStep.correctChoiceId ? content.correctLabel : content.wrongLabel}>
+                          {currentStep.insight}
+                        </LessonFeedback>
                       )}
 
                       <div className="flex flex-wrap gap-3">
-                        <Button onClick={handleCheckAnswer} disabled={!selectedChoiceId} className="bg-[#f97316] text-white hover:bg-[#ea6a10]">
+                        <Button onClick={handleCheckAnswer} disabled={!selectedChoiceId} className="min-h-10">
                           {content.checkAnswer}
                         </Button>
-                        <Button variant="outline" onClick={handleNext} disabled={!canAdvance} className="border-slate-200 bg-white text-[#113a63] hover:bg-slate-50 hover:text-[#113a63]">
+                        <Button variant="outline" onClick={handleNext} disabled={!canAdvance} className="min-h-10 border-slate-200 bg-background text-foreground hover:bg-muted">
                           {content.nextQuestion}
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" onClick={handleRestartModule} className="text-[#113a63]/70 hover:bg-slate-100 hover:text-[#113a63]">
+                        <Button variant="ghost" onClick={handleRestartModule} className="min-h-10 text-subtitle hover:bg-muted hover:text-foreground">
                           <RefreshCcw className="mr-2 h-4 w-4" />
                           {content.restartModule}
                         </Button>
@@ -1020,11 +965,11 @@ export function InteractiveOptionsLesson() {
 
                   {currentStep.kind === 'builder' && (
                     <div className="flex flex-wrap gap-3">
-                      <Button variant="outline" onClick={handleNext} disabled={!canAdvance} className="border-slate-200 bg-white text-[#113a63] hover:bg-slate-50 hover:text-[#113a63]">
+                      <Button variant="outline" onClick={handleNext} disabled={!canAdvance} className="min-h-10 border-slate-200 bg-background text-foreground hover:bg-muted">
                         {content.nextQuestion}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" onClick={handleRestartModule} className="text-[#113a63]/70 hover:bg-slate-100 hover:text-[#113a63]">
+                      <Button variant="ghost" onClick={handleRestartModule} className="min-h-10 text-subtitle hover:bg-muted hover:text-foreground">
                         <RefreshCcw className="mr-2 h-4 w-4" />
                         {content.restartModule}
                       </Button>
@@ -1032,8 +977,7 @@ export function InteractiveOptionsLesson() {
                   )}
                 </>
               ) : null}
-            </CardContent>
-          </Card>
+          </div>
         </div>
       </div>
     </section>

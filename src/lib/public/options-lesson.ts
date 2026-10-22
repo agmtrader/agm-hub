@@ -124,8 +124,8 @@ const makeStep = ({ options, answer, strategy, visual, ...step }: StepInput): Op
 
 const modules: OptionsLessonModule[] = [
   {
-    id: 'core-intuition', level: 'Beginner', title: 'The Optionality Mindset',
-    description: 'Building the Intuition of Contracts, Rights, and Obligations',
+    id: 'core-intuition', level: "Beginner", title: "Options Basics",
+    description: "Calls, puts, premiums, strikes, expiration, and the rights and obligations of buyers and sellers.",
     image: '/assets/resource-center/interactive-learning/modules/optionality-mindset.png',
     previewStrategy: 'long_call',
     steps: [
@@ -180,8 +180,8 @@ const modules: OptionsLessonModule[] = [
     ],
   },
   {
-    id: 'payoff-leverage', level: 'Beginner', title: 'Mapping the Payoff Curve',
-    description: 'Visualizing Risk Profiles, Breakevens, and Leverage',
+    id: 'payoff-leverage', level: "Beginner", title: "Payoffs and Leverage",
+    description: "Read payoff charts and calculate intrinsic value, break-even prices and contract exposure.",
     image: '/assets/resource-center/interactive-learning/modules/mapping-payoff-curve.png',
     previewStrategy: 'long_call',
     steps: [
@@ -193,8 +193,20 @@ const modules: OptionsLessonModule[] = [
     ],
   },
   {
-    id: 'volatility-greeks', level: 'Intermediate', title: 'The Hidden Dimensions',
-    description: 'Mastering Volatility Waves and Time Decay (The Greeks)',
+    id: 'execution-risk', level: "Intermediate", title: "Trading Options and Managing Risk",
+    description: "Understand order types, bid-ask spreads, assignment and position risk before combining strategies.",
+    image: '/assets/resource-center/interactive-learning/modules/pro-playbook.png',
+    previewStrategy: 'covered_call',
+    steps: [
+      makeStep({ id: 'assignment', title: 'The Reality of Assignment', prompt: 'You sold a $40 Put and the stock closes at $38 on expiration Friday. What structural event will happen to your account?', context: 'An in-the-money short put carries an obligation at expiration.', insight: 'You are assigned and required to buy 100 shares at the $40 strike price.', options: ['Nothing; the option expires worthless.', 'You are assigned and forced to buy 100 shares at $40 per share.', 'You automatically receive $200 cash.'], answer: 1, strategy: 'protective_put', visual: 'An account dashboard shows a Short $40 Put while the stock closes Friday at $38.' }),
+      makeStep({ id: 'bid-ask', title: 'The Bid-Ask Spread Tax', prompt: 'The Bid is $1.00 and the Ask is $3.00. If you use a Market Order to buy immediately, what price do you pay and what is the immediate unrealized loss?', context: 'A market buy fills at the current ask, while immediate liquidation would occur at the bid.', insight: 'You pay the $3 ask and could sell only at the $1 bid, creating an immediate $2 unrealized loss.', options: ['Pay $1.00 | Loss: $0', 'Pay $2.00 | Loss: $1.00', 'Pay $3.00 | Loss: $2.00'], answer: 2, strategy: 'long_option_risk', visual: 'An illiquid order book displays Bid $1.00 from 10 buyers and Ask $3.00 from 5 sellers.' }),
+      makeStep({ id: 'limit-order', title: 'Order Type Selection', prompt: 'You want to ensure you never pay more than $1.50 to enter a trade. Which order type must you use?', context: 'Choose the order that controls the maximum acceptable execution price.', insight: 'A Limit Order executes only at your specified price or better, though execution is not guaranteed.', options: ['Market Order', 'Limit Order', 'Stop Order'], answer: 1, strategy: 'long_option_risk', visual: 'A trading ticket toggles order types beside a maximum-cost line fixed at $1.50.' }),
+      makeStep({ id: 'covered-call-execution', title: 'Defensive Monetization (Covered Calls)', prompt: 'You own 100 shares at $100 and sell a $105 Call for a $2 premium. If the stock stays at $100 all month, what happens?', context: 'The stock remains below the short call strike through expiration.', insight: 'The Call expires worthless and you keep the $2 premium, lowering the effective stock cost basis.', options: ['You lose your shares.', 'The option expires worthless and you keep the $2 premium as profit, lowering your cost basis.', 'You owe the broker money.'], answer: 1, strategy: 'covered_call', visual: 'A 100-share position at $100 is overlaid with a short $105 Call and a green +$2 premium bubble.' }),
+    ],
+  },
+  {
+    id: 'volatility-greeks', level: "Intermediate", title: "Volatility and the Greeks",
+    description: "Understand how volatility, delta and time decay affect an option's value.",
     image: '/assets/resource-center/interactive-learning/modules/hidden-dimensions.png',
     previewStrategy: 'greeks_curve',
     steps: [
@@ -206,8 +218,8 @@ const modules: OptionsLessonModule[] = [
     ],
   },
   {
-    id: 'multi-leg', level: 'Intermediate', title: 'Strategic Architectures',
-    description: 'Engineering Multi-Leg Spreads, Corridors, and Combos',
+    id: 'multi-leg', level: "Advanced", title: "Spreads and Multi-Leg Strategies",
+    description: "Combine calls and puts into spreads, straddles and defined-risk strategies, then build a bull call spread.",
     image: '/assets/resource-center/interactive-learning/modules/strategic-architectures.png',
     previewStrategy: 'long_straddle',
     steps: [
@@ -215,18 +227,39 @@ const modules: OptionsLessonModule[] = [
       makeStep({ id: 'spread-cap', title: 'Calculating the Cap', prompt: 'The $100/$110 Bull Call Spread cost a $3 net debit. If the stock reaches $160 at expiration, what is the net profit?', context: 'Subtract the debit from the $10 width between strikes.', insight: 'The spread is worth its $10 maximum width. Minus the $3 debit, net profit is $7, or $700 per spread.', options: ['$60', '$10', '$7 ($700 total)', '$0'], answer: 2, strategy: 'covered_call', visual: 'The Bull Call Spread slider is at $160 while its profit line remains flat at the capped maximum.' }),
       makeStep({ id: 'straddle', title: 'Engineering Chaos (The Straddle)', prompt: 'Which combination creates a V-shaped payoff that profits from a sufficiently large move in either direction?', context: 'Combine one bullish right with one bearish right at the same strike.', insight: 'Buying both a Call and a Put at the same strike creates a long straddle.', options: ['Buy a Call and Sell a Put at the same strike.', 'Buy a Call and Buy a Put at the same strike.', 'Sell a Call and Sell a Put at the same strike.'], answer: 1, strategy: 'long_straddle', visual: 'A V-shaped payoff has its trough at $50 and rises into profit on both the left and right wings.' }),
       makeStep({ id: 'iron-condor', title: 'The Zone of Safety (Iron Condor)', prompt: 'An Iron Condor is profitable between $90 and $110 with capped losses outside. Where must the stock settle for maximum profit?', context: 'This market-neutral structure benefits from consolidation.', insight: 'Maximum profit occurs when the stock expires between the two inner short strikes: $90 to $110.', options: ['It must skyrocket past $110.', 'It must crash below $90.', 'It must stay consolidated within the $90 to $110 range.'], answer: 2, strategy: 'covered_call', visual: 'A table-top payoff is flat and profitable from $90 to $110, then slopes into capped losses beyond both boundaries.' }),
-    ],
-  },
-  {
-    id: 'execution-risk', level: 'Advanced', title: "The Pro's Playbook",
-    description: 'Execution Mechanics, Position Sizing, and Reality Check',
-    image: '/assets/resource-center/interactive-learning/modules/pro-playbook.png',
-    previewStrategy: 'covered_call',
-    steps: [
-      makeStep({ id: 'assignment', title: 'The Reality of Assignment', prompt: 'You sold a $40 Put and the stock closes at $38 on expiration Friday. What structural event will happen to your account?', context: 'An in-the-money short put carries an obligation at expiration.', insight: 'You are assigned and required to buy 100 shares at the $40 strike price.', options: ['Nothing; the option expires worthless.', 'You are assigned and forced to buy 100 shares at $40 per share.', 'You automatically receive $200 cash.'], answer: 1, strategy: 'protective_put', visual: 'An account dashboard shows a Short $40 Put while the stock closes Friday at $38.' }),
-      makeStep({ id: 'bid-ask', title: 'The Bid-Ask Spread Tax', prompt: 'The Bid is $1.00 and the Ask is $3.00. If you use a Market Order to buy immediately, what price do you pay and what is the immediate unrealized loss?', context: 'A market buy fills at the current ask, while immediate liquidation would occur at the bid.', insight: 'You pay the $3 ask and could sell only at the $1 bid, creating an immediate $2 unrealized loss.', options: ['Pay $1.00 | Loss: $0', 'Pay $2.00 | Loss: $1.00', 'Pay $3.00 | Loss: $2.00'], answer: 2, strategy: 'long_option_risk', visual: 'An illiquid order book displays Bid $1.00 from 10 buyers and Ask $3.00 from 5 sellers.' }),
-      makeStep({ id: 'limit-order', title: 'Order Type Selection', prompt: 'You want to ensure you never pay more than $1.50 to enter a trade. Which order type must you use?', context: 'Choose the order that controls the maximum acceptable execution price.', insight: 'A Limit Order executes only at your specified price or better, though execution is not guaranteed.', options: ['Market Order', 'Limit Order', 'Stop Order'], answer: 1, strategy: 'long_option_risk', visual: 'A trading ticket toggles order types beside a maximum-cost line fixed at $1.50.' }),
-      makeStep({ id: 'covered-call-execution', title: 'Defensive Monetization (Covered Calls)', prompt: 'You own 100 shares at $100 and sell a $105 Call for a $2 premium. If the stock stays at $100 all month, what happens?', context: 'The stock remains below the short call strike through expiration.', insight: 'The Call expires worthless and you keep the $2 premium, lowering the effective stock cost basis.', options: ['You lose your shares.', 'The option expires worthless and you keep the $2 premium as profit, lowering your cost basis.', 'You owe the broker money.'], answer: 1, strategy: 'covered_call', visual: 'A 100-share position at $100 is overlaid with a short $105 Call and a green +$2 premium bubble.' }),
+      {
+        "id": "bull-call-builder",
+        "kind": "builder",
+        "title": "Create a bull call spread on the graph",
+        "prompt": "Create a bull call spread. Buy a call at $90 for $10 and sell a call at $110 for $5. Select the contracts and place the handles at the correct strike prices.",
+        "context": "This practical step turns the payoff diagram into something learners can manipulate directly.",
+        "insight": "A bull call spread combines a long lower-strike call with a short higher-strike call. The net debit defines max loss, while strike width minus the debit defines max profit.",
+        "builder": {
+          "instruction": "Select both contracts, then adjust the strikes using the controls or by dragging the points on the graph.",
+          "contractPrompt": "Select contracts to build your strategy.",
+          "longCallLabel": "Long call",
+          "shortCallLabel": "Short call",
+          "selectedContractsLabel": "Selected contracts",
+          "premiumDebitLabel": "premium debit",
+          "premiumCreditLabel": "premium credit",
+          "checkPlacement": "Check setup",
+          "resetStrategy": "Reset setup",
+          "targetLongStrike": 90,
+          "targetShortStrike": 110,
+          "longPremium": 10,
+          "shortPremium": 5,
+          "maxProfitLabel": "Max profit",
+          "maxLossLabel": "Max loss",
+          "breakEvenLabel": "Break even",
+          "successLabel": "Correct",
+          "retryLabel": "Adjust the handles",
+          "retryHint": "Use both contracts, keep the long call below the short call, and place the strikes near",
+          "longStrikeLabel": "Long call strike",
+          "shortStrikeLabel": "Short call strike",
+          "underlyingPriceLabel": "Underlying price",
+          "profitLossLabel": "Profit / Loss"
+        }
+      },
     ],
   },
 ]
@@ -436,11 +469,45 @@ const spanishStepText: Record<string, TranslatedStep> = {
 }
 
 const spanishModuleText: Record<string, { title: string; description: string; level: string }> = {
-  'core-intuition': { title: 'La Mentalidad de Opcionalidad', description: 'Construyendo la Intuición de Contratos, Derechos y Obligaciones', level: 'Principiante' },
-  'payoff-leverage': { title: 'Mapeando la Curva de Payoff', description: 'Visualizando Perfiles de Riesgo, Puntos de Equilibrio y Apalancamiento', level: 'Principiante' },
-  'volatility-greeks': { title: 'Las Dimensiones Ocultas', description: 'Dominando las Olas de Volatilidad y el Deterioro Temporal (Los Greeks)', level: 'Intermedio' },
-  'multi-leg': { title: 'Arquitecturas Estratégicas', description: 'Diseñando Spreads Multi-Leg, Corredores y Combinaciones', level: 'Intermedio' },
-  'execution-risk': { title: 'El Manual del Profesional', description: 'Mecánica de Ejecución, Tamaño de Posición y Prueba de Realidad', level: 'Avanzado' },
+  'core-intuition': { title: 'Conceptos básicos de opciones', description: 'Calls, puts, primas, strikes, vencimientos y derechos y obligaciones de compradores y vendedores.', level: 'Principiante' },
+  'payoff-leverage': { title: 'Ganancias, pérdidas y apalancamiento', description: 'Lee gráficos de ganancias y pérdidas y calcula el valor intrínseco, el equilibrio y la exposición de los contratos.', level: 'Principiante' },
+  'volatility-greeks': { title: 'Volatilidad y los griegos', description: 'Comprende cómo la volatilidad, delta y el paso del tiempo afectan el valor de una opción.', level: 'Intermedio' },
+  'multi-leg': { title: 'Spreads y estrategias con varias opciones', description: 'Combina calls y puts en spreads, straddles y estrategias de riesgo definido y construye un bull call spread.', level: 'Avanzado' },
+  'execution-risk': { title: 'Operativa de opciones y gestión del riesgo', description: 'Comprende las órdenes, el bid-ask spread, la asignación y el riesgo de posición antes de combinar estrategias.', level: 'Intermedio' },
+}
+
+const spanishSpreadBuilderStep: OptionsModuleStep = {
+  "id": "bull-call-builder",
+  "kind": "builder",
+  "title": "Construye un bull call spread",
+  "prompt": "Compra una call con strike de $90 por una prima de $10 y vende otra con strike de $110 por $5. Selecciona ambos contratos y ajusta sus strikes.",
+  "context": "Manipula el gráfico para ver cómo se combinan las dos posiciones.",
+  "insight": "El débito neto es $5 por acción: pérdida máxima de $5, ganancia máxima de $15 y equilibrio en $95 al vencimiento.",
+  "builder": {
+    "instruction": "Selecciona ambos contratos y ajusta los strikes con los controles o arrastrando los puntos del gráfico.",
+    "contractPrompt": "Selecciona los contratos de tu estrategia.",
+    "longCallLabel": "Call larga",
+    "shortCallLabel": "Call corta",
+    "selectedContractsLabel": "Contratos seleccionados",
+    "premiumDebitLabel": "prima pagada",
+    "premiumCreditLabel": "prima recibida",
+    "checkPlacement": "Revisar estrategia",
+    "resetStrategy": "Reiniciar estrategia",
+    "targetLongStrike": 90,
+    "targetShortStrike": 110,
+    "longPremium": 10,
+    "shortPremium": 5,
+    "maxProfitLabel": "Ganancia máxima",
+    "maxLossLabel": "Pérdida máxima",
+    "breakEvenLabel": "Punto de equilibrio",
+    "successLabel": "Correcto",
+    "retryLabel": "Ajusta los handles",
+    "retryHint": "Selecciona ambos contratos y ajusta los strikes a",
+    "longStrikeLabel": "Strike de la call larga",
+    "shortStrikeLabel": "Strike de la call corta",
+    "underlyingPriceLabel": "Precio del subyacente",
+    "profitLossLabel": "Ganancia / pérdida"
+  }
 }
 
 const spanishModules: OptionsLessonModule[] = modules.map((module) => {
@@ -450,6 +517,7 @@ const spanishModules: OptionsLessonModule[] = modules.map((module) => {
     ...module,
     ...translatedModule,
     steps: module.steps.map((step) => {
+      if (step.kind === 'builder') return spanishSpreadBuilderStep
       const translatedStep = spanishStepText[step.id]
 
       return {
@@ -467,13 +535,13 @@ const spanishModules: OptionsLessonModule[] = modules.map((module) => {
 const shared = {
   badge: 'Interactive Options Lesson',
   title: 'Learn options step by step',
-  description: 'Work through five guided modules with interactive payoff charts, practical execution scenarios, and immediate answer feedback.',
-  browseTitle: 'Choose a module',
+  description: 'Learn options from the basics through trading mechanics, volatility and multi-leg strategies, with interactive charts and questions in each chapter.',
+  browseTitle: 'Choose a chapter',
   browseDescription: 'Begin with contract mechanics, then progress through payoff leverage, volatility, multi-leg structures, and real execution risk.',
-  backToModules: 'Back to modules', startModule: 'Open module', lessonProgressLabel: 'Overall learning path', moduleProgressLabel: 'Module progress',
+  backToModules: 'Back to Options chapters', startModule: 'Open module', lessonProgressLabel: 'Overall learning path', moduleProgressLabel: 'Chapter progress',
   questionLabel: 'Question', questionPlural: 'questions', correctLabel: 'Correct', wrongLabel: 'Try again', checkAnswer: 'Check answer', nextQuestion: 'Next question',
-  restartModule: 'Restart module', moduleComplete: 'Module complete', moduleCompletedTitle: 'You completed this module',
-  moduleCompletedDescription: 'Nice work. Review the module or return to the catalog to continue the learning path.',
+  restartModule: 'Restart chapter', moduleComplete: 'Chapter complete', moduleCompletedTitle: 'You completed this chapter',
+  moduleCompletedDescription: 'Review this chapter or continue to the next one.',
   reviewVideos: 'Explore video chapters', keepLearning: 'Continue learning', modules,
 }
 
@@ -483,11 +551,23 @@ export const optionsLessonContent: Record<string, OptionsLessonContent> = {
     ...shared,
     modules: spanishModules,
     badge: 'Leccion Interactiva de Opciones', title: 'Aprende opciones paso a paso',
-    description: 'Avanza por cinco modulos guiados con graficas interactivas, escenarios de ejecucion y retroalimentacion inmediata.',
-    browseTitle: 'Elige un modulo', browseDescription: 'Comienza con la mecanica de contratos y avanza por payoff, volatilidad, estructuras multi-leg y riesgo de ejecucion.',
-    backToModules: 'Volver a modulos', startModule: 'Abrir modulo', lessonProgressLabel: 'Ruta completa de aprendizaje', moduleProgressLabel: 'Progreso del modulo',
+    description: 'Aprende opciones desde los conceptos básicos hasta la operativa, la volatilidad y las estrategias con varias opciones, con gráficos y preguntas en cada capítulo.',
+    browseTitle: 'Elige un capítulo', browseDescription: 'Comienza con la mecanica de contratos y avanza por payoff, volatilidad, estructuras multi-leg y riesgo de ejecucion.',
+    backToModules: 'Volver a los capítulos de opciones', startModule: 'Abrir modulo', lessonProgressLabel: 'Ruta completa de aprendizaje', moduleProgressLabel: 'Progreso del capítulo',
     questionLabel: 'Pregunta', questionPlural: 'preguntas', correctLabel: 'Correcto', wrongLabel: 'Intentalo de nuevo', checkAnswer: 'Revisar respuesta', nextQuestion: 'Siguiente pregunta',
-    restartModule: 'Reiniciar modulo', moduleComplete: 'Modulo completado', moduleCompletedTitle: 'Completaste este modulo',
-    moduleCompletedDescription: 'Buen trabajo. Repasa el modulo o vuelve al catalogo para continuar.', reviewVideos: 'Explorar capitulos en video', keepLearning: 'Seguir aprendiendo',
+    restartModule: 'Reiniciar capítulo', moduleComplete: 'Capítulo completado', moduleCompletedTitle: 'Completaste este capítulo',
+    moduleCompletedDescription: 'Repasa este capítulo o continúa con el siguiente.', reviewVideos: 'Explorar capitulos en video', keepLearning: 'Seguir aprendiendo',
   },
+}
+
+export const getInteractiveLessonSlides = (lang: string) => {
+  const content = optionsLessonContent[lang] ?? optionsLessonContent.en
+
+  return content.modules.map((module, index) => ({
+    id: module.id,
+    title: module.title,
+    image: module.image,
+    href: `/resource-center/interactive-learning/options?module=${encodeURIComponent(module.id)}`,
+    eyebrow: `${lang === 'es' ? 'Capítulo' : 'Chapter'} ${index + 1}`,
+  }))
 }
