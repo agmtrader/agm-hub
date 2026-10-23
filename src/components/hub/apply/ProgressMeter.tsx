@@ -24,8 +24,8 @@ const ProgressMeter = ({ currentStep }: Props) => {
 
     return (
         <div className="mb-8">
-            <div className="md:hidden rounded-xl border bg-card p-4 shadow-sm">
-                <div className="flex items-center justify-between gap-3">
+            <div className="lg:hidden rounded-xl border bg-card p-4 shadow-sm">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
                     <p className="text-sm font-medium text-muted-foreground">
                         Step {currentStepIndex + 1} of {steps.length}
                     </p>
@@ -38,7 +38,7 @@ const ProgressMeter = ({ currentStep }: Props) => {
                     {steps.map((step, index) => (
                         <React.Fragment key={step.step}>
                             <div
-                                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                                className={`flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
                                     currentStep >= step.step
                                         ? 'bg-primary text-background'
                                         : 'bg-muted text-foreground'
@@ -53,7 +53,7 @@ const ProgressMeter = ({ currentStep }: Props) => {
                             {index < steps.length - 1 && (
                                 <div className="mx-1 h-1 flex-1 rounded-full bg-muted">
                                     <div
-                                        className="h-full rounded-full bg-primary transition-all duration-300 ease-in-out"
+                                        className="h-full rounded-full bg-primary transition-[width] duration-300 ease-in-out"
                                         style={{ width: currentStep > step.step ? '100%' : '0%' }}
                                     />
                                 </div>
@@ -63,7 +63,7 @@ const ProgressMeter = ({ currentStep }: Props) => {
                 </div>
             </div>
 
-            <div className="hidden items-center justify-between gap-2 md:flex">
+            <div className="hidden items-center justify-between gap-2 lg:flex">
                 {steps.map((step, index) => (
                     <React.Fragment key={step.step}>
                         <div className="flex min-w-0 flex-col items-center text-center">
@@ -85,7 +85,7 @@ const ProgressMeter = ({ currentStep }: Props) => {
                         {index < steps.length - 1 && (
                             <div className="h-1 flex-1 rounded-full bg-muted">
                                 <div
-                                    className="h-full rounded-full bg-primary transition-all duration-300 ease-in-out"
+                                    className="h-full rounded-full bg-primary transition-[width] duration-300 ease-in-out"
                                     style={{ width: currentStep > step.step ? '100%' : '0%' }}
                                 />
                             </div>

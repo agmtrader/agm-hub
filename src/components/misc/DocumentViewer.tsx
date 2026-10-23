@@ -99,9 +99,9 @@ const DocumentViewer = ({ isOpen, onOpenChange, document, documentName }: Docume
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="max-w-4xl max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
+          <DialogTitle className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <span>{documentName}</span>
             <div className="flex gap-2">
               <Button onClick={handleOpenInNewTab} variant="outline" size="sm">

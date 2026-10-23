@@ -609,30 +609,30 @@ const Disclosures = () => {
   const copy = lang.startsWith('es') ? content.es : content.en
 
   return (
-    <div className='mx-32 my-10'>
+    <div className='mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12'>
       <DashboardPage title={copy.pageTitle} description={copy.pageSubtitle}>
         <Tabs defaultValue="terms" className="w-full">
-          <TabsList className="mb-4">
-            <TabsTrigger value="terms">{copy.tabs.terms}</TabsTrigger>
-            <TabsTrigger value="cyber">{copy.tabs.cyber}</TabsTrigger>
-            <TabsTrigger value="privacy">{copy.tabs.privacy}</TabsTrigger>
+          <TabsList className="mb-4 grid h-auto w-full grid-cols-1 gap-1 sm:grid-cols-3">
+            <TabsTrigger className="min-h-11 whitespace-normal" value="terms">{copy.tabs.terms}</TabsTrigger>
+            <TabsTrigger className="min-h-11 whitespace-normal" value="cyber">{copy.tabs.cyber}</TabsTrigger>
+            <TabsTrigger className="min-h-11 whitespace-normal" value="privacy">{copy.tabs.privacy}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="terms" className="w-full">
             <Card className="w-full">
-              <CardContent className="space-y-6">{renderSections(copy.terms)}</CardContent>
+              <CardContent className="space-y-6 pt-6">{renderSections(copy.terms)}</CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="cyber" className="w-full">
             <Card className="w-full">
-              <CardContent className="space-y-8">{renderSections(copy.cyber)}</CardContent>
+              <CardContent className="space-y-8 pt-6">{renderSections(copy.cyber)}</CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="privacy" className="w-full">
             <Card className="w-full">
-              <CardContent className="space-y-8">{renderSections(copy.privacy)}</CardContent>
+              <CardContent className="space-y-8 pt-6">{renderSections(copy.privacy)}</CardContent>
             </Card>
           </TabsContent>
         </Tabs>

@@ -5,7 +5,8 @@
 html {
   font-family: var(--font-rubik);
   scroll-behavior: smooth;
-  scroll-padding-top: 10rem;
+  scroll-padding-top: 8rem;
+  -webkit-text-size-adjust: 100%;
 }
 
 .markdown > * {
@@ -59,4 +60,40 @@ html {
     scrollbar-width: none; /* Firefox */
   }
 
+}
+
+@layer base {
+  .hub-surface :where(h1, h2, h3) {
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  .hub-surface :where(p, label, li) {
+    overflow-wrap: anywhere;
+  }
+
+  .hub-surface :where(.grid, .flex) > * {
+    min-width: 0;
+  }
+
+  @media (max-width: 639px) {
+    .hub-surface .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    input:not([type="radio"]):not([type="checkbox"]):not([type="range"]),
+    textarea, select {
+      font-size: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .hub-surface *, .hub-surface *::before, .hub-surface *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }

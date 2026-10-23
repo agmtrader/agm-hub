@@ -366,7 +366,7 @@ function PayoffConceptGraph({ visual }: { visual: OptionsLessonVisualConfig }) {
             : '#f97316'
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       {!visual.description && <p className="mb-4 text-sm leading-6 text-subtitle">{visual.instruction}</p>}
       {visual.description && (
         <div className="space-y-2">
@@ -793,7 +793,7 @@ export function InteractiveOptionsLesson({ initialModuleId }: { initialModuleId?
     return (
       <section className="flex w-full flex-col items-center gap-6">
         <div className="flex flex-col items-center gap-4 px-6 text-center">
-          <Link href={formatURL('/resource-center#interactive-learning', lang)} className="inline-flex items-center gap-2 text-sm text-foreground/70 hover:text-primary">
+          <Link href={formatURL('/resource-center#interactive-learning', lang)} className="inline-flex min-h-10 items-center gap-2 text-sm text-foreground/70 hover:text-primary">
             <ArrowLeft className="h-4 w-4" />
             {lang === 'es' ? 'Volver al Centro de Recursos' : 'Back to Resource Center'}
           </Link>

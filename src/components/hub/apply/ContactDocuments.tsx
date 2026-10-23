@@ -277,7 +277,7 @@ const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false
   return (
     <>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-wrap gap-3 items-center justify-between">
           <div>
             <CardTitle>Documents {holderName ? `- ${holderName}` : ''}</CardTitle>
           </div>

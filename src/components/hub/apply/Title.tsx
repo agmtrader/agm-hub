@@ -22,7 +22,7 @@ const Title = ({ setStarted }: Props) => {
   const requirementsUrl = `${formatURL('/requirements', lang)}${providerId ? `?provider_id=${encodeURIComponent(providerId)}` : ''}`
 
   return (
-    <div className='relative w-full h-[calc(100vh-80px)] flex flex-col justify-center items-center overflow-hidden bg-background'>
+    <div className='relative w-full min-h-[calc(100svh-6rem)] py-12 sm:py-16 flex flex-col justify-center items-center overflow-hidden bg-background'>
         <InteractiveGridPattern
           className={cn(
             '[mask-image:radial-gradient(1300px_circle_at_center,white,transparent)]',
@@ -38,11 +38,11 @@ const Title = ({ setStarted }: Props) => {
           animate="visible"
           className='z-10 flex flex-col gap-y-8 justify-center items-center text-center px-4 max-w-4xl'
         >
-          <motion.h1 variants={itemVariants} className='text-5xl md:text-7xl font-bold tracking-tighter text-foreground'>
+          <motion.h1 variants={itemVariants} className='text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter text-foreground'>
             {t('apply.account.title.ready')}
           </motion.h1>
           
-          <motion.p variants={itemVariants} className='text-xl md:text-2xl text-muted-foreground max-w-2xl'>
+          <motion.p variants={itemVariants} className='text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl'>
             {t('apply.account.title.description')}
           </motion.p>
 
@@ -50,7 +50,7 @@ const Title = ({ setStarted }: Props) => {
             <Button
               size="lg"
               onClick={() => setStarted(true)}
-              className="px-8 py-6 text-lg font-semibold gap-2"
+              className="h-auto min-h-12 whitespace-normal px-5 py-3 text-base sm:px-8 sm:text-lg font-semibold gap-2"
             >
                 {t('apply.account.title.startApplication')} <ArrowRight className="w-5 h-5" />
             </Button>

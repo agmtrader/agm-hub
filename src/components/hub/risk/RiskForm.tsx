@@ -153,7 +153,7 @@ const RiskForm = () => {
         <motion.form 
           noValidate
           onSubmit={form.handleSubmit(onSubmit)} 
-          className="w-full flex flex-col gap-10 p-5"
+          className="w-full flex flex-col gap-8 px-0 py-5 sm:p-5"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -216,7 +216,7 @@ const RiskForm = () => {
               name={q.key as any}
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
                     <FormLabel>{q.label}</FormLabel>
                     <FormMessage />
                   </div>
@@ -227,13 +227,13 @@ const RiskForm = () => {
                       className="flex flex-col"
                     >
                       {q.choices.map((choice) => (
-                        <FormItem key={choice.value} className="flex flex-row gap-x-2 items-center">
+                        <FormItem key={choice.value} className="flex flex-wrap gap-x-3 gap-y-2 items-center space-y-0 rounded-md py-2">
                           <FormControl>
                             <RadioGroupItem value={String(choice.value)} />
                           </FormControl>
-                          <FormLabel className="font-normal whitespace-nowrap">{choice.label}</FormLabel>
+                          <FormLabel className="min-w-0 flex-1 font-normal leading-relaxed cursor-pointer">{choice.label}</FormLabel>
                           {q.key === 'diversification' && (
-                            <Progress className="bg-secondary w-64" value={choice.bonds_percentage} />
+                            <Progress className="bg-secondary basis-full w-full sm:basis-auto sm:w-48 sm:shrink-0" value={choice.bonds_percentage} />
                           )}
                         </FormItem>
                       ))}
@@ -258,7 +258,8 @@ const RiskForm = () => {
       </Form>
 
       <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
-        <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-7xl max-h-[90dvh] overflow-y-auto">
+          <DialogHeader className="sr-only"><DialogTitle>{t('risk.title')}</DialogTitle></DialogHeader>
           {investmentProposal && (
             <InvestmentProposalView investmentProposal={investmentProposal} />
           )}

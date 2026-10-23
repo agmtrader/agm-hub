@@ -877,13 +877,13 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center my-20 gap-5 p-5">
+    <div className="flex flex-col justify-center items-center my-8 sm:my-14 gap-6 px-4 sm:px-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold ">{t('apply.account.header.title')}</h1>
         <p className="text-lg">{t('apply.account.header.description')}</p>
       </div>
       <ProgressMeter currentStep={currentStep} />
-      <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[50%] max-w-3xl">
+      <div className="w-full min-w-0 max-w-4xl application-form">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(
@@ -906,7 +906,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
             {currentStep === FormStep.ACCOUNT_TYPE && (
               <>
                 <AccountTypeStep form={form} />
-                <div className="flex justify-between">
+                <div className="flex flex-wrap justify-between gap-3">
                   <div></div>
                   <Button
                     type="button"
@@ -921,7 +921,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
             {currentStep === FormStep.PERSONAL_INFO && (
               <>
                 <PersonalInfoStep form={form} businessAndOccupations={businessAndOccupations} referrer={referrer} setReferrer={setReferrer} />
-                <div className="flex justify-between">
+                <div className="flex flex-wrap justify-between gap-3">
                   <Button type="button" variant="outline" onClick={handlePreviousStep} disabled={isSaving}>Previous</Button>
                   <Button type="button" onClick={handleNextStep} disabled={isSaving} className="bg-primary text-background hover:bg-primary/90">Next</Button>
                 </div>
@@ -940,7 +940,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
                   financialRanges={financialRanges}
                   estimatedDepositError={estimatedDepositError}
                 />
-                <div className="flex justify-between">
+                <div className="flex flex-wrap justify-between gap-3">
                   <Button type="button" variant="outline" onClick={handlePreviousStep} disabled={isSaving}>Previous</Button>
                   <Button type="button" onClick={handleNextStep} disabled={isSaving} className="bg-primary text-background hover:bg-primary/90">Next</Button>
                 </div>
@@ -950,7 +950,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
             {currentStep === FormStep.REGULATORY_INFO && (
               <div className="space-y-8">
                 <RegulatoryInfoStep form={form} />
-                <div className="flex justify-between">
+                <div className="flex flex-wrap justify-between gap-3">
                   <Button type="button" variant="outline" onClick={handlePreviousStep} disabled={isSaving}>Previous</Button>
                   <Button
                     type="button"
@@ -978,7 +978,7 @@ const IBKRApplicationForm = ({ prefetchedData = null }: Props) => {
                     const values = sanitizeApplication(normalizeJointW8Signers(form.getValues()));
                     void queueReconciliation(values, persistedAccount.current, false).catch(() => undefined);
                   }} />
-                <div className="flex justify-between">
+                <div className="flex flex-wrap justify-between gap-3">
                   <Button
                     type="button"
                     variant="outline"

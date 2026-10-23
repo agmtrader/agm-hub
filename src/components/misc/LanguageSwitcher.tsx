@@ -20,12 +20,12 @@ const LanguageSwitcher = () => {
   }
 
   return (
-      <div className='flex gap-5 w-fit'>
-          <Button className='p-0' variant='ghost' onClick={() => handleChangeLang('en')}>
-            <US title='English' className='w-10 rounded-md'/>
+      <div className='flex shrink-0 gap-1 w-fit'>
+          <Button className='h-10 w-10 p-2' variant='ghost' aria-label='English' aria-pressed={path.split('/')[1] === 'en'} onClick={() => handleChangeLang('en')}>
+            <US title='English' className='w-6 rounded-sm'/>
           </Button>
-          <Button className='p-0' variant='ghost' onClick={() => handleChangeLang('es')}>
-            <ES title='Spanish' className='w-10 rounded-md'/>
+          <Button className='h-10 w-10 p-2' variant='ghost' aria-label='Español' aria-pressed={path.split('/')[1] === 'es'} onClick={() => handleChangeLang('es')}>
+            <ES title='Spanish' className='w-6 rounded-sm'/>
           </Button>
       </div>
   )

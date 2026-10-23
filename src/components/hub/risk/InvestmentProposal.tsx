@@ -372,22 +372,22 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
   return (
   <div>
     {/* Toolbar */}
-    <div className="flex justify-end gap-2 mb-2">
+    <div className="flex justify-end gap-2 mb-2 pr-10">
       <Button size="sm" variant="primary" onClick={() => handleExport('pdf')}>
         <Download className="h-4 w-4 mr-1" /> PDF
       </Button>
     </div>
 
     {/* Main content to capture */}
-    <div ref={containerRef} className="flex flex-col gap-5 w-full text-lg">
+    <div ref={containerRef} className="flex min-w-0 flex-col gap-5 w-full text-base sm:text-lg">
       {/* Overview section for export */}
       <div className="export-overview flex flex-col gap-5">
 
-        <h3 className="text-5xl font-semibold text-primary">
+        <h3 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-primary">
           Investment Proposal
         </h3>
 
-        <div className="grid grid-cols-2 lg:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <Card className="p-6 w-full h-full gap-5 flex flex-col">
             <h3 className="text-xl font-semibold text-foreground">Portfolio Stats</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -481,8 +481,8 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
             </div>
           </Card>
         </div>
-          <Card className="col-span-2 p-6 w-full h-full gap-5 flex flex-col">
-            <div className="flex items-start justify-between gap-4">
+          <Card className="lg:col-span-2 p-4 sm:p-6 w-full h-full gap-5 flex flex-col">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
               <div>
                 <h3 className="text-xl font-semibold text-foreground">10-Year Return Projection</h3>
               </div>

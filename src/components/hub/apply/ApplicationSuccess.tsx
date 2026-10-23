@@ -21,7 +21,7 @@ const ApplicationSuccess = ({ documentsUploaded }: ApplicationSuccessProps) => {
             <p className='text-lg text-subtitle'>{t('apply.account.application_success.description')}</p>
             <p className='text-sm text-subtitle'>{t('apply.account.application_success.description_2')}</p>
         </div>
-        <div className='flex gap-4'>
+        <div className='flex flex-wrap justify-center gap-4'>
             <Button>
             <Link href={formatURL('/', lang)}>{t('apply.account.application_success.go_back_home')}</Link>
             </Button>

@@ -11,7 +11,7 @@ interface Props {
 const DashboardPage = ({title, description, children}: Props) => {
 
   return (
-    <div className='flex flex-col gap-4 w-full h-full p-4 text-foreground'>
+    <div className='flex flex-col gap-4 min-w-0 w-full h-full py-4 text-foreground'>
       <Image src='/assets/brand/agm-logo.png' alt='AGM Logo' width={150} height={150} />
       <p className='text-3xl font-bold'>{title}</p>
       <p className='text-sm'>{description}</p>

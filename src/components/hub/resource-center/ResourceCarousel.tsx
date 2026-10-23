@@ -30,7 +30,7 @@ export function ResourceCarousel({ slides, renderTitle }: ResourceCarouselProps)
   const { lang, t } = useTranslationProvider()
 
   return (
-    <div className="w-full flex justify-center items-center h-full max-w-[90%] md:max-w-[80%] lg:max-w-[72%] relative">
+    <div className="w-full min-w-0 flex justify-center items-center h-full max-w-7xl px-2 sm:px-10 relative">
       <Button
         variant="outline"
         size="icon"
@@ -50,9 +50,9 @@ export function ResourceCarousel({ slides, renderTitle }: ResourceCarouselProps)
                   slide.href && 'hover:-translate-y-1'
                 )}
               >
-                <CardContent className="flex-1 p-6 flex items-center justify-center">
+                <CardContent className="flex-1 p-4 sm:p-6 flex items-center justify-center">
                   <div className="relative w-full aspect-video">
-                    <Image src={slide.image} alt={slide.title} fill className="object-cover rounded-lg" />
+                    <Image src={slide.image} alt={slide.title} fill className="object-cover rounded-lg outline outline-1 -outline-offset-1 outline-black/10" />
                   </div>
                 </CardContent>
                 <CardHeader className="pt-2 pb-4">
@@ -75,15 +75,15 @@ export function ResourceCarousel({ slides, renderTitle }: ResourceCarouselProps)
             )
 
             return (
-              <div key={slide.id} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.33%] px-4">
+              <div key={slide.id} className="min-w-0 flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.33%] px-3 sm:px-4">
                 <div className="p-1 h-full">
                   {slide.href ? (
                     slide.external ? (
-                      <a href={slide.href} target="_blank" rel="noopener noreferrer" className="h-full block">
+                      <a href={slide.href} target="_blank" rel="noopener noreferrer" className="h-full block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                         {content}
                       </a>
                     ) : (
-                      <Link href={formatURL(slide.href, lang)} className="h-full block">
+                      <Link href={formatURL(slide.href, lang)} className="h-full block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                         {content}
                       </Link>
                     )

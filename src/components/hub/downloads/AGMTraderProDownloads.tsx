@@ -31,9 +31,9 @@ const AGMTraderProDownloads = () => {
 
       {/* Content with higher z-index */}
       <div className="container py-8 my-2 relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col my-10">
+        <div className="max-w-7xl mx-auto flex flex-col my-4 sm:my-10">
           <div className="text-center">
-            <h1 className="text-5xl font-bold text-foreground mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
               {t('main.products.trader.title')}
             </h1>
             <p className="text-lg max-w-xl mx-auto text-subtitle mb-10">

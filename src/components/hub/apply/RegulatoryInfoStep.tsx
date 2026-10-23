@@ -32,7 +32,7 @@ const RegulatoryInfoStep = ({ form }: RegulatoryInfoStepProps) => {
   }, [accountType]);
 
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="space-y-6 sm:p-2">
       <CardHeader>
         <CardTitle>{t('apply.account.regulatory.regulatory_information')}</CardTitle>
       </CardHeader>
@@ -51,7 +51,7 @@ const RegulatoryInfoStep = ({ form }: RegulatoryInfoStepProps) => {
 
           return (
             <div key={opt.code} className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
                 <p className="text-foreground text-sm">{opt.label}</p>
                 <div className="flex items-center gap-2">
                   <FormField

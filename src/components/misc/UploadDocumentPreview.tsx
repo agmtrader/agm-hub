@@ -151,7 +151,7 @@ const UploadDocumentPreview = ({ file, onFileChange, onBusyChange }: UploadDocum
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-h-[92vh] max-w-5xl overflow-hidden">
+        <DialogContent className="max-h-[92dvh] max-w-5xl overflow-y-auto">
           <DialogHeader className="gap-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
             <div className="min-w-0">
               <DialogTitle className="truncate pr-8" title={file.name}>{shortenFileName(file.name, 64)}</DialogTitle>

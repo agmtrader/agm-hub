@@ -817,7 +817,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         name={`${basePath}.street1` as any}
         render={({ field }) => (
           <FormItem>
-            <div className='flex flex-row gap-2 items-center'>
+            <div className='flex flex-wrap gap-2 items-center'>
               <FormLabel>{t('apply.account.account_holder_info.street_address_1')}</FormLabel>
               <FormMessage />
             </div>
@@ -832,7 +832,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         name={`${basePath}.street2` as any}
         render={({ field }) => (
           <FormItem>
-            <div className='flex flex-row gap-2 items-center'>
+            <div className='flex flex-wrap gap-2 items-center'>
               <FormLabel>{t('apply.account.account_holder_info.street_address_2')}</FormLabel>
               <FormMessage />
             </div>
@@ -864,7 +864,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
           name={`${basePath}.city` as any}
           render={({ field }) => (
             <FormItem>
-              <div className='flex flex-row gap-2 items-center'>
+              <div className='flex flex-wrap gap-2 items-center'>
                 <FormLabel>{t('apply.account.account_holder_info.city')}</FormLabel>
                 <FormMessage />
               </div>
@@ -879,7 +879,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
           name={`${basePath}.postalCode` as any}
           render={({ field }) => (
             <FormItem>
-              <div className='flex flex-row gap-2 items-center'> 
+              <div className='flex flex-wrap gap-2 items-center'>
                 <FormLabel>{t('apply.account.account_holder_info.zip')}</FormLabel>
                 <FormMessage />
               </div>
@@ -894,7 +894,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
   );
 
   const renderOrganizationFields = () => (
-    <Card className="p-6 space-y-6">
+    <Card className="space-y-6 sm:p-2">
       <CardHeader>
         <CardTitle>{t('apply.account.account_holder_info.organization_information')}</CardTitle>
       </CardHeader>
@@ -904,7 +904,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         name={`customer.organization.identifications.0.name` as any}
         render={({ field }) => (
           <FormItem>
-            <div className='flex flex-row gap-2 items-center'>
+            <div className='flex flex-wrap gap-2 items-center'>
               <FormLabel>{t('apply.account.account_holder_info.organization_name')}</FormLabel>
               <FormMessage />
             </div>  
@@ -919,7 +919,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         name={`customer.organization.identifications.0.businessDescription` as any}
         render={({ field }) => (
           <FormItem>
-            <div className='flex flex-row gap-2 items-center'>
+            <div className='flex flex-wrap gap-2 items-center'>
             <FormLabel>{t('apply.account.account_holder_info.business_description')}</FormLabel>
             <FormMessage />
             </div>
@@ -934,7 +934,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         name={`customer.organization.identifications.0.identification` as any}
         render={({ field }) => (
           <FormItem>
-            <div className='flex flex-row gap-2 items-center'>
+            <div className='flex flex-wrap gap-2 items-center'>
               <FormLabel>{t('apply.account.account_holder_info.organization_identification_number')}</FormLabel>
               <FormMessage />
             </div>
@@ -949,7 +949,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
         name={`customer.organization.accountSupport.ownersResideUS` as any}
         render={({ field }) => (
           <FormItem>
-            <div className='flex flex-row gap-2 items-center'>
+            <div className='flex flex-wrap gap-2 items-center'>
               <FormLabel>{t('apply.account.account_holder_info.owners_reside_in_us')}</FormLabel>
               <FormMessage />
             </div>
@@ -998,7 +998,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
     const occupationOptions = availableOccupations.length ? availableOccupations : [];
 
     return (
-    <Card className="p-6 space-y-6">
+    <Card className="space-y-6 sm:p-2">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
@@ -1011,7 +1011,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             name={`${basePath}.name.first` as any}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.account_holder_info.first_name')}</FormLabel>
                   <FormMessage />
                 </div>
@@ -1026,7 +1026,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             name={`${basePath}.name.last` as any}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.account_holder_info.last_name')}</FormLabel>
                   <FormMessage />
                 </div>
@@ -1042,7 +1042,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
           name={`${basePath}.email` as any}
           render={({ field }) => (
             <FormItem>
-              <div className='flex flex-row gap-2 items-center'>
+              <div className='flex flex-wrap gap-2 items-center'>
                 <FormLabel>{t('apply.account.account_holder_info.email')}</FormLabel>
                 <FormMessage />
               </div>
@@ -1058,7 +1058,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             name={`${basePath}.dateOfBirth` as any}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.account_holder_info.date_of_birth')}</FormLabel>
                   <FormMessage />
                 </div>
@@ -1088,7 +1088,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             name={`${basePath}.maritalStatus` as any}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.account_holder_info.marital_status')}</FormLabel>
                   <FormMessage />
                 </div>
@@ -1114,7 +1114,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             name={`${basePath}.numDependents` as any}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.account_holder_info.num_dependents')}</FormLabel>
                   <FormMessage />
                 </div>
@@ -1147,7 +1147,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             name={`${basePath}.phones.0.number` as any}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.account_holder_info.phone_number')}</FormLabel>
                   <FormMessage />
                 </div>
@@ -1165,7 +1165,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
           name={`${basePath}.identificationType` as any}
           render={({ field }) => (
             <FormItem>
-              <div className='flex flex-row gap-2 items-center'> 
+              <div className='flex flex-wrap gap-2 items-center'>
                 <FormLabel>{t('apply.account.account_holder_info.id_type')}</FormLabel>
                 <FormMessage />
               </div>
@@ -1194,7 +1194,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             name={idNumberField}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.account_holder_info.id_number')}</FormLabel>
                   <FormMessage />
                 </div>
@@ -1211,7 +1211,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             name={`${basePath}.identification.expirationDate` as any}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.account_holder_info.expiration_date')}</FormLabel>
                   <FormMessage />
                 </div>
@@ -1251,7 +1251,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
           name={`${basePath}.employmentType` as any}
           render={({ field }) => (
             <FormItem>
-              <div className='flex flex-row gap-2 items-center'>
+              <div className='flex flex-wrap gap-2 items-center'>
                 <FormLabel>{t('apply.account.account_holder_info.employment_type')}</FormLabel>
                 <FormMessage />
               </div>
@@ -1389,7 +1389,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
   return (
     <div className="space-y-6">
 
-      <Card className="p-6">
+      <Card>
         <CardHeader>
           <CardTitle>{t('apply.account.account_holder_info.account_setup')}</CardTitle>
         </CardHeader>
@@ -1399,7 +1399,7 @@ const PersonalInfoStep = ({ form, businessAndOccupations, referrer, setReferrer 
             name="accounts.0.margin"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-row gap-2 items-center">
+                <div className="flex flex-wrap gap-2 items-center">
                   <FormLabel>{t('apply.account.account_holder_info.account_type')}</FormLabel>
                   <FormMessage />
                 </div>

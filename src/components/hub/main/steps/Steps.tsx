@@ -116,7 +116,10 @@ const accountTypes: StepDetail[] = [
         {managementTypes.map((step) => (
           <Card
             key={step.title}
-            className="cursor-pointer transition-all duration-300 hover:border-primary/50 hover:shadow-md hover:scale-[1.03]"
+            className="cursor-pointer transition-[box-shadow,border-color] duration-200 hover:border-primary/50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedStep(step) } }}
             onClick={() => setSelectedStep(step)}
           >
             <CardContent className="p-6 space-y-2">
@@ -139,7 +142,10 @@ const accountTypes: StepDetail[] = [
         {accountTypes.map((step) => (
           <Card
             key={step.title}
-            className="cursor-pointer transition-all duration-300 hover:border-primary/50 hover:shadow-md hover:scale-[1.03]"
+            className="cursor-pointer transition-[box-shadow,border-color] duration-200 hover:border-primary/50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedStep(step) } }}
             onClick={() => setSelectedStep(step)}
           >
             <CardContent className="p-6 space-y-2">
@@ -153,11 +159,10 @@ const accountTypes: StepDetail[] = [
       </div>
 
       <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-5">
-        <Button className="w-full sm:w-fit">
-          <Link href={formatURL("/apply", lang)}>{t('shared.apply_for_an_account')}</Link>
-          <ArrowRight className="h-4 w-4" />
+        <Button asChild className="w-full sm:w-fit">
+          <Link href={formatURL("/apply", lang)}>{t('shared.apply_for_an_account')}<ArrowRight className="ml-2 h-4 w-4 shrink-0" /></Link>
         </Button>
-        <Button variant="outline" className="w-full sm:w-fit">
+        <Button asChild variant="outline" className="w-full sm:w-fit">
           <Link href={formatURL("/requirements", lang)}>{t('shared.view_requirements')}</Link>
         </Button>
       </div>

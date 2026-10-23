@@ -81,13 +81,14 @@ const Products = () => {
       </motion.p>
 
       <motion.div 
-        className="w-full flex justify-center items-center h-full max-w-full md:max-w-[80%] lg:max-w-[65%] relative"
+        className="w-full flex justify-center items-center h-full max-w-5xl relative"
         variants={itemVariants}
       >
         <Button
           variant="outline"
           size="icon"
           className="hidden md:inline-flex rounded-full shadow-md absolute left-0 z-10"
+          aria-label={lang === 'es' ? 'Anterior' : 'Previous'}
           onClick={() => emblaApi?.scrollPrev()}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -113,13 +114,13 @@ const Products = () => {
                             />
                           </div>
                         ) : index === 1 ? (
-                          <div className="flex items-end justify-center gap-3 sm:gap-6 w-full">
-                            <div className="relative w-[160px] h-[115px] sm:w-[220px] sm:h-[158px] md:w-[568px] md:h-[408px]">
-                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90">
+                          <div className="flex items-end justify-center gap-3 sm:gap-6 w-full max-w-[872px]">
+                            <div className="relative w-[70%] aspect-[568/408]">
+                              <div className="absolute inset-0">
                                 <IPad
                                   width={408}
                                   height={568}
-                                  className="h-[115px] w-auto sm:h-[158px] md:h-[408px]"
+                                  className="absolute top-1/2 left-1/2 w-[71.83%] h-auto max-w-none -translate-x-1/2 -translate-y-1/2 -rotate-90"
                                   src={'/assets/products/mobile-app.png'}
                                 />
                               </div>
@@ -127,7 +128,7 @@ const Products = () => {
                             <Iphone15Pro
                               width={207}
                               height={408}
-                              className="h-[115px] w-auto sm:h-[158px] md:h-[408px]"
+                              className="w-[25.5%] h-auto shrink-0"
                               src={'/assets/products/iphone-app.png'}
                             />
                           </div>
@@ -183,6 +184,7 @@ const Products = () => {
           variant="outline"
           size="icon"
           className="hidden md:inline-flex rounded-full shadow-md absolute right-0 z-10"
+          aria-label={lang === 'es' ? 'Siguiente' : 'Next'}
           onClick={() => emblaApi?.scrollNext()}
         >
           <ChevronRight className="h-4 w-4" />
@@ -190,7 +192,7 @@ const Products = () => {
       </motion.div>
 
       <motion.div
-        className="flex items-center justify-center gap-2"
+        className="flex items-center justify-center gap-1"
         variants={itemVariants}
       >
         {apps.map((app, index) => (
@@ -199,10 +201,10 @@ const Products = () => {
             type="button"
             aria-label={`Go to ${app.name}`}
             aria-pressed={selectedIndex === index}
-            className={`h-2.5 rounded-full transition-all ${
+            className={`relative h-10 w-10 rounded-full transition-colors after:absolute after:inset-x-2 after:top-[15px] after:h-2.5 after:rounded-full ${
               selectedIndex === index
-                ? "w-6 bg-primary"
-                : "w-2.5 bg-primary/30 hover:bg-primary/50"
+                ? "after:bg-primary"
+                : "after:bg-primary/30 hover:after:bg-primary/50"
             }`}
             onClick={() => emblaApi?.scrollTo(index)}
           />

@@ -73,8 +73,8 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
                 value={field.value}
                 className="grid gap-4"
               >
-                <Card className="p-6 hover:border-primary transition-colors">
-                  <FormItem className="flex flex-row items-center justify-start gap-10">
+                <Card className="p-4 sm:p-6 hover:border-primary transition-colors">
+                  <FormItem className="flex flex-row items-center justify-start gap-4 sm:gap-6 space-y-0">
                       <FormControl>
                         <RadioGroupItem value="INDIVIDUAL" />
                       </FormControl>
@@ -89,8 +89,8 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
                   </FormItem>
                 </Card>
 
-                <Card className="p-6 hover:border-primary transition-colors">
-                  <FormItem className="flex flex-row items-center justify-start gap-10">
+                <Card className="p-4 sm:p-6 hover:border-primary transition-colors">
+                  <FormItem className="flex flex-row items-center justify-start gap-4 sm:gap-6 space-y-0">
                       <FormControl>
                         <RadioGroupItem value="JOINT" />
                       </FormControl>
@@ -105,8 +105,8 @@ const AccountTypeStep = ({ form }: AccountTypeStepProps) => {
                   </FormItem>
                 </Card>
 
-                <Card className="p-6">
-                  <FormItem className="flex flex-row items-center justify-start gap-10">
+                <Card className="p-4 sm:p-6">
+                  <FormItem className="flex flex-row items-center justify-start gap-4 sm:gap-6 space-y-0">
                     <FormControl>
                       <RadioGroupItem value="ORG" />
                     </FormControl>

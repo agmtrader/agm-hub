@@ -133,9 +133,9 @@ const FinancialInfoStep = ({
               control={form.control}
               name={`${basePath}.0.sourcesOfWealth.${index}.sourceType` as any}
               render={({ field }) => (
-                <FormItem className="col-span-3">
+                <FormItem className="sm:col-span-3">
                   {index === 0 && (
-                    <div className="flex flex-row gap-2 items-center">
+                    <div className="flex flex-wrap gap-2 items-center">
                       <FormLabel>{t('apply.account.financial.source_type')}</FormLabel>
                       <FormMessage />
                     </div>
@@ -165,7 +165,7 @@ const FinancialInfoStep = ({
               render={({ field }) => (
                 <FormItem>
                   {index === 0 && 
-                    <div className="flex flex-row gap-2 items-center">
+                    <div className="flex flex-wrap gap-2 items-center">
                       <FormLabel>{t('apply.account.financial.percentage')}</FormLabel>
                       <FormMessage />
                     </div>
@@ -211,7 +211,7 @@ const FinancialInfoStep = ({
               render={({ field }) => (
                 <FormItem>
                   {index === 0 && 
-                    <div className="flex flex-row gap-2 items-center">
+                    <div className="flex flex-wrap gap-2 items-center">
                       <FormLabel>{t('apply.account.financial.asset_class')}</FormLabel>
                       <FormMessage />
                     </div>
@@ -241,7 +241,7 @@ const FinancialInfoStep = ({
               render={({ field }) => (
                 <FormItem>
                   {index === 0 && 
-                    <div className="flex flex-row gap-2 items-center">
+                    <div className="flex flex-wrap gap-2 items-center">
                       <FormLabel>{t('apply.account.financial.years_trading')}</FormLabel>
                       <FormMessage />
                     </div>
@@ -266,7 +266,7 @@ const FinancialInfoStep = ({
               render={({ field }) => (
                 <FormItem>
                   {index === 0 && 
-                    <div className="flex flex-row gap-2 items-center">
+                    <div className="flex flex-wrap gap-2 items-center">
                       <FormLabel>{t('apply.account.financial.trades_per_year')}</FormLabel>
                       <FormMessage />
                     </div>
@@ -291,7 +291,7 @@ const FinancialInfoStep = ({
               render={({ field }) => (
                 <FormItem>
                     {index === 0 && 
-                    <div className="flex flex-row gap-2 items-center">
+                    <div className="flex flex-wrap gap-2 items-center">
                       <FormLabel>{t('apply.account.financial.knowledge_level')}</FormLabel>
                       <FormMessage />
                     </div>
@@ -328,7 +328,7 @@ const FinancialInfoStep = ({
   };
 
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="space-y-6 sm:p-2">
       <CardHeader>
         <CardTitle>{t('apply.account.financial.financial_information')}</CardTitle>
       </CardHeader>
@@ -341,7 +341,7 @@ const FinancialInfoStep = ({
               name="accounts.0.baseCurrency"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex flex-row gap-2 items-center">
+                  <div className="flex flex-wrap gap-2 items-center">
                     <FormLabel>{t('apply.account.financial.base_currency')}</FormLabel>
                     <FormMessage />
                   </div>
@@ -366,7 +366,7 @@ const FinancialInfoStep = ({
         </div>
 
         <div className="space-y-4">
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <h4 className="text-lg font-semibold">
               {t('apply.account.financial.trading_permissions')}
             </h4>
@@ -383,7 +383,7 @@ const FinancialInfoStep = ({
               {trading_products(t).map((product) => {
                 const isSelected = tradingPermissions.some(p => p.product === product.id);
                 return (
-                  <div key={product.id} className="flex items-center space-x-2 border p-4 rounded-md">
+                  <div key={product.id} className="flex items-start space-x-2 border p-4 rounded-md">
                     <Checkbox
                       id={`product-${product.id}`}
                       checked={isSelected}
@@ -391,7 +391,7 @@ const FinancialInfoStep = ({
                     />
                     <label
                       htmlFor={`product-${product.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer w-full"
+                      className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer w-full"
                     >
                       {product.label}
                     </label>
@@ -412,7 +412,7 @@ const FinancialInfoStep = ({
             name={`${basePath}.0.netWorth` as any}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.financial.net_worth')} (USD)</FormLabel>
                   <FormMessage />
                 </div>
@@ -442,7 +442,7 @@ const FinancialInfoStep = ({
             name={`${basePath}.0.liquidNetWorth` as any}
             render={({ field }) => (
               <FormItem>
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.financial.liquid_net_worth')} (USD)</FormLabel>
                   <FormMessage />
                 </div>
@@ -472,7 +472,7 @@ const FinancialInfoStep = ({
             name={`${basePath}.0.annualNetIncome` as any}
             render={({ field }) => (
               <FormItem>  
-                <div className='flex flex-row gap-2 items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                   <FormLabel>{t('apply.account.financial.annual_net_income')} (USD)</FormLabel>
                   <FormMessage />
                 </div>
@@ -505,7 +505,7 @@ const FinancialInfoStep = ({
           name={`${basePath}.0.investmentObjectives` as any}
           render={({ field }) => (
             <FormItem>
-              <div className='flex flex-row gap-2 items-center'>
+              <div className='flex flex-wrap gap-2 items-center'>
                 <FormLabel>{t('apply.account.financial.investment_objectives')}</FormLabel>
                 <FormMessage />
               </div>
@@ -541,7 +541,7 @@ const FinancialInfoStep = ({
 
         {/* Investment Experience */}
         <div className="space-y-2">
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <h4 className="text-lg font-semibold">
               {t('apply.account.financial.investment_experience')}
             </h4>
@@ -551,7 +551,7 @@ const FinancialInfoStep = ({
 
         {/* Source of Wealth */}
         <div className="space-y-2">
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <h4 className="text-lg font-semibold">
               {t('apply.account.financial.source_of_wealth')}
             </h4>
@@ -561,7 +561,7 @@ const FinancialInfoStep = ({
 
         {/* Estimated Deposit */}
         <div className="space-y-2">
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <Label className={cn(estimatedDepositError && "text-destructive")}>
               {t('apply.account.financial.estimated_deposit')}
             </Label>

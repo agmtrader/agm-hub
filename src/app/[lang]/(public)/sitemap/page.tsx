@@ -71,9 +71,9 @@ const SitemapPage = () => {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-subtitle hover:text-primary transition-colors flex items-center gap-1.5 group"
+                    className="text-subtitle hover:text-primary transition-colors flex min-h-10 items-center gap-1.5 group"
                   >
-                    <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                     {link.label}
                   </Link>
                 </li>

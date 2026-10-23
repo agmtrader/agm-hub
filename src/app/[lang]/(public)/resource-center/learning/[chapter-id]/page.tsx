@@ -37,9 +37,9 @@ const ChapterPage = ({ params }: Props) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-full justify-start items-center gap-5 my-10 flex flex-col w-full"
+      className="h-full justify-start items-center gap-5 my-8 flex flex-col w-full max-w-7xl mx-auto px-4 sm:px-6"
     >
-      <Button asChild className="absolute left-10 z-10" variant="ghost">
+      <Button asChild className="self-start h-auto min-h-10 whitespace-normal text-left" variant="ghost">
         <Link href={formatURL('/resource-center#learning', lang)}>
           <ArrowLeft className="w-4 h-4 text-foreground" />
           {t('learning.go_back')}
@@ -49,7 +49,7 @@ const ChapterPage = ({ params }: Props) => {
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-5xl font-bold"
+        className="text-3xl sm:text-4xl md:text-5xl font-bold text-center"
       >
         {t('learning.chapter_label')} {chapterId}
       </motion.h1>
@@ -58,7 +58,7 @@ const ChapterPage = ({ params }: Props) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-2xl text-subtitle"
+        className="text-xl sm:text-2xl text-subtitle text-center"
       >
         {(() => {
           const translated = t(`learning.chapters.${chapterId}.title`)
@@ -75,9 +75,9 @@ const ChapterPage = ({ params }: Props) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="w-full h-full gap-8 flex items-start justify-center"
+          className="w-full min-w-0 gap-6 flex flex-col lg:flex-row items-start justify-center"
         >
-          <motion.div layout className="flex flex-col gap-2 w-[300px] p-6 bg-muted rounded-lg shadow-sm">
+          <motion.div layout className="flex shrink-0 flex-col gap-2 w-full lg:w-[280px] p-4 sm:p-6 bg-muted rounded-lg shadow-sm">
             <h3 className="font-semibold mb-2 text-lg">{t('learning.available_videos')}</h3>
             <AnimatePresence mode="wait">
               {showList && (
@@ -97,7 +97,7 @@ const ChapterPage = ({ params }: Props) => {
                       <Button
                         onClick={() => setSelected(video)}
                         className={cn(
-                          'text-sm p-3 w-fit h-fit justify-start text-left bg-transparent text-foreground hover:bg-primary/10',
+                          'text-sm p-3 w-full min-h-11 h-auto whitespace-normal justify-start text-left bg-transparent text-foreground hover:bg-primary/10',
                           selected.id === video.id && 'bg-primary text-background hover:bg-primary hover:text-background'
                         )}
                       >
@@ -109,6 +109,8 @@ const ChapterPage = ({ params }: Props) => {
               )}
             </AnimatePresence>
             <Button
+              aria-label={showList ? (lang === 'es' ? 'Ocultar videos' : 'Hide videos') : (lang === 'es' ? 'Mostrar videos' : 'Show videos')}
+              aria-expanded={showList}
               onClick={() => setShowList(!showList)}
               className="text-sm mt-2 p-2 w-fit bg-transparent hover:bg-transparent text-foreground hover:text-foreground"
             >
@@ -125,7 +127,7 @@ const ChapterPage = ({ params }: Props) => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: 'spring', stiffness: 100 }}
-            className="w-[1024px] max-w-[90vw] h-auto flex items-center justify-center"
+            className="w-full min-w-0 flex-1 h-auto flex items-center justify-center"
           >
             <div className="w-full relative" style={{ paddingTop: '56.25%' }}>
               <iframe
@@ -142,7 +144,7 @@ const ChapterPage = ({ params }: Props) => {
 
       <div className="w-full max-w-[1024px] relative mt-8">
         <div className="flex items-center justify-center relative">
-          <div className="absolute h-[2px] w-full top-1/2 -translate-y-1/2">
+          <div className="hidden sm:block absolute h-[2px] w-full top-1/2 -translate-y-1/2">
             {videos.map((_, index) => {
               if (index === videos.length - 1) return null
               const isWatched = index < videos.findIndex((v) => v.id === selected?.id)
@@ -152,7 +154,7 @@ const ChapterPage = ({ params }: Props) => {
                   className={cn(
                     'absolute h-full',
                     isWatched ? 'bg-blue-500' : 'bg-orange-500',
-                    'transition-all duration-300'
+                    'transition-[color,background-color,transform] duration-300'
                   )}
                   style={{
                     left: `${(index / (videos.length - 1)) * 100}%`,
@@ -163,7 +165,7 @@ const ChapterPage = ({ params }: Props) => {
             })}
           </div>
 
-          <div className="flex justify-between w-full relative">
+          <div className="flex flex-wrap gap-1 sm:gap-3 justify-between w-full relative">
             {videos.map((video, index) => {
               const isWatched = index < videos.findIndex((v) => v.id === selected?.id)
               const isCurrent = video.id === selected?.id
@@ -173,8 +175,8 @@ const ChapterPage = ({ params }: Props) => {
                   key={video.id}
                   onClick={() => setSelected(video)}
                   className={cn(
-                    'w-8 h-8 rounded-full flex items-center justify-center',
-                    'transition-all duration-300 relative',
+                    'w-10 h-10 shrink-0 rounded-full flex items-center justify-center',
+                    'transition-[color,background-color,transform] duration-300 relative',
                     'hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2',
                     isWatched ? 'bg-blue-500 text-white' : 'bg-orange-500 text-white',
                     isCurrent && 'ring-2 ring-offset-2 ring-black scale-110'

@@ -18,17 +18,17 @@ export function ResourceSteps({ title, intro, steps }: ResourceStepsProps) {
   return (
     <Card className="border border-border/60 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">{title}</CardTitle>
+        <CardTitle className="text-xl leading-snug sm:text-2xl">{title}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {intro ? <p className="text-base text-subtitle leading-7">{intro}</p> : null}
         <ol className="space-y-4">
           {steps.map((step, index) => (
-            <li key={`${step.title}-${index}`} className="flex gap-4">
+            <li key={`${step.title}-${index}`} className="flex gap-3 sm:gap-4">
               <div className="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center shrink-0 font-semibold">
                 {index + 1}
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex min-w-0 flex-col gap-1 break-words">
                 <p className="font-semibold">{step.title}</p>
                 {step.body ? <p className="text-subtitle leading-7">{step.body}</p> : null}
                 {step.note ? <p className="text-sm text-subtitle">{step.note}</p> : null}
