@@ -13,6 +13,8 @@ export const investmentProposalDistributionKeys = [
     'bonds_bbb',
     'bonds_bb',
     'etfs',
+    'investment_grade',
+    'gold',
 ] as const
 
 export type InvestmentProposalDistributionKey = (typeof investmentProposalDistributionKeys)[number]
@@ -32,6 +34,8 @@ export interface InvestmentProposalAssets {
     bbb: Bond[]
     bb: Bond[]
     etfs: Bond[]
+    investment_grade?: Bond[]
+    gold?: Bond[]
 }
 
 export type InvestmentProposalSourceType = 'risk_profile' | 'portfolio_plan' | 'custom'

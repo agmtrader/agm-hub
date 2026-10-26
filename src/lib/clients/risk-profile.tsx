@@ -25,10 +25,14 @@ export interface RiskArchetype {
   id: number;
   name: string;
   treasuries: number;
-  bonds_aaa_a: number;
-  bonds_bbb: number;
-  bonds_bb: number;
-  etfs: number;
+  investment_grade: number;
+  high_yield: number;
+  equity: number;
+  gold: number;
+  positions: number;
+  largest_position: number;
+  risk_assessment: string;
+  horizon_fit: string;
   min_score: number;
   max_score: number;
 }

@@ -83,8 +83,10 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       color: RATING_COLORS['AAA/AA/A'],
     },
     { key: 'bbb', distributionKey: 'bonds_bbb', label: 'BBB', color: RATING_COLORS['BBB'] },
-    { key: 'bb', distributionKey: 'bonds_bb', label: 'BB', color: RATING_COLORS['BB'] },
-    { key: 'etfs', distributionKey: 'etfs', label: 'ETFs', color: RATING_COLORS['ETFs'] },
+    { key: 'investment_grade', distributionKey: 'investment_grade', label: 'Investment grade (AAA–BBB)', color: RATING_COLORS['AAA/AA/A'] },
+    { key: 'bb', distributionKey: 'bonds_bb', label: 'High yield (BB)', color: RATING_COLORS['BB'] },
+    { key: 'etfs', distributionKey: 'etfs', label: 'Equity (ETFs)', color: RATING_COLORS['ETFs'] },
+    { key: 'gold', distributionKey: 'gold', label: 'Gold (GLD)', color: '#B8860B' },
   ] as const
 
   const [riskArchetypeName, setRiskArchetypeName] = useState<string | null>(null)
@@ -177,6 +179,8 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
 
     const groupedBonds = {
       treasuries: proposal.assets?.treasury ?? [],
+      investment_grade: proposal.assets?.investment_grade ?? [],
+      gold: proposal.assets?.gold ?? [],
       aaa_a: proposal.assets?.aaa_a ?? [],
       bbb: proposal.assets?.bbb ?? [],
       bb: proposal.assets?.bb ?? [],
@@ -414,7 +418,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
             />
           </Card>
           <Card className='w-full h-full gap-10 flex flex-col p-5'>
-            <h3 className="text-xl font-semibold text-foreground">Portfolio Distribution by Rating</h3>
+            <h3 className="text-xl font-semibold text-foreground">Portfolio Distribution by Asset Class</h3>
 
             <div className="h-fit">
               <ChartContainer

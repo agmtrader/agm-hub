@@ -1,7 +1,7 @@
 import { Base } from './base'
 
-export type AssetKey = 'cash' | 'treasuries' | 'bonds' | 'stocks'
-export type BondRatingKey = 'aaa' | 'bbb' | 'bb'
+export type AssetKey = 'cash' | 'treasuries' | 'bonds' | 'stocks' | 'gold'
+export type BondRatingKey = 'aaa' | 'bbb' | 'bb' | 'ig'
 export type RiskTolerance = 'conservative' | 'moderate' | 'aggressive'
 export type PlannerDataSource = 'live' | 'fallback'
 
