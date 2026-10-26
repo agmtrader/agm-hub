@@ -29,7 +29,7 @@ export interface RiskArchetype {
   high_yield: number;
   equity: number;
   positions: number;
-  largest_position: number;
+  largest_position: number | null;
   risk_assessment: string;
   horizon_fit: string;
   min_score: number;
