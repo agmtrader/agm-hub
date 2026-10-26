@@ -1,6 +1,6 @@
 import { Base } from './base'
 
-export const proposalAllocationKeys = ['treasuries', 'investment_grade', 'high_yield', 'equity', 'gold'] as const
+export const proposalAllocationKeys = ['treasuries', 'investment_grade', 'high_yield', 'equity'] as const
 export type AssetKey = (typeof proposalAllocationKeys)[number]
 export type RiskTolerance = 'conservative' | 'moderate' | 'aggressive'
 export type PlannerDataSource = 'live' | 'fallback'

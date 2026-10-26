@@ -4,14 +4,14 @@ import type { RiskArchetype } from './risk-profile'
 import { ReadBondsReport, ReadEtfsReport, ReadUSTBondsReport } from '@/utils/tools/reporting'
 
 export const allocationCaps: Record<AssetKey, number> = {
-  treasuries: 100, investment_grade: 100, high_yield: 100, equity: 100, gold: 100,
+  treasuries: 100, investment_grade: 100, high_yield: 100, equity: 100,
 }
 export const proposalAllocationLabels: Record<AssetKey, string> = {
   treasuries: 'Treasuries', investment_grade: 'Investment grade (AAA–BBB)',
-  high_yield: 'High yield (BB)', equity: 'Equity (ETFs)', gold: 'Gold (GLD)',
+  high_yield: 'High yield (BB)', equity: 'Equity (ETFs)',
 }
 export const proposalAllocationColors: Record<AssetKey, string> = {
-  treasuries: '#1E3A8A', investment_grade: '#2571A5', high_yield: '#E8590C', equity: '#C92A2A', gold: '#B8860B',
+  treasuries: '#1E3A8A', investment_grade: '#2571A5', high_yield: '#E8590C', equity: '#C92A2A',
 }
 
 // Same classified equity universe as the proposal API. Bond/commodity ETFs are excluded.
@@ -35,9 +35,9 @@ export function proposalAssetSymbol(row: Record<string, unknown>): string {
   }
   return ''
 }
-export function proposalEtfCategory(row: Record<string, unknown>): 'equity' | 'gold' | null {
+export function proposalEtfCategory(row: Record<string, unknown>): 'equity' | null {
   const symbol = String(row['Financial Instrument'] || proposalAssetSymbol(row)).trim().toUpperCase()
-  return symbol === 'GLD' ? 'gold' : equityEtfSymbols.has(symbol) ? 'equity' : null
+  return equityEtfSymbols.has(symbol) ? 'equity' : null
 }
 export function proposalBondCategory(row: Record<string, unknown>): 'investment_grade' | 'high_yield' | null {
   const token = (value: unknown) => String(value ?? '').trim().toUpperCase().replace(/\s+/g, '').replace(/[−–]/g, '-')
@@ -53,31 +53,38 @@ export function proposalBondCategory(row: Record<string, unknown>): 'investment_
 }
 
 export function getAllocationFromRiskArchetype(archetype: RiskArchetype): PortfolioAllocation {
-  return Object.fromEntries(proposalAllocationKeys.map(key => [key, Math.round(Number(archetype[key]) * 100)])) as PortfolioAllocation
+  const total = proposalAllocationKeys.reduce((sum, key) => sum + Number(archetype[key]), 0)
+  const raw = Object.fromEntries(proposalAllocationKeys.map(key => [key, Number(archetype[key]) / total * 10000])) as PortfolioAllocation
+  const units = Object.fromEntries(proposalAllocationKeys.map(key => [key, Math.floor(raw[key] + 1e-9)])) as PortfolioAllocation
+  const ordered = [...proposalAllocationKeys].sort((a, b) => (raw[b] - units[b]) - (raw[a] - units[a]))
+  const remaining = 10000 - proposalAllocationKeys.reduce((sum, key) => sum + units[key], 0)
+  for (const key of ordered.slice(0, remaining)) units[key] += 1
+  return Object.fromEntries(proposalAllocationKeys.map(key => [key, units[key] / 100])) as PortfolioAllocation
 }
 export function getRiskToleranceFromScore(score: number): RiskTolerance {
   return score < 1.25 ? 'conservative' : score < 2.5 ? 'moderate' : 'aggressive'
 }
 export function getFallbackPlannerAssets(): PlannerAssetProfile[] {
   const assumptions: Record<AssetKey, [number, number]> = {
-    treasuries: [0.042, 0.035], investment_grade: [0.06, 0.06], high_yield: [0.087, 0.11], equity: [0.085, 0.19], gold: [0, 0.19],
+    treasuries: [0.042, 0.035], investment_grade: [0.06, 0.06], high_yield: [0.087, 0.11], equity: [0.085, 0.19],
   }
   return proposalAllocationKeys.map(key => ({
-    key, label: proposalAllocationLabels[key], benchmark: key === 'gold' ? 'GLD' : proposalAllocationLabels[key],
+    key, label: proposalAllocationLabels[key], benchmark: proposalAllocationLabels[key],
     color: proposalAllocationColors[key], expectedReturn: assumptions[key][0], volatility: assumptions[key][1],
     source: 'fallback', note: 'Planning assumption until the corresponding market feed loads; API preview determines proposal return.',
   }))
 }
 export function normalizeAllocation(allocation: PortfolioAllocation, changedKey: AssetKey, value: number, lockedKeys: AssetKey[] = []): PortfolioAllocation {
-  const next = { ...allocation, [changedKey]: Math.max(0, Math.min(100, Math.round(value))) }
-  let difference = 100 - proposalAllocationKeys.reduce((sum, key) => sum + next[key], 0)
+  const next = Object.fromEntries(proposalAllocationKeys.map(key => [key, Math.round(allocation[key] * 100)])) as PortfolioAllocation
+  next[changedKey] = Math.max(0, Math.min(10000, Math.round(value * 100)))
+  let difference = 10000 - proposalAllocationKeys.reduce((sum, key) => sum + next[key], 0)
   for (const key of proposalAllocationKeys.filter(key => key !== changedKey && !lockedKeys.includes(key))) {
-    const delta = Math.max(-next[key], Math.min(100 - next[key], difference))
+    const delta = Math.max(-next[key], Math.min(10000 - next[key], difference))
     next[key] += delta
     difference -= delta
   }
   next[changedKey] += difference
-  return next
+  return Object.fromEntries(proposalAllocationKeys.map(key => [key, next[key] / 100])) as PortfolioAllocation
 }
 
 export type PortfolioCalculationResult = {
@@ -86,12 +93,11 @@ export type PortfolioCalculationResult = {
 }
 export function calculatePortfolio(allocation: PortfolioAllocation, assets: PlannerAssetProfile[], targetReturn: number, startingAmount: number, tolerance: RiskTolerance): PortfolioCalculationResult {
   const byKey = Object.fromEntries(assets.map(asset => [asset.key, asset])) as Record<AssetKey, PlannerAssetProfile>
-  const allocationTotal = proposalAllocationKeys.reduce((sum, key) => sum + allocation[key], 0)
+  const allocationTotal = Math.round(proposalAllocationKeys.reduce((sum, key) => sum + allocation[key] * 100, 0)) / 100
   const expectedReturn = proposalAllocationKeys.reduce((sum, key) => sum + allocation[key] / 100 * byKey[key].expectedReturn, 0)
   let variance = 0
   for (const left of proposalAllocationKeys) for (const right of proposalAllocationKeys) {
-    // GLD correlation is an explicit zero planning assumption; credit sleeves share bond risk.
-    const correlation = left === right ? 1 : left === 'gold' || right === 'gold' ? 0
+    const correlation = left === right ? 1
       : left === 'equity' || right === 'equity' ? (left === 'treasuries' || right === 'treasuries' ? 0.12 : 0.2)
       : left === 'treasuries' || right === 'treasuries' ? 0.72 : 1
     variance += allocation[left] / 100 * allocation[right] / 100 * byKey[left].volatility * byKey[right].volatility * correlation
@@ -133,12 +139,12 @@ export async function loadPlannerAssetProfiles(market = readPlannerMarketData())
     const candidates: Record<string, unknown>[] = profile.key === 'treasuries' ? rows[1]
       : profile.key === 'investment_grade' || profile.key === 'high_yield' ? rows[0].filter(row => proposalBondCategory(row) === profile.key)
       : rows[2].filter(row => proposalEtfCategory(row) === profile.key)
-    const isEtf = profile.key === 'equity' || profile.key === 'gold'
+    const isEtf = profile.key === 'equity'
     const values = candidates.map(row => numberField(row, isEtf ? ['Current Yield'] : ['Current Yield', 'YTM', 'CY', 'Ask Yield', 'Bid Yield']))
       .filter((value): value is number => value !== null && (isEtf || value > 0))
       .map(value => isEtf || Math.abs(value) > 1 ? value / 100 : value)
     const expectedReturn = median(values)
-    if (expectedReturn !== null) Object.assign(profile, { expectedReturn, source: 'live', benchmark: profile.key === 'gold' ? 'GLD' : `AGM ${profile.label} feed`,
+    if (expectedReturn !== null) Object.assign(profile, { expectedReturn, source: 'live', benchmark: `AGM ${profile.label} feed`,
       note: 'Return from the corresponding eligible market universe. Volatility and correlations are planning assumptions.' })
   }
   return profiles

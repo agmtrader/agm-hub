@@ -12,11 +12,10 @@ export const investmentProposalGroups = [
     { key: 'investment_grade', assetKey: 'investment_grade', distributionKey: 'investment_grade', label: 'Investment grade (AAA–BBB)', color: '#2571A5' },
     { key: 'bb', assetKey: 'bb', distributionKey: 'bonds_bb', label: 'High yield (BB)', color: '#E8590C' },
     { key: 'etfs', assetKey: 'etfs', distributionKey: 'etfs', label: 'Equity (ETFs)', color: '#C92A2A' },
-    { key: 'gold', assetKey: 'gold', distributionKey: 'gold', label: 'Gold (GLD)', color: '#B8860B' },
 ] as const
 
 export const investmentProposalDistributionKeys = [
-    'treasuries', 'investment_grade', 'bonds_bb', 'etfs', 'gold', 'cash', 'stocks',
+    'treasuries', 'investment_grade', 'bonds_bb', 'etfs', 'cash', 'stocks',
 ] as const
 
 export type InvestmentProposalDistributionKey = (typeof investmentProposalDistributionKeys)[number]
@@ -37,7 +36,6 @@ export interface InvestmentProposalAssets {
     bb: Bond[]
     etfs: Bond[]
     investment_grade?: Bond[]
-    gold?: Bond[]
 }
 
 export type InvestmentProposalSourceType = 'risk_profile' | 'portfolio_plan' | 'custom'
@@ -53,7 +51,7 @@ export interface InvestmentProposalPayload {
 export interface InvestmentProposalAssetInput {
     symbol: string
     percentage: number
-    source_bucket: 'treasuries' | 'investment_grade' | 'high_yield' | 'equity' | 'gold'
+    source_bucket: 'treasuries' | 'investment_grade' | 'high_yield' | 'equity'
 }
 
 export interface InvestmentProposalPreview extends InvestmentProposalPayload {

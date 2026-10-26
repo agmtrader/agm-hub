@@ -154,7 +154,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     const groupedBonds = {
       treasuries: proposal.assets?.treasury ?? [],
       investment_grade: proposal.assets?.investment_grade ?? [],
-      gold: proposal.assets?.gold ?? [],
       bb: proposal.assets?.bb ?? [],
       etfs: proposal.assets?.etfs ?? [],
     }

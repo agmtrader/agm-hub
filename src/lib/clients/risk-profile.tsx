@@ -28,7 +28,6 @@ export interface RiskArchetype {
   investment_grade: number;
   high_yield: number;
   equity: number;
-  gold: number;
   positions: number;
   largest_position: number;
   risk_assessment: string;
