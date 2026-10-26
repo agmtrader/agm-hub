@@ -1,626 +1,145 @@
-import type {
-  AssetKey,
-  BondBucketProfiles,
-  BondRatingAllocation,
-  BondRatingKey,
-  PlannerAssetProfile,
-  PortfolioAllocation,
-  RiskTolerance,
-} from './portfolio-plans'
+import type { AssetKey, PlannerAssetProfile, PortfolioAllocation, RiskTolerance } from './portfolio-plans'
+import { proposalAllocationKeys } from './portfolio-plans'
 import type { RiskArchetype } from './risk-profile'
-import { ReadBondsReport, ReadEtfsReport, ReadStocksReport, ReadUSTBondsReport } from '@/utils/tools/reporting'
-
-const assetKeys: AssetKey[] = ['cash', 'treasuries', 'bonds', 'stocks', 'gold']
-const bondRatingKeys: BondRatingKey[] = ['aaa', 'bbb', 'bb', 'ig']
+import { ReadBondsReport, ReadEtfsReport, ReadUSTBondsReport } from '@/utils/tools/reporting'
 
 export const allocationCaps: Record<AssetKey, number> = {
-  cash: 10,
-  treasuries: 100,
-  bonds: 100,
-  stocks: 100,
-  gold: 100,
+  treasuries: 100, investment_grade: 100, high_yield: 100, equity: 100, gold: 100,
+}
+export const proposalAllocationLabels: Record<AssetKey, string> = {
+  treasuries: 'Treasuries', investment_grade: 'Investment grade (AAA–BBB)',
+  high_yield: 'High yield (BB)', equity: 'Equity (ETFs)', gold: 'Gold (GLD)',
+}
+export const proposalAllocationColors: Record<AssetKey, string> = {
+  treasuries: '#1E3A8A', investment_grade: '#2571A5', high_yield: '#E8590C', equity: '#C92A2A', gold: '#B8860B',
 }
 
-const riskCaps: Record<RiskTolerance, number> = {
-  conservative: 0.08,
-  moderate: 0.16,
-  aggressive: 0.28,
+// Same classified equity universe as the proposal API. Bond/commodity ETFs are excluded.
+const equityEtfSymbols = new Set([
+  'EEM', 'DIA', 'XLP', 'VEA', 'VT', 'XLY', 'XLE', 'ARKK', 'QQQ', 'XLRE',
+  'IEMG', 'IYR', 'EWJ', 'VOO', 'IBB', 'XLB', 'VTI', 'XLV', 'QQQM', 'RSP',
+  'VNQ', 'IWM', 'VXUS', 'IVV', 'XLK', 'SOXX', 'XLU', 'EFA', 'SPY', 'VWO',
+  'IEFA', 'XLF', 'XLI', 'ACWI', 'SMH', 'SCHB',
+])
+const moodysToSp: Record<string, string> = {
+  AAA: 'AAA', AA1: 'AA+', AA2: 'AA', AA3: 'AA-', A1: 'A+', A2: 'A', A3: 'A-',
+  BAA1: 'BBB+', BAA2: 'BBB', BAA3: 'BBB-', BA1: 'BB+', BA2: 'BB', BA3: 'BB-',
+  B1: 'B+', B2: 'B', B3: 'B-', CAA1: 'CCC+', CAA2: 'CCC', CAA3: 'CCC-', CA: 'CC', C: 'C',
 }
+const ratings = ['AAA', 'AA+', 'AA', 'AA-', 'A+', 'A', 'A-', 'BBB+', 'BBB', 'BBB-', 'BB+', 'BB', 'BB-', 'B+', 'B', 'B-', 'CCC+', 'CCC', 'CCC-', 'CC', 'C', 'SD', 'D']
 
-const correlation: Record<AssetKey, Record<AssetKey, number>> = {
-  cash: { cash: 1, treasuries: 0.08, bonds: 0.1, stocks: 0.05, gold: 0 },
-  treasuries: { cash: 0.08, treasuries: 1, bonds: 0.72, stocks: 0.12, gold: 0 },
-  bonds: { cash: 0.1, treasuries: 0.72, bonds: 1, stocks: 0.2, gold: 0 },
-  stocks: { cash: 0.05, treasuries: 0.12, bonds: 0.2, stocks: 1, gold: 0 },
-  gold: { cash: 0, treasuries: 0, bonds: 0, stocks: 0, gold: 1 },
-}
-
-export type PortfolioCalculationResult = {
-  expectedReturn: number
-  volatility: number
-  allocationTotal: number
-  returnDelta: number
-  oneYearGain: number
-  oneYearRangeLow: number
-  oneYearRangeHigh: number
-  riskTier: RiskTolerance
-  guidance: string[]
-}
-
-// Gold uses an explicit uncorrelated 19% volatility planning assumption until
-// live risk history is available; its return is populated from GLD, never equity.
-const fallbackAssets: PlannerAssetProfile[] = [
-  { key: 'gold', label: 'Gold (GLD)', benchmark: 'GLD', color: '#B8860B',
-    expectedReturn: 0, volatility: 0.19, source: 'fallback',
-    note: 'GLD return unavailable until the ETF feed loads; volatility and zero correlations are planning assumptions.' },
-  {
-    key: 'cash',
-    label: 'Cash',
-    benchmark: 'AGM short-rate proxy',
-    color: '#227C9D',
-    expectedReturn: 0.035,
-    volatility: 0.01,
-    source: 'fallback',
-    note: 'Cash-like assumption used when live market data is unavailable.',
-  },
-  {
-    key: 'treasuries',
-    label: 'Treasuries',
-    benchmark: 'AGM U.S. Treasury proxy',
-    color: '#3A86FF',
-    expectedReturn: 0.042,
-    volatility: 0.035,
-    source: 'fallback',
-    note: 'Treasury assumption used when live treasury data is unavailable.',
-  },
-  {
-    key: 'bonds',
-    label: 'Corporate Bonds',
-    benchmark: 'AGM corporate bond proxy',
-    color: '#FB5607',
-    expectedReturn: 0.045,
-    volatility: 0.06,
-    source: 'fallback',
-    note: 'Corporate bond assumption used when live bond data is unavailable.',
-  },
-  {
-    key: 'stocks',
-    label: 'Stocks/ETF',
-    benchmark: 'AGM stock and ETF proxy',
-    color: '#D00000',
-    expectedReturn: 0.085,
-    volatility: 0.19,
-    source: 'fallback',
-    note: 'Broad stock and ETF assumption, not a recommendation to buy a specific security.',
-  },
-]
-
-const fallbackBondBucketProfiles: BondBucketProfiles = {
-  ig: { expectedReturn: 0, volatility: 0.06, benchmark: 'AAA–BBB', note: 'Investment-grade return unavailable until the bond feed loads.', source: 'fallback' },
-  aaa: {
-    expectedReturn: 0.053,
-    volatility: 0.04,
-    benchmark: 'AGM A-AAA proxy',
-    note: 'Fallback estimate for higher-quality corporate bonds.',
-    source: 'fallback',
-  },
-  bbb: {
-    expectedReturn: 0.074,
-    volatility: 0.07,
-    benchmark: 'AGM BBB proxy',
-    note: 'Fallback estimate for medium-quality corporate bonds.',
-    source: 'fallback',
-  },
-  bb: {
-    expectedReturn: 0.087,
-    volatility: 0.11,
-    benchmark: 'AGM BB proxy',
-    note: 'Fallback estimate for higher-yield corporate bonds.',
-    source: 'fallback',
-  },
-}
-
-export function getFallbackPlannerAssets(): PlannerAssetProfile[] {
-  return fallbackAssets.map((asset) => ({ ...asset }))
-}
-
-export function getFallbackBondBucketProfiles(): BondBucketProfiles {
-  return {
-    ig: { ...fallbackBondBucketProfiles.ig },
-    aaa: { ...fallbackBondBucketProfiles.aaa },
-    bbb: { ...fallbackBondBucketProfiles.bbb },
-    bb: { ...fallbackBondBucketProfiles.bb },
+export function proposalAssetSymbol(row: Record<string, unknown>): string {
+  for (const key of ['symbol', 'Symbol', 'Ticker', 'ticker', 'sheet_name', 'Financial Instrument']) {
+    const value = String(row[key] ?? '').trim()
+    if (value) return value
   }
+  return ''
 }
-
-export function getRiskToleranceFromScore(score: number): RiskTolerance {
-  if (score < 1.25) return 'conservative'
-  if (score < 2.5) return 'moderate'
-  return 'aggressive'
+export function proposalEtfCategory(row: Record<string, unknown>): 'equity' | 'gold' | null {
+  const symbol = String(row['Financial Instrument'] || proposalAssetSymbol(row)).trim().toUpperCase()
+  return symbol === 'GLD' ? 'gold' : equityEtfSymbols.has(symbol) ? 'equity' : null
+}
+export function proposalBondCategory(row: Record<string, unknown>): 'investment_grade' | 'high_yield' | null {
+  const token = (value: unknown) => String(value ?? '').trim().toUpperCase().replace(/\s+/g, '').replace(/[−–]/g, '-')
+  const canonical = [row['S&P Equivalent_x'], row['S&P Equivalent']].map(token).find(value => ratings.includes(value))
+  const structured = [token(row.SP), moodysToSp[token(row.Moodys ?? row["Moody's"])]].filter(value => ratings.includes(value))
+  const tokens = [...new Set([...ratings, ...Object.keys(moodysToSp)])].sort((a, b) => b.length - a.length)
+  const expression = new RegExp(`(?<![A-Z0-9+\\-])(${tokens.map(value => value.replace(/[+]/g, '\\+')).join('|')})(?![A-Z0-9+\\-])`, 'g')
+  const text = String(row.Ratings ?? '').toUpperCase().replace(/[−–]/g, '-').replace(/\bN\s*\/\s*A\b/g, '')
+  const freeText = (text.match(expression) ?? []).map(value => moodysToSp[value] || value)
+  const resolved = canonical || (structured.length ? structured : freeText).sort((a, b) => ratings.indexOf(b) - ratings.indexOf(a))[0]
+  const base = resolved?.replace(/[+-]/g, '') ?? ''
+  return base === 'BB' ? 'high_yield' : ['AAA', 'AA', 'A', 'BBB'].includes(base) ? 'investment_grade' : null
 }
 
 export function getAllocationFromRiskArchetype(archetype: RiskArchetype): PortfolioAllocation {
-  return { cash: 0, treasuries: Math.round(archetype.treasuries * 100),
-    bonds: Math.round((archetype.investment_grade + archetype.high_yield) * 100),
-    stocks: Math.round(archetype.equity * 100), gold: Math.round(archetype.gold * 100) }
+  return Object.fromEntries(proposalAllocationKeys.map(key => [key, Math.round(Number(archetype[key]) * 100)])) as PortfolioAllocation
+}
+export function getRiskToleranceFromScore(score: number): RiskTolerance {
+  return score < 1.25 ? 'conservative' : score < 2.5 ? 'moderate' : 'aggressive'
+}
+export function getFallbackPlannerAssets(): PlannerAssetProfile[] {
+  const assumptions: Record<AssetKey, [number, number]> = {
+    treasuries: [0.042, 0.035], investment_grade: [0.06, 0.06], high_yield: [0.087, 0.11], equity: [0.085, 0.19], gold: [0, 0.19],
+  }
+  return proposalAllocationKeys.map(key => ({
+    key, label: proposalAllocationLabels[key], benchmark: key === 'gold' ? 'GLD' : proposalAllocationLabels[key],
+    color: proposalAllocationColors[key], expectedReturn: assumptions[key][0], volatility: assumptions[key][1],
+    source: 'fallback', note: 'Planning assumption until the corresponding market feed loads; API preview determines proposal return.',
+  }))
+}
+export function normalizeAllocation(allocation: PortfolioAllocation, changedKey: AssetKey, value: number, lockedKeys: AssetKey[] = []): PortfolioAllocation {
+  const next = { ...allocation, [changedKey]: Math.max(0, Math.min(100, Math.round(value))) }
+  let difference = 100 - proposalAllocationKeys.reduce((sum, key) => sum + next[key], 0)
+  for (const key of proposalAllocationKeys.filter(key => key !== changedKey && !lockedKeys.includes(key))) {
+    const delta = Math.max(-next[key], Math.min(100 - next[key], difference))
+    next[key] += delta
+    difference -= delta
+  }
+  next[changedKey] += difference
+  return next
 }
 
-export function getBondRatingAllocationFromRiskArchetype(archetype: RiskArchetype): BondRatingAllocation {
-  const total = archetype.investment_grade + archetype.high_yield
-  const ig = total > 0 ? Number((archetype.investment_grade / total * 100).toFixed(10)) : 0
-  return { aaa: 0, bbb: 0, ig, bb: Number((100 - ig).toFixed(10)) }
+export type PortfolioCalculationResult = {
+  expectedReturn: number; volatility: number; allocationTotal: number; returnDelta: number
+  oneYearGain: number; oneYearRangeLow: number; oneYearRangeHigh: number; riskTier: RiskTolerance; guidance: string[]
 }
-
-export function calculatePortfolio(
-  allocation: PortfolioAllocation,
-  assets: PlannerAssetProfile[],
-  targetReturn: number,
-  startingAmount: number,
-  riskTolerance: RiskTolerance,
-): PortfolioCalculationResult {
-  const byKey = Object.fromEntries(assets.map((asset) => [asset.key, asset])) as Record<AssetKey, PlannerAssetProfile>
-  const allocationTotal = assetKeys.reduce((sum, key) => sum + Number(allocation[key] || 0), 0)
-  const weights = assetKeys.map((key) => Number(allocation[key] || 0) / 100)
-
-  const expectedReturn = assetKeys.reduce((sum, key, index) => sum + weights[index] * byKey[key].expectedReturn, 0)
-
+export function calculatePortfolio(allocation: PortfolioAllocation, assets: PlannerAssetProfile[], targetReturn: number, startingAmount: number, tolerance: RiskTolerance): PortfolioCalculationResult {
+  const byKey = Object.fromEntries(assets.map(asset => [asset.key, asset])) as Record<AssetKey, PlannerAssetProfile>
+  const allocationTotal = proposalAllocationKeys.reduce((sum, key) => sum + allocation[key], 0)
+  const expectedReturn = proposalAllocationKeys.reduce((sum, key) => sum + allocation[key] / 100 * byKey[key].expectedReturn, 0)
   let variance = 0
-  for (const rowKey of assetKeys) {
-    for (const columnKey of assetKeys) {
-      variance +=
-        (Number(allocation[rowKey] || 0) / 100) *
-        (Number(allocation[columnKey] || 0) / 100) *
-        byKey[rowKey].volatility *
-        byKey[columnKey].volatility *
-        correlation[rowKey][columnKey]
-    }
+  for (const left of proposalAllocationKeys) for (const right of proposalAllocationKeys) {
+    // GLD correlation is an explicit zero planning assumption; credit sleeves share bond risk.
+    const correlation = left === right ? 1 : left === 'gold' || right === 'gold' ? 0
+      : left === 'equity' || right === 'equity' ? (left === 'treasuries' || right === 'treasuries' ? 0.12 : 0.2)
+      : left === 'treasuries' || right === 'treasuries' ? 0.72 : 1
+    variance += allocation[left] / 100 * allocation[right] / 100 * byKey[left].volatility * byKey[right].volatility * correlation
   }
-
   const volatility = Math.sqrt(Math.max(variance, 0))
+  const riskTier = volatility <= 0.08 ? 'conservative' : volatility <= 0.16 ? 'moderate' : 'aggressive'
   const returnDelta = expectedReturn - targetReturn / 100
-
-  return {
-    expectedReturn,
-    volatility,
-    allocationTotal,
-    returnDelta,
-    oneYearGain: startingAmount * expectedReturn,
-    oneYearRangeLow: startingAmount * (expectedReturn - volatility),
-    oneYearRangeHigh: startingAmount * (expectedReturn + volatility),
-    riskTier: getRiskTier(volatility),
-    guidance: buildGuidance(expectedReturn, targetReturn / 100, volatility, riskTolerance, allocationTotal),
-  }
+  const guidance = [returnDelta < -0.015 ? 'The mix is below the target return. Review the allocation and target together.'
+    : returnDelta > 0.015 ? 'The mix exceeds the target return. Review whether a more defensive allocation meets your goal.' : 'This mix is close to the target return. Compare the expected return with its modeled risk.']
+  if (volatility > { conservative: 0.08, moderate: 0.16, aggressive: 0.28 }[tolerance]) guidance.push('Modeled risk exceeds the selected tolerance. Consider more Treasuries or investment-grade bonds.')
+  return { expectedReturn, volatility, allocationTotal, returnDelta, oneYearGain: startingAmount * expectedReturn,
+    oneYearRangeLow: startingAmount * (expectedReturn - volatility), oneYearRangeHigh: startingAmount * (expectedReturn + volatility), riskTier, guidance }
 }
-
-export function buildPlannerAssetsForAllocation(
-  assets: PlannerAssetProfile[],
-  bondRatingAllocation: BondRatingAllocation,
-  bondBucketProfiles: BondBucketProfiles,
-): PlannerAssetProfile[] {
-  const nextAssets = assets.map((asset) => ({ ...asset }))
-  const bondAsset = nextAssets.find((asset) => asset.key === 'bonds')
-  if (!bondAsset) return nextAssets
-
-  const weights = {
-    ig: Number(bondRatingAllocation.ig || 0) / 100,
-    aaa: Number(bondRatingAllocation.aaa || 0) / 100,
-    bbb: Number(bondRatingAllocation.bbb || 0) / 100,
-    bb: Number(bondRatingAllocation.bb || 0) / 100,
-  }
-
-  bondAsset.expectedReturn =
-    bondBucketProfiles.ig.expectedReturn * weights.ig +
-    bondBucketProfiles.aaa.expectedReturn * weights.aaa +
-    bondBucketProfiles.bbb.expectedReturn * weights.bbb +
-    bondBucketProfiles.bb.expectedReturn * weights.bb
-
-  bondAsset.volatility =
-    bondBucketProfiles.ig.volatility * weights.ig +
-    bondBucketProfiles.aaa.volatility * weights.aaa +
-    bondBucketProfiles.bbb.volatility * weights.bbb +
-    bondBucketProfiles.bb.volatility * weights.bb
-
-  bondAsset.benchmark = `Within corporate bonds (${bondRatingAllocation.ig || 0}% AAA–BBB / ${bondRatingAllocation.aaa}% A-AAA / ${bondRatingAllocation.bbb}% BBB / ${bondRatingAllocation.bb}% BB)`
-  bondAsset.note = 'Derived from the live AGM bond universe using the current bond rating sliders.'
-  bondAsset.source =
-    bondBucketProfiles.ig.source === 'live' || bondBucketProfiles.aaa.source === 'live' || bondBucketProfiles.bbb.source === 'live' || bondBucketProfiles.bb.source === 'live'
-      ? 'live'
-      : 'fallback'
-
-  return nextAssets
-}
-
-export function normalizeAllocation(
-  allocation: PortfolioAllocation,
-  changedKey: AssetKey,
-  nextValue: number,
-  lockedKeys: AssetKey[] = [],
-): PortfolioAllocation {
-  const clamped = Math.max(0, Math.min(allocationCaps[changedKey], Math.round(nextValue)))
-  const nextAllocation = { ...allocation, gold: Number(allocation.gold || 0), [changedKey]: clamped }
-  const total = assetKeys.reduce((sum, key) => sum + Number(nextAllocation[key] || 0), 0)
-  let remainingAdjustment = total - 100
-  const locked = new Set(lockedKeys.filter((key) => key !== changedKey))
-  const adjustableKeys = assetKeys.filter((key) => key !== changedKey && !locked.has(key))
-
-  if (remainingAdjustment === 0) return nextAllocation
-
-  if (remainingAdjustment > 0) {
-    for (const key of adjustableKeys) {
-      const reduction = Math.min(nextAllocation[key], remainingAdjustment)
-      nextAllocation[key] -= reduction
-      remainingAdjustment -= reduction
-      if (remainingAdjustment === 0) break
-    }
-    if (remainingAdjustment > 0) {
-      nextAllocation[changedKey] = Math.max(0, nextAllocation[changedKey] - remainingAdjustment)
-    }
-  } else {
-    remainingAdjustment = Math.abs(remainingAdjustment)
-    for (const key of adjustableKeys) {
-      const increase = Math.min(allocationCaps[key] - nextAllocation[key], remainingAdjustment)
-      nextAllocation[key] += increase
-      remainingAdjustment -= increase
-      if (remainingAdjustment === 0) break
-    }
-  }
-
-  return nextAllocation
-}
-
-export function normalizeBondRatingAllocation(
-  allocation: BondRatingAllocation,
-  changedKey: BondRatingKey,
-  nextValue: number,
-  lockedKeys: BondRatingKey[] = [],
-): BondRatingAllocation {
-  const clamped = Math.max(0, Math.min(100, Number(nextValue.toFixed(10))))
-  const nextAllocation = { ...allocation, ig: Number(allocation.ig || 0), [changedKey]: clamped }
-  const locked = new Set(lockedKeys.filter((key) => key !== changedKey))
-  const adjustableKeys = bondRatingKeys.filter((key) => key !== changedKey && !locked.has(key))
-  let adjustment = 100 - bondRatingKeys.reduce((sum, key) => sum + nextAllocation[key], 0)
-
-  for (const key of adjustableKeys) {
-    const delta = Math.max(-nextAllocation[key], Math.min(100 - nextAllocation[key], adjustment))
-    nextAllocation[key] = Number((nextAllocation[key] + delta).toFixed(10))
-    adjustment -= delta
-  }
-
-  return nextAllocation
-}
-
-export function formatPercent(value: number): string {
-  return `${(value * 100).toFixed(1)}%`
-}
-
+export function formatPercent(value: number): string { return `${(value * 100).toFixed(1)}%` }
 export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(value)
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value)
 }
-
-export async function loadPlannerAssetProfiles(): Promise<PlannerAssetProfile[]> {
-  const assets = getFallbackPlannerAssets()
-
-  try {
-    const [corporateBonds, treasuries, stocks, etfs] = await Promise.all([
-      ReadBondsReport(),
-      ReadUSTBondsReport(),
-      ReadStocksReport(),
-      ReadEtfsReport(),
-    ])
-
-    const goldRow = (Array.isArray(etfs) ? etfs : []).find((row: Record<string, unknown>) => String(row['Financial Instrument'] || '').toUpperCase() === 'GLD')
-    const goldReturn = goldRow ? firstNumber(goldRow, ['Current Yield']) : null
-    if (goldReturn !== null) applyAsset(assets, 'gold', { expectedReturn: goldReturn / 100, volatility: 0.19, benchmark: 'GLD', note: 'GLD historical return from the ETF feed; volatility and zero correlations are planning assumptions.' })
-    const treasuryYield = medianYield(Array.isArray(treasuries) ? treasuries : [])
-    const corporateYield = medianYield(Array.isArray(corporateBonds) ? corporateBonds : [])
-    const spyReturn = averageSpyYearOverYearReturn([...(Array.isArray(stocks) ? stocks : []), ...(Array.isArray(etfs) ? etfs : [])])
-    const spyVolatility = estimateSpyVolatility([...(Array.isArray(stocks) ? stocks : []), ...(Array.isArray(etfs) ? etfs : [])])
-
-    if (treasuryYield !== null) {
-      applyAsset(assets, 'treasuries', {
-        expectedReturn: clamp(treasuryYield, 0, 0.15),
-        volatility: clamp(estimateBondVolatility(Array.isArray(treasuries) ? treasuries : []), 0.025, 0.09),
-        benchmark: 'AGM U.S. Treasury feed',
-        note: 'Derived from AGM treasury snapshots.',
-      })
-      applyAsset(assets, 'cash', {
-        expectedReturn: clamp(treasuryYield * 0.85, 0.001, 0.12),
-        volatility: 0.01,
-        benchmark: 'AGM short treasury cash proxy',
-        note: 'Cash estimate derived from the AGM treasury feed.',
-      })
-    }
-
-    if (corporateYield !== null) {
-      applyAsset(assets, 'bonds', {
-        expectedReturn: clamp(corporateYield, 0, 0.18),
-        volatility: clamp(estimateBondVolatility(Array.isArray(corporateBonds) ? corporateBonds : []), 0.035, 0.14),
-        benchmark: 'AGM corporate bond feed',
-        note: 'Derived from AGM corporate bond snapshots.',
-      })
-    }
-
-    if (spyReturn !== null) {
-      applyAsset(assets, 'stocks', {
-        expectedReturn: clamp(spyReturn, 0, 0.3),
-        volatility: clamp(spyVolatility ?? 0.19, 0.08, 0.45),
-        benchmark: 'AGM SPY proposal-equity feed',
-        note: 'Derived from the same SPY-style live proposal equity feed used by proposal generation.',
-      })
-    }
-
-    return assets
-  } catch {
-    return assets
-  }
-}
-
-export async function loadPlannerBondBucketProfiles(): Promise<BondBucketProfiles> {
-  const bondBucketProfiles = getFallbackBondBucketProfiles()
-
-  try {
-    const corporateBonds = await ReadBondsReport()
-    const corporateRows = Array.isArray(corporateBonds) ? corporateBonds : []
-
-    applyBondBucketProfile(bondBucketProfiles, 'ig', filterBondRowsByBucket(corporateRows, 'ig'), { benchmark: 'AGM AAA–BBB bond feed', note: 'Derived from the full investment-grade universe without a credit suballocation.' })
-    applyBondBucketProfile(bondBucketProfiles, 'aaa', filterBondRowsByBucket(corporateRows, 'aaa'), {
-      benchmark: 'AGM A-AAA bond feed',
-      note: 'Derived from higher-quality corporate bonds in the AGM live universe.',
-    })
-    applyBondBucketProfile(bondBucketProfiles, 'bbb', filterBondRowsByBucket(corporateRows, 'bbb'), {
-      benchmark: 'AGM BBB bond feed',
-      note: 'Derived from BBB corporate bonds in the AGM live universe.',
-    })
-    applyBondBucketProfile(bondBucketProfiles, 'bb', filterBondRowsByBucket(corporateRows, 'bb'), {
-      benchmark: 'AGM BB bond feed',
-      note: 'Derived from BB corporate bonds in the AGM live universe.',
-    })
-
-    return bondBucketProfiles
-  } catch {
-    return bondBucketProfiles
-  }
-}
-
-function getRiskTier(volatility: number): RiskTolerance {
-  if (volatility <= 0.08) return 'conservative'
-  if (volatility <= 0.16) return 'moderate'
-  return 'aggressive'
-}
-
-function buildGuidance(
-  expectedReturn: number,
-  targetReturn: number,
-  volatility: number,
-  riskTolerance: RiskTolerance,
-  allocationTotal: number,
-): string[] {
-  const messages: string[] = []
-  const riskCap = riskCaps[riskTolerance]
-  const returnGap = targetReturn - expectedReturn
-
-  if (allocationTotal !== 100) {
-    messages.push('Bring the allocation total to 100% before treating the result as a complete portfolio.')
-  }
-
-  if (returnGap > 0.015) {
-    messages.push(
-      volatility >= riskCap
-        ? 'The target return is above this mix while risk is already near the selected tolerance. Lower the target or accept a higher risk profile.'
-        : 'To move closer to the target return, shift weight from cash, treasuries, or corporate bonds toward stocks/ETFs.',
-    )
-  } else if (returnGap < -0.015) {
-    messages.push('The mix is above the target return. You may be able to reduce risk by shifting some exposure toward cash, treasuries, or bonds.')
-  } else {
-    messages.push('This mix is close to the target return. The main tradeoff is whether the added risk feels worth the expected return.')
-  }
-
-  if (volatility > riskCap) {
-    messages.push('Portfolio risk is above the selected tolerance. Move toward cash, treasuries, or higher-quality bonds to reduce volatility.')
-  }
-
-  return messages
-}
-
-function applyAsset(
-  assets: PlannerAssetProfile[],
-  key: AssetKey,
-  updates: Pick<PlannerAssetProfile, 'expectedReturn' | 'volatility' | 'benchmark' | 'note'>,
-) {
-  const asset = assets.find((item) => item.key === key)
-  if (!asset) return
-  asset.expectedReturn = updates.expectedReturn
-  asset.volatility = updates.volatility
-  asset.benchmark = updates.benchmark
-  asset.note = updates.note
-  asset.source = 'live'
-}
-
-function applyBondBucketProfile(
-  bucketProfiles: BondBucketProfiles,
-  key: BondRatingKey,
-  rows: Record<string, unknown>[],
-  details: Pick<PlannerAssetProfile, 'benchmark' | 'note'>,
-) {
-  const expectedReturn = medianYield(rows)
-  if (expectedReturn === null) return
-
-  bucketProfiles[key] = {
-    expectedReturn: clamp(expectedReturn, 0, 0.2),
-    volatility: clamp(estimateBondVolatility(rows), 0.03, 0.16),
-    benchmark: details.benchmark,
-    note: details.note,
-    source: 'live',
-  }
-}
-
-function firstNumber(row: Record<string, unknown>, keys: string[]): number | null {
+export function readPlannerMarketData() { return [ReadBondsReport(), ReadUSTBondsReport(), ReadEtfsReport()] as const }
+function numberField(row: Record<string, unknown>, keys: string[]): number | null {
   for (const key of keys) {
-    const value = row[key]
-    const parsed = Number(String(value ?? '').replace('%', '').trim())
-    if (Number.isFinite(parsed)) return parsed
+    const raw = row[key]
+    if (raw == null || String(raw).trim() === '') continue
+    const value = Number(String(raw).replace(/[% ,]/g, ''))
+    if (Number.isFinite(value)) return value
   }
   return null
 }
-
-function normalizePercent(value: number): number {
-  return value > 1 ? value / 100 : value
-}
-
-function normalizeRatingToken(value: unknown): string {
-  return String(value ?? '').trim().toUpperCase().replace(/\s+/g, '')
-}
-
-function extractSpLikeRating(value: unknown): string {
-  const text = String(value ?? '').toUpperCase()
-  const candidates = [
-    'AAA', 'AA+', 'AA', 'AA-', 'A+', 'A', 'A-',
-    'BBB+', 'BBB', 'BBB-', 'BB+', 'BB', 'BB-',
-  ]
-  return candidates.find((candidate) => text.includes(candidate)) ?? ''
-}
-
-function resolveBondBucket(row: Record<string, unknown>): BondRatingKey | null {
-  const rating = normalizeRatingToken(
-    row['S&P Equivalent'] ??
-    row['SP'] ??
-    extractSpLikeRating(row['Ratings']) ??
-    '',
-  )
-
-  const normalized = rating.replace('+', '').replace('-', '')
-  if (normalized === 'AAA' || normalized === 'AA' || normalized === 'A') return 'aaa'
-  if (normalized === 'BBB') return 'bbb'
-  if (normalized === 'BB') return 'bb'
-  return null
-}
-
-function filterBondRowsByBucket(rows: Record<string, unknown>[], bucket: BondRatingKey): Record<string, unknown>[] {
-  return rows.filter((row) => bucket === 'ig' ? ['aaa', 'bbb'].includes(resolveBondBucket(row) || '') : resolveBondBucket(row) === bucket)
-}
-
-function medianYield(rows: Record<string, unknown>[]): number | null {
-  const yields = rows
-    .map((row) => firstNumber(row, ['YTM', 'Current Yield', 'CY', 'Ask Yield', 'Bid Yield']))
-    .filter((value): value is number => value !== null && value > 0)
-    .map(normalizePercent)
-
-  return median(yields)
-}
-
-function estimateBondVolatility(rows: Record<string, unknown>[]): number {
-  const yields = rows
-    .map((row) => firstNumber(row, ['YTM', 'Current Yield', 'CY', 'Ask Yield', 'Bid Yield']))
-    .filter((value): value is number => value !== null)
-    .map(normalizePercent)
-
-  const durations = rows
-    .map((row) => firstNumber(row, ['Duration', 'Years to Maturity']))
-    .filter((value): value is number => value !== null && value > 0)
-
-  const yieldDispersion = standardDeviation(yields) * 3
-  const durationRisk = (median(durations) ?? 4) * 0.008
-  return Math.max(yieldDispersion, durationRisk)
-}
-
-function averageSpyYearOverYearReturn(rows: Record<string, unknown>[]): number | null {
-  const spyRows = rows
-    .filter((row) => String(row.sheet_name ?? '').trim().toUpperCase() === 'SPY')
-    .map((row) => ({
-      date: new Date(String(row.Date ?? '')),
-      close: Number(row.Close),
-    }))
-    .filter((row) => !Number.isNaN(row.date.getTime()) && Number.isFinite(row.close) && row.close > 0)
-    .sort((left, right) => left.date.getTime() - right.date.getTime())
-
-  if (spyRows.length < 2) return null
-
-  const points = [
-    0,
-    365.25,
-    365.25 * 2,
-    365.25 * 3,
-    365.25 * 4,
-    365.25 * 5,
-  ]
-
-  const latest = spyRows[spyRows.length - 1].date
-  const prices = points
-    .map((days) => priceAsOf(spyRows, new Date(latest.getTime() - days * 24 * 60 * 60 * 1000)))
-    .filter((value): value is number => value !== null)
-
-  if (prices.length < 6) return null
-
-  const yields = [
-    prices[0] / prices[1] - 1,
-    prices[1] / prices[2] - 1,
-    prices[2] / prices[3] - 1,
-    prices[3] / prices[4] - 1,
-    prices[4] / prices[5] - 1,
-  ]
-
-  const average = yields.reduce((sum, value) => sum + value, 0) / yields.length
-  return average
-}
-
-function estimateSpyVolatility(rows: Record<string, unknown>[]): number | null {
-  const spyRows = rows
-    .filter((row) => String(row.sheet_name ?? '').trim().toUpperCase() === 'SPY')
-    .map((row) => ({
-      date: new Date(String(row.Date ?? '')),
-      close: Number(row.Close),
-    }))
-    .filter((row) => !Number.isNaN(row.date.getTime()) && Number.isFinite(row.close) && row.close > 0)
-    .sort((left, right) => left.date.getTime() - right.date.getTime())
-
-  if (spyRows.length < 2) return null
-
-  const returns: number[] = []
-  for (let index = 1; index < spyRows.length; index += 1) {
-    const previous = spyRows[index - 1].close
-    const current = spyRows[index].close
-    if (previous > 0 && current > 0) {
-      returns.push(current / previous - 1)
-    }
-  }
-
-  if (returns.length < 2) return null
-  return standardDeviation(returns) * Math.sqrt(252)
-}
-
-function priceAsOf(rows: Array<{ date: Date; close: number }>, targetDate: Date): number | null {
-  let match: number | null = null
-  for (const row of rows) {
-    if (row.date.getTime() <= targetDate.getTime()) {
-      match = row.close
-      continue
-    }
-    break
-  }
-  return match
-}
-
-function standardDeviation(values: number[]): number {
-  if (values.length < 2) return 0
-  const mean = values.reduce((sum, value) => sum + value, 0) / values.length
-  const variance = values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length
-  return Math.sqrt(variance)
-}
-
 function median(values: number[]): number | null {
-  if (values.length === 0) return null
+  if (!values.length) return null
   const sorted = [...values].sort((a, b) => a - b)
-  const middle = Math.floor(sorted.length / 2)
-  if (sorted.length % 2 === 0) {
-    return (sorted[middle - 1] + sorted[middle]) / 2
-  }
-  return sorted[middle]
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
 }
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value))
+export async function loadPlannerAssetProfiles(market = readPlannerMarketData()): Promise<PlannerAssetProfile[]> {
+  const profiles = getFallbackPlannerAssets()
+  const settled = await Promise.allSettled(market)
+  const rows = settled.map(result => result.status === 'fulfilled' && Array.isArray(result.value) ? result.value : [])
+  for (const profile of profiles) {
+    const candidates: Record<string, unknown>[] = profile.key === 'treasuries' ? rows[1]
+      : profile.key === 'investment_grade' || profile.key === 'high_yield' ? rows[0].filter(row => proposalBondCategory(row) === profile.key)
+      : rows[2].filter(row => proposalEtfCategory(row) === profile.key)
+    const isEtf = profile.key === 'equity' || profile.key === 'gold'
+    const values = candidates.map(row => numberField(row, isEtf ? ['Current Yield'] : ['Current Yield', 'YTM', 'CY', 'Ask Yield', 'Bid Yield']))
+      .filter((value): value is number => value !== null && (isEtf || value > 0))
+      .map(value => isEtf || Math.abs(value) > 1 ? value / 100 : value)
+    const expectedReturn = median(values)
+    if (expectedReturn !== null) Object.assign(profile, { expectedReturn, source: 'live', benchmark: profile.key === 'gold' ? 'GLD' : `AGM ${profile.label} feed`,
+      note: 'Return from the corresponding eligible market universe. Volatility and correlations are planning assumptions.' })
+  }
+  return profiles
 }

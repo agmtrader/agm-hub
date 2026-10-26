@@ -7,14 +7,16 @@ export interface Bond {
     equivalent: string
 }
 
+export const investmentProposalGroups = [
+    { key: 'treasuries', assetKey: 'treasury', distributionKey: 'treasuries', label: 'Treasuries', color: '#1E3A8A' },
+    { key: 'investment_grade', assetKey: 'investment_grade', distributionKey: 'investment_grade', label: 'Investment grade (AAA–BBB)', color: '#2571A5' },
+    { key: 'bb', assetKey: 'bb', distributionKey: 'bonds_bb', label: 'High yield (BB)', color: '#E8590C' },
+    { key: 'etfs', assetKey: 'etfs', distributionKey: 'etfs', label: 'Equity (ETFs)', color: '#C92A2A' },
+    { key: 'gold', assetKey: 'gold', distributionKey: 'gold', label: 'Gold (GLD)', color: '#B8860B' },
+] as const
+
 export const investmentProposalDistributionKeys = [
-    'treasuries',
-    'bonds_aaa_a',
-    'bonds_bbb',
-    'bonds_bb',
-    'etfs',
-    'investment_grade',
-    'gold',
+    'treasuries', 'investment_grade', 'bonds_bb', 'etfs', 'gold', 'cash', 'stocks',
 ] as const
 
 export type InvestmentProposalDistributionKey = (typeof investmentProposalDistributionKeys)[number]
@@ -51,7 +53,7 @@ export interface InvestmentProposalPayload {
 export interface InvestmentProposalAssetInput {
     symbol: string
     percentage: number
-    source_bucket?: 'BONDS' | 'UST' | 'STOCKS' | 'ETFS'
+    source_bucket: 'treasuries' | 'investment_grade' | 'high_yield' | 'equity' | 'gold'
 }
 
 export interface InvestmentProposalPreview extends InvestmentProposalPayload {

@@ -15,6 +15,7 @@ import { Download } from 'lucide-react'
 import { ListRiskArchetypes, ReadRiskProfileById } from '@/utils/clients/risk-profile'
 import {
   investmentProposalDistributionKeys,
+  investmentProposalGroups,
   type InvestmentProposalDistribution,
 } from '@/lib/clients/investment-proposals'
 
@@ -60,34 +61,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     return totalWeight > 0 ? normalizedDistribution : null
   }
 
-  const RATING_COLORS = {
-        'AAA/AA/A': '#1D4ED8',
-        'Treasuries': '#1E3A8A',
-        'BBB': '#3B82F6',
-        'BB': '#60A5FA',
-        'ETFs': '#93C5FD',
-        'Other': '#2563EB',
-  } as const
-
-  const GROUPS = [
-    {
-      key: 'treasuries',
-      distributionKey: 'treasuries',
-      label: 'Treasuries',
-      color: RATING_COLORS['Treasuries'],
-    },
-    {
-      key: 'aaa_a',
-      distributionKey: 'bonds_aaa_a',
-      label: 'AAA/AA/A',
-      color: RATING_COLORS['AAA/AA/A'],
-    },
-    { key: 'bbb', distributionKey: 'bonds_bbb', label: 'BBB', color: RATING_COLORS['BBB'] },
-    { key: 'investment_grade', distributionKey: 'investment_grade', label: 'Investment grade (AAA–BBB)', color: RATING_COLORS['AAA/AA/A'] },
-    { key: 'bb', distributionKey: 'bonds_bb', label: 'High yield (BB)', color: RATING_COLORS['BB'] },
-    { key: 'etfs', distributionKey: 'etfs', label: 'Equity (ETFs)', color: RATING_COLORS['ETFs'] },
-    { key: 'gold', distributionKey: 'gold', label: 'Gold (GLD)', color: '#B8860B' },
-  ] as const
+  const GROUPS = investmentProposalGroups
 
   const [riskArchetypeName, setRiskArchetypeName] = useState<string | null>(null)
   const [projectionSeed, setProjectionSeed] = useState(0)
@@ -181,8 +155,6 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       treasuries: proposal.assets?.treasury ?? [],
       investment_grade: proposal.assets?.investment_grade ?? [],
       gold: proposal.assets?.gold ?? [],
-      aaa_a: proposal.assets?.aaa_a ?? [],
-      bbb: proposal.assets?.bbb ?? [],
       bb: proposal.assets?.bb ?? [],
       etfs: proposal.assets?.etfs ?? [],
     }
