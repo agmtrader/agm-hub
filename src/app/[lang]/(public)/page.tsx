@@ -4,6 +4,7 @@ import Products from "@/components/hub/main/products/Products"
 import Title from "@/components/hub/main/title/Title"
 import Steps from '@/components/hub/main/steps/Steps'
 import GetStarted from '@/components/hub/main/modern-tools/ModernTools'
+import FloatingVideoPlayer from '@/components/hub/main/FloatingVideoPlayer'
 
 export default function Home() {
     
@@ -30,6 +31,7 @@ export default function Home() {
             <GetStarted />
         </section>
 
+        <FloatingVideoPlayer />
     </div>
   )
 }
