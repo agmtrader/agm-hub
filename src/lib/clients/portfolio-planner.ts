@@ -14,12 +14,10 @@ export const proposalAllocationColors: Record<AssetKey, string> = {
   treasuries: '#1E3A8A', investment_grade: '#2571A5', high_yield: '#E8590C', equity: '#C92A2A',
 }
 
-// Same classified equity universe as the proposal API. Bond/commodity ETFs are excluded.
+// Same approved ETF universe as the proposal API.
 const equityEtfSymbols = new Set([
-  'EEM', 'DIA', 'XLP', 'VEA', 'VT', 'XLY', 'XLE', 'ARKK', 'QQQ', 'XLRE',
-  'IEMG', 'IYR', 'EWJ', 'VOO', 'IBB', 'XLB', 'VTI', 'XLV', 'QQQM', 'RSP',
-  'VNQ', 'IWM', 'VXUS', 'IVV', 'XLK', 'SOXX', 'XLU', 'EFA', 'SPY', 'VWO',
-  'IEFA', 'XLF', 'XLI', 'ACWI', 'SMH', 'SCHB',
+  'SPY', 'VOO', 'QQQ', 'DIA',
+  'XLK', 'XLF', 'XLV', 'XLE', 'XLY', 'XLI', 'XLP', 'XLU', 'XLB', 'XLRE',
 ])
 const moodysToSp: Record<string, string> = {
   AAA: 'AAA', AA1: 'AA+', AA2: 'AA', AA3: 'AA-', A1: 'A+', A2: 'A', A3: 'A-',
