@@ -30,9 +30,8 @@ import { CreateInvestmentProposal } from "@/utils/clients/investment_proposals"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
-import { Progress } from "@/components/ui/progress"
 import { RiskArchetype, RiskProfilePayload } from "@/lib/clients/risk-profile"
-import { useRiskTranslations, calcRiskScore, RiskFormValues } from "@/lib/clients/schemas/risk-questions"
+import { useRiskTranslations, calcRiskScore, riskQuestionnaireVersion, RiskFormValues } from "@/lib/clients/schemas/risk-questions"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 import InvestmentProposalView from "@/components/hub/risk/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/clients/investment-proposals"
@@ -86,9 +85,10 @@ const RiskForm = () => {
         questions.map(q => [q.key, q.choices.find(c => c.value === values[q.key])?.label])
       ) as RiskProfilePayload['answers']
 
-      const raw_answers = Object.fromEntries(
-        questions.map(q => [q.key, Number(values[q.key])])
-      )
+      const raw_answers = {
+        ...Object.fromEntries(questions.map(q => [q.key, values[q.key]])),
+        questionnaire_version: riskQuestionnaireVersion,
+      }
 
       const riskProfilePayload: RiskProfilePayload = {
         name: values.name,
@@ -232,9 +232,6 @@ const RiskForm = () => {
                             <RadioGroupItem value={String(choice.value)} />
                           </FormControl>
                           <FormLabel className="min-w-0 flex-1 font-normal leading-relaxed cursor-pointer">{choice.label}</FormLabel>
-                          {q.key === 'diversification' && (
-                            <Progress className="bg-secondary basis-full w-full sm:basis-auto sm:w-48 sm:shrink-0" value={choice.bonds_percentage} />
-                          )}
                         </FormItem>
                       ))}
                     </RadioGroup>

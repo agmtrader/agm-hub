@@ -28,7 +28,11 @@ const questions = load('src/lib/clients/schemas/risk-questions.ts', {
 const { risk_assesment_schema } = load('src/lib/clients/schemas/risk-profile.tsx', {
   zod: require('zod'), './risk-questions': questions,
 })
-const values = { name: 'Deposit Test', email: 'deposit@example.com', type: 2.5, loss: 2, gain: 3, period: 2, diversification: 2, goals: 2 }
+const values = {
+  name: 'Deposit Test', email: 'deposit@example.com', objective: 3, time_horizon: 4,
+  withdrawal_need: 5, emergency_reserves: 4, loss_impact: 4, drawdown_limit: 3,
+  drawdown_response: 4, volatility_preference: 3, investment_experience: 2,
+}
 
 test('required deposit rejects missing, empty, zero, negative and non-finite amounts in both languages', () => {
   for (const lang of ['en', 'es']) {
@@ -48,7 +52,7 @@ test('positive deposits retain cents and do not affect risk scoring', () => {
   for (const amount of [0.01, 25000.75, '100000.25']) {
     const parsed = schema.parse({ ...values, starting_amount: amount })
     assert.equal(parsed.starting_amount, Number(amount))
-    assert.equal(questions.calcRiskScore(parsed), 2.25)
+    assert.equal(questions.calcRiskScore(parsed), 1.375)
   }
 })
 

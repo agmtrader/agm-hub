@@ -477,44 +477,77 @@
             "estimated_deposit": "Estimated initial deposit (USD)",
             "estimated_deposit_help": "How much do you plan to deposit initially? This amount will be used as the starting amount in your investment proposal.",
             "estimated_deposit_error": "Enter a USD amount greater than zero with no more than two decimal places.",
-            "type": {
-                "title": "What type of investor do you consider yourself?",
-                "conservative": "Conservative",
-                "moderate": "Moderate",
-                "aggressive": "Aggressive"
+            "objective": {
+                "title": "What is the main purpose of this investment?",
+                "option_1": "Preserve the money I invest",
+                "option_2": "Generate income with limited fluctuations",
+                "option_3": "Balance income and long-term growth",
+                "option_4": "Prioritize long-term growth while keeping some income",
+                "option_5": "Prioritize long-term growth and accept large fluctuations"
             },
-            "loss": {
-                "title": "If your portfolio loses 20% of its value, what action would you take?",
-                "sell_everything": "Sell everything",
-                "sell_some": "Sell some investments",
-                "do_nothing": "Do nothing",
-                "invest_more": "Invest more"
+            "time_horizon": {
+                "title": "When do you expect to need a substantial part of this money?",
+                "option_1": "In less than 1 year",
+                "option_2": "In 1 to less than 3 years",
+                "option_3": "In 3 to less than 5 years",
+                "option_4": "In 5 to less than 10 years",
+                "option_5": "In 10 years or more"
             },
-            "gain": {
-                "title": "If your portfolio appreciates 20% of its value, what action would you take?",
-                "sell_everything": "Sell everything",
-                "sell_some": "Sell some investments",
-                "do_nothing": "Do nothing",
-                "invest_more": "Invest more"
+            "withdrawal_need": {
+                "title": "How much of this investment do you expect to withdraw in the next three years?",
+                "option_1": "More than 50%",
+                "option_2": "More than 25% and up to 50%",
+                "option_3": "More than 10% and up to 25%",
+                "option_4": "Up to 10%",
+                "option_5": "I do not expect to withdraw anything"
             },
-            "period": {
-                "title": "What do you think should be the average term of your investment portfolio?",
-                "more_than_21_years": "More than 21 years",
-                "11_to_20_years": "11 to 20 years",
-                "5_to_10_years": "5 to 10 years",
-                "0_to_5_years": "0 to 5 years"
+            "emergency_reserves": {
+                "title": "Outside this investment, how many months of essential expenses could you cover with readily available savings?",
+                "option_1": "I have no readily available savings",
+                "option_2": "Less than 3 months",
+                "option_3": "3 to less than 6 months",
+                "option_4": "6 to less than 12 months",
+                "option_5": "12 months or more"
             },
-            "diversification": {
-                "title": "Considering asset class diversification, which of these portfolios would you select?",
-                "portfolio_a": "Portfolio A: 100% bonds, 0% stocks",
-                "portfolio_b": "Portfolio B: 80% bonds, 20% stocks",
-                "portfolio_c": "Portfolio C: 60% bonds, 40% stocks"
+            "loss_impact": {
+                "title": "If this investment permanently lost 20% of its value, what would be the impact on your finances?",
+                "option_1": "I would struggle to cover essential expenses or obligations",
+                "option_2": "I would have to delay an important financial goal substantially",
+                "option_3": "I could still cover my needs, but a planned goal would be affected",
+                "option_4": "I would make minor adjustments to discretionary spending",
+                "option_5": "My expenses and financial plans would still be on track"
             },
-            "goals": {
-                "title": "Which of these portfolios best represents your objectives with the most acceptable results?",
-                "portfolio_a": "Portfolio A: 4% average return",
-                "portfolio_b": "Portfolio B: 5% average return",
-                "portfolio_c": "Portfolio C: 7% average return"
+            "drawdown_limit": {
+                "title": "How much could this investment temporarily fall in a year before you would want to reduce its risk?",
+                "option_1": "Less than 5%",
+                "option_2": "5% to less than 10%",
+                "option_3": "10% to less than 15%",
+                "option_4": "15% to less than 25%",
+                "option_5": "25% or more"
+            },
+            "drawdown_response": {
+                "title": "Your diversified portfolio falls 20% in three months. Your goals and timeline are unchanged. What would you most likely do?",
+                "option_1": "Move the entire portfolio to lower-risk investments",
+                "option_2": "Move most of the portfolio to lower-risk investments",
+                "option_3": "Reduce risk in part of the portfolio",
+                "option_4": "Review the plan before deciding whether to make changes",
+                "option_5": "Keep the existing plan even if the portfolio could fall further"
+            },
+            "volatility_preference": {
+                "title": "Which trade-off between year-to-year fluctuations and potential long-term returns would you choose?",
+                "option_1": "The smallest fluctuations, even with limited return potential",
+                "option_2": "Small fluctuations with some return potential",
+                "option_3": "Moderate fluctuations for moderate return potential",
+                "option_4": "Large fluctuations for higher return potential",
+                "option_5": "Very large fluctuations for the highest return potential"
+            },
+            "investment_experience": {
+                "title": "What experience do you have with investments that can fall in value, such as bonds, funds, ETFs, or stocks?",
+                "option_1": "I have not invested in these products",
+                "option_2": "I have invested only with guidance and have limited experience",
+                "option_3": "I have invested in some of these products and followed their performance",
+                "option_4": "I have managed a mix of these investments for several years",
+                "option_5": "I have managed a mix of these investments through a major market downturn"
             }
         },
         "result": {

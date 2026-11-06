@@ -477,44 +477,77 @@
             "estimated_deposit": "Depósito inicial estimado (USD)",
             "estimated_deposit_help": "¿Cuánto planeas depositar inicialmente? Este será el monto inicial de tu propuesta de inversión.",
             "estimated_deposit_error": "Ingresa un monto en USD mayor que cero con un máximo de dos decimales.",
-            "type": {
-                "title": "¿Qué tipo de inversor te consideras?",
-                "conservative": "Conservador",
-                "moderate": "Moderado",
-                "aggressive": "Agresivo"
+            "objective": {
+                "title": "¿Cuál es el propósito principal de esta inversión?",
+                "option_1": "Proteger el capital invertido",
+                "option_2": "Generar ingresos con fluctuaciones limitadas",
+                "option_3": "Equilibrar ingresos y crecimiento a largo plazo",
+                "option_4": "Priorizar el crecimiento a largo plazo y mantener algo de ingresos",
+                "option_5": "Priorizar el crecimiento a largo plazo y aceptar fluctuaciones grandes"
             },
-            "loss": {
-                "title": "Si tu cartera pierde 20% de su valor, ¿qué acción tomarías?",
-                "sell_everything": "Vender todo",
-                "sell_some": "Vender algunas inversiones",
-                "do_nothing": "No hacer nada",
-                "invest_more": "Invertir más"
+            "time_horizon": {
+                "title": "¿Cuándo espera necesitar una parte importante de este dinero?",
+                "option_1": "En menos de 1 año",
+                "option_2": "Entre 1 y menos de 3 años",
+                "option_3": "Entre 3 y menos de 5 años",
+                "option_4": "Entre 5 y menos de 10 años",
+                "option_5": "En 10 años o más"
             },
-            "gain": {
-                "title": "Si tu cartera aprecia un 20% de su valor, ¿qué acción tomarías?",
-                "sell_everything": "Vender todo",
-                "sell_some": "Vender algunas inversiones",
-                "do_nothing": "No hacer nada",
-                "invest_more": "Invertir más"
+            "withdrawal_need": {
+                "title": "¿Qué parte de esta inversión espera retirar en los próximos tres años?",
+                "option_1": "Más del 50%",
+                "option_2": "Más del 25% y hasta el 50%",
+                "option_3": "Más del 10% y hasta el 25%",
+                "option_4": "Hasta el 10%",
+                "option_5": "No espero retirar nada"
             },
-            "period": {
-                "title": "¿Cuál crees que debería ser el plazo promedio de tu cartera de inversión?",
-                "more_than_21_years": "Más de 21 años",
-                "11_to_20_years": "11 a 20 años",
-                "5_to_10_years": "5 a 10 años",
-                "0_to_5_years": "0 a 5 años"
+            "emergency_reserves": {
+                "title": "Sin contar esta inversión, ¿cuántos meses de gastos esenciales podría cubrir con ahorros de fácil acceso?",
+                "option_1": "No tengo ahorros de fácil acceso",
+                "option_2": "Menos de 3 meses",
+                "option_3": "Entre 3 y menos de 6 meses",
+                "option_4": "Entre 6 y menos de 12 meses",
+                "option_5": "12 meses o más"
             },
-            "diversification": {
-                "title": "Considerando la diversificación de clases de activos, ¿cuál de estos portafolios seleccionarías?",
-                "portfolio_a": "Portafolio A: 100% bonos, 0% acciones",
-                "portfolio_b": "Portafolio B: 80% bonos, 20% acciones",
-                "portfolio_c": "Portafolio C: 60% bonos, 40% acciones"
+            "loss_impact": {
+                "title": "Si esta inversión perdiera permanentemente el 20% de su valor, ¿cómo afectaría sus finanzas?",
+                "option_1": "Me costaría cubrir gastos u obligaciones esenciales",
+                "option_2": "Tendría que posponer considerablemente una meta financiera importante",
+                "option_3": "Podría cubrir mis necesidades, pero una meta prevista se vería afectada",
+                "option_4": "Haría pequeños ajustes en gastos no esenciales",
+                "option_5": "Mis gastos y planes financieros seguirían encaminados"
             },
-            "goals": {
-                "title": "¿Cuál de estos portafolios representa mejor tus objetivos con los resultados más aceptables?",
-                "portfolio_a": "Portafolio A: 4% rendimiento promedio",
-                "portfolio_b": "Portafolio B: 5% rendimiento promedio",
-                "portfolio_c": "Portafolio C: 7% rendimiento promedio"
+            "drawdown_limit": {
+                "title": "¿Cuánto podría caer temporalmente esta inversión en un año antes de que usted quisiera reducir su riesgo?",
+                "option_1": "Menos del 5%",
+                "option_2": "Del 5% a menos del 10%",
+                "option_3": "Del 10% a menos del 15%",
+                "option_4": "Del 15% a menos del 25%",
+                "option_5": "25% o más"
+            },
+            "drawdown_response": {
+                "title": "Su portafolio diversificado cae un 20% en tres meses. Sus metas y plazos siguen siendo los mismos. ¿Qué haría probablemente?",
+                "option_1": "Trasladar todo el portafolio a inversiones de menor riesgo",
+                "option_2": "Trasladar la mayor parte a inversiones de menor riesgo",
+                "option_3": "Reducir el riesgo en una parte del portafolio",
+                "option_4": "Revisar el plan antes de decidir si hago cambios",
+                "option_5": "Mantener el plan aunque el portafolio pudiera caer más"
+            },
+            "volatility_preference": {
+                "title": "¿Qué relación entre las fluctuaciones de un año a otro y el rendimiento potencial a largo plazo prefiere?",
+                "option_1": "Las menores fluctuaciones posibles, aunque el rendimiento potencial sea limitado",
+                "option_2": "Fluctuaciones pequeñas con cierto potencial de rendimiento",
+                "option_3": "Fluctuaciones moderadas a cambio de un potencial de rendimiento moderado",
+                "option_4": "Fluctuaciones grandes a cambio de un mayor potencial de rendimiento",
+                "option_5": "Fluctuaciones muy grandes a cambio del mayor potencial de rendimiento"
+            },
+            "investment_experience": {
+                "title": "¿Qué experiencia tiene con inversiones que pueden perder valor, como bonos, fondos, ETF o acciones?",
+                "option_1": "No he invertido en estos productos",
+                "option_2": "Solo he invertido con asesoría y tengo poca experiencia",
+                "option_3": "He invertido en algunos de estos productos y he seguido su desempeño",
+                "option_4": "He gestionado una combinación de estas inversiones durante varios años",
+                "option_5": "He gestionado una combinación de estas inversiones durante una caída importante del mercado"
             }
         },
         "result": {
