@@ -10,7 +10,7 @@ export interface Bond {
 export const investmentProposalGroups = [
     { key: 'treasuries', assetKey: 'treasury', distributionKey: 'treasuries', label: 'Treasuries', color: '#1E3A8A' },
     { key: 'investment_grade', assetKey: 'investment_grade', distributionKey: 'investment_grade', label: 'Investment grade (AAA–BBB)', color: '#2571A5' },
-    { key: 'bb', assetKey: 'bb', distributionKey: 'bonds_bb', label: 'High yield (BB)', color: '#E8590C' },
+    { key: 'bb', assetKey: 'bb', distributionKey: 'bonds_bb', label: 'High yield / other bonds', color: '#E8590C' },
     { key: 'etfs', assetKey: 'etfs', distributionKey: 'etfs', label: 'Equity (ETFs)', color: '#C92A2A' },
 ] as const
 
