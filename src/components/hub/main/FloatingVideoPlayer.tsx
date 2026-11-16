@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { Maximize2, Play, RotateCcw, X } from 'lucide-react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
+import { Maximize2, Pause, Play, RotateCcw, Volume2, VolumeX, X } from 'lucide-react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 
@@ -11,6 +11,44 @@ type PlaybackState = { time: number; paused: boolean; muted: boolean; volume: nu
 
 function readPlayback(video: HTMLVideoElement): PlaybackState {
   return { time: video.currentTime, paused: video.paused, muted: video.muted, volume: video.volume }
+}
+
+function PlaybackControls({ videoRef, spanish }: { videoRef: RefObject<HTMLVideoElement>; spanish: boolean }) {
+  const [paused, setPaused] = useState(true)
+  const [muted, setMuted] = useState(false)
+  const [time, setTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    const sync = () => {
+      setPaused(video.paused)
+      setMuted(video.muted || video.volume === 0)
+      setTime(video.currentTime)
+      setDuration(Number.isFinite(video.duration) ? video.duration : 0)
+    }
+    const events = ['play', 'pause', 'timeupdate', 'durationchange', 'volumechange']
+    events.forEach(event => video.addEventListener(event, sync))
+    sync()
+    return () => events.forEach(event => video.removeEventListener(event, sync))
+  }, [videoRef])
+
+  const format = (seconds: number) => `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60).toString().padStart(2, '0')}`
+  return (
+    <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center gap-1 bg-black/80 px-1 text-white sm:gap-2" onClick={event => event.stopPropagation()}>
+      <button type="button" className="flex h-10 w-10 shrink-0 items-center justify-center" aria-label={paused ? (spanish ? 'Reproducir' : 'Play') : (spanish ? 'Pausar' : 'Pause')} onClick={() => {
+        const video = videoRef.current
+        if (video) { if (video.paused) void video.play().catch(() => {}); else video.pause() }
+      }}>{paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}</button>
+      <span className="text-xs tabular-nums">{format(time)}</span>
+      <input type="range" min={0} max={duration || 0} step="0.1" value={Math.min(time, duration)} disabled={!duration} aria-label={spanish ? 'Posición del video' : 'Video position'} className="min-w-0 flex-1 accent-orange-500" onChange={event => { if (videoRef.current) videoRef.current.currentTime = Number(event.target.value) }} />
+      <span className="text-xs tabular-nums">{format(duration)}</span>
+      <button type="button" className="flex h-10 w-10 shrink-0 items-center justify-center" aria-label={muted ? (spanish ? 'Activar sonido' : 'Unmute') : (spanish ? 'Silenciar' : 'Mute')} onClick={() => { if (videoRef.current) videoRef.current.muted = !videoRef.current.muted }}>
+        {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+      </button>
+    </div>
+  )
 }
 
 export default function FloatingVideoPlayer() {
@@ -88,14 +126,13 @@ export default function FloatingVideoPlayer() {
         poster="/assets/videos/agm-introduction-poster.svg"
         preload="none"
         playsInline
-        controls={started}
-        controlsList="nofullscreen"
         className="agm-video h-full w-full object-contain"
         onError={() => {
           setStarted(false)
           setHasError(true)
         }}
       />
+      {started && <PlaybackControls videoRef={videoRef} spanish={spanish} />}
       <Dialog.Trigger asChild>
         <button
           type="button"
@@ -156,8 +193,6 @@ export default function FloatingVideoPlayer() {
           poster="/assets/videos/agm-introduction-poster.svg"
           preload="metadata"
           playsInline
-          controls
-          controlsList="nofullscreen"
           className="agm-video aspect-video max-h-[80dvh] w-full object-contain"
           onLoadedMetadata={() => {
             const video = expandedVideoRef.current
@@ -174,6 +209,7 @@ export default function FloatingVideoPlayer() {
           }}
           onError={() => setExpandedError(true)}
         />
+        <PlaybackControls videoRef={expandedVideoRef} spanish={spanish} />
         {expandedError && (
           <p role="alert" className="px-4 pb-4 text-center text-sm text-white">
             {spanish ? 'No se pudo iniciar el video. Usa los controles para reintentar.' : 'The video could not start. Use the controls to try again.'}
