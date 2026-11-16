@@ -48,6 +48,10 @@ html {
   .text-wrap-pretty { text-wrap: pretty; }
 }
 
+.agm-video::-webkit-media-controls-fullscreen-button {
+  display: none;
+}
+
 
 @layer utilities {
   /* Chrome, Safari and Opera */
