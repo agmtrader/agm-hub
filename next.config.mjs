@@ -2,8 +2,11 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '15mb'
+      bodySizeLimit: '50mb'
     }
+  },
+  logging: {
+    browserToTerminal: true,
   },
   reactStrictMode: false,
   env: {

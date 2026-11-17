@@ -14,30 +14,66 @@ import { toast } from '@/hooks/use-toast'
 import { ReadContactDocuments, UploadContactDocument, UpdateContactDocument, DeleteContactDocument } from '@/utils/clients/contact'
 import { calculateSHA1, getBase64 } from '@/utils/clients/documents'
 import { formatTimestamp, getDateObjectFromTimestamp } from '@/utils/dates'
-import { documentCategories, documentLanguageOptions } from '@/lib/clients/documents'
+import {
+  documentCategories,
+  documentLanguageOptions,
+  getDocumentCategoryByKey,
+  getDocumentCategoryKey,
+} from '@/lib/clients/documents'
 import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import DocumentViewer from '@/components/misc/DocumentViewer'
+import UploadDocumentPreview from '@/components/misc/UploadDocumentPreview'
 import type { InternalDocument } from '@/lib/clients/documents'
 
 type Props = {
   contactId: string
-  accountId: string
+  accountId: string | null
   holderName?: string
+  uploadOnly?: boolean
+  allowedCategoryKeys?: string[] | null
 }
 
-const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
-  const { t } = useTranslationProvider()
+const formatDocumentDate = (value: unknown, locale: string) => {
+  const timestamp = String(value || '').trim()
+  if (!timestamp) return '-'
+
+  try {
+    const date = getDateObjectFromTimestamp(timestamp)
+    if (Number.isNaN(date.getTime())) return '-'
+
+    return new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date)
+  } catch {
+    return '-'
+  }
+}
+
+const formatDocumentLanguage = (value: unknown) => {
+  const language = String(value || '').trim()
+  const normalizedLanguage = language.toLowerCase()
+
+  if (normalizedLanguage === 'en' || normalizedLanguage === 'english') return 'English'
+  if (normalizedLanguage === 'es' || normalizedLanguage === 'spanish' || normalizedLanguage === 'español') return 'Spanish'
+  return language || '-'
+}
+
+const ContactDocuments = ({ contactId, accountId, holderName, uploadOnly = false, allowedCategoryKeys = null }: Props) => {
+  const { t, lang } = useTranslationProvider()
   const [links, setLinks] = useState<any[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [isPreparingDocument, setIsPreparingDocument] = useState(false)
   const [files, setFiles] = useState<File[] | null>(null)
   const [editingRow, setEditingRow] = useState<any | null>(null)
   const [selectedDocument, setSelectedDocument] = useState<InternalDocument | null>(null)
   const [selectedDocumentName, setSelectedDocumentName] = useState<string>('')
   const [isViewerOpen, setIsViewerOpen] = useState(false)
 
-  const [documentCategory, setDocumentCategory] = useState<string>('')
+  const [documentCategoryKey, setDocumentCategoryKey] = useState<string>('')
   const [documentType, setDocumentType] = useState<string>('')
   const [documentLanguage, setDocumentLanguage] = useState<string>('')
   const [issuedDate, setIssuedDate] = useState<Date | undefined>(undefined)
@@ -45,10 +81,21 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
   const [comment, setComment] = useState<string>('')
 
   const categories = documentCategories(t)
-  const selectedCategory = categories.find((c) => c.name === documentCategory)
+  const allowedCategorySet = Array.isArray(allowedCategoryKeys) ? new Set(allowedCategoryKeys) : null
+  const visibleCategories = allowedCategorySet
+    ? categories.filter((category) => allowedCategorySet.has(String((category as any).key || '')))
+    : categories
+  const selectedCategory = getDocumentCategoryByKey(documentCategoryKey, t)
   const availableTypes: readonly string[] | null = Array.isArray(selectedCategory?.types)
     ? (selectedCategory.types as readonly string[])
     : null
+
+  useEffect(() => {
+    if (!visibleCategories.some((category) => category.key === documentCategoryKey)) {
+      setDocumentCategoryKey(visibleCategories[0]?.key || '')
+      setDocumentType('')
+    }
+  }, [documentCategoryKey, visibleCategories])
 
   async function refreshLinks() {
     if (!contactId) return
@@ -66,7 +113,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
 
   async function handleUpload() {
     if (!files || files.length === 0) return
-    if (!documentCategory) {
+    if (!selectedCategory?.canonicalName) {
       toast({ title: 'Missing category', description: 'Select a document category', variant: 'warning' })
       return
     }
@@ -83,7 +130,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
       setIsUploading(true)
       const base64Data = await getBase64(file)
       const sha1Checksum = await calculateSHA1(file)
-      await UploadContactDocument(
+      const uploaded = await UploadContactDocument(
         accountId,
         contactId,
         file.name,
@@ -91,16 +138,19 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
         sha1Checksum,
         file.type,
         base64Data,
-        documentCategory,
+        selectedCategory.canonicalName,
         documentType,
         documentLanguage,
         issuedDate ? formatTimestamp(issuedDate) : '',
         expiryDate ? formatTimestamp(expiryDate) : '',
         comment || null
       )
+      if (uploaded?.duplicate) {
+        toast({ title: 'Document saved', description: uploaded.link_reused ? 'This file is already attached to this contact.' : 'The existing file was reused and linked to this contact.', variant: 'success' })
+      }
       setIsDialogOpen(false)
       setFiles(null)
-      setDocumentCategory('')
+      setDocumentCategoryKey('')
       setDocumentType('')
       setDocumentLanguage('')
       setIssuedDate(undefined)
@@ -117,7 +167,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
   async function handleDelete(row: any) {
     if (!row?.document_id) return
     try {
-      await DeleteContactDocument(row.document_id)
+      await DeleteContactDocument(row.document_id, row.id)
       await refreshLinks()
     } catch {
       toast({ title: 'Error', description: 'Failed to delete document', variant: 'destructive' })
@@ -154,12 +204,13 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
     try {
       await UpdateContactDocument(
         editingRow.document_id,
-        documentCategory || undefined,
+        selectedCategory?.canonicalName || undefined,
         documentType || undefined,
         documentLanguage || undefined,
         comment || undefined,
-        issuedDate ? formatTimestamp(issuedDate) : undefined,
-        expiryDate ? formatTimestamp(expiryDate) : undefined
+        issuedDate ? formatTimestamp(issuedDate) : null,
+        expiryDate ? formatTimestamp(expiryDate) : null,
+        editingRow.id
       )
       setIsEditDialogOpen(false)
       await refreshLinks()
@@ -169,15 +220,34 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
   }
 
   const columns: ColumnDefinition<any>[] = [
-    { header: 'Document ID', accessorKey: 'document_id' },
     { header: 'Category', accessorKey: 'category' },
     { header: 'Type', accessorKey: 'type' },
-    { header: 'Language', accessorKey: 'document_language' },
-    { header: 'Issued', accessorKey: 'issued_date' },
-    { header: 'Expiry', accessorKey: 'expiry_date' },
+    {
+      header: 'Language',
+      accessorKey: 'document_language',
+      cell: ({ getValue }) => formatDocumentLanguage(getValue()),
+    },
+    {
+      header: 'Issued Date',
+      accessorKey: 'issued_date',
+      cell: ({ getValue }) => (
+        <span className="tabular-nums">
+          {formatDocumentDate(getValue(), lang === 'es' ? 'es-CR' : 'en-US')}
+        </span>
+      ),
+    },
+    {
+      header: 'Expiration Date',
+      accessorKey: 'expiry_date',
+      cell: ({ getValue }) => (
+        <span className="tabular-nums">
+          {formatDocumentDate(getValue(), lang === 'es' ? 'es-CR' : 'en-US')}
+        </span>
+      ),
+    },
   ]
 
-  const rowActions = [
+  const rowActions = uploadOnly ? [] : [
     {
       label: 'View',
       icon: Eye,
@@ -188,7 +258,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
       icon: FileText,
       onClick: (row: any) => {
         setEditingRow(row)
-        setDocumentCategory(row?.category || '')
+        setDocumentCategoryKey(getDocumentCategoryKey(row?.category || '', t) || '')
         setDocumentType(row?.type || '')
         setDocumentLanguage(row?.document_language || '')
         setComment(row?.comment || '')
@@ -207,7 +277,7 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
   return (
     <>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-wrap gap-3 items-center justify-between">
           <div>
             <CardTitle>Documents {holderName ? `- ${holderName}` : ''}</CardTitle>
           </div>
@@ -218,10 +288,10 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
             <DialogContent className="max-w-xl">
               <DialogHeader><DialogTitle>Upload Document</DialogTitle></DialogHeader>
               <div className="space-y-4">
-                <Select value={documentCategory} onValueChange={setDocumentCategory}>
+                <Select value={documentCategoryKey} onValueChange={setDocumentCategoryKey}>
                   <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
                   <SelectContent>
-                    {categories.map((c) => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
+                    {visibleCategories.map((c) => <SelectItem key={c.key} value={c.key}>{c.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 {availableTypes?.length ? (
@@ -245,22 +315,65 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
                     ))}
                   </SelectContent>
                 </Select>
-                <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
-                <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
+                <div className="space-y-2">
+                  <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
+                  {issuedDate ? (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setIssuedDate(undefined)}>
+                      Clear issue date
+                    </Button>
+                  ) : null}
+                </div>
+                <div className="space-y-2">
+                  <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
+                  {expiryDate ? (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setExpiryDate(undefined)}>
+                      Clear expiry date
+                    </Button>
+                  ) : null}
+                </div>
                 <Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment (optional)" />
-                <FileUploader value={files} onValueChange={setFiles} dropzoneOptions={{ maxFiles: 1, maxSize: 10 * 1024 * 1024 }}>
+                <FileUploader
+                  value={files}
+                  onValueChange={setFiles}
+                  dropzoneOptions={{
+                    accept: {
+                      'application/pdf': ['.pdf'],
+                      'image/jpeg': ['.jpg', '.jpeg'],
+                      'image/png': ['.png'],
+                      'image/webp': ['.webp'],
+                    },
+                    maxFiles: 1,
+                    maxSize: 10 * 1024 * 1024,
+                    multiple: false,
+                  }}
+                >
                   <FileInput><div className="p-4 text-center text-sm text-muted-foreground">Drag & drop or click to upload</div></FileInput>
-                  <FileUploaderContent>{files?.map((f, i) => <FileUploaderItem key={i} index={i}>{f.name}</FileUploaderItem>)}</FileUploaderContent>
+                  <FileUploaderContent>
+                    {files?.map((file, index) => (
+                      <FileUploaderItem key={index} index={index} className="h-auto min-h-24 p-2">
+                        <UploadDocumentPreview
+                          file={file}
+                          onFileChange={(editedFile) => setFiles([editedFile])}
+                          onBusyChange={setIsPreparingDocument}
+                        />
+                      </FileUploaderItem>
+                    ))}
+                  </FileUploaderContent>
                 </FileUploader>
-                <Button onClick={handleUpload} disabled={isUploading || !files?.length} className="w-full">
-                  {isUploading ? 'Uploading...' : 'Upload'}
+                <Button onClick={handleUpload} disabled={isUploading || isPreparingDocument || !files?.length || visibleCategories.length === 0} className="w-full">
+                  {isUploading ? 'Uploading...' : isPreparingDocument ? 'Preparing document...' : 'Upload'}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
         </CardHeader>
         <CardContent>
-          <DataTable data={links} columns={columns} rowActions={rowActions} enableRowActions />
+          <DataTable
+            data={links}
+            columns={columns}
+            rowActions={uploadOnly ? undefined : rowActions}
+            enableRowActions={!uploadOnly}
+          />
         </CardContent>
       </Card>
 
@@ -268,10 +381,10 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
         <DialogContent className="max-w-xl">
           <DialogHeader><DialogTitle>Edit Document Metadata</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <Select value={documentCategory} onValueChange={setDocumentCategory}>
+            <Select value={documentCategoryKey} onValueChange={setDocumentCategoryKey}>
               <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
               <SelectContent>
-                {categories.map((c) => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
+                {categories.map((c) => <SelectItem key={c.key} value={c.key}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
             {availableTypes?.length ? (
@@ -292,19 +405,35 @@ const ContactDocuments = ({ contactId, accountId, holderName }: Props) => {
                 ))}
               </SelectContent>
             </Select>
-            <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
-            <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
+            <div className="space-y-2">
+              <DateTimePicker value={issuedDate} onChange={setIssuedDate} placeholder="Issue date" className="w-full" granularity="minute" />
+              {issuedDate ? (
+                <Button type="button" variant="outline" size="sm" onClick={() => setIssuedDate(undefined)}>
+                  Clear issue date
+                </Button>
+              ) : null}
+            </div>
+            <div className="space-y-2">
+              <DateTimePicker value={expiryDate} onChange={setExpiryDate} placeholder="Expiry date" className="w-full" granularity="minute" />
+              {expiryDate ? (
+                <Button type="button" variant="outline" size="sm" onClick={() => setExpiryDate(undefined)}>
+                  Clear expiry date
+                </Button>
+              ) : null}
+            </div>
             <Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Comment (optional)" />
             <Button onClick={handleSaveEdit} className="w-full">Save</Button>
           </div>
         </DialogContent>
       </Dialog>
-      <DocumentViewer
-        isOpen={isViewerOpen}
-        onOpenChange={setIsViewerOpen}
-        document={selectedDocument}
-        documentName={selectedDocumentName}
-      />
+      {!uploadOnly && (
+        <DocumentViewer
+          isOpen={isViewerOpen}
+          onOpenChange={setIsViewerOpen}
+          document={selectedDocument}
+          documentName={selectedDocumentName}
+        />
+      )}
     </>
   )
 }

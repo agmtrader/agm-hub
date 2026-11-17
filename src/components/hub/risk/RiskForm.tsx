@@ -7,13 +7,14 @@ import 'chart.js/auto'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { getDefaults } from '@/utils/form'
 import { risk_assesment_schema } from "@/lib/clients/schemas/risk-profile"
 import { Input } from "@/components/ui/input"
@@ -29,9 +30,8 @@ import { CreateInvestmentProposal } from "@/utils/clients/investment_proposals"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslationProvider } from "@/utils/providers/TranslationProvider"
-import { Progress } from "@/components/ui/progress"
 import { RiskArchetype, RiskProfilePayload } from "@/lib/clients/risk-profile"
-import { useRiskTranslations, calcRiskScore, RiskFormValues } from "@/lib/clients/schemas/risk-questions"
+import { useRiskTranslations, calcRiskScore, riskQuestionnaireVersion, RiskFormValues } from "@/lib/clients/schemas/risk-questions"
 import LoadingComponent from "@/components/misc/LoadingComponent"
 import InvestmentProposalView from "@/components/hub/risk/InvestmentProposal"
 import { InvestmentProposal as InvestmentProposalType } from "@/lib/clients/investment-proposals"
@@ -50,25 +50,27 @@ const RiskForm = () => {
   })
 
   const [riskArchetypes, setRiskArchetypes] = useState<RiskArchetype[] | null>(null)
+  const [archetypesLoadFailed, setArchetypesLoadFailed] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [investmentProposal, setInvestmentProposal] = useState<InvestmentProposalType | null>(null)
   const [isProposalOpen, setIsProposalOpen] = useState(false)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const riskArchetypes = await ListRiskArchetypes()
-        setRiskArchetypes(riskArchetypes)
-      } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch risk archetypes',
-          variant: 'destructive',
-        })
+  const loadRiskArchetypes = useCallback(async () => {
+    setArchetypesLoadFailed(false)
+    try {
+      const archetypes = await ListRiskArchetypes()
+      if (!Array.isArray(archetypes) || archetypes.length === 0) {
+        throw new Error('No risk archetypes returned')
       }
+      setRiskArchetypes(archetypes)
+    } catch {
+      setArchetypesLoadFailed(true)
     }
-    fetchData()
   }, [])
+
+  useEffect(() => {
+    void loadRiskArchetypes()
+  }, [loadRiskArchetypes])
 
   async function onSubmit(values: RiskFormValues) {
 
@@ -83,12 +85,15 @@ const RiskForm = () => {
         questions.map(q => [q.key, q.choices.find(c => c.value === values[q.key])?.label])
       ) as RiskProfilePayload['answers']
 
-      const raw_answers = Object.fromEntries(
-        questions.map(q => [q.key, Number(values[q.key])])
-      )
+      const raw_answers = {
+        ...Object.fromEntries(questions.map(q => [q.key, values[q.key]])),
+        questionnaire_version: riskQuestionnaireVersion,
+      }
 
       const riskProfilePayload: RiskProfilePayload = {
         name: values.name,
+        email: values.email,
+        estimated_deposit: values.starting_amount,
         score: risk_score,
         answers,
         raw_answers,
@@ -97,8 +102,12 @@ const RiskForm = () => {
       const riskProfileResponse = await CreateRiskProfile(riskProfilePayload)
       if (!riskProfileResponse) throw new Error('Failed to create risk profile')
 
-      const savedRiskProfile = { ...riskProfilePayload, id: riskProfileResponse.id }
-      const proposal = await CreateInvestmentProposal(savedRiskProfile)
+      const savedRiskProfile = {
+        ...riskProfilePayload,
+        id: riskProfileResponse.id,
+        contact_id: riskProfileResponse.contact_id,
+      }
+      const proposal = await CreateInvestmentProposal(savedRiskProfile, values.starting_amount)
       if (!proposal) throw new Error('Failed to create investment proposal')
 
       setInvestmentProposal(proposal)
@@ -120,6 +129,17 @@ const RiskForm = () => {
     }
   }
 
+  if (archetypesLoadFailed) {
+    return (
+      <div role="alert" className="flex flex-col items-center gap-4 p-5 text-center">
+        <p>{t('risk.form.load_error')}</p>
+        <Button type="button" onClick={() => void loadRiskArchetypes()}>
+          {t('risk.form.retry')}
+        </Button>
+      </div>
+    )
+  }
+
   if (!riskArchetypes) return <LoadingComponent />
 
   return (
@@ -131,8 +151,9 @@ const RiskForm = () => {
     >
       <Form {...form}>
         <motion.form 
+          noValidate
           onSubmit={form.handleSubmit(onSubmit)} 
-          className="w-full flex flex-col gap-10 p-5"
+          className="w-full flex flex-col gap-8 px-0 py-5 sm:p-5"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -150,6 +171,44 @@ const RiskForm = () => {
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="name@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="starting_amount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('risk.form.estimated_deposit')}</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    required
+                    inputMode="decimal"
+                    min="0.01"
+                    step="0.01"
+                    value={field.value ?? ''}
+                    onChange={(event) => field.onChange(event.target.value === '' ? null : Number(event.target.value))}
+                  />
+                </FormControl>
+                <FormDescription>{t('risk.form.estimated_deposit_help')}</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {questions.map((q) => (
             <FormField
               key={q.key}
@@ -157,7 +216,7 @@ const RiskForm = () => {
               name={q.key as any}
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
                     <FormLabel>{q.label}</FormLabel>
                     <FormMessage />
                   </div>
@@ -168,14 +227,11 @@ const RiskForm = () => {
                       className="flex flex-col"
                     >
                       {q.choices.map((choice) => (
-                        <FormItem key={choice.value} className="flex flex-row gap-x-2 items-center">
+                        <FormItem key={choice.value} className="flex flex-wrap gap-x-3 gap-y-2 items-center space-y-0 rounded-md py-2">
                           <FormControl>
                             <RadioGroupItem value={String(choice.value)} />
                           </FormControl>
-                          <FormLabel className="font-normal whitespace-nowrap">{choice.label}</FormLabel>
-                          {q.key === 'diversification' && (
-                            <Progress className="bg-secondary w-64" value={choice.bonds_percentage} />
-                          )}
+                          <FormLabel className="min-w-0 flex-1 font-normal leading-relaxed cursor-pointer">{choice.label}</FormLabel>
                         </FormItem>
                       ))}
                     </RadioGroup>
@@ -199,7 +255,8 @@ const RiskForm = () => {
       </Form>
 
       <Dialog open={isProposalOpen} onOpenChange={setIsProposalOpen}>
-        <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-7xl max-h-[90dvh] overflow-y-auto">
+          <DialogHeader className="sr-only"><DialogTitle>{t('risk.title')}</DialogTitle></DialogHeader>
           {investmentProposal && (
             <InvestmentProposalView investmentProposal={investmentProposal} />
           )}

@@ -36,7 +36,7 @@ export function ResourceSnapshot({
   return (
     <Card className="border border-border/60 shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="text-2xl">{title}</CardTitle>
+        <CardTitle className="text-xl leading-snug sm:text-2xl">{title}</CardTitle>
         {description ? <p className="text-sm text-subtitle leading-6">{description}</p> : null}
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-3">
@@ -46,7 +46,7 @@ export function ResourceSnapshot({
           return (
             <div key={key} className="rounded-xl border border-border/60 bg-muted/20 p-5">
               <div className="flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-full border ${accent}`}>
+                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border ${accent}`}>
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>

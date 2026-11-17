@@ -21,17 +21,17 @@ module.exports = {
   			'120': '120deg'
   		},
   		colors: {
-  			background: '#FFFFFF',
-  			foreground: '#062D47',
+			background: 'var(--agm-background, #FFFFFF)',
+			foreground: 'var(--agm-foreground, #062D47)',
   			primary: {
   				light: '#fac49e',
-  				DEFAULT: '#f26c0d',
-  				dark: '#d46010'
+					DEFAULT: 'var(--agm-primary, #f26c0d)',
+					dark: 'var(--agm-primary-dark, #d46010)'
   			},
   			secondary: {
 				light: '#5996C0',
-				DEFAULT: '#2571A5',
-				dark: '#062D47'
+				DEFAULT: 'var(--agm-secondary, #2571A5)',
+				dark: 'var(--agm-secondary-dark, #062D47)'
 			},
   			muted: {
   				DEFAULT: '#F1F5F9'

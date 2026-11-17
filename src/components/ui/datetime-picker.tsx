@@ -574,7 +574,7 @@ const TimePicker = React.forwardRef<TimePickerRef, TimePickerProps>(
     return (
       <div className="flex items-center justify-center gap-2">
         <label htmlFor="datetime-picker-hour-input" className="cursor-pointer">
-          <Clock className="mr-2 h-4 w-4" />
+          <Clock className="mr-2 h-4 w-4 shrink-0" />
         </label>
         <TimePickerInput
           picker={hourCycle === 24 ? 'hours' : '12hours'}
@@ -763,13 +763,13 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
         <PopoverTrigger asChild disabled={disabled}>
           <Button
             className={cn(
-              'w-full justify-start text-left font-normal bg-muted hover:bg-muted text-subtitle hover:text-foreground',
+              'w-full justify-start text-left font-normal min-w-0 h-auto min-h-10 whitespace-normal bg-muted hover:bg-muted text-subtitle hover:text-foreground',
               !displayDate && 'text-subtitle',
               className,
             )}
             ref={buttonRef}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
+            <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
             {displayDate ? (
               format(
                 displayDate,

@@ -7,29 +7,33 @@ import { useTranslationProvider } from '@/utils/providers/TranslationProvider'
 import Link from 'next/link'
 import { formatURL } from '@/utils/language/lang'
 import { Button } from '@/components/ui/button'
+import { useSearchParams } from 'next/navigation'
 
 const RequirementsPage = () => {
 
     const { t, lang } = useTranslationProvider()
+    const searchParams = useSearchParams()
+    const providerId = searchParams.get('provider_id') || searchParams.get('provider') || searchParams.get('application_provider') || searchParams.get('id')
+    const applicationUrl = `${formatURL('/apply', lang)}${providerId ? `?provider_id=${encodeURIComponent(providerId)}` : ''}`
 
   return (
     <div className="container flex-col flex py-6 gap-6 justify-center items-center">
         <div className='flex flex-col gap-2'>
-            <h1 className="text-4xl font-bold p-5 text-center">{t('requirements.title')}</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold py-3 text-center">{t('requirements.title')}</h1>
             <p className="text-muted-foreground text-center">{t('requirements.description')}</p>
         </div>        
         <Tabs defaultValue="personal" className="w-full max-w-7xl flex flex-col gap-6">
-            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 mb-6">
-            <TabsTrigger value="personal">{t('requirements.personal.title')}</TabsTrigger>
-            <TabsTrigger value="institutional">{t('requirements.institutional.title')}</TabsTrigger>
+            <TabsList className="grid h-auto w-full grid-cols-1 gap-1 p-1 sm:grid-cols-2">
+            <TabsTrigger className="min-h-11 whitespace-normal text-center" value="personal">{t('requirements.personal.title')}</TabsTrigger>
+            <TabsTrigger className="min-h-11 whitespace-normal text-center" value="institutional">{t('requirements.institutional.title')}</TabsTrigger>
             </TabsList>
             <TabsContent value="personal">
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-6">
                     {/* Identity Documents Card */}
                     <Card className="border-none shadow-md">
                         <CardHeader className="pb-4">
                         <div className="flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-primary" />
+                            <FileText className="h-5 w-5 shrink-0 text-primary" />
                             <CardTitle>1. {t('requirements.personal.identity.title')}</CardTitle>
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">{t('requirements.personal.identity.description')}</p>
@@ -62,7 +66,7 @@ const RequirementsPage = () => {
                     <Card className="border-none shadow-md">
                         <CardHeader className="pb-4">
                         <div className="flex items-center gap-2">
-                            <Home className="h-5 w-5 text-primary" />
+                            <Home className="h-5 w-5 shrink-0 text-primary" />
                             <CardTitle>2. {t('requirements.personal.proof_of_address.title')}</CardTitle>
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">{t('requirements.personal.proof_of_address.description')}</p>
@@ -81,7 +85,7 @@ const RequirementsPage = () => {
                     <Card className="border-none shadow-md">
                         <CardHeader className="pb-4">
                         <div className="flex items-center gap-2">
-                            <Wallet className="h-5 w-5 text-primary" />
+                            <Wallet className="h-5 w-5 shrink-0 text-primary" />
                             <CardTitle>3. {t('requirements.personal.source_of_wealth.title')}</CardTitle>
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">{t('requirements.personal.source_of_wealth.description')}</p>
@@ -91,6 +95,10 @@ const RequirementsPage = () => {
                             <li className="flex items-start gap-2">
                             <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
                             {t('requirements.personal.source_of_wealth.documents.salary')}
+                            </li>
+                            <li className="flex items-start gap-2">
+                            <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
+                            {t('requirements.personal.source_of_wealth.documents.income_certification')}
                             </li>
                             <li className="flex items-start gap-2">
                             <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
@@ -123,7 +131,7 @@ const RequirementsPage = () => {
                     <Card className="border-none shadow-md">
                         <CardHeader className="pb-4">
                             <div className="flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-primary" />
+                                <FileText className="h-5 w-5 shrink-0 text-primary" />
                                 <CardTitle>1. {t('requirements.institutional.company_documents.title')}</CardTitle>
                             </div>
                             <p className="text-sm text-muted-foreground mt-1">{t('requirements.institutional.company_documents.description')}</p>
@@ -156,7 +164,7 @@ const RequirementsPage = () => {
                     <Card className="border-none shadow-md">
                         <CardHeader className="pb-4">
                             <div className="flex items-center gap-2">
-                                <Home className="h-5 w-5 text-primary" />
+                                <Home className="h-5 w-5 shrink-0 text-primary" />
                                 <CardTitle>2. {t('requirements.institutional.address_verification.title')}</CardTitle>
                             </div>
                             <p className="text-sm text-muted-foreground mt-1">{t('requirements.institutional.address_verification.description')}</p>
@@ -175,7 +183,7 @@ const RequirementsPage = () => {
                     <Card className="border-none shadow-md">
                         <CardHeader className="pb-4">
                             <div className="flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-primary" />
+                                <FileText className="h-5 w-5 shrink-0 text-primary" />
                                 <CardTitle>3. {t('requirements.institutional.director_identification.title')}</CardTitle>
                             </div>
                             <p className="text-sm text-muted-foreground mt-1">{t('requirements.institutional.director_identification.description')}</p>
@@ -208,7 +216,7 @@ const RequirementsPage = () => {
                     <Card className="border-none shadow-md">
                         <CardHeader className="pb-4">
                             <div className="flex items-center gap-2">
-                                <Home className="h-5 w-5 text-primary" />
+                                <Home className="h-5 w-5 shrink-0 text-primary" />
                                 <CardTitle>4. {t('requirements.institutional.director_address.title')}</CardTitle>
                             </div>
                             <p className="text-sm text-muted-foreground mt-1">{t('requirements.institutional.director_address.description')}</p>
@@ -227,7 +235,7 @@ const RequirementsPage = () => {
                     <Card className="border-none shadow-md">
                         <CardHeader className="pb-4">
                             <div className="flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-primary" />
+                                <FileText className="h-5 w-5 shrink-0 text-primary" />
                                 <CardTitle>5. {t('requirements.institutional.capital_ownership.title')}</CardTitle>
                             </div>
                         </CardHeader>
@@ -256,13 +264,17 @@ const RequirementsPage = () => {
                     <Card className="border-none shadow-md">
                         <CardHeader className="pb-4">
                             <div className="flex items-center gap-2">
-                                <Wallet className="h-5 w-5 text-primary" />
+                                <Wallet className="h-5 w-5 shrink-0 text-primary" />
                                 <CardTitle>6. {t('requirements.institutional.source_of_wealth.title')}</CardTitle>
                             </div>
                             <p className="text-sm text-muted-foreground mt-1">{t('requirements.institutional.source_of_wealth.description')}</p>
                         </CardHeader>
                         <CardContent>
                             <ul className="space-y-2 text-sm text-muted-foreground">
+                                <li className="flex items-start gap-2">
+                                    <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
+                                    {t('requirements.institutional.source_of_wealth.documents.income_certification')}
+                                </li>
                                 <li className="flex items-start gap-2">
                                     <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
                                     {t('requirements.institutional.source_of_wealth.documents.investments')}
@@ -277,7 +289,7 @@ const RequirementsPage = () => {
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
-                                    {t('requirements.institutional.source_of_wealth.documents.profits]')}
+                                    {t('requirements.institutional.source_of_wealth.documents.profits')}
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <span className="block w-1 h-1 mt-2 rounded-full bg-primary flex-shrink-0"></span>
@@ -293,7 +305,7 @@ const RequirementsPage = () => {
                 </div>
             </TabsContent>
         </Tabs>
-        <Link href={formatURL('/apply', lang)} target="_blank" rel="noopener noreferrer">
+        <Link href={applicationUrl}>
             <Button className="w-full">
                 {t('shared.apply_for_an_account')}
                 <ArrowRight className="h-4 w-4" />

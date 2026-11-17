@@ -1,6 +1,8 @@
 'use client'
+import { proposalBucketStats } from '@/lib/clients/proposal-presentation'
+import { ReadProposalRiskContext } from '@/utils/clients/read-batches'
 import { Card } from '@/components/ui/card'
-import { PieChart, Pie, Cell } from 'recharts'
+import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { useMemo, useState, useRef, useEffect } from 'react'
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart'
 import { Bond, InvestmentProposal as InvestmentProposalType, } from '@/lib/clients/investment-proposals'
@@ -13,12 +15,21 @@ import { Download } from 'lucide-react'
 import { ListRiskArchetypes, ReadRiskProfileById } from '@/utils/clients/risk-profile'
 import {
   investmentProposalDistributionKeys,
+  investmentProposalGroups,
   type InvestmentProposalDistribution,
 } from '@/lib/clients/investment-proposals'
 
 type Props = {
   investmentProposal: InvestmentProposalType
 }
+
+const PROJECTION_DISCLAIMER = 'This is a simulated projection. Each yearly return is applied to the previous year\'s portfolio value. The average annual return is the arithmetic average of the 10 simulated yearly returns.'
+
+const PROJECTION_OUTCOMES = [
+  { key: 'current', label: 'Scenario 1', labelEs: 'Escenario 1', color: '#1E3A8A', growthMin: 0.62, declineMax: 0.38 },
+  { key: 'positive', label: 'Scenario 2', labelEs: 'Escenario 2', color: '#2563EB', growthMin: 0.8, declineMax: 0.2 },
+  { key: 'optimistic', label: 'Scenario 3', labelEs: 'Escenario 3', color: '#60A5FA', growthMin: 0.95, declineMax: 0.05 },
+] as const
 
 const InvestmentProposal = ({ investmentProposal }: Props) => {
   const parseDistribution = (
@@ -50,34 +61,10 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
     return totalWeight > 0 ? normalizedDistribution : null
   }
 
-  const RATING_COLORS = {
-        'AAA/AA/A': '#1D4ED8',
-        'Treasuries': '#1E3A8A',
-        'BBB': '#3B82F6',
-        'BB': '#60A5FA',
-        'ETFs': '#93C5FD',
-        'Other': '#2563EB',
-  } as const
-
-  const GROUPS = [
-    {
-      key: 'treasuries',
-      distributionKey: 'treasuries',
-      label: 'Treasuries',
-      color: RATING_COLORS['Treasuries'],
-    },
-    {
-      key: 'aaa_a',
-      distributionKey: 'bonds_aaa_a',
-      label: 'AAA/AA/A',
-      color: RATING_COLORS['AAA/AA/A'],
-    },
-    { key: 'bbb', distributionKey: 'bonds_bbb', label: 'BBB', color: RATING_COLORS['BBB'] },
-    { key: 'bb', distributionKey: 'bonds_bb', label: 'BB', color: RATING_COLORS['BB'] },
-    { key: 'etfs', distributionKey: 'etfs', label: 'ETFs', color: RATING_COLORS['ETFs'] },
-  ] as const
+  const GROUPS = investmentProposalGroups
 
   const [riskArchetypeName, setRiskArchetypeName] = useState<string | null>(null)
+  const [projectionSeed, setProjectionSeed] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -90,10 +77,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       }
 
       try {
-        const [matchedRiskProfile, riskArchetypes] = await Promise.all([
-          ReadRiskProfileById(String(riskProfileId)),
-          ListRiskArchetypes(),
-        ])
+        const { profile: matchedRiskProfile, archetypes: riskArchetypes } = await ReadProposalRiskContext(String(riskProfileId))
 
         if (!matchedRiskProfile) {
           setRiskArchetypeName(null)
@@ -169,8 +153,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
 
     const groupedBonds = {
       treasuries: proposal.assets?.treasury ?? [],
-      aaa_a: proposal.assets?.aaa_a ?? [],
-      bbb: proposal.assets?.bbb ?? [],
+      investment_grade: proposal.assets?.investment_grade ?? [],
       bb: proposal.assets?.bb ?? [],
       etfs: proposal.assets?.etfs ?? [],
     }
@@ -182,38 +165,39 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
       return acc
     }, {} as Record<string, number>)
     const distribution = parseDistribution(proposal.derived_distribution)
-    const weights = GROUPS.reduce((acc, group) => {
-      const distributionWeight = distribution?.[group.distributionKey] ?? 0
-      acc[group.key] = distributionWeight > 0 ? distributionWeight : countBasedWeights[group.key] ?? 0
-      return acc
-    }, {} as Record<string, number>)
+    const weights = distribution
+      ? GROUPS.reduce((acc, group) => {
+          acc[group.key] = distribution[group.distributionKey]
+          return acc
+        }, {} as Record<string, number>)
+      : countBasedWeights
 
     // Build pie data where "count" actually represents the allocation percentage (×100 for nicer numbers)
     const pieData = GROUPS.map(group => {
-      const bonds = groupedBonds[group.key as keyof typeof groupedBonds] as Bond[]
+      const stats = proposalBucketStats(groupedBonds[group.key as keyof typeof groupedBonds] as Bond[], weights[group.key] || 0)
+      const bonds = stats.holdings as Bond[]
       return {
         name: group.label,
         // use percentage * 100 so the PieChart adds up to ~100 (or 1 if required)
-        count: (weights[group.key] || 0) * 100,
+        count: stats.weight * 100,
         color: group.color,
         bonds,
       }
-    })
+    }).filter((item) => item.count > 0)
 
     // Calculate stats per rating (table) – we still want the actual # of bonds
     const perRating = GROUPS.map(group => {
-      const bonds = groupedBonds[group.key as keyof typeof groupedBonds] as Bond[]
-      const avgYield = bonds.length
-        ? bonds.reduce((s, b) => s + (b['current_yield'] || 0), 0) / bonds.length
-        : 0
+      const stats = proposalBucketStats(groupedBonds[group.key as keyof typeof groupedBonds] as Bond[], weights[group.key] || 0)
+      const bonds = stats.holdings as Bond[]
+      const avgYield = stats.avgYield
       return {
         name: group.label,
         count: bonds.length,
         avgYield,
-        percentage: (weights[group.key] || 0) * 100,
+        percentage: stats.weight * 100,
         color: group.color,
       }
-    })
+    }).filter((row) => row.percentage > 0)
 
     // Expected average portfolio yield – weight each group's average by its allocation
     const averageYield = perRating.reduce((sum, item) => {
@@ -231,6 +215,100 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
 
     return { pieData, summaryStats }
   }, [investmentProposal])
+
+  const currencyFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }),
+    []
+  )
+
+  useEffect(() => {
+    // Generate the random sequence after mount so server and client render the same initial chart.
+    setProjectionSeed(Math.random())
+  }, [chartData.summaryStats?.averageYield, (investmentProposal as InvestmentProposalType & { starting_amount?: number | null }).starting_amount, (investmentProposal as InvestmentProposalType & { startingAmount?: number | string | null }).startingAmount])
+
+  const projectionData = useMemo(() => {
+    const portfolioYield = Number(chartData.summaryStats?.averageYield ?? 0)
+    const maxAnnualReturn = Number.isFinite(portfolioYield) ? Math.abs(portfolioYield) : 0
+    const rawStartingAmount = (investmentProposal as InvestmentProposalType & { starting_amount?: number | null }).starting_amount ?? (investmentProposal as InvestmentProposalType & { startingAmount?: number | string | null }).startingAmount
+    const parsedStartingAmount = Number(rawStartingAmount)
+    const startingAmount = Number.isFinite(parsedStartingAmount) && parsedStartingAmount > 0 ? parsedStartingAmount : 100
+    const hasStartingAmount = Number.isFinite(parsedStartingAmount) && parsedStartingAmount > 0
+    const baselineValue = hasStartingAmount ? startingAmount : 100
+    let randomSeed = projectionSeed
+    const yearlySamples = Array.from({ length: 10 }, () => {
+      randomSeed = (randomSeed * 9301 + 49297) % 233280
+      return randomSeed / 233280
+    })
+
+    // Share yearly samples so stronger assumptions produce comparable outcomes.
+    const outcomes = PROJECTION_OUTCOMES.map((outcome) => {
+      let portfolioValue = baselineValue
+      const points = [
+        { year: 'Initial', value: Number(baselineValue.toFixed(2)), annualReturn: 0 },
+        ...yearlySamples.map((sample, index) => {
+          const isCorrection = (index + 1) % 4 === 0
+          const minimumReturn = isCorrection ? -maxAnnualReturn * outcome.declineMax : maxAnnualReturn * outcome.growthMin
+          const maximumReturn = isCorrection ? 0 : maxAnnualReturn
+          const sampledReturn = minimumReturn + sample * (maximumReturn - minimumReturn)
+          const annualReturn = Math.min(maximumReturn, Math.max(minimumReturn, Number(sampledReturn.toFixed(2))))
+          portfolioValue *= 1 + annualReturn / 100
+          return { year: `Year ${index + 1}`, value: Number(portfolioValue.toFixed(2)), annualReturn }
+        }),
+      ]
+      return {
+        ...outcome,
+        points,
+        averageAnnualReturn: points.slice(1).reduce((sum, point) => sum + point.annualReturn, 0) / yearlySamples.length,
+        projectedValue: points.at(-1)?.value ?? baselineValue,
+      }
+    })
+    const current = outcomes[0]
+
+    return {
+      outcomes,
+      averageAnnualReturn: current.averageAnnualReturn,
+      hasStartingAmount,
+      baselineValue,
+      maxVolatility: maxAnnualReturn,
+      projectedValue: current.projectedValue,
+      data: current.points.map((point, yearOffset) => ({
+        ...point,
+        current: outcomes[0].points[yearOffset].value,
+        positive: outcomes[1].points[yearOffset].value,
+        optimistic: outcomes[2].points[yearOffset].value,
+      })),
+    }
+  }, [chartData.summaryStats?.averageYield, (investmentProposal as InvestmentProposalType & { starting_amount?: number | null }).starting_amount, (investmentProposal as InvestmentProposalType & { startingAmount?: number | string | null }).startingAmount, projectionSeed])
+
+  const renderProjectionSummaries = (language: 'en' | 'es' = 'en') => (
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {projectionData.outcomes.map((outcome) => (
+        <div key={outcome.key} className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm tabular-nums">
+          <p className="font-semibold" style={{ color: outcome.color }}>{language === 'es' ? outcome.labelEs : outcome.label}</p>
+          <p className="mt-1 text-xl font-bold" style={{ color: outcome.color }}>
+            {projectionData.hasStartingAmount ? currencyFormatter.format(outcome.projectedValue) : `${outcome.projectedValue.toFixed(1)} ${language === 'es' ? 'índice' : 'index'}`}
+          </p>
+          <p className="mt-1 text-subtitle">{language === 'es' ? 'Promedio anual' : 'Average annual return'}: {outcome.averageAnnualReturn.toFixed(2)}%</p>
+        </div>
+      ))}
+    </div>
+  )
+
+  const renderProjectionLegend = (language: 'en' | 'es' = 'en') => (
+    <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-subtitle" aria-label="Projection legend">
+      {PROJECTION_OUTCOMES.map((outcome) => (
+        <div key={outcome.key} className="flex items-center gap-2">
+          <span className="w-8 shrink-0 border-t-2" style={{ borderColor: outcome.color }} aria-hidden="true" />
+          {language === 'es' ? outcome.labelEs : outcome.label}
+        </div>
+      ))}
+    </div>
+  )
 
   const summaryStatsColumns: ColumnDefinition<any>[] = [
     {
@@ -269,22 +347,22 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
   return (
   <div>
     {/* Toolbar */}
-    <div className="flex justify-end gap-2 mb-2">
+    <div className="flex justify-end gap-2 mb-2 pr-10">
       <Button size="sm" variant="primary" onClick={() => handleExport('pdf')}>
         <Download className="h-4 w-4 mr-1" /> PDF
       </Button>
     </div>
 
     {/* Main content to capture */}
-    <div ref={containerRef} className="flex flex-col gap-5 w-full text-lg">
+    <div ref={containerRef} className="flex min-w-0 flex-col gap-5 w-full text-base sm:text-lg">
       {/* Overview section for export */}
       <div className="export-overview flex flex-col gap-5">
 
-        <h3 className="text-5xl font-semibold text-primary">
+        <h3 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-primary">
           Investment Proposal
         </h3>
 
-        <div className="grid grid-cols-2 lg:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <Card className="p-6 w-full h-full gap-5 flex flex-col">
             <h3 className="text-xl font-semibold text-foreground">Portfolio Stats</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -311,7 +389,7 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
             />
           </Card>
           <Card className='w-full h-full gap-10 flex flex-col p-5'>
-            <h3 className="text-xl font-semibold text-foreground">Portfolio Distribution by Rating</h3>
+            <h3 className="text-xl font-semibold text-foreground">Portfolio Distribution by Asset Class</h3>
 
             <div className="h-fit">
               <ChartContainer
@@ -378,11 +456,82 @@ const InvestmentProposal = ({ investmentProposal }: Props) => {
             </div>
           </Card>
         </div>
-      </div>
+          <Card className="lg:col-span-2 p-4 sm:p-6 w-full h-full gap-5 flex flex-col">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-semibold text-foreground">10-Year Return Projection</h3>
+              </div>
 
-      <p className="text-base text-error">
-          The investment proposal reflects the saved asset selection at creation time. If you want to see more details, please contact us and set up a meeting.
-          </p>
+            </div>
+
+            {renderProjectionSummaries()}
+
+            {!projectionData.hasStartingAmount && (
+              <p className="text-xs text-subtitle">
+                No starting amount was saved for this proposal, so this chart uses a base index of 100.
+              </p>
+            )}
+
+            <div className="h-[320px] w-full">
+              <ChartContainer
+                config={{
+                  projectedValue: {
+                    label: 'Projected Value',
+                    color: '#1D4ED8',
+                  },
+                }}
+                className="h-full w-full"
+              >
+                <LineChart data={projectionData.data} margin={{ top: 16, right: 24, left: 12, bottom: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="year" tickLine={false} axisLine={false} />
+                  <YAxis
+                    domain={['dataMin', 'dataMax']}
+                    padding={{ top: 16, bottom: 16 }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={90}
+                    tickFormatter={(value) =>
+                      projectionData.hasStartingAmount
+                        ? currencyFormatter.format(Number(value))
+                        : `${Number(value).toFixed(0)}`
+                    }
+                  />
+                  {PROJECTION_OUTCOMES.map((outcome) => (
+                    <Line key={outcome.key} type="monotone" dataKey={outcome.key} name={outcome.label} stroke={outcome.color} strokeWidth={3} dot={{ r: 3, fill: outcome.color }} activeDot={{ r: 5 }} />
+                  ))}
+                  <ChartTooltip
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.length) return null
+
+                      const data = payload[0].payload as { year: string }
+                      const yearIndex = projectionData.data.findIndex((point) => point.year === data.year)
+                      if (yearIndex < 0) return null
+                      return (
+                        <div className="rounded-lg border bg-background p-3 shadow-lg">
+                          <p className="text-xs text-subtitle">{data.year}</p>
+                          {projectionData.outcomes.map((outcome) => {
+                            const point = outcome.points[yearIndex]
+                            return (
+                              <div key={outcome.key} className="mt-2 text-xs">
+                                <p className="font-semibold" style={{ color: outcome.color }}>{outcome.label}: {projectionData.hasStartingAmount ? currencyFormatter.format(point.value) : `${point.value.toFixed(2)} index`}</p>
+                                <p className="text-subtitle">Return that year: {point.annualReturn.toFixed(2)}%</p>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )
+                    }}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </div>
+            {renderProjectionLegend()}
+            <p className="text-pretty text-xs leading-relaxed text-subtitle">
+              {PROJECTION_DISCLAIMER}
+            </p>
+          </Card>
+      </div>
       </div>
     </div>
   )

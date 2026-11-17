@@ -102,12 +102,12 @@ const AgreementsStep = ({
         <h2 className="text-xl font-semibold mb-2">{t('apply.account.agreements.title')}</h2>
         {forms ? (
           forms.map((form) => (
-            <Card key={form.formNumber} className="flex justify-between p-4 items-center">
+            <Card key={form.formNumber} className="flex justify-between gap-3 p-4 items-start">
               <div className="flex flex-col">
                 <p className="text-md font-semibold">{form.formName}</p>
                 <p className="text-sm text-muted-foreground">{t('apply.account.agreements.form_number')}{form.formNumber}</p>
               </div>
-              <Button type="button" variant="ghost" onClick={() => handleViewForm(form.formNumber, form.formName)}>
+              <Button type="button" variant="ghost" className="shrink-0" aria-label={`${t('apply.account.agreements.title')}: ${form.formName}`} onClick={() => handleViewForm(form.formNumber, form.formName)}>
                 <Eye className="w-4 h-4" />
               </Button>
             </Card>
@@ -128,7 +128,7 @@ const AgreementsStep = ({
       {!isSignatureValid && (userSignature || '').length > 0 && (
         <p className="text-sm text-error mt-1">{t('apply.account.agreements.signature_error')}</p>
       )}
-      <div className="flex justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
         <Button type="button" variant="outline" onClick={onPrevious}>
           {t('apply.account.agreements.previous')}
         </Button>
@@ -142,7 +142,7 @@ const AgreementsStep = ({
         </Button>
       </div>
       <Dialog open={isFormViewerOpen} onOpenChange={setIsFormViewerOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+        <DialogContent className="max-w-4xl max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{selectedFormName}</DialogTitle>
           </DialogHeader>

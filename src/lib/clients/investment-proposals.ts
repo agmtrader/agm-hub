@@ -2,33 +2,31 @@ import { Base } from "./base"
 
 export interface Bond {
     symbol: string
+    percentage?: number
     current_yield: number
     equivalent: string
 }
 
+export const investmentProposalGroups = [
+    { key: 'treasuries', assetKey: 'treasury', distributionKey: 'treasuries', label: 'Treasuries', color: '#1E3A8A' },
+    { key: 'investment_grade', assetKey: 'investment_grade', distributionKey: 'investment_grade', label: 'Investment grade (AAA–BBB)', color: '#2571A5' },
+    { key: 'bb', assetKey: 'bb', distributionKey: 'bonds_bb', label: 'High yield / other bonds', color: '#E8590C' },
+    { key: 'etfs', assetKey: 'etfs', distributionKey: 'etfs', label: 'Equity (ETFs)', color: '#C92A2A' },
+] as const
+
 export const investmentProposalDistributionKeys = [
-    'treasuries',
-    'bonds_aaa_a',
-    'bonds_bbb',
-    'bonds_bb',
-    'etfs',
+    'treasuries', 'investment_grade', 'bonds_bb', 'etfs', 'cash', 'stocks',
 ] as const
 
 export type InvestmentProposalDistributionKey = (typeof investmentProposalDistributionKeys)[number]
 
 export type InvestmentProposalDistribution = Record<InvestmentProposalDistributionKey, number>
 
-export type PlannerInputs = {
-    risk_profile_id: string
-    name?: string | null
-    target_return: number
-    starting_amount: number
-    risk_tolerance: 'conservative' | 'moderate' | 'aggressive'
-    selected_risk_archetype?: string | null
-    allocation: Record<'cash' | 'treasuries' | 'bonds' | 'stocks', number>
-    bond_rating_allocation: Record<'aaa' | 'bbb' | 'bb', number>
-    locked_assets?: Record<'cash' | 'treasuries' | 'bonds' | 'stocks', boolean> | null
-    locked_bond_ratings?: Record<'aaa' | 'bbb' | 'bb', boolean> | null
+export type InvestmentProposalPreviewBucketSummary = {
+    key: InvestmentProposalDistributionKey
+    weight: number
+    asset_count: number
+    average_yield: number
 }
 
 export interface InvestmentProposalAssets {
@@ -37,22 +35,30 @@ export interface InvestmentProposalAssets {
     bbb: Bond[]
     bb: Bond[]
     etfs: Bond[]
+    investment_grade?: Bond[]
 }
 
-export type InvestmentProposalSourceType = 'hub_original' | 'planner' | 'custom'
+export type InvestmentProposalSourceType = 'risk_profile' | 'portfolio_plan' | 'custom'
 
 export interface InvestmentProposalPayload {
-    risk_profile_id: string
+  risk_profile_id?: string | null
+  contact_id?: string | null
     source_type: InvestmentProposalSourceType
     assets: InvestmentProposalAssets
-    planner_inputs?: PlannerInputs | null
     derived_distribution?: InvestmentProposalDistribution | null
 }
 
 export interface InvestmentProposalAssetInput {
     symbol: string
     percentage: number
+    source_bucket: 'treasuries' | 'investment_grade' | 'high_yield' | 'equity'
 }
 
+export interface InvestmentProposalPreview extends InvestmentProposalPayload {
+    total_assets: number
+    bucket_summaries: InvestmentProposalPreviewBucketSummary[]
+    expected_average_yield: number
+    expected_return_decimal: number
+}
 
 export type InvestmentProposal = InvestmentProposalPayload & Base

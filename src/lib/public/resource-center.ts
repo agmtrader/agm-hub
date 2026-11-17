@@ -133,6 +133,13 @@ export const resourceCenterSections: ResourceSection[] = [
         href: '/resource-center/account-management/message-center',
         eyebrow: 'Account Management',
       },
+      {
+        id: '08',
+        title: 'How to update your tax forms',
+        image: '/assets/resource-center/account-management/update-tax-forms.svg',
+        href: '/resource-center/account-management/update-tax-forms',
+        eyebrow: 'Account Management',
+      },
     ],
   },
   {

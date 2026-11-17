@@ -1,13 +1,18 @@
-import { accessAPI } from "../api"
-import { RiskProfilePayload } from "@/lib/clients/risk-profile"
+import { unwrapApiResult } from "../api-result"
+import { accessAPI, accessAPIResult } from "../api"
+import { RiskProfile, RiskProfilePayload } from "@/lib/clients/risk-profile"
 import {
   InvestmentProposal,
   InvestmentProposalAssetInput,
+  InvestmentProposalPreview,
 } from "@/lib/clients/investment-proposals"
 import { PortfolioPlanPayload } from "@/lib/clients/portfolio-plans"
 
-export async function CreateInvestmentProposal(risk_profile: RiskProfilePayload) {
-  const report = await accessAPI('/investment_proposals/create/risk', 'POST', {'risk_profile': risk_profile})
+export async function CreateInvestmentProposal(
+  risk_profile: RiskProfilePayload & Pick<RiskProfile, 'id'>,
+  starting_amount?: number,
+) {
+  const report = unwrapApiResult(await accessAPIResult('/investment_proposals/create/risk', 'POST', { risk_profile, starting_amount }))
   return report
 }
 
@@ -16,15 +21,9 @@ export async function CreateInvestmentProposalFromPlan(portfolio_plan: Portfolio
   return report
 }
 
-export async function ReadInvestmentProposals(): Promise<InvestmentProposal[] | null> {
-  const proposals: InvestmentProposal[] = await accessAPI('/investment_proposals/read', 'GET')
-  return proposals || null
-}
-
-export async function ReadInvestmentProposalByID(proposal_id: string): Promise<InvestmentProposal | null> {
-  const proposals: InvestmentProposal[] = await accessAPI(`/investment_proposals/read?id=${proposal_id}`, 'GET')
-  const proposal = proposals[0] || null
-  return proposal
+export async function PreviewInvestmentProposalFromPlan(portfolio_plan: Partial<PortfolioPlanPayload>): Promise<InvestmentProposalPreview> {
+  const report: InvestmentProposalPreview = await accessAPI('/investment_proposals/preview/plan', 'POST', { portfolio_plan })
+  return report
 }
 
 export async function ReadInvestmentProposalsByRiskProfile(risk_profile_id: string): Promise<InvestmentProposal[] | null> {
@@ -32,12 +31,13 @@ export async function ReadInvestmentProposalsByRiskProfile(risk_profile_id: stri
   return proposals || null
 }
 
-export async function ReadInvestmentProposalsByAccount(account_id: string): Promise<InvestmentProposal[] | null> {
-  const proposals: InvestmentProposal[] = await accessAPI(`/investment_proposals/read?account_id=${account_id}`, 'GET')
-  return proposals || null
-}
-
-export async function CreateInvestmentProposalFromAssets(assets: InvestmentProposalAssetInput[]): Promise<InvestmentProposal> {
-  const proposal: InvestmentProposal = await accessAPI('/investment_proposals/create/assets', 'POST', { assets: assets })
+export async function CreateInvestmentProposalFromAssets(
+  assets: InvestmentProposalAssetInput[],
+  risk_profile_id?: string | null,
+): Promise<InvestmentProposal> {
+  const proposal: InvestmentProposal = await accessAPI('/investment_proposals/create/assets', 'POST', {
+    assets,
+    risk_profile_id,
+  })
   return proposal
 }

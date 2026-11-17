@@ -96,8 +96,9 @@ export function InteractiveGridPattern({
       {Array.from({ length: horizontal * vertical }).map((_, index) => {
         const x = (index % horizontal) * responsiveWidth
         const y = Math.floor(index / horizontal) * responsiveHeight
-        const hoveredFillClass =
-          hoveredColorIndex === 0 ? "fill-orange-400/50" : "fill-sky-300/45"
+        const hoveredFill = hoveredColorIndex === 0
+          ? 'var(--agm-grid-accent, rgba(249, 115, 22, 0.5))'
+          : 'var(--agm-grid-highlight, rgba(125, 211, 252, 0.45))'
         const mobileTrailLength = 4
         const isMobileActiveSquare =
           isMobile &&
@@ -116,9 +117,10 @@ export function InteractiveGridPattern({
             height={responsiveHeight}
             className={cn(
               "stroke-gray-400/30 transition-all duration-100 ease-in-out [&:not(:hover)]:duration-1000",
-              isMobile ? (isMobileActiveSquare ? hoveredFillClass : "fill-transparent") : hoveredSquare === index ? hoveredFillClass : "fill-transparent",
+              isMobile ? (isMobileActiveSquare ? "fill-current" : "fill-transparent") : hoveredSquare === index ? "fill-current" : "fill-transparent",
               squaresClassName
             )}
+            style={isMobile ? (isMobileActiveSquare ? { fill: hoveredFill } : undefined) : hoveredSquare === index ? { fill: hoveredFill } : undefined}
             onMouseEnter={() => {
               if (isMobile) return
               setHoveredSquare(index)

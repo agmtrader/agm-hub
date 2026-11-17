@@ -17,6 +17,7 @@ export type InternalAccount = AccountPayload & {
   estimated_deposit?: number | null,
   date_sent_to_ibkr?: string | null,
   referrer?: string | null,
+  application_provider_id?: string | null,
   emailed_credentials: boolean,
 }
 export type AccountWritePayload = InternalAccount & Partial<AccountCredentialPayload>
@@ -128,6 +129,8 @@ export interface IBKRAccount {
   dateApproved?: string;
   dateFunded?: string;
   dateOpened?: string;
+  dateClosed?: string;
+  signatures?: string[];
 }
 
 export interface FeeTemplate {

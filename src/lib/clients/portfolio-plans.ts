@@ -1,14 +1,11 @@
 import { Base } from './base'
 
-export type AssetKey = 'cash' | 'treasuries' | 'bonds' | 'stocks'
-export type BondRatingKey = 'aaa' | 'bbb' | 'bb'
+export const proposalAllocationKeys = ['treasuries', 'investment_grade', 'high_yield', 'equity'] as const
+export type AssetKey = (typeof proposalAllocationKeys)[number]
 export type RiskTolerance = 'conservative' | 'moderate' | 'aggressive'
 export type PlannerDataSource = 'live' | 'fallback'
-
 export type PortfolioAllocation = Record<AssetKey, number>
-export type BondRatingAllocation = Record<BondRatingKey, number>
 export type AssetLocks = Record<AssetKey, boolean>
-export type BondRatingLocks = Record<BondRatingKey, boolean>
 
 export type PlannerAssetProfile = {
   key: AssetKey
@@ -23,17 +20,17 @@ export type PlannerAssetProfile = {
 }
 
 export type PortfolioPlanPayload = {
-  risk_profile_id: string
+  risk_profile_id?: string | null
+  contact_id?: string | null
   account_id?: string | null
   name?: string | null
   target_return: number
+  total_assets?: number
   starting_amount: number
   risk_tolerance: RiskTolerance
   selected_risk_archetype?: string | null
   allocation: PortfolioAllocation
-  bond_rating_allocation: BondRatingAllocation
   locked_assets?: AssetLocks | null
-  locked_bond_ratings?: BondRatingLocks | null
   expected_return?: number | null
   volatility?: number | null
   one_year_gain?: number | null

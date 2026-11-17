@@ -1,8 +1,10 @@
 'use client'
+import { ReadApplicationReferences } from '@/utils/clients/read-batches'
 import React, { useEffect, useState } from 'react';
 import Title from '@/components/hub/apply/Title';
 import IBKRApplicationForm from '@/components/hub/apply/IBKRApplicationForm';
 import { GetBusinessAndOccupation, GetFinancialRanges, GetForms } from '@/utils/clients/account';
+import ApplicationProviderTheme from '@/components/hub/apply/ApplicationProviderTheme';
 
 const agreementFormNumbers = [
   '3230', '3024', '4070', '3044', '3089', '4304', '4404', '5013', '5001', '4024', '9130', '3074', '3203',
@@ -21,11 +23,7 @@ const page = () => {
     let active = true;
     const load = async () => {
       try {
-        const [financialRangesResult, businessResult, agreementsResult] = await Promise.all([
-          GetFinancialRanges(),
-          GetBusinessAndOccupation(),
-          GetForms(agreementFormNumbers),
-        ]);
+        const { financialRangesResult, businessResult, agreementsResult } = await ReadApplicationReferences(agreementFormNumbers);
         if (!active) return;
         setPrefetchedData({
           financialRangesResult,
@@ -42,12 +40,11 @@ const page = () => {
     };
   }, []);
 
-  if (started) {
-    return <IBKRApplicationForm prefetchedData={prefetchedData} />
-  }
-  else {
-    return <Title setStarted={setStarted}/>
-  }
+  return (
+    <ApplicationProviderTheme>
+      {started ? <IBKRApplicationForm prefetchedData={prefetchedData} /> : <Title setStarted={setStarted} />}
+    </ApplicationProviderTheme>
+  )
 }
 
 export default page

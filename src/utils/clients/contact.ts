@@ -1,4 +1,5 @@
-import { accessAPI } from "../api"
+import { accessAPI, accessAPIResult } from "../api"
+import { unwrapApiResult } from "../api-result"
 import { Contact, ContactPayload } from "@/lib/clients/contact"
 import { IDResponse } from "@/lib/clients/base"
 import { InternalDocument } from "@/lib/clients/documents"
@@ -21,10 +22,16 @@ export async function ReadContactByID(id: string): Promise<Contact | null> {
 }
 
 export async function ReadContactByEmail(email: string): Promise<Contact | null> {
-    const contacts: Contact[] = await accessAPI(`/contacts/read?email=${email}`, 'GET')
+    const contacts = await ReadContactsByEmail(email)
     if (!contacts || contacts.length === 0) return null
     if (contacts.length > 1) throw new Error('Multiple contacts found with same Email')
     return contacts[0]
+}
+
+// Email is a search attribute, not a unique person identifier.
+export async function ReadContactsByEmail(email: string): Promise<Contact[]> {
+    if (!email.trim()) throw new Error('A nonblank contact email is required')
+    return accessAPI(`/contacts/read?${new URLSearchParams({ email: email.trim() })}`, 'GET')
 }
 
 export async function UpdateContactByID(id: string, contact: Partial<Contact>): Promise<'Updated'> {
@@ -33,7 +40,7 @@ export async function UpdateContactByID(id: string, contact: Partial<Contact>): 
 }
 
 export async function UploadContactDocument(
-    accountID: string,
+    accountID: string | null | undefined,
     contactID: string,
     file_name: string,
     file_length: number,
@@ -89,11 +96,13 @@ export async function UpdateContactDocument(
     type?: string,
     document_language?: string,
     comment?: string,
-    issued_date?: string,
-    expiry_date?: string
+    issued_date?: string | null,
+    expiry_date?: string | null,
+    contactDocumentID?: string
 ): Promise<any> {
     return accessAPI('/contacts/documents', 'PATCH', {
         document_id: documentID,
+        contact_document_id: contactDocumentID,
         category,
         type,
         document_language,
@@ -103,18 +112,41 @@ export async function UpdateContactDocument(
     })
 }
 
-export async function DeleteContactDocument(documentID: string): Promise<any> {
-    return accessAPI('/contacts/documents', 'DELETE', { document_id: documentID })
+export async function DeleteContactDocument(documentID: string, contactDocumentID?: string): Promise<any> {
+    return accessAPI('/contacts/documents', 'DELETE', { document_id: documentID, contact_document_id: contactDocumentID })
 }
 
 export async function CreateContactScreening(
     contactID: string
 ): Promise<IDResponse> {
-    return accessAPI('/contacts/screening', 'POST', {
+    return accessAPI('/contacts/screen', 'POST', {
         contact_id: contactID
     })
 }
 
-export async function ReadContactScreenings(contactID: string): Promise<any[]> {
+export async function ReadContactScreenings(contactID?: string): Promise<any[]> {
+    if (!contactID) {
+        return accessAPI('/contacts/screening', 'GET')
+    }
     return accessAPI(`/contacts/screening?contact_id=${contactID}`, 'GET')
+}
+
+export type ApplicationLinkedContact = {
+    name: string
+    contact_id: string
+    type: 'person' | 'company'
+    entityId?: string | null
+    externalId?: string | null
+    outcome: 'matched' | 'created'
+}
+
+export async function ReconcileApplicationContacts(accountId: string): Promise<ApplicationLinkedContact[]> {
+    const result = unwrapApiResult<{ linked_contacts: ApplicationLinkedContact[] }>(
+        await accessAPIResult('/contacts/reconcile_application', 'POST', { account_id: accountId })
+    )
+    if (!Array.isArray(result?.linked_contacts) || result.linked_contacts.length === 0
+        || result.linked_contacts.some(contact => !contact.contact_id)) {
+        throw new Error('Contact setup did not return the required holders. Please retry.')
+    }
+    return result.linked_contacts
 }

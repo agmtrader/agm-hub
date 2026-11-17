@@ -26,7 +26,7 @@ export default async function Layout(
   } = props;
 
   return (
-    <div className="flex flex-col min-h-screen w-full">
+    <div className="flex flex-col min-h-screen w-full min-w-0 hub-surface">
       <TranslationProvider lang={lang}>
         <Header />
         {children}

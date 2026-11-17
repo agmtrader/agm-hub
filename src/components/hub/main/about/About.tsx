@@ -33,7 +33,7 @@ const About = () => {
             </h2>
             <div 
                 ref={ref}
-                className='relative group flex max-w-2xl flex-wrap justify-center gap-x-6 gap-y-3 rounded-xl p-4'
+                className='relative group isolate flex max-w-2xl overflow-hidden flex-wrap justify-center gap-x-6 gap-y-3 rounded-xl p-4'
                 onMouseMove={handleMouseMove}
             >
                 <motion.div
@@ -83,7 +83,7 @@ const About = () => {
             </div>
         </div>
         <Iphone15Pro
-            className='h-[26rem] sm:h-[32rem] lg:h-[40rem]'
+            className='h-[26rem] w-auto max-w-full shrink-0 sm:h-[32rem] lg:h-[36rem]'
             src='/assets/products/iphone-app.png'
             style={{ transform: 'perspective(1000px) rotateY(-15deg) rotateZ(0deg)' }}
         />

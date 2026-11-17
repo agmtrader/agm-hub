@@ -115,9 +115,9 @@ export function ResourceGuidePage({ sectionAnchor, content }: ResourceGuidePageP
   const sections = explicitSections.length > 0 ? explicitSections : inferredSections
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-6xl mx-auto py-14 px-6 flex flex-col gap-8">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-6xl mx-auto py-8 px-4 sm:py-14 sm:px-6 flex flex-col gap-8">
       <div className="flex justify-start">
-        <Button asChild variant="ghost">
+        <Button asChild variant="ghost" className="h-auto min-h-10 whitespace-normal text-left">
           <Link href={formatURL(`/resource-center#${sectionAnchor}`, lang)}>
             <ArrowLeft className="w-4 h-4 text-foreground" />
             {copy.back}
@@ -127,8 +127,8 @@ export function ResourceGuidePage({ sectionAnchor, content }: ResourceGuidePageP
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{copy.eyebrow}</p>
-        <h1 className="text-4xl md:text-5xl font-bold">{copy.title}</h1>
-        <p className="text-lg text-subtitle leading-8 max-w-5xl">{copy.description}</p>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">{copy.title}</h1>
+        <p className="text-base sm:text-lg text-subtitle leading-7 sm:leading-8 max-w-5xl">{copy.description}</p>
       </div>
 
       <div className="grid gap-6">

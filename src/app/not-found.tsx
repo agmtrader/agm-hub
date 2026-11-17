@@ -8,9 +8,9 @@ import { formatURL } from '@/utils/language/lang'
 const NotFound = () => {
 
   return (
-    <div className="h-screen w-screen flex flex-col justify-center items-center gap-y-3">
+    <div className="min-h-[100svh] w-full px-4 py-12 text-center flex flex-col justify-center items-center gap-y-3">
       <motion.h1 
-        className="text-9xl font-extrabold text-red-600"
+        className="text-7xl sm:text-9xl font-extrabold text-red-600"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 20 }}

@@ -32,8 +32,8 @@ function FAQ({}: Props) {
       variants={containerVariants}
       className='w-full h-fit flex flex-col justify-center text-agm-dark-blue p-5 gap-5 items-center'
     >
-      <motion.p variants={itemVariants} className='text-5xl text-center font-bold'>{t('main.faq.title')}</motion.p>
-      <Accordion type="single" collapsible className="w-[80%] text-start">
+      <motion.p variants={itemVariants} className='text-3xl sm:text-4xl md:text-5xl text-center font-bold'>{t('main.faq.title')}</motion.p>
+      <Accordion type="single" collapsible className="w-full max-w-4xl text-start">
         <motion.div variants={itemVariants}>
           <AccordionItem value="item-1" >
             <AccordionTrigger>

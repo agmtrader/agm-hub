@@ -1,5 +1,6 @@
 'use server'
 
+import { ApiRequestError, ApiResult } from "./api-result"
 import { Map } from "../lib/public/types"
 
 interface AuthenticationResponse {
@@ -34,18 +35,28 @@ export async function getToken(): Promise<string> {
     if (inFlightTokenRequest) return inFlightTokenRequest
 
     inFlightTokenRequest = (async () => {
-        const response = await fetch(`${api_url}/token`, {
-            method: 'POST',
-            headers: {
-                'Cache-Control': 'no-cache',
-            },
-            body: JSON.stringify({token: 'all'}),
-        })
+        const email = process.env.AGM_API_HUB_EMAIL;
+        const password = process.env.AGM_API_HUB_PASSWORD;
+        if (!email || !password) throw new ApiRequestError('Hub API credentials are not configured.')
 
-        if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`Failed to get authentication token.`);
-
-        const auth_response: AuthenticationResponse = await response.json();
-        if (!auth_response.access_token) throw new Error(`Failed to get authentication token.`);
+        let response: Response
+        try {
+            response = await fetch(`${api_url}/token`, {
+                method: 'POST',
+                headers: { 'Cache-Control': 'no-cache', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            })
+        } catch {
+            throw new ApiRequestError('The AGM API is unavailable. Please try again shortly.')
+        }
+        const payload = await response.json().catch(() => ({}))
+        if (!response.ok) {
+            throw new ApiRequestError(
+                typeof payload?.message === 'string' ? payload.message : 'Hub authentication failed.',
+            )
+        }
+        const auth_response: AuthenticationResponse = payload;
+        if (!auth_response.access_token) throw new ApiRequestError(`Failed to get authentication token.`);
 
         const tokenLifetimeSeconds = Math.max(0, Number(auth_response.expires_in || 0) - TOKEN_EXPIRY_BUFFER_SECONDS)
         cachedToken = auth_response.access_token
@@ -61,53 +72,61 @@ export async function getToken(): Promise<string> {
 }
 
 async function GetData(url: string, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`
-        },
-    });
-
-    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
-    return await response.json();
+    return request(url, 'GET', undefined, token)
 }
 
 async function PostData(url: string, params: Map | undefined, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        method: 'POST',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(params),
-    });
-
-    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
-    return await response.json();
+    return request(url, 'POST', params, token)
 }
 
 async function DeleteData(url: string, params: Map | undefined, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        method: 'DELETE',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(params),
-    });
-    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
-    return await response.json();
+    return request(url, 'DELETE', params, token)
 }
 
 async function PatchData(url: string, params: Map | undefined, token: string) {
-    const response = await fetch(`${api_url}${url}`, {
-        method: 'PATCH',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(params),
-    });
-    if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 404 || response.status === 500) throw new Error(`An unknown error occurred. Please try again later.`);
-    return await response.json();
+    return request(url, 'PATCH', params, token)
+}
+
+async function request(url: string, method: string, params: Map | undefined, token: string) {
+    let response: Response
+    try {
+        response = await fetch(`${api_url}${url}`, {
+            method,
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Authorization': `Bearer ${token}`,
+                ...(method !== 'GET' ? { 'Content-Type': 'application/json' } : {}),
+            },
+            ...(method !== 'GET' ? { body: JSON.stringify(params) } : {}),
+        })
+    } catch {
+        throw new ApiRequestError('The AGM API is unavailable. Please try again shortly.')
+    }
+
+    const requestId = response.headers.get('X-Request-ID') || undefined
+    const payload = await response.json().catch(() => ({}))
+    if (!response.ok) {
+        const message = typeof payload?.message === 'string' ? payload.message :
+            typeof payload?.error === 'string' ? payload.error :
+            response.status === 403 ? 'This operation is not enabled for the Hub.' :
+            response.status === 401 ? 'Hub authentication expired or was rejected.' :
+            'The request could not be completed.'
+        throw new ApiRequestError(`${message}${requestId ? ` (request ID: ${requestId})` : ''}`, response.status, typeof payload?.code === 'string' ? payload.code : undefined, requestId)
+    }
+    return payload
+}
+
+// Expected transport failures cross the action boundary as data, preserving UI guidance.
+export async function accessAPIResult(url: string, type: string, params?: Map): Promise<ApiResult> {
+    try {
+        return { ok: true, data: await accessAPI(url, type, params) }
+    } catch (error) {
+        if (!(error instanceof ApiRequestError)) throw error
+        return { ok: false, error: {
+            message: error.message,
+            ...(error.status !== undefined ? { status: error.status } : {}),
+            ...(error.code !== undefined ? { code: error.code } : {}),
+            ...(error.requestId !== undefined ? { requestId: error.requestId } : {}),
+        } }
+    }
 }

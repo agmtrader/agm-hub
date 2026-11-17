@@ -102,10 +102,19 @@ export const FileUploader = forwardRef<
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!value) return;
+
+        const target = e.target as HTMLElement;
+        if (target.closest("[role='dialog']") || target.closest("button, input, textarea, select, a")) {
+          return;
+        }
+
+        const navigationKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+        const actionKeys = ["Enter", " ", "Space", "Delete", "Backspace", "Escape"];
+        if (!navigationKeys.includes(e.key) && !actionKeys.includes(e.key)) return;
+
         e.preventDefault();
         e.stopPropagation();
-
-        if (!value) return;
 
         const moveNext = () => {
           const nextIndex = activeIndex + 1;
@@ -135,7 +144,7 @@ export const FileUploader = forwardRef<
           moveNext();
         } else if (e.key === prevKey) {
           movePrev();
-        } else if (e.key === "Enter" || e.key === "Space") {
+        } else if (e.key === "Enter" || e.key === " " || e.key === "Space") {
           if (activeIndex === -1) {
             dropzoneState.inputRef.current?.click();
           }
@@ -246,7 +255,7 @@ export const FileUploader = forwardRef<
           tabIndex={0}
           onKeyDownCapture={handleKeyDown}
           className={cn(
-            "grid w-full focus:outline-none overflow-hidden ",
+            "grid min-w-0 w-full focus:outline-none overflow-hidden ",
             className,
             {
               "gap-2": value && value.length > 0,
@@ -273,7 +282,7 @@ export const FileUploaderContent = forwardRef<
 
   return (
     <div
-      className={cn("w-full px-1")}
+      className={cn("w-full min-w-0 overflow-hidden px-1")}
       ref={containerRef}
       aria-description="content file holder"
     >
@@ -281,7 +290,7 @@ export const FileUploaderContent = forwardRef<
         {...props}
         ref={ref}
         className={cn(
-          "flex rounded-xl gap-1",
+          "flex w-full min-w-0 rounded-xl gap-1",
           orientation === "horizontal" ? "flex-raw flex-wrap" : "flex-col",
           className,
         )}
@@ -305,13 +314,13 @@ export const FileUploaderItem = forwardRef<
       ref={ref}
       className={cn(
         buttonVariants({ variant: "ghost" }),
-        "h-6 p-1 justify-between cursor-pointer relative",
+        "h-6 w-full min-w-0 max-w-full overflow-hidden p-1 justify-between cursor-pointer relative",
         className,
         isSelected ? "bg-muted" : "",
       )}
       {...props}
     >
-      <div className="font-medium leading-none tracking-tight flex items-center gap-1.5 h-full w-full">
+      <div className="font-medium leading-none tracking-tight flex min-w-0 items-center gap-1.5 h-full w-full overflow-hidden">
         {children}
       </div>
       <button
@@ -320,7 +329,10 @@ export const FileUploaderItem = forwardRef<
           "absolute",
           direction === "rtl" ? "top-1 left-1" : "top-1 right-1",
         )}
-        onClick={() => removeFileFromSet(index)}
+        onClick={(event) => {
+          event.stopPropagation();
+          removeFileFromSet(index);
+        }}
       >
         <span className="sr-only">remove item {index}</span>
         <RemoveIcon className="w-4 h-4 hover:stroke-destructive duration-200 ease-in-out" />

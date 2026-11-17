@@ -42,12 +42,13 @@ const ModernTools = () => {
           variant="outline"
           size="icon"
           className="hidden shrink-0 rounded-full shadow-md sm:inline-flex"
+          aria-label={lang === 'es' ? 'Anterior' : 'Previous'}
           onClick={() => emblaApi?.scrollPrev()}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
 
-        <div className="w-full overflow-hidden px-0 sm:px-4">
+        <div className="min-w-0 flex-1 overflow-hidden px-0 sm:px-4">
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-4 py-4 md:gap-6">
               {tools.map((tool, index) => (
@@ -101,6 +102,7 @@ const ModernTools = () => {
           variant="outline"
           size="icon"
           className="hidden shrink-0 rounded-full shadow-md sm:inline-flex"
+          aria-label={lang === 'es' ? 'Siguiente' : 'Next'}
           onClick={() => emblaApi?.scrollNext()}
         >
           <ChevronRight className="h-4 w-4" />

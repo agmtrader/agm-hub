@@ -21,6 +21,11 @@ export async function POST(request: NextRequest) {
           : 'ERROR',
       timestamp: typeof body?.timestamp === 'string' ? body.timestamp : new Date().toISOString(),
       payload: body?.payload ?? null,
+      ...(body?.event === 'application_reconciliation_failed' && body?.severity === 'ERROR' ? {
+        '@type': 'type.googleapis.com/google.devtools.clouderrorreporting.v1beta1.ReportedErrorEvent',
+        message: 'Error: Application reconciliation failed\n    at applicationReconciliation (IBKRApplicationForm)',
+        serviceContext: { service: process.env.K_SERVICE || 'agm-hub' },
+      } : {}),
     };
 
     // JSON line logging so Cloud Run can ingest a structured record.
