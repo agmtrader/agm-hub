@@ -84,6 +84,12 @@ export function getApplicationDefaults<Schema extends z.AnyZodObject>(schema: Sc
                         w8Ben: { ...defaultW8Ben }
                     }]
                 },
+                beneficialOwnership: {
+                    hasBeneficialOwners: undefined,
+                    beneficialOwners: [],
+                    intermediateEntities: [],
+                    trustees: [],
+                },
                 regulatoryInformation: defaultRegulatoryInfo,
             }
         }
