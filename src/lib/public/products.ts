@@ -27,9 +27,14 @@ export const AGMTraderProDownloads: DownloadOption[] = [
     download_url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-windows-x64.exe',
   },
   {
-    os: 'macOS',
+    os: 'macOS (Intel)',
     icon: FaApple,
     download_url: 'https://download2.interactivebrokers.com/installers/agmtrader/agmtrader/agmtrader-macosx-x64.dmg',
+  },
+  {
+    os: 'macOS (Apple Silicon)',
+    icon: FaApple,
+    download_url: 'https://download.clientam.com/installers/agmtrader/agmtrader/agmtrader-macos-arm.dmg',
   },
   {
     os: 'Linux',
